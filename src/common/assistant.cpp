@@ -667,19 +667,45 @@ std::string wideStrToStr(const std::wstring& ws) {
 // Description: 对版本号进行格式化的处理函数
 // Parameter:   std::string ver 四段式版本号
 // Parameter:   bool bPrefix 是否携带 v 前缀
-// Parameter:   bool bSuffix 是否根据最后一段补充 -dev 后缀
+// Parameter:   bool bSuffix 是否根据最后一段补充后缀
+// Parameter:   int ver_type 版本类型 (0 - 社区版, 1 - 专业版)
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2019/11/04 23:20
 //************************************
-std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix) {
+std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix, int ver_type) {
 	std::vector<std::string> split;
 	boost::split(split, ver, boost::is_any_of("."));
-	std::string suffix = split[split.size() - 1] == "1" ? "-dev" : "";
 
-	return ver = boost::str(
-		boost::format("%1%%2%.%3%.%4%%5%") %
-		(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
-	);
+	if (ver_type == 0) {
+		std::string suffix = split[split.size() - 1] == "1" ? "-dev" : "";
+		return ver = boost::str(
+			boost::format("%1%%2%.%3%.%4%%5%") %
+			(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
+		);
+	}
+	else {
+		std::string suffix = split[split.size() - 1];
+		suffix = (suffix != "0" ? " Rev." + suffix : "");
+		return ver = boost::str(
+			boost::format("%1%%2%.%3%.%4%%5%") %
+			(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
+		);
+	}
+}
+
+//************************************
+// Method:      isCommercialVersion
+// Description: 判断当前是否为专业版 (商业版)
+// Access:      public 
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/01/28 01:16
+//************************************ 
+bool isCommercialVersion() {
+#ifdef Pandas_Commercial
+	return true;
+#else
+	return false;
+#endif // Pandas_Commercial
 }
 
 #ifdef Pandas_Version
@@ -693,8 +719,12 @@ std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix) {
 //************************************
 std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 #ifdef _WIN32
-	// 提前获取默认版本号
-	std::string szDefaultVersion = formatVersion(Pandas_Version, bPrefix, bSuffix);
+
+	std::string szDefaultVersion = formatVersion(
+		isCommercialVersion() ? Pandas_Commercial_Version : Pandas_Version,
+		bPrefix, bSuffix,
+		isCommercialVersion() ? 1 : 0
+	);
 
 	// 获取当前的文件名
 	char szModulePath[MAX_PATH] = { 0 };
@@ -727,7 +757,8 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 			);
 
 			delete[] pVersionInfo;
-			return formatVersion(sFileVersion, bPrefix, bSuffix);
+
+			return formatVersion(sFileVersion, bPrefix, bSuffix, isCommercialVersion() ? 1 : 0);
 		}
 	}
 
@@ -735,7 +766,11 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	ShowWarning("%s: Could not get file version, defaulting to '%s'\n", __func__, szDefaultVersion.c_str());
 	return szDefaultVersion;
 #else
-	return formatVersion(Pandas_Version, bPrefix, bSuffix);
+	return formatVersion(
+		isCommercialVersion() ? Pandas_Commercial_Version : Pandas_Version,
+		bPrefix, bSuffix,
+		isCommercialVersion() ? 1 : 0
+	);
 #endif // _WIN32
 }
 #endif // Pandas_Version

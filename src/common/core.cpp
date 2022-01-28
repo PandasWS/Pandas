@@ -349,13 +349,27 @@ static void display_title(void) {
 #else
 
 #ifdef RENEWAL
-	const char* mode = "Renewal";
+	const char* work_mode = "Renewal";
 #else
-	const char* mode = "Pre-Renewal";
+	const char* work_mode = "Pre-Renewal";
 #endif // RENEWAL
 
-	// 在程序启动时显示 Pandas 的版本号
-	ShowInfo("Pandas Version: " CL_WHITE "%s" CL_RESET " (Mode: %s)\n", getPandasVersion().c_str(), mode);
+#ifdef _DEBUG
+	const char* compile_mode = "Debug";
+#else
+	const char* compile_mode = "Release";
+#endif // _DEBUG
+
+	// 在程序启动时显示熊猫模拟器的版本号
+	if (isCommercialVersion()) {
+		std::string community_ver = formatVersion(Pandas_Version, true, true, 0);
+		ShowInfo("Welcome to Pandas Pro: " CL_GREEN "%s" CL_RESET " (Build on community version %s)\n", getPandasVersion().c_str(), community_ver.c_str());
+	}
+	else {
+		ShowInfo("Welcome to Pandas Community: " CL_GREEN "%S" CL_RESET "\n", getPandasVersion().c_str());
+	}
+
+	ShowInfo("Compile for Client PACKETVER: " CL_WHITE "%d" CL_RESET " | Mode: %s | %s\n", PACKETVER, work_mode, compile_mode);
 
 	// 若宏定义开关指定了源码的版本号和分支, 那么也一起打印出来
 	std::string branch(GIT_BRANCH), hash(GIT_HASH);

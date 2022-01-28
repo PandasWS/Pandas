@@ -55,8 +55,15 @@ options = {
         {
             'regex' : r'#define Pandas_Version "(.*)"',
             'replto' : r'#define Pandas_Version "%s"',
-            'vmode' : '.'
-        }
+            'vmode' : '.',
+            'for_type' : 0
+        },
+        {
+            'regex' : r'#define Pandas_Commercial_Version "(.*)"',
+            'replto' : r'#define Pandas_Commercial_Version "%s"',
+            'vmode' : '.',
+            'for_type' : 1
+        },
     ]
 }
 
@@ -110,15 +117,17 @@ class VersionUpdater():
 
         return version
 
-    def processFile(self, filename, rules, version):
+    def processFile(self, filename, rules, version, ver_type):
         displaypath = filename if self.__lastdir__ == '' else os.path.relpath(filename, os.path.join(self.__lastdir__, '../'))
         Message.ShowStatus('正在更新 %s 中的版本号到: %s' % (displaypath, version))
         for rule in rules:
+            if 'for_type' in rule and rule['for_type'] != ver_type:
+                continue
             usever = self.versionFormat(version, rule['vmode'])
             replto = rule['replto'] % usever
             Common.match_file_resub(filename, rule['regex'], replto)
 
-    def updateDirectory(self, directory, version):
+    def updateDirectory(self, directory, version, ver_type):
         self.__lastdir__ = directory
 
         fregexs = [v for _x, v in enumerate(self.__options__)]
@@ -130,7 +139,7 @@ class VersionUpdater():
                     if re.match(fregex, filename) is None:
                         continue
                     rules = self.__options__[fregex]
-                    self.processFile(fullpath, rules, version)
+                    self.processFile(fullpath, rules, version, ver_type)
 
 def main():
     os.chdir(os.path.split(os.path.realpath(__file__))[0])
@@ -139,15 +148,28 @@ def main():
 
     print('')
 
-    # 读取当前的 Pandas 主程序版本号
-    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir), origin=True)
-    Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
+    # 判断当前是否为专业版
+    slndir_path = os.path.abspath(project_slndir)
+    is_commercial = Common.is_commercial_ver(slndir_path)
 
-    print('')
+    # 读取当前熊猫模拟器的版本号
+    pandas_communtiy_ver = Common.get_community_ver(slndir_path, origin=True)
+    if is_commercial:
+        pandas_commercial_ver = Common.get_commercial_ver(slndir_path, origin=True)
+        pandas_display_ver = Common.get_pandas_ver(slndir_path, prefix='v')
+        Message.ShowInfo('当前的社区版本号是: %s | 专业版本号是: %s' % (pandas_communtiy_ver, pandas_commercial_ver))
+        Message.ShowInfo('最终生成的可读版本: %s' % pandas_display_ver)
+    else:
+        Message.ShowInfo('当前的社区版本号是: %s' % pandas_communtiy_ver)
+
+    # 确认当前的版本号规范
+    rule_tips = '四段式: 1.0.0.1, 最后一段为 1 则表示为开发版'
+    if is_commercial:
+        rule_tips = '四段式: YYYY.MM.DD.REV, 最后一段为修订版号, 从 0 开始'
 
     # 询问获取升级后的目标版本
     newver = Inputer().requireText({
-        'tips' : '请输入新的版本号 (四段式: 1.0.0.1, 最后一段为 1 则表示为开发版)'
+        'tips' : '请输入新的版本号 (%s): ' % rule_tips,
     })
 
     if not isVersionFormatValid(newver):
@@ -156,7 +178,7 @@ def main():
 
     # 执行更新操作
     ver = VersionUpdater(options)
-    ver.updateDirectory(slndir('src'), newver)
+    ver.updateDirectory(slndir('src'), newver, 1 if is_commercial else 0)
 
     Common.exit_with_pause()
 

@@ -33,6 +33,8 @@ __all__ = [
 	'exit_with_pause',
 	'welcome',
     'timefmt',
+    'get_community_ver',
+    'get_commercial_ver',
     'get_pandas_ver',
     'get_pandas_branch',
     'get_pandas_hash',
@@ -343,9 +345,9 @@ def get_encoding(filename):
 
     return str.lower(result['encoding'])
 
-def get_pandas_ver(slndir, prefix = None, origin = False):
+def get_community_ver(slndir, prefix = None, origin = False):
     '''
-    读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
+    读取当前 Pandas 在 src/config/pandas.hpp 定义的社区版版本号
     若读取不到版本号则返回 None
     '''
     filepath = os.path.abspath(slndir + '/src/config/pandas.hpp')
@@ -364,6 +366,51 @@ def get_pandas_ver(slndir, prefix = None, origin = False):
                 version += '-dev'
     
     return version if not prefix else prefix + version
+
+
+def get_commercial_ver(slndir, prefix = None, origin = False):
+    '''
+    读取当前 Pandas 在 src/config/pandas.hpp 定义的商业版版本号
+    若读取不到版本号则返回 None
+    '''
+    filepath = os.path.abspath(slndir + '/src/config/pandas.hpp')
+    if not is_file_exists(filepath):
+        return None
+    matchgroup = match_file_regex(filepath, r'#define Pandas_Commercial_Version "(.*)"')
+    version = matchgroup[0] if matchgroup is not None else None
+    
+    if not origin:
+        # 读取到的版本号应该是四段式的
+        # 将其加工成三段式, 并在末尾追加可能需要的修订后缀
+        splitver = version.split('.')
+        if (len(splitver) == 4):
+            version = '%s.%s.%s' % (splitver[0], splitver[1], splitver[2])
+            if splitver[3] != '0':
+                version += ' Rev.%s' % splitver[3]
+    
+    return version if not prefix else prefix + version
+
+
+def is_commercial_ver(slndir):
+    '''
+    当前是否为专业版 (商业版)
+    '''
+    filepath = os.path.abspath(slndir + '/src/config/pandas.hpp')
+    if not is_file_exists(filepath):
+        return False
+    matchgroup = match_file_regex(filepath, r'#define Pandas_Commercial_Version "(.*)"')
+    return matchgroup is not None
+
+
+def get_pandas_ver(slndir, prefix = None, origin = False):
+    '''
+    根据是否启用了专业版 (商业版) 来获得对应的展示版本
+    '''
+    if is_commercial_ver(slndir):
+        return get_commercial_ver(slndir, prefix, origin)
+    else:
+        return get_community_ver(slndir, prefix, origin)
+
 
 def get_pandas_branch(slndir):
     '''
@@ -437,7 +484,7 @@ def is_pandas_release(slndir):
     读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
     并判断最后一段是否为 0 (表示正式版)
     '''
-    version = get_pandas_ver(slndir, origin = True)
+    version = get_community_ver(slndir, origin = True)
     splitver = version.split('.')
     return (len(splitver) == 4 and splitver[3] == '0')
 

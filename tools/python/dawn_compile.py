@@ -223,7 +223,7 @@ def clean_environment():
 
     shutil.rmtree(slndir(project_cachedir), ignore_errors=True)
 
-def compile_sub(define_val, name, version, scheme = 'Release|Win32'):
+def compile_sub(define_val, name, scheme = 'Release|Win32'):
     '''
     用于执行编译
     '''
@@ -266,7 +266,7 @@ def define_builder(options):
         value = value + ' '
     return value
 
-def compile_prere(version):
+def compile_prere():
     '''
     编译复兴前版本
     '''
@@ -287,7 +287,7 @@ def compile_prere(version):
 
     define_values = define_builder(define_options)
     
-    if not compile_sub(define_values, '复兴前', version):
+    if not compile_sub(define_values, '复兴前'):
         Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
 
@@ -300,7 +300,7 @@ def compile_prere(version):
     
     print('')
 
-def compile_renewal(version):
+def compile_renewal():
     '''
     编译复兴后版本
     '''
@@ -319,8 +319,8 @@ def compile_renewal(version):
 
     define_values = define_builder(define_options)
     
-    if not compile_sub(define_values, '复兴后', version):
-        Message.ShowError('编译复兴前版本时发生了一些错误, 请检查...')
+    if not compile_sub(define_values, '复兴后'):
+        Message.ShowError('编译复兴后版本时发生了一些错误, 请检查...')
         Common.exit_with_pause(-1)
     
     # 将之前 compile_prere 中临时重命名的复兴前产物全部改回正常的文件名
@@ -358,9 +358,9 @@ def main():
 
     print('')
 
-    # 读取当前的 Pandas 主程序版本号
-    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
-    Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
+    # 读取当前熊猫模拟器的版本号
+    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir), prefix ='v')
+    Message.ShowInfo('当前模拟器的版本号为: %s' % pandas_ver)
 
     # 判断是否已经写入了对应的更新日志, 若没有则要给予提示再继续
     if (has_changelog(pandas_ver)):
@@ -400,11 +400,11 @@ def main():
 
     # 编译 Pandas 的复兴前版本
     if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
-        compile_prere(pandas_ver)
+        compile_prere()
 
     # 编译 Pandas 的复兴后版本
     if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
-        compile_renewal(pandas_ver)
+        compile_renewal()
 
     Message.ShowStatus('编译工作已经全部结束, 请归档符号并执行打包流程.')
 

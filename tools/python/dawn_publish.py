@@ -422,9 +422,9 @@ def main():
     Common.welcome('打包流程辅助脚本')
     print('')
 
-    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
-    Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
-    
+    # 读取当前熊猫模拟器的版本号
+    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir), prefix ='v')
+    Message.ShowInfo('当前模拟器的版本号为: %s' % pandas_ver)
 
     # 若环境变量为空则设置个默认值
     if not os.getenv('DEFINE_PROJECT_NAME'):
