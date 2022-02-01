@@ -770,11 +770,15 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	ShowWarning("%s: Could not get file version, defaulting to '%s'\n", __func__, szDefaultVersion.c_str());
 	return szDefaultVersion;
 #else
+#ifdef Pandas_Commercial_Version
 	return formatVersion(
 		isCommercialVersion() ? Pandas_Commercial_Version : Pandas_Version,
 		bPrefix, bSuffix,
 		isCommercialVersion() ? 1 : 0
 	);
+#else
+	return formatVersion(Pandas_Version, bPrefix, bSuffix, 0);
+#endif // Pandas_Commercial_Version
 #endif // _WIN32
 }
 #endif // Pandas_Version
