@@ -422,9 +422,20 @@ def main():
     Common.welcome('打包流程辅助脚本')
     print('')
 
-    pandas_ver = Common.get_pandas_ver(os.path.abspath(project_slndir))
-    Message.ShowInfo('当前模拟器的主版本是 %s' % pandas_ver)
-    
+    # 判断当前是否为专业版
+    slndir_path = os.path.abspath(project_slndir)
+    is_commercial = Common.is_commercial_ver(slndir_path)
+
+    # 读取当前熊猫模拟器的版本号
+    pandas_communtiy_ver = Common.get_community_ver(slndir_path, origin=True)
+    pandas_ver = Common.get_community_ver(slndir_path, prefix='v', origin=False)
+    if is_commercial:
+        pandas_commercial_ver = Common.get_commercial_ver(slndir_path, origin=True)
+        pandas_display_ver = Common.get_pandas_ver(slndir_path, prefix='v')
+        Message.ShowInfo('社区版版本号: %s | 专业版版本号: %s' % (pandas_communtiy_ver, pandas_commercial_ver))
+        Message.ShowInfo('最终显示版本: %s' % pandas_display_ver)
+    else:
+        Message.ShowInfo('社区版版本号: %s (%s)' % (pandas_communtiy_ver, pandas_ver))
 
     # 若环境变量为空则设置个默认值
     if not os.getenv('DEFINE_PROJECT_NAME'):

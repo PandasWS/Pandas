@@ -53,6 +53,8 @@ void ensurePathEndwithSep(std::wstring& path, std::wstring sep);
 std::wstring strToWideStr(const std::string& s);
 std::string wideStrToStr(const std::wstring& ws);
 
+std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix, int ver_type);
+bool isCommercialVersion();
 std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 
 bool isDoubleByteCharacter(unsigned char high, unsigned char low);

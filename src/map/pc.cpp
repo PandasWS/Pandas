@@ -15126,8 +15126,15 @@ void pc_show_version(struct map_session_data *sd) {
 		githash = msg_txt_cn(sd, 91);			// 暂无数据
 
 	// 构建并输出第一行版本信息
-	// 熊猫模拟器版本: v1.0.6-dev (官方编译)
-	sprintf(mes, msg_txt_cn(sd, 85), getPandasVersion().c_str(), compile);
+	if (isCommercialVersion()) {
+		// 熊猫模拟器专业版: v2022.01.28 (基于社区版 v1.1.10-dev 构建 | 官方编译)
+		std::string community_ver = formatVersion(Pandas_Version, true, true, 0);
+		sprintf(mes, msg_txt_cn(sd, 92), getPandasVersion().c_str(), community_ver.c_str(), compile);
+	}
+	else {
+		// 熊猫模拟器社区版: v1.0.6-dev (官方编译)
+		sprintf(mes, msg_txt_cn(sd, 85), getPandasVersion().c_str(), compile);
+	}
 	clif_displaymessage(sd->fd, mes);
 
 	// 构建并输出第二行版本信息
