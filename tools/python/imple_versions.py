@@ -154,18 +154,19 @@ def main():
 
     # 读取当前熊猫模拟器的版本号
     pandas_communtiy_ver = Common.get_community_ver(slndir_path, origin=True)
+    pandas_ver = Common.get_community_ver(slndir_path, prefix='v', origin=False)
     if is_commercial:
         pandas_commercial_ver = Common.get_commercial_ver(slndir_path, origin=True)
         pandas_display_ver = Common.get_pandas_ver(slndir_path, prefix='v')
-        Message.ShowInfo('当前的社区版本号是: %s | 专业版本号是: %s' % (pandas_communtiy_ver, pandas_commercial_ver))
-        Message.ShowInfo('最终生成的可读版本: %s' % pandas_display_ver)
+        Message.ShowInfo('社区版版本号: %s | 专业版版本号: %s' % (pandas_communtiy_ver, pandas_commercial_ver))
+        Message.ShowInfo('最终显示版本: %s' % pandas_display_ver)
     else:
-        Message.ShowInfo('当前的社区版本号是: %s' % pandas_communtiy_ver)
+        Message.ShowInfo('社区版版本号: %s (%s)' % (pandas_communtiy_ver, pandas_ver))
 
     # 确认当前的版本号规范
-    rule_tips = '四段式: 1.0.0.1, 最后一段为 1 则表示为开发版'
+    rule_tips = '格式: 1.0.0.1, 第四段为 1 则表示为开发版'
     if is_commercial:
-        rule_tips = '四段式: YYYY.MM.DD.REV, 最后一段为修订版号, 从 0 开始'
+        rule_tips = '格式: YYYY.MM.DD.REV, 第四段为修订版号, 从 0 开始'
 
     # 询问获取升级后的目标版本
     newver = Inputer().requireText({
