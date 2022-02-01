@@ -366,7 +366,7 @@ static void display_title(void) {
 		ShowInfo("Welcome to Pandas Pro: " CL_GREEN "%s" CL_RESET " (Build on community version %s)\n", getPandasVersion().c_str(), community_ver.c_str());
 	}
 	else {
-		ShowInfo("Welcome to Pandas Community: " CL_GREEN "%S" CL_RESET "\n", getPandasVersion().c_str());
+		ShowInfo("Welcome to Pandas Community: " CL_GREEN "%s" CL_RESET "\n", getPandasVersion().c_str());
 	}
 
 	ShowInfo("Compile for Client PACKETVER: " CL_WHITE "%d" CL_RESET " | Mode: %s | %s\n", PACKETVER, work_mode, compile_mode);

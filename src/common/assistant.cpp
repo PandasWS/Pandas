@@ -720,11 +720,15 @@ bool isCommercialVersion() {
 std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 #ifdef _WIN32
 
+#ifdef Pandas_Commercial_Version
 	std::string szDefaultVersion = formatVersion(
 		isCommercialVersion() ? Pandas_Commercial_Version : Pandas_Version,
 		bPrefix, bSuffix,
 		isCommercialVersion() ? 1 : 0
 	);
+#else
+	std::string szDefaultVersion = formatVersion(Pandas_Version, bPrefix, bSuffix, 0);
+#endif // Pandas_Commercial_Version
 
 	// 获取当前的文件名
 	char szModulePath[MAX_PATH] = { 0 };
