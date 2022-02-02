@@ -72,8 +72,8 @@ Body:
       Earth: 150
       Fire: 25
       Wind: 100
-      Poison: 100
-      Holy: 150
+      Poison: 150
+      Holy: 100
       Dark: 100
       Ghost: 100
       Undead: 125
