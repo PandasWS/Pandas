@@ -2451,6 +2451,73 @@ void clif_selllist(struct map_session_data *sd)
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
 
+#if defined(Pandas_ScriptCommand_Callshop) && defined(Pandas_Struct_Npc_Itemlist_Saved)
+void clif_selllist_filter(struct map_session_data* sd, int shopid)
+{
+	int fd, i, c = 0, val;
+	struct npc_data* nd;
+
+	nullpo_retv(sd);
+	if ((nd = map_id2nd(shopid)) == NULL)
+		return;
+
+	fd=sd->fd;
+	WFIFOHEAD(fd, MAX_INVENTORY * 10 + 4);
+	WFIFOW(fd,0)=0xc7;
+	for( i = 0; i < MAX_INVENTORY; i++ )
+	{
+		if( sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory_data[i] )
+		{
+			if (!pc_can_sell_item(sd, &sd->inventory.u.items_inventory[i], nd->subtype))
+				continue;
+
+			if (nd->u.shop.shop_item->itemfilter.flag){
+
+				if (nd->u.shop.shop_item->itemfilter.type != IT_UNKNOWN){
+					if (nd->u.shop.shop_item->itemfilter.type == itemdb_type(sd->inventory.u.items_inventory[i].nameid))
+						;
+					else
+						continue;
+				}
+
+				if (nd->u.shop.shop_item->itemfilter.identify > -1) {
+					if ((nd->u.shop.shop_item->itemfilter.identify == 1 && sd->inventory.u.items_inventory[i].identify == 0) || (nd->u.shop.shop_item->itemfilter.identify == 1 && sd->inventory.u.items_inventory[i].identify == 0))
+						continue;
+				}
+
+				if (nd->u.shop.shop_item->itemfilter.refine != -1 && nd->u.shop.shop_item->itemfilter.refine > sd->inventory.u.items_inventory[i].refine)
+					continue;
+
+				if (nd->u.shop.shop_item->itemfilter.enchantgrade != 0 && nd->u.shop.shop_item->itemfilter.enchantgrade > sd->inventory.u.items_inventory[i].enchantgrade)
+					continue;
+
+				if (nd->u.shop.shop_item->itemfilter.itemsize){
+					int j;
+					ARR_FIND(0, nd->u.shop.shop_item->itemfilter.itemsize, j, nd->u.shop.shop_item->itemfilter.itemlist[j] == sd->inventory.u.items_inventory[i].nameid);
+
+					if (j == nd->u.shop.shop_item->itemfilter.itemsize)
+						continue;
+				}
+			}
+
+			if (battle_config.rental_item_novalue && sd->inventory.u.items_inventory[i].expire_time)
+				val = 0;
+			else {
+				val = sd->inventory_data[i]->value_sell;
+				if (val < 0)
+					continue;
+			}
+			WFIFOW(fd,4+c*10)=i+2;
+			WFIFOL(fd,6+c*10)=val;
+			WFIFOL(fd,10+c*10)=pc_modifysellvalue(sd,val);
+			c++;
+		}
+	}
+	WFIFOW(fd,2)=c*10+4;
+	WFIFOSET(fd,WFIFOW(fd,2));
+}
+#endif // defined(Pandas_ScriptCommand_Callshop) && defined(Pandas_Struct_Npc_Itemlist_Saved)
+
 /// Closes shop (CZ_NPC_TRADE_QUIT).
 /// 09d4
 void clif_parse_NPCShopClosed(int fd, struct map_session_data *sd) {

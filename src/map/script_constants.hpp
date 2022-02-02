@@ -9039,6 +9039,16 @@
 	export_constant(SUSPEND_MODE_NORMAL);
 #endif // Pandas_Player_Suspend_System
 
+#ifdef Pandas_Struct_Npc_Itemlist_Saved
+	export_constant(FILTER_NONE);
+	export_constant(FILTER_TYPE);
+	export_constant(FILTER_IDENTIFY);
+	export_constant(FILTER_REFINE);
+	export_constant(FILTER_ENCHANTGRADE);
+	export_constant(FILTER_ITEMLIST);
+	export_constant(FILTER_MAX);
+#endif  // Pandas_Struct_Npc_Itemlist_Saved
+
 	#undef export_constant
 	#undef export_constant2
 	#undef export_parameter

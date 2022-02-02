@@ -28,6 +28,28 @@ struct npc_label_list {
 	int pos;
 };
 
+#ifdef Pandas_Struct_Npc_Itemlist_Saved
+enum npc_selllist_filter {
+	FILTER_NONE = 0,
+	FILTER_TYPE,
+	FILTER_IDENTIFY,
+	FILTER_REFINE,
+	FILTER_ENCHANTGRADE,
+	FILTER_ITEMLIST,
+	FILTER_MAX
+};
+
+struct npc_selllist_filter_item {
+	bool flag;
+	item_types type;
+	char identify;
+	char refine;
+	uint8 enchantgrade;
+	t_itemid itemlist[1024];
+	int itemsize;
+};
+#endif // Pandas_Struct_Npc_Itemlist_Saved
+
 /// Item list for NPC sell/buy list
 struct npc_item_list {
 	t_itemid nameid;
@@ -36,6 +58,9 @@ struct npc_item_list {
 	unsigned short qty; ///< Stock counter (Market shop)
 	uint8 flag; ///< 1: Item added by npcshopitem/npcshopadditem, force load! (Market shop)
 #endif
+#ifdef Pandas_Struct_Npc_Itemlist_Saved
+	struct npc_selllist_filter_item itemfilter;
+#endif // Pandas_Struct_Npc_Itemlist_Saved
 };
 
 #if !defined(sun) && (!defined(__NETBSD__) || __NetBSD_Version__ >= 600000000) // NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute

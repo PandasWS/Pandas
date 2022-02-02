@@ -18437,6 +18437,9 @@ BUILDIN_FUNC(callshop)
 		switch (flag) {
 			case 1: npc_buysellsel(sd,nd->bl.id,0); break; //Buy window
 			case 2: npc_buysellsel(sd,nd->bl.id,1); break; //Sell window
+#ifdef Pandas_ScriptCommand_Callshop
+			case 3: clif_selllist_filter(sd, nd->bl.id); break; // Filter Sell window
+#endif // Pandas_ScriptCommand_Callshop
 			default: clif_npcbuysell(sd,nd->bl.id); break; //Show menu
 		}
 	}
@@ -30617,6 +30620,167 @@ BUILDIN_FUNC(sleep3) {
 }
 #endif // Pandas_ScriptCommand_Sleep3
 
+#ifdef Pandas_ScriptCommand_Selllist_clear
+/* ===========================================================
+ * 指令: selllist_clear
+ * 描述: 清空過濾商店
+ * 用法: selllist_clear "商店名稱";
+ * 返回: 成功则返回0, 失败则返回 -1
+ * 作者: Renee
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(selllist_clear)
+{
+	struct npc_data* nd = nullptr;
+	const char* shopname = script_getstr(st, 2);
+
+	nd = npc_name2id(shopname);
+
+	if (!nd) {
+		ShowError("buildin_selllist_clear: Shop [%s] not found (or NPC is not shop type)\n", shopname);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	nd->u.shop.shop_item->itemfilter.flag = false;
+	nd->u.shop.shop_item->itemfilter.type = IT_UNKNOWN;
+	nd->u.shop.shop_item->itemfilter.identify = -1;
+	nd->u.shop.shop_item->itemfilter.refine = -1;
+	nd->u.shop.shop_item->itemfilter.enchantgrade = 0;
+	for (int i = 0; i < nd->u.shop.shop_item->itemfilter.itemsize; i++)
+		nd->u.shop.shop_item->itemfilter.itemlist[i] = 0;
+	nd->u.shop.shop_item->itemfilter.itemsize = 0;
+
+	script_pushint(st, 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Selllist_clear
+
+#ifdef Pandas_ScriptCommand_Selllist_filter
+/* ===========================================================
+ * 指令: selllist_filter
+ * 描述: 設置過濾商店細節
+ * 用法: selllist_filter "商店名稱",<選項>,<傳入值|傳入陣列>;
+ * 返回: 成功则返回0, 失败则返回 -1
+ * 作者: Renee
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(selllist_filter)
+{
+	struct map_session_data* sd = nullptr;
+	struct npc_data* nd = nullptr;
+	struct reg_db *src_reg_db = nullptr;
+	struct script_data *retdata = nullptr;
+	int retid, itemsize, filter, value = 0;
+	const char* shopname = script_getstr(st, 2);
+
+	nd = npc_name2id(shopname);
+
+	if (!script_rid2sd(sd)){
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (!nd) {
+		ShowError("buildin_selllist_filter: Shop [%s] not found (or NPC is not shop type)\n", shopname);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	filter = (enum npc_selllist_filter)script_getnum(st, 3);
+
+	if(filter >= FILTER_MAX || filter <= FILTER_NONE){
+		ShowWarning("buildin_selllist_filter: unsupported filter type.\n");
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	retdata = script_getdata(st, 4);
+	retid = reference_getid(retdata);
+	const char* retname = reference_getname(retdata);
+
+	if (filter == FILTER_ITEMLIST) {
+		if (!data_isreference(retdata)) {
+			ShowError("buildin_selllist_filter: error argument! please give a array variable.\n");
+			script_reportdata(retdata);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	
+		if (!(src_reg_db = script_array_src(st, sd, retname, reference_getref(retdata)))) {
+			ShowError("buildin_selllist_filter: variable '%s' is not a array.\n", retname);
+			script_reportdata(retdata);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+	
+		if (is_string_variable(retname)) {
+			ShowError("buildin_selllist_filter: the array variable '%s' must be integer type.\n", retname);
+			script_reportdata(retdata);
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		itemsize = script_array_highest_key(st, sd, retname, src_reg_db);
+	} else {
+		value = script_getnum(st, 4);
+	}
+
+	switch (filter)
+	{
+		case FILTER_TYPE:
+			if (value >= IT_MAX || value < IT_HEALING) {
+				ShowError("buildin_selllist_filter: Unknown Item Type.\n");
+				script_pushint(st, -1);
+				return SCRIPT_CMD_FAILURE;
+			}
+			nd->u.shop.shop_item->itemfilter.type = static_cast<item_types>(value);
+			break;
+		case FILTER_IDENTIFY:
+			if (value > 1 || value < 0) {
+				ShowWarning("buildin_selllist_filter: Invalid identify value %d, capping...\n", value);
+			}
+			nd->u.shop.shop_item->itemfilter.identify = cap_value(value, 0, 1);
+			break;
+		case FILTER_REFINE:
+			if (value > MAX_REFINE || value < 0) {
+				ShowWarning("buildin_selllist_filter: Invalid refine value %d, capping...\n", value);
+			}
+			nd->u.shop.shop_item->itemfilter.refine = cap_value(value, 0, MAX_REFINE);
+			break;
+		case FILTER_ENCHANTGRADE:
+			nd->u.shop.shop_item->itemfilter.enchantgrade = static_cast<uint8>(value);
+			break;
+		case FILTER_ITEMLIST: {
+			int count = 0;
+			t_itemid nameid;
+			std::shared_ptr<item_data> item;
+			for (int i = 0; i < itemsize; ++i) {
+				nameid = static_cast<t_itemid>(get_val2_num(st, reference_uid(retid, i), src_reg_db));
+				item = item_db.find(nameid);
+				if (item == nullptr) {
+					ShowError("buildin_selllist_filter: Unknown item id %u\n", nameid);
+					continue;
+				}
+				nd->u.shop.shop_item->itemfilter.itemlist[i] = nameid;
+				count++;
+			}
+			if (!count) {
+				ShowError("buildin_selllist_filter: FILTER_ITEMLIST Set Failed, Count was be '0'.\n");
+				script_pushint(st, -1);
+				return SCRIPT_CMD_FAILURE;
+			}
+			nd->u.shop.shop_item->itemfilter.itemsize = count;
+		}
+			break;
+		default:
+			ShowWarning("buildin_selllist_filter: unsupported filter type.\n");
+			script_pushint(st, -1);
+			return SCRIPT_CMD_FAILURE;
+	}
+	nd->u.shop.shop_item->itemfilter.flag = true;
+	script_pushint(st, 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Selllist_filter
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31527,6 +31691,12 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Sleep3
 	BUILDIN_DEF(sleep3,"i"),							// 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错 [人鱼姬的思念]
 #endif // Pandas_ScriptCommand_Sleep3
+#ifdef Pandas_ScriptCommand_Selllist_clear
+	BUILDIN_DEF(selllist_clear, "s"),					// 清空過濾商店
+#endif // Pandas_ScriptCommand_Selllist_clear
+#ifdef Pandas_ScriptCommand_Selllist_filter
+	BUILDIN_DEF(selllist_filter,"si?"),					// 設置過濾商店細節
+#endif // Pandas_ScriptCommand_Selllist_filter
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
