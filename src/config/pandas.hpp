@@ -1972,6 +1972,10 @@
 	// 是否启用 sleep3 脚本指令 [人鱼姬的思念]
 	// 该指令用于休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错
 	#define Pandas_ScriptCommand_Sleep3
+
+	// 是否启用 getquesttime 脚本指令 [Sola丶小克]
+	// 该指令用于查询角色指定任务的时间信息 (感谢 "SSBoyz" 建议)
+	#define Pandas_ScriptCommand_GetQuestTime
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
