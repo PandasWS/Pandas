@@ -18,7 +18,6 @@ REM to avoid any localization issue
 set "login_running=false"
 set "char_running=false"
 set "map_running=false"
-set "web_running=false"
 
 
 if "%target%" == "status" (
@@ -40,7 +39,6 @@ echo "Stoping all serv"
 call :stopLogin
 call :stopChar
 call :stopMap
-call :stopWeb
 goto :EOF
 
 :Watch
@@ -50,7 +48,6 @@ set "restart_mode=on"
 call :startLogin
 call :startChar
 call :startMap
-call :startWeb
 goto :EOF
 
 :Start
@@ -59,7 +56,6 @@ set "restart_mode=off"
 call :startLogin
 call :startChar
 call :startMap
-call :startWeb
 goto :EOF
 
 :getStatus
@@ -67,7 +63,6 @@ echo "Getting status of all serv"
 call :getLoginStatus
 call :getCharStatus
 call :getMapStatus
-call :getWebStatus
 
 if "%login_running%" == "false" ( echo "login_serv is not running" 
 ) else echo "login_serv is running pid=%LoginServPID%"
@@ -75,8 +70,6 @@ if "%char_running%" == "false" ( echo "char_serv is not running"
 ) else echo "char_serv is running pid=%CharServPID%"
 if "%map_running%" == "false" ( echo "map_serv is not running"
 ) else echo "map_serv is running pid=%MapServPID%"
-if "%web_running%" == "false" ( echo "web_serv is not running"
-) else echo "web_serv is running pid=%WebServPID%"
 
 goto :EOF
 
@@ -102,11 +95,6 @@ call :getMapStatus
 if "%map_running%" == "true" Taskkill /PID %MapServPID% /F
 goto :EOF
 
-:stopWeb
-call :getWebStatus
-if "%web_running%" == "true" Taskkill /PID %WebServPID% /F
-goto :EOF
-
 REM start sub targets
 :startLogin
 call :getLoginStatus
@@ -126,12 +114,6 @@ if "%map_running%" == "false" ( start cmd /k tools\batches\mapserv.bat %restart_
 ) else echo "Map serv is already running, pid=%MapServPID%" 
 goto :EOF  
 
-:startWeb
-call :getWebStatus
-if "%web_running%" == "false" ( start cmd /k tools\batches\webserv.bat %restart_mode%
-) else echo "Web serv is already running, pid=%WebServPID%" 
-goto :EOF  
-
 REM status sub targets
 
 :getLoginStatus
@@ -147,9 +129,4 @@ goto :EOF
 :getMapStatus
 for /F "TOKENS=1,2,*" %%a in ('tasklist /FI "IMAGENAME eq map-server.exe"') do set MapServPID=%%b
 echo(%MapServPID%|findstr "^[-][1-9][0-9]*$ ^[1-9][0-9]*$ ^0$">nul&& set "map_running=true" || set "map_running=false"
-goto :EOF
-
-:getWebStatus
-for /F "TOKENS=1,2,*" %%a in ('tasklist /FI "IMAGENAME eq web-server.exe"') do set WebServPID=%%b
-echo(%WebServPID%|findstr "^[-][1-9][0-9]*$ ^[1-9][0-9]*$ ^0$">nul&& set "web_running=true" || set "web_running=false"
 goto :EOF
