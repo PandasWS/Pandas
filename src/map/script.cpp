@@ -3842,6 +3842,7 @@ struct script_state* script_alloc_state(struct script_code* rootscript, int pos,
 	st->oid = oid;
 	st->sleep.timer = INVALID_TIMER;
 	st->npc_item_flag = battle_config.item_enabled_npc;
+	st->asyncSleep = false;
 
 #ifdef Pandas_ScriptCommand_UnlockCmd
 	// 确保创建 script_state 的时候 unlockcmd 的值为 0
