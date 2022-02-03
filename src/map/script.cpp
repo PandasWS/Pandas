@@ -29595,7 +29595,7 @@ BUILDIN_FUNC(unlockcmd) {
 /* ===========================================================
  * 指令: batrec_query
  * 描述: 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值
- * 用法: batrec_query <记录宿主的单位编号>, <交互目标的单位编号>, <记录类型>{, <聚合规则>};
+ * 用法: batrec_query <记录宿主的单位编号>,<交互目标的单位编号>,<记录类型>{,<聚合规则>};
  * 返回: 返回 -1 表示查无记录, 含 0 正整数表示伤害值
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -29631,7 +29631,7 @@ BUILDIN_FUNC(batrec_query) {
 /* ===========================================================
  * 指令: batrec_rank
  * 描述: 查询指定单位的战斗记录并对记录的值进行排序, 返回排行榜单
- * 用法: batrec_rank <记录宿主的单位编号>, <返回交互目标的单位编号数组>, <返回记录值数组>, <记录类型>{, <聚合规则>{, <排序规则>}};
+ * 用法: batrec_rank <记录宿主的单位编号>,<返回交互目标的单位编号数组>,<返回记录值数组>,<记录类型>{,<聚合规则>{,<排序规则>}};
  * 返回: 失败返回 -1, 含 0 正整数表示数组中返回的榜单记录数
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -29722,7 +29722,7 @@ BUILDIN_FUNC(batrec_rank) {
 /* ===========================================================
  * 指令: batrec_sortout
  * 描述: 移除指定单位的战斗记录中交互单位已经不存在 (或下线) 的记录
- * 用法: batrec_sortout <记录宿主的单位编号>{, <记录类型>};
+ * 用法: batrec_sortout <记录宿主的单位编号>{,<记录类型>};
  * 返回: 该指令无论成功与否, 都不会有返回值
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -29830,7 +29830,7 @@ BUILDIN_FUNC(disable_batrec) {
 /* ===========================================================
  * 指令: login
  * 描述: 将指定的角色以特定的登录模式拉上线
- * 用法: login <角色编号>{, <默认是否坐下>{, <默认身体朝向>{, <默认脑袋朝向>{, <登录模式>}}}};
+ * 用法: login <角色编号>{,<默认是否坐下>{,<默认身体朝向>{,<默认脑袋朝向>{,<登录模式>}}}};
  * 返回: 成功返回 1, 失败返回 0
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -30616,6 +30616,59 @@ BUILDIN_FUNC(sleep3) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Sleep3
+
+#ifdef Pandas_ScriptCommand_GetQuestTime
+/* ===========================================================
+ * 指令: getquesttime
+ * 描述: 查询角色指定任务的时间信息
+ * 用法: getquesttime <任务编号>{,<想查询的时间类型>{,<角色编号>}};
+ * 返回: 成功返回时间戳, 失败返回 -1
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getquesttime) {
+	int quest_id = script_getnum(st, 2);
+	int query_time_type = (script_hasdata(st, 3) && script_isint(st, 3)) ? script_getnum(st, 3) : 0;
+	struct map_session_data* sd = nullptr;
+
+	if (!script_charid2sd(4, sd)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	std::shared_ptr<s_quest_db> qi = quest_search(quest_id);
+	if (!qi) {
+		ShowError("buildin_getquesttime: Quest %d not found in DB.\n", quest_id);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int i = 0;
+	ARR_FIND(0, sd->num_quests, i, sd->quest_log[i].quest_id == quest_id);
+	if (i == sd->num_quests) {
+		ShowError("buildin_getquesttime: Character %d doesn't have quest %d.\n", sd->status.char_id, quest_id);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	switch (query_time_type)
+	{
+	case 0:
+		script_pushint(st, sd->quest_log[i].time);
+		break;
+	case 1:
+		script_pushint(st, sd->quest_log[i].time - qi->time);
+		break;
+	case 2:
+		script_pushint(st, max(sd->quest_log[i].time - time(nullptr), 0));
+		break;
+	default:
+		ShowError("buildin_getquesttime: Invaild type for quest time.\n");
+		script_pushint(st, -1);
+		break;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetQuestTime
 
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
@@ -31527,6 +31580,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_Sleep3
 	BUILDIN_DEF(sleep3,"i"),							// 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错 [人鱼姬的思念]
 #endif // Pandas_ScriptCommand_Sleep3
+#ifdef Pandas_ScriptCommand_GetQuestTime
+	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetQuestTime
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
