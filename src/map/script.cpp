@@ -18382,24 +18382,46 @@ std::map<int, DBResultData*> query_sql_db;
 static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 {
 	if (!st->asyncSleep) {
+		// 若当前 st 没有处于异步休眠状态
+		// 那么说明这是一次全新执行的异步查询调用
+
+		// 获取对应的查询语句
 		const char* query = script_getstr(st, 2);
+
+		// 如果有传递用来接收返回值的变量, 那么执行异步查询并要求返回结果
 		if (script_hasdata(st, 3)) {
+
+			// 下次脚本被执行的时候将直接从当前脚本行继续往下执行
 			st->state = RERUNLINE;
+
+			// 设置当前的脚本进入异步休眠状态
 			st->asyncSleep = true;
+
+			// 设置查询任务, 并要求在查询结束之后执行匿名回调函数
 			addDBJob(
 				type,
 				query,
 				[st](FutureData result_data) {
+					// 将查询的结果保存到 query_sql_db 字典中
 					query_sql_db[st->id] = (DBResultData*)result_data;
+
+					// 恢复脚本的执行
 					run_script_main(st);
 				}
 			);
 		}
 		else
+			// 如果没有要求需要保存返回值, 那么不设置匿名回调函数
 			addDBJob(type, query);
 	}
 	else {
+		// 若当前 st 处于异步休眠状态
+		// 那么说明现在异步线程已经完成了数据查询工作并回调继续执行脚本
+
+		// 从 query_sql_db 字典中读取当前 st 对应的查询结果
 		DBResultData result_data(query_sql_db[st->id]);
+
+		// 读取完成后直接移除字典中保存的内容
 		delete query_sql_db[st->id];
 		query_sql_db.erase(st->id);
 
@@ -18411,7 +18433,10 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 		size_t num_vars;
 		size_t num_cols;
 
+		// 取消当前脚本的异步休眠状态
 		st->asyncSleep = false;
+
+		// 设置脚本的状态为恢复正常执行
 		st->state = RUN;
 
 		// check target variables

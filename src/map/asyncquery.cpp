@@ -1,4 +1,4 @@
-#include "asyncquery.hpp"
+﻿#include "asyncquery.hpp"
 #include "map.hpp"
 #include "log.hpp"
 
@@ -87,11 +87,13 @@ Sql* getHandle(dbType type) {
 
 // Main Thread Function
 void addDBJob(dbType dType, string query, futureJobFunc resultFunc) {
+	// 将查询任务排入 dbJobs 队列
 	dbJobs.push_back({ dType, query, resultFunc });
 }
 
 // Main Thread Function
 void addDBJob(dbType dType, string query) {
+	// 将查询任务排入 dbJobs 队列
 	dbJobs.push_back({ dType, query, NULL });
 }
 
@@ -100,9 +102,11 @@ void doQuery(dbJob& job) {
 	Sql* handle = getHandle(job.dType);
 	int sql_result_value;
 
+	// 执行查询, 失败则报错; 成功则看看是否有回调函数
 	if (SQL_ERROR == (sql_result_value = Sql_QueryStr(handle, job.query.c_str())))
 		Sql_ShowDebug(handle);
 	else if (job.resultFunc) {
+		// 有回调函数的话，把查询到的数据保存到一个 DBResultData 类中
 		DBResultData* r = new DBResultData(
 			(size_t)Sql_NumRows(handle),
 			(size_t)Sql_NumColumns(handle),
@@ -115,6 +119,7 @@ void doQuery(dbJob& job) {
 			for (size_t ColumnNum = 0; ColumnNum < r->ColumnNum; ColumnNum++)
 				r->SetData(Row, ColumnNum, handle);
 
+		// 将回调函数排入 future 队列等待执行
 		add_future(job.resultFunc, (FutureData)r);
 	}
 
@@ -124,13 +129,17 @@ void doQuery(dbJob& job) {
 // DB Thread Function
 void db_runtime(void) {
 	while (runflag != CORE_ST_STOP) {
+		// 只要服务器的运行状态不是 CORE_ST_STOP
+		// 那么此线程函数每 50 毫秒执行一次 dbJobs.Run 方法
 		this_thread::sleep_for(chrono::milliseconds(50));
 
+		// 取出任务并挨个执行 doQuery 方法 (不是并行)
 		dbJobs.Run([](dbJob& job) {
 			doQuery(job);
-			});
+		});
 	}
 
+	// 服务器状态被切换到 CORE_ST_STOP 准备停止
 	ShowStatus("Close DB Server(async thread) Connection....\n");
 	Sql_Free(MainDBHandle);
 	MainDBHandle = NULL;

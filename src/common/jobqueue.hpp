@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <mutex>
 #include <vector>
@@ -20,14 +20,18 @@ public:
 	void Run(std::function<void (JobType&)> func) {
 		// use mutex here to prevent data racing from push_back()
 		std::unique_lock<std::mutex> lock(mt);
+
+		// 如果没有等待执行的任务, 那么返回
 		if (!queue.size())
 			return;
 
+		// 把等待执行的任务全部从 queue 取出, 放到 QueueForRunning
 		std::vector<JobType> QueueForRunning(queue.size());
 		QueueForRunning.assign(queue.begin(), queue.end());
 		queue.clear();
 		lock.unlock();
 
+		// 一个接一个的顺序回调执行 (不并行)
 		for (auto& job : QueueForRunning)
 			func(job);
 	}
