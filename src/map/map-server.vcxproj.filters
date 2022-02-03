@@ -152,6 +152,9 @@
     <ClInclude Include="vending.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="asyncquery.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="map_artisan.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -299,6 +302,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vending.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="asyncquery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="map_artisan.cpp">

@@ -190,6 +190,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="achievement.hpp" />
+    <ClInclude Include="asyncquery.hpp" />
     <ClInclude Include="atcommand.hpp" />
     <ClInclude Include="aura.hpp" />
     <ClInclude Include="battle.hpp" />
@@ -246,6 +247,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp" />
+    <ClCompile Include="asyncquery.cpp" />
     <ClCompile Include="atcommand.cpp" />
     <ClCompile Include="aura.cpp" />
     <ClCompile Include="battle.cpp" />
