@@ -951,7 +951,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			item->item_usage.override = override;
 		} else {
 			if (!exists)
-				item->item_usage.override = 0;
+				item->item_usage.override = 100;
 		}
 
 		if (this->nodeExists(nouseNode, "Sitting")) {
@@ -967,7 +967,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		}
 	} else {
 		if (!exists) {
-			item->item_usage.override = 0;
+			item->item_usage.override = 100;
 			item->item_usage.sitting = false;
 		}
 	}
@@ -989,7 +989,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			item->gm_lv_trade_override = override;
 		} else {
 			if (!exists)
-				item->gm_lv_trade_override = 0;
+				item->gm_lv_trade_override = 100;
 		}
 
 		if (this->nodeExists(tradeNode, "NoDrop")) {
@@ -1101,7 +1101,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		}
 	} else {
 		if (!exists) {
-			item->gm_lv_trade_override = 0;
+			item->gm_lv_trade_override = 100;
 			item->flag.trade_restriction.drop = false;
 			item->flag.trade_restriction.trade = false;
 			item->flag.trade_restriction.trade_partner = false;
