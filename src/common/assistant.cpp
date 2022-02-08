@@ -701,11 +701,26 @@ std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix, int ver_t
 // Author:      Sola丶小克(CairoLee)  2022/01/28 01:16
 //************************************ 
 bool isCommercialVersion() {
-#ifdef Pandas_Commercial
+#ifdef Pandas_Commercial_Version
 	return true;
 #else
 	return false;
-#endif // Pandas_Commercial
+#endif // Pandas_Commercial_Version
+}
+
+//************************************
+// Method:      getDefinedVersion
+// Description: 读取宏定义中所预设的版本字符串
+// Access:      public 
+// Returns:     const char*
+// Author:      Sola丶小克(CairoLee)  2022/02/08 17:00
+//************************************ 
+inline const char* getDefinedVersion() {
+#ifdef Pandas_Commercial_Version
+	return Pandas_Commercial_Version;
+#else
+	return Pandas_Version;
+#endif // Pandas_Commercial_Version
 }
 
 #ifdef Pandas_Version
@@ -719,16 +734,7 @@ bool isCommercialVersion() {
 //************************************
 std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 #ifdef _WIN32
-
-#ifdef Pandas_Commercial_Version
-	std::string szDefaultVersion = formatVersion(
-		isCommercialVersion() ? Pandas_Commercial_Version : Pandas_Version,
-		bPrefix, bSuffix,
-		isCommercialVersion() ? 1 : 0
-	);
-#else
-	std::string szDefaultVersion = formatVersion(Pandas_Version, bPrefix, bSuffix, 0);
-#endif // Pandas_Commercial_Version
+	std::string szDefaultVersion = formatVersion(getDefinedVersion(), bPrefix, bSuffix, isCommercialVersion() ? 1 : 0);
 
 	// 获取当前的文件名
 	char szModulePath[MAX_PATH] = { 0 };
@@ -754,8 +760,9 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 		UINT nItemLength = 0;
 		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
+			std::string szVersionFormat = (isCommercialVersion() ? "%1$04d.%2$02d.%3$02d.%4%" : "%1%.%2%.%3%.%4%");
 
-			std::string sFileVersion = boost::str(boost::format("%1%.%2%.%3%.%4%") %
+			std::string sFileVersion = boost::str(boost::format(szVersionFormat) %
 				HIWORD(pFileInfo->dwFileVersionMS) % LOWORD(pFileInfo->dwProductVersionMS) % 
 				HIWORD(pFileInfo->dwProductVersionLS) % LOWORD(pFileInfo->dwProductVersionLS)
 			);
@@ -770,15 +777,7 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 	ShowWarning("%s: Could not get file version, defaulting to '%s'\n", __func__, szDefaultVersion.c_str());
 	return szDefaultVersion;
 #else
-#ifdef Pandas_Commercial_Version
-	return formatVersion(
-		isCommercialVersion() ? Pandas_Commercial_Version : Pandas_Version,
-		bPrefix, bSuffix,
-		isCommercialVersion() ? 1 : 0
-	);
-#else
-	return formatVersion(Pandas_Version, bPrefix, bSuffix, 0);
-#endif // Pandas_Commercial_Version
+	return formatVersion(getDefinedVersion(), bPrefix, bSuffix, isCommercialVersion() ? 1 : 0);
 #endif // _WIN32
 }
 #endif // Pandas_Version
