@@ -59,8 +59,8 @@ jobs:
 
       - name: Preparing dependencies
         run: |
-          ./tools/integration/retry.sh sudo apt-get install mysql-client -y
-          ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
+          ./tools/integration/retry.sh sudo apt-get update -y
+          ./tools/integration/retry.sh sudo apt-get install mysql-client libmysqlclient-dev zlib1g-dev libpcre3-dev -y
 
       - name: Setup gcc compiler
         uses: egor-tensin/setup-gcc@v1
@@ -151,8 +151,8 @@ jobs:
 
       - name: Preparing dependencies
         run: |
-          ./tools/integration/retry.sh sudo apt-get install mysql-client -y
-          ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
+          ./tools/integration/retry.sh sudo apt-get update -y
+          ./tools/integration/retry.sh sudo apt-get install mysql-client libmysqlclient-dev zlib1g-dev libpcre3-dev -y
 
       - name: Setup clang compiler
         uses: egor-tensin/setup-clang@v1
