@@ -40,3 +40,11 @@ CREATE TABLE IF NOT EXISTS `barter` (
   `amount` SMALLINT(5) UNSIGNED NOT NULL,
   PRIMARY KEY  (`name`,`index`)
 ) ENGINE=MyISAM;
+
+-- -----------------------------------------------
+-- upgrade_20220204.sql
+-- -----------------------------------------------
+
+ALTER TABLE `market`
+MODIFY `amount` INT(11) NOT NULL
+;

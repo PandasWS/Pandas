@@ -5928,6 +5928,18 @@
 	export_constant(IG_SEALED_SCROLL);
 	export_constant(IG_SQUAD_PRIZE1);
 	export_constant(IG_SQUAD_PRIZE2);
+	export_constant(IG_LI_NYANGVINE_BOX1_26);
+	export_constant(IG_LI_NYANGVINE_BOX2_26);
+	export_constant(IG_LI_NYANGVINE_BOX3_26);
+	export_constant(IG_ENCHANT_STONE_BOX26);
+	export_constant(IG_THIRD_JOB_STONE_GARMENT_BOX);
+	export_constant(IG_THIRD_JOB_STONE_GARMENT_BOX2);
+	export_constant(IG_THIRD_JOB_STONE_TOP_BOX);
+	export_constant(IG_THIRD_JOB_STONE_TOP_BOX2);
+	export_constant(IG_THIRD_JOB_STONE_MIDDLE_BOX);
+	export_constant(IG_THIRD_JOB_STONE_MIDDLE_BOX2);
+	export_constant(IG_THIRD_JOB_STONE_BOTTOM_BOX);
+	export_constant(IG_THIRD_JOB_STONE_BOTTOM_BOX2);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -8666,6 +8678,7 @@
 	export_constant(INF2_IGNOREAUTOGUARD);
 	export_constant(INF2_IGNORECICADA);
 	export_constant(INF2_SHOWSCALE);
+	export_constant(INF2_IGNOREGTB);
 
 	/* skill no near npc flags */
 	export_constant(SKILL_NONEAR_WARPPORTAL);
@@ -8982,6 +8995,7 @@
 	export_constant(ITEMINFO_MAGICATTACK);
 	export_constant(ITEMINFO_ID);
 	export_constant(ITEMINFO_AEGISNAME);
+	export_constant(ITEMINFO_ARMORLEVEL);
 	export_constant(ITEMINFO_SUBTYPE);
 
 	/* refine types */
