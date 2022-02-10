@@ -1,4 +1,4 @@
-#include "future.hpp"
+﻿#include "future.hpp"
 #include "jobqueue.hpp"
 
 JobQueue<futureJob> futureJobs;

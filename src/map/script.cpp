@@ -27791,8 +27791,10 @@ BUILDIN_FUNC(getinventoryinfo) {
 		retval = sd->inventory.u.items_inventory[idx].option[type - 22].param; break;
 	case 27:
 		retval = (int)sd->inventory.u.items_inventory[idx].bound; break;
+	case 28:
+		retval = (int)sd->inventory.u.items_inventory[idx].enchantgrade; break;
 	default:
-		ShowWarning("buildin_getinventoryinfo: The type should be in range 0-%d, currently type is: %d.\n", 26, type);
+		ShowWarning("buildin_getinventoryinfo: The type should be in range 0-%d, currently type is: %d.\n", 28, type);
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -29430,8 +29432,17 @@ BUILDIN_FUNC(setinventoryinfo) {
 		}
 		sd->inventory.u.items_inventory[idx].bound = (char)value;
 		break;
+	case 28:
+		if (value < 0 || value > MAX_ENCHANTGRADE) {
+			ShowWarning("buildin_setinventoryinfo: The Value should be in range 0-%d, but you passed %d.\n", MAX_ENCHANTGRADE, value);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_SUCCESS;
+		}
+		sd->inventory.u.items_inventory[idx].enchantgrade = (uint8)value;
+		need_recalc_status = true;
+		break;
 	default:
-		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 26, type);
+		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 28, type);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
