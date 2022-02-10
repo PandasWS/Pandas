@@ -788,7 +788,7 @@ struct Battle_Config
 	int remove_manhole_with_status;			// 当"人孔/黑洞陷阱"地面陷阱被移除的时候, 是否同时使被捕获的玩家立即脱困 [Sola丶小克]
 #endif // Pandas_BattleConfig_Remove_Manhole_With_Status
 #ifdef Pandas_BattleConfig_Restore_Mes_Logic
-	int restore_mes_logic;					// 是否使 2021-11-17 客户端的 mes 指令使用经典换行策略 [Sola丶小克]
+	int restore_mes_logic;					// 使 2021-11-03 及更新版本的客户端在执行 mes 指令时使用经典换行策略 [Sola丶小克]
 #endif // Pandas_BattleConfig_Restore_Mes_Logic
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
