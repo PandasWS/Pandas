@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/sql.hpp"
 #include "../common/future.hpp"

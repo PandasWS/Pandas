@@ -3412,6 +3412,8 @@ Body:
   Translation: ""
 - Original: "buildin_setinventoryinfo: Nonexistant item index.\n"
   Translation: ""
+- Original: "buildin_setinventoryinfo: The Value should be in range 0-%d, but you passed %d.\n"
+  Translation: ""
 - Original: "buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n"
   Translation: ""
 - Original: "buildin_setiteminfo: Can not set a weapon level for %d.\n"
