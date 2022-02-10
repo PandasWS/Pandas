@@ -138,21 +138,13 @@ void db_runtime(void) {
 			doQuery(job);
 		});
 	}
-
-	// 服务器状态被切换到 CORE_ST_STOP 准备停止
-	ShowStatus("Close DB Server(async thread) Connection....\n");
-	Sql_Free(MainDBHandle);
-	MainDBHandle = NULL;
-	if (log_config.sql_logs)
-		Sql_Free(LogDBHandle);
-	LogDBHandle = NULL;
 }
 
 // Main Thread Function
 void asyncquery_init(void) {
 	MainDBHandle = Sql_Malloc();
 
-	ShowInfo("Connecting to the DB Server(async thread)....\n");
+	ShowInfo("Connecting to the Map DB Server(async thread)....\n");
 	if (SQL_ERROR == Sql_Connect(MainDBHandle, map_server_id, map_server_pw, map_server_ip, map_server_port, map_server_db))
 	{
 		ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
@@ -161,7 +153,7 @@ void asyncquery_init(void) {
 		Sql_Free(MainDBHandle);
 		exit(EXIT_FAILURE);
 	}
-	ShowStatus("Connect success! (DB Server(async thread) Connection)\n");
+	ShowStatus("Connect success! (Map DB Server(async thread) Connection)\n");
 
 	if (log_config.sql_logs) {
 		LogDBHandle = Sql_Malloc();
@@ -186,4 +178,13 @@ void asyncquery_init(void) {
 // Main Thread Function
 void asyncquery_final(void) {
 	db_thread->join();
+
+	ShowStatus("Close Map DB Server(async thread) Connection....\n");
+	Sql_Free(MainDBHandle);
+	MainDBHandle = NULL;
+	if (log_config.sql_logs) {
+		ShowStatus("Close Log DB Server(async thread) Connection....\n");
+		Sql_Free(LogDBHandle);
+		LogDBHandle = NULL;
+	}
 }
