@@ -2610,6 +2610,24 @@ void clif_parse_NPCMarketPurchase(int fd, struct map_session_data *sd) {
 /// - append this text
 void clif_scriptmes(struct map_session_data *sd, int npcid, const char *mes)
 {
+#if defined(Pandas_BattleConfig_Restore_Mes_Logic) && PACKETVER >= 20211103
+	if (battle_config.restore_mes_logic && strlen(mes) != 0 && mes[0] == ' ') {
+		std::string strMessage(mes);
+		strMessage = '\n' + strMessage;
+
+		int fd = sd->fd;
+		int slen = strlen(strMessage.c_str()) + 9;
+
+		WFIFOHEAD(fd, slen);
+		WFIFOW(fd,0)=0xb4;
+		WFIFOW(fd,2)=slen;
+		WFIFOL(fd,4)=npcid;
+		memcpy(WFIFOCP(fd,8), strMessage.c_str(), slen - 8);
+		WFIFOSET(fd,WFIFOW(fd,2));
+		return;
+	}
+#endif // defined(Pandas_BattleConfig_Restore_Mes_Logic) && PACKETVER >= 20211103
+
 	int fd = sd->fd;
 	int slen = strlen(mes) + 9;
 

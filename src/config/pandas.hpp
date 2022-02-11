@@ -348,6 +348,10 @@
 	// 是否启用 remove_manhole_with_status 配置选项及其功能 [Sola丶小克]
 	// 此选项用于设置当"人孔/黑洞陷阱"地面陷阱被移除的时候是否同时使被捕获的玩家脱困
 	#define Pandas_BattleConfig_Remove_Manhole_With_Status
+
+	// 是否启用 restore_mes_logic 配置选项及其功能 [Sola丶小克]
+	// 此选项用于设置是否使 2021-11-03 及更新版本的客户端在执行 mes 指令时使用经典换行策略
+	#define Pandas_BattleConfig_Restore_Mes_Logic
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

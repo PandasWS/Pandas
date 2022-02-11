@@ -10398,6 +10398,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Remove_Manhole_With_Status
 	{ "remove_manhole_with_status",        &battle_config.remove_manhole_with_status,       1,      0,      1,              },
 #endif // Pandas_BattleConfig_Remove_Manhole_With_Status
+#ifdef Pandas_BattleConfig_Restore_Mes_Logic
+	{ "restore_mes_logic",                 &battle_config.restore_mes_logic,                1,      0,      1,              },
+#endif // Pandas_BattleConfig_Restore_Mes_Logic
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };
