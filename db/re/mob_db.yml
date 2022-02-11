@@ -29580,6 +29580,7 @@ Body:
     ElementLevel: 2
     WalkSpeed: 1000
     AttackDelay: 24
+    DamageMotion: 1
     Drops:
       - Item: Elunium
         Rate: 3
@@ -40183,6 +40184,7 @@ Body:
     ElementLevel: 4
     WalkSpeed: 1000
     AttackDelay: 24
+    DamageMotion: 1
     Drops:
       - Item: Piece_Of_Egg_Shell
         Rate: 2500
@@ -54093,6 +54095,7 @@ Body:
     Element: Neutral
     ElementLevel: 1
     WalkSpeed: 200
+    DamageMotion: 1
     Class: Boss
     Modes:
       NoRandomWalk: true
@@ -54109,6 +54112,7 @@ Body:
     Element: Neutral
     ElementLevel: 1
     WalkSpeed: 200
+    DamageMotion: 1
     Class: Boss
     Modes:
       NoRandomWalk: true
@@ -54125,6 +54129,7 @@ Body:
     Element: Neutral
     ElementLevel: 1
     WalkSpeed: 200
+    DamageMotion: 1
     Class: Boss
     Modes:
       NoRandomWalk: true
@@ -54141,6 +54146,7 @@ Body:
     Element: Fire
     ElementLevel: 1
     WalkSpeed: 200
+    DamageMotion: 1
     Class: Boss
     Modes:
       NoRandomWalk: true
@@ -57564,6 +57570,7 @@ Body:
     ElementLevel: 1
     WalkSpeed: 150
     AttackDelay: 24
+    DamageMotion: 1
     Modes:
       Detector: true
       IgnoreMagic: true
