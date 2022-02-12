@@ -1389,11 +1389,15 @@ static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target
 	}
 
 #ifdef Pandas_Aura_Mechanism
-	// 若封包发送的目标是一个玩家单位,
-	// 那么这里绘制 bl 的光环效果给到 tbl 对应的玩家客户端
 	if (tbl->type == BL_PC) {
+		// 若封包发送的目标是一个玩家单位,
+		// 那么这里绘制 bl 的光环效果给到 tbl 对应的玩家客户端
 		struct map_session_data* tsd = BL_CAST(BL_PC, tbl);
 		clif_send_auras_single(bl, tsd);
+	}
+	else {
+		// 否则广播给 target 指定范围玩家
+		clif_send_auras(bl, target, false, AURA_SPECIAL_NOTHING);
 	}
 #endif // Pandas_Aura_Mechanism
 }
@@ -4608,23 +4612,10 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 			// 指定了明确的 target 发送目标, 那么相关封包只发送给指定目标
 			struct map_session_data* tsd = BL_CAST(BL_PC, target);
 
-			if (aura_need_hiding(bl, target)) {
-				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
-			}
-			else {
-				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			
+			if (!aura_need_hiding(bl, target)) {
 				clif_getareachar_unit(tsd, bl);
-			}
-		}
-		else {
-			// 否则再用范围发送方式对 bl 附近的单位进行广播
-			if (aura_need_hiding(bl)) {
-				clif_clearunit_area(bl, CLR_TRICKDEAD);
-			}
-			else {
-				clif_clearunit_area(bl, CLR_TRICKDEAD);
-				map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
-				//clif_send_auras(bl, AREA_WOS, TRUE, AURA_SPECIAL_NOTHING);
 			}
 		}
 
@@ -5939,11 +5930,21 @@ int clif_insight(struct block_list *bl,va_list ap)
 			skill_getareachar_skillunit_visibilty_single((TBL_SKILL*)bl, &tsd->bl);
 			break;
 		default:
+#ifdef Pandas_Aura_Mechanism
+			if (bl && tsd) {
+				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			}
+#endif // Pandas_Aura_Mechanism
 			clif_getareachar_unit(tsd,bl);
 			break;
 		}
 	}
 	if (clif_session_isValid(sd)) { //Tell sd that tbl walked into his view
+#ifdef Pandas_Aura_Mechanism
+		if (tbl && sd) {
+			clif_clearunit_single(tbl->id, CLR_TRICKDEAD, sd->fd);
+		}
+#endif // Pandas_Aura_Mechanism
 		clif_getareachar_unit(sd,tbl);
 	}
 	return 0;
