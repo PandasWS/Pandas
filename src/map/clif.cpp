@@ -4618,6 +4618,10 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 				clif_getareachar_unit(tsd, bl);
 			}
 		}
+		else if (bl->type == BL_NPC) {
+			clif_clearunit_area(bl, CLR_TRICKDEAD);
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+		}
 
 		// 若是玩家单位, 那么将身上的特殊效果发送给自己 (猥琐的解决客户端缺陷)
 		// 当自己隐匿或伪装后重新显示时, 像 202 / 362 这种特殊的光环效果会自动消失
