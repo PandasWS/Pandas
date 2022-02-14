@@ -2354,6 +2354,96 @@ void pet_evolution(struct map_session_data *sd, int16 pet_id) {
 	clif_inventorylist(sd);
 }
 
+#ifdef Pandas_ScriptCommand_PetEvolution
+int pet_evolutionappoint(struct map_session_data* sd, int16 pet_id, bool friendly, bool petequip) {
+	if(sd == nullptr)
+		return -1;
+
+	if (sd->pd == nullptr) {
+		return -1;
+	}
+
+	if (!battle_config.feature_petevolution) {
+		return -1;
+	}
+	//宠物亲密度检测
+	if (friendly) {
+		if (sd->pd->pet.intimate < PET_INTIMATE_LOYAL) {
+			return -1;
+		}
+	}
+	//宠物装备检测
+	if (petequip) {
+		if (sd->pd->pet.equip)
+			return -1;
+	}
+	else sd->pd->pet.equip = 0;
+
+
+	auto pet_db_ptr = sd->pd->get_pet_db();
+
+
+	std::shared_ptr<s_pet_db> new_data = pet_db.find(pet_id);
+
+	if (new_data == nullptr) {
+		return -1;
+	}
+
+	int idx = pet_egg_search(sd, sd->pd->pet.pet_id);
+
+	if (idx == -1) {
+		return -1;
+	}
+
+	// Virtually delete the old egg
+	log_pick_pc(sd, LOG_TYPE_OTHER, -1, &sd->inventory.u.items_inventory[idx]);
+	clif_delitem(sd, idx, 1, 0);
+
+	// Change the old egg to the new one
+	sd->inventory.u.items_inventory[idx].nameid = new_data->EggID;
+	sd->inventory_data[idx] = itemdb_search(new_data->EggID);
+
+	// Virtually add it to the inventory
+	log_pick_pc(sd, LOG_TYPE_OTHER, 1, &sd->inventory.u.items_inventory[idx]);
+	clif_additem(sd, idx, 1, 0);
+
+	// Remove the old pet from sight
+	unit_remove_map(&sd->pd->bl, CLR_OUTSIGHT);
+
+	// Prepare the new pet
+	sd->pd->pet.class_ = pet_id;
+	sd->pd->pet.egg_id = new_data->EggID;
+	pet_set_intimate(sd->pd, new_data->intimate);
+	if (!sd->pd->pet.rename_flag) {
+		std::shared_ptr<s_mob_db> mdb = mob_db.find(pet_id);
+
+		safestrncpy(sd->pd->pet.name, mdb->jname.c_str(), NAME_LENGTH);
+	}
+	status_set_viewdata(&sd->pd->bl, pet_id);
+
+	// Save the pet and inventory data
+	intif_save_petdata(sd->status.account_id, &sd->pd->pet);
+	if (save_settings & CHARSAVE_PET)
+		chrif_save(sd, CSAVE_INVENTORY);
+
+	// Spawn it
+	if (map_addblock(&sd->pd->bl))
+		return -1;
+
+	clif_spawn(&sd->pd->bl);
+	clif_send_petdata(sd, sd->pd, 0, 0);
+	clif_send_petdata(sd, sd->pd, 5, battle_config.pet_hair_style);
+	clif_pet_equip_area(sd->pd);
+	clif_send_petstatus(sd);
+	clif_emotion(&sd->bl, ET_BEST);
+	clif_specialeffect(&sd->pd->bl, EF_HO_UP, AREA);
+
+	clif_pet_evolution_result(sd, e_pet_evolution_result::SUCCESS);
+	clif_inventorylist(sd);
+	return sd->pd->pet.egg_id;
+
+}
+#endif // Pandas_ScriptCommand_PetEvolution
 /**
  * Initialize pet data.
  */
