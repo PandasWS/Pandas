@@ -1229,7 +1229,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 #endif // Pandas_Fix_Item_Trade_FloorDropable
 
 // instances
-int map_addinstancemap(int src_m, int instance_id);
+int map_addinstancemap(int src_m, int instance_id, bool no_mapflag);
 int map_delinstancemap(int m);
 void map_data_copyall(void);
 void map_data_copy(struct map_data *dst_map, struct map_data *src_map);

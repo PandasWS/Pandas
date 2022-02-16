@@ -10148,7 +10148,11 @@ static const struct _battle_data {
 	{ "allow_consume_restricted_item",      &battle_config.allow_consume_restricted_item,   1,      0,      1,              },
 	{ "allow_equip_restricted_item",        &battle_config.allow_equip_restricted_item,     1,      0,      1,              },
 	{ "max_walk_path",                      &battle_config.max_walk_path,                   17,     1,      MAX_WALKPATH,   },
+#ifdef RENEWAL
+	{ "item_enabled_npc",                   &battle_config.item_enabled_npc,                0,      0,      1,              },
+#else
 	{ "item_enabled_npc",                   &battle_config.item_enabled_npc,                1,      0,      1,              },
+#endif
 	{ "item_flooritem_check",               &battle_config.item_onfloor,                    1,      0,      1,              },
 	{ "bowling_bash_area",                  &battle_config.bowling_bash_area,               0,      0,      20,             },
 	{ "drop_rateincrease",                  &battle_config.drop_rateincrease,               0,      0,      1,              },
@@ -10744,6 +10748,7 @@ int battle_config_read(const char* cfgName)
 			const char* name;
 		} bc_whitelist[] = {
 			{ "traps_setting" },
+			{ "item_enabled_npc" },
 			{ "pet_hungry_friendly_decrease" }	// rAthena 对是否弃用此选项不明确, 先忽略检测
 		};
 
