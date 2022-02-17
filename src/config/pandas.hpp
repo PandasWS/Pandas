@@ -352,6 +352,10 @@
 	// 是否启用 restore_mes_logic 配置选项及其功能 [Sola丶小克]
 	// 此选项用于设置是否使 2021-11-03 及更新版本的客户端在执行 mes 指令时使用经典换行策略
 	#define Pandas_BattleConfig_Restore_Mes_Logic
+
+	// 是否启用 itemdb_warning_policy 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制是否关闭加载物品数据库时的一些警告信息
+	#define Pandas_BattleConfig_ItemDB_Warning_Policy
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

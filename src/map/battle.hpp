@@ -790,6 +790,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Restore_Mes_Logic
 	int restore_mes_logic;					// 使 2021-11-03 及更新版本的客户端在执行 mes 指令时使用经典换行策略 [Sola丶小克]
 #endif // Pandas_BattleConfig_Restore_Mes_Logic
+#ifdef Pandas_BattleConfig_ItemDB_Warning_Policy
+	int itemdb_warning_policy;				// 是否关闭加载物品数据库时的一些警告信息 [Sola丶小克]
+#endif // Pandas_BattleConfig_ItemDB_Warning_Policy
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

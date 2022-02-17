@@ -10405,6 +10405,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Restore_Mes_Logic
 	{ "restore_mes_logic",                 &battle_config.restore_mes_logic,                1,      0,      1,              },
 #endif // Pandas_BattleConfig_Restore_Mes_Logic
+#ifdef Pandas_BattleConfig_ItemDB_Warning_Policy
+	{ "itemdb_warning_policy",             &battle_config.itemdb_warning_policy,            0,      0,      3,              },
+#endif // Pandas_BattleConfig_ItemDB_Warning_Policy
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };
