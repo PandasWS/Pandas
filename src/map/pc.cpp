@@ -3410,7 +3410,7 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if(sd->state.lr_flag != 2) {
 #ifdef RENEWAL
 				bonus = sd->bonus.eatk + val;
-				sd->bonus.eatk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				sd->bonus.eatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 #else
 				bonus = status->batk + val;
 				status->batk = cap_value(bonus, 0, PEC_USHRT_MAX);
