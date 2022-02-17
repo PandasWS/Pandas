@@ -3412,10 +3412,10 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if(sd->state.lr_flag != 2) {
 #ifdef RENEWAL
 				bonus = sd->bonus.eatk + val;
-				sd->bonus.eatk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				sd->bonus.eatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 #else
 				bonus = status->batk + val;
-				status->batk = cap_value(bonus, 0, USHRT_MAX);
+				status->batk = cap_value(bonus, 0, PEC_USHRT_MAX);
 #endif
 			}
 			break;
@@ -3483,37 +3483,37 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 		case SP_PATK:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->patk + val;
-				status->patk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->patk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_SMATK:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->smatk + val;
-				status->smatk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->smatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_RES:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->res + val;
-				status->res = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->res = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_MRES:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->mres + val;
-				status->mres = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->mres = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_HPLUS:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->hplus + val;
-				status->hplus = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->hplus = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_CRATE:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->crate + val;
-				status->crate = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->crate = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_ATKELE:
