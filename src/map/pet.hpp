@@ -221,6 +221,9 @@ TIMER_FUNC(pet_recovery_timer); // [Valaris]
 TIMER_FUNC(pet_heal_timer); // [Valaris]
 int pet_egg_search(struct map_session_data *sd, int pet_id);
 void pet_evolution(struct map_session_data *sd, int16 pet_id);
+#ifdef Pandas_ScriptCommand_PetEvolution
+int pet_evolutionappoint(struct map_session_data* sd, int16 pet_id , bool friendly ,bool petequip);
+#endif // Pandas_ScriptCommand_PetEvolution
 int pet_food(struct map_session_data *sd, struct pet_data *pd);
 void pet_clear_support_bonuses(struct map_session_data *sd);
 

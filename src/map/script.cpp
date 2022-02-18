@@ -30882,6 +30882,29 @@ BUILDIN_FUNC(getquesttime) {
 }
 #endif // Pandas_ScriptCommand_GetQuestTime
 
+#ifdef Pandas_ScriptCommand_PetEvolution
+/* ===========================================================
+ * 指令: petevolution
+ * 描述: 查询角色指定任务的时间信息
+ * 用法: getquesttime 宠物id{,<亲密度检测>{,<宠物装备检测>{,<角色编号>}}};
+ * 注意: 若不作宠物装备检查 则进化后.原宠物装备会直接清空
+ * 返回: 成功返回进化宠物对应的宠物蛋ID, 失败返回 -1 
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(petevolution) {
+	struct map_session_data* sd;
+	uint16 id = script_getnum(st, 2);
+	bool friendly = script_hasdata(st, 3)?script_getnum(st, 3):0;
+	bool petequip = script_hasdata(st, 4) ? script_getnum(st, 4) : 0;
+
+	if (!script_charid2sd(5, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	int neweggid = pet_evolutionappoint(sd, id, friendly, petequip);
+	script_pushint(st, neweggid);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_PetEvolution
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31798,6 +31821,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
+#ifdef Pandas_ScriptCommand_PetEvolution
+		BUILDIN_DEF(petevolution, "i???"),					// 查询角色指定任务的时间信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_PetEvolution
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
