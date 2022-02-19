@@ -864,7 +864,7 @@ int WFIFOSET(int fd, size_t len)
 		exit(EXIT_FAILURE);
 #else
 		uint16 cmd = (*(uint16*)(s->wdata + s->wdata_size));
-		if (cmd == 0x388a || cmd == 0x308b) {
+		if (cmd == 0x388a || cmd == 0x308b || cmd == 0x3818 || cmd == 0x3019) {
 			if (len > 0xFFFFF) {
 				ShowFatalError("WFIFOSET: Packet 0x%x is too big. (len=%u, max=%u)\n", (*(uint16*)(s->wdata + s->wdata_size)), (unsigned int)len, 0xFFFFF);
 				exit(EXIT_FAILURE);

@@ -1514,7 +1514,11 @@ int intif_parse_LoadGuildStorage(int fd)
 	if (guild_id <= 0)
 		return 0;
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	sd = map_id2sd( RFIFOL(fd,4) );
+#else
+	sd = map_id2sd( RFIFOL(fd,4+2) );
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	if (flag){ //If flag != 0, we attach a player and open the storage
 		if(sd == NULL){
 #ifndef Pandas_Unlock_Storage_Capacity_Limit
