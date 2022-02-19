@@ -1980,6 +1980,10 @@
 	// 是否启用 getquesttime 脚本指令 [Sola丶小克]
 	// 该指令用于查询角色指定任务的时间信息 (感谢 "SSBoyz" 建议)
 	#define Pandas_ScriptCommand_GetQuestTime
+
+	// 是否启用 makeitem4 脚本指令 [人鱼姬的思念]
+	// 该指令用于查询角色指定任务的时间信息 (感谢 "SSBoyz" 建议)
+	#define Pandas_ScriptCommand_MakeItem4
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

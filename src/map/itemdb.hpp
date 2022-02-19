@@ -824,6 +824,7 @@ enum e_item_drop_effect : uint16 {
 	DROPEFFECT_GREEN_PILLAR,
 	DROPEFFECT_RED_PILLAR,
 #endif
+
 };
 
 /// Enum for items with delayed consumption

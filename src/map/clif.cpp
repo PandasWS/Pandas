@@ -962,7 +962,42 @@ void clif_dropflooritem( struct flooritem_data* fitem, bool canShowEffect ){
 #endif
 	clif_send( &p, sizeof(p), &fitem->bl, AREA );
 }
+#ifdef Pandas_ScriptCommand_MakeItem4
+void clif_dropflooritem2(struct flooritem_data* fitem, int Effectid) {
+	nullpo_retv(fitem);
+	int Eid = Effectid;
+	if (fitem->item.nameid == 0) {
+		return;
+	}
 
+	struct packet_dropflooritem p;
+
+	p.PacketType = dropflooritemType;
+	p.ITAID = fitem->bl.id;
+	p.ITID = client_nameid(fitem->item.nameid);
+#if PACKETVER >= 20130000 /* not sure date */
+	p.type = itemtype(fitem->item.nameid);
+#endif
+	p.IsIdentified = fitem->item.identify ? 1 : 0;
+	p.xPos = fitem->bl.x;
+	p.yPos = fitem->bl.y;
+	p.subX = fitem->subx;
+	p.subY = fitem->suby;
+	p.count = fitem->item.amount;
+#if defined(PACKETVER_ZERO) || PACKETVER >= 20180418
+
+	if (Eid) {
+		p.showdropeffect = 1;
+		p.dropeffectmode = Eid;
+	}
+	else {
+		p.showdropeffect = 0;
+		p.dropeffectmode = DROPEFFECT_NONE;
+	}
+#endif
+	clif_send(&p, sizeof(p), &fitem->bl, AREA);
+}
+#endif // Pandas_ScriptCommand_MakeItem4
 
 
 /// Makes an item disappear from the ground.

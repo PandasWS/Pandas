@@ -30846,6 +30846,118 @@ BUILDIN_FUNC(getquesttime) {
 }
 #endif // Pandas_ScriptCommand_GetQuestTime
 
+#ifdef Pandas_ScriptCommand_MakeItem4
+/* ===========================================================
+ * 指令: makeitem4
+ * 描述: 地图制作可带有<装备评级>掉落在地上的物品,并产生掉落特效!
+ * 用法:
+ * makeitem4 <item id>,<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>,<enchantgrade>,<Effectid>;
+ * makeitem4 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>,<enchantgrade>,<Effectid>;
+ * Effectid值:
+ * 参数说明
+ * 掉落光环颜色:
+ * 0 - 无光效
+ * 1 - 蓝色柱形掉落光效
+ * 2 - 黄色柱形掉落光效
+ * 3 - 紫色柱形掉落光效
+ * 4 - 绿色柱形掉落光效
+ * 5 - 橙色柱形掉落光效
+ * 作者 :人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(makeitem4) {
+	t_itemid nameid;
+	uint16 amount, x, y;
+	const char* mapname;
+	int m;
+	struct item item_tmp;
+	struct item_data* id;
+	const char* funcname = script_getfuncname(st);
+	int Effectid = 0;
+
+	if (script_isstring(st, 2)) {
+		const char* name = script_getstr(st, 2);
+		std::shared_ptr<item_data> item_data = item_db.searchname(name);
+
+		if (item_data) {
+			nameid = item_data->nameid;
+		}
+		else {
+			ShowError("buildin_%s: Unknown item %s\n", funcname, name);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+	else {
+		nameid = (t_itemid)script_getnum(st, 2);
+
+		if (!itemdb_exists(nameid)) {
+			ShowError("buildin_%s: Unknown item id %u\n", funcname, nameid);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	amount = script_getnum(st, 3);
+	mapname = script_getstr(st, 4);
+	x = script_getnum(st, 5);
+	y = script_getnum(st, 6);
+
+	if (strcmp(mapname, "this") == 0) {
+		TBL_PC* sd;
+		if (!script_rid2sd(sd))
+			return SCRIPT_CMD_SUCCESS; //Failed...
+		m = sd->bl.m;
+	}
+	else
+		m = map_mapname2mapid(mapname);
+
+	if ((id = itemdb_search(nameid))) {
+		char iden, ref, attr;
+		memset(&item_tmp, 0, sizeof(item_tmp));
+		item_tmp.nameid = nameid;
+
+		iden = (char)script_getnum(st, 7);
+		ref = (char)script_getnum(st, 8);
+		attr = (char)script_getnum(st, 9);
+
+		if (id->type == IT_WEAPON || id->type == IT_ARMOR || id->type == IT_SHADOWGEAR) {
+			item_tmp.enchantgrade = script_getnum(st, 17);
+			if (ref > MAX_REFINE) ref = MAX_REFINE;
+		}
+		else if (id->type == IT_PETEGG) {
+			iden = 1;
+			ref = 0;
+		}
+		else {
+			iden = 1;
+			ref = attr = 0;
+		}
+
+		item_tmp.identify = iden;
+#ifdef Pandas_BattleConfig_Force_Identified
+		item_tmp.identify = (battle_config.force_identified & 32 ? 1 : item_tmp.identify);
+#endif // Pandas_BattleConfig_Force_Identified
+		item_tmp.refine = ref;
+		item_tmp.attribute = attr;
+		item_tmp.card[0] = script_getnum(st, 10);
+		item_tmp.card[1] = script_getnum(st, 11);
+		item_tmp.card[2] = script_getnum(st, 12);
+		item_tmp.card[3] = script_getnum(st, 13);
+		int res = script_getitem_randomoption(st, nullptr, &item_tmp, funcname, 14);
+			if (res != SCRIPT_CMD_SUCCESS)
+				return res;
+		Effectid = script_getnum(st, 18);
+		if (Effectid > 9)
+			Effectid = 9;
+		else if (Effectid < 0)
+			Effectid = 0;
+
+		map_addflooritem2(&item_tmp, amount, m, x, y, 0, 0, 0, 4, 0, Effectid);
+	}
+	else
+		return SCRIPT_CMD_FAILURE;
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_MakeItem4
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31761,6 +31873,7 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
+	BUILDIN_DEF(makeitem4, "visiiiiiiiiirrrii"),
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
