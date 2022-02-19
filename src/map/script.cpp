@@ -30846,6 +30846,58 @@ BUILDIN_FUNC(getquesttime) {
 }
 #endif // Pandas_ScriptCommand_GetQuestTime
 
+
+/* unitspecialeffect <GID>, <特效ID>{, <发送目标>{ {, <目标GID>}});
+*
+*使指定实体<GID>显示一个特效效果, 类似于 specialeffect 不过他可以显示给任何目标
+*
+*发送目标
+*AREA - 发送给可视范围内的玩家(默认)
+*SELF - 发送给自己, 如果指定<目标GID> 则特效只能指定玩家看到
+*PARTY_AREA - 发送给可视范围内的指定队伍
+*GUILD_AREA - 发送给可视范围内的指定公会
+*BG_AREA - 发送给可视范围内的指定BG队伍
+* 原作者 : Hercules
+* 转译   : 人鱼姬的思念
+*/
+#ifdef Pandas_ScriptCommand_unitspecialeffect
+BUILDIN_FUNC(unitspecialeffect) {
+	int gid = script_getnum(st, 2);
+	block_list* bl = map_id2bl(gid);
+
+	struct map_session_data* sd;
+	sd = map_id2sd(script_getnum(st, 2));
+
+	enum send_target target = script_hasdata(st, 4) ? (send_target)script_getnum(st, 4) : AREA;
+
+	int type = script_getnum(st, 3);
+
+	if (type <= EF_NONE || type >= EF_MAX) {
+		ShowError("buildin_unitspecialeffect: unsupported effect id %d\n", type);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (target == SELF) {
+		if (script_rid2sd(sd)) {
+			if (script_hasdata(st, 5)) {
+				sd = map_id2sd(script_getnum(st, 5));
+			}
+			else {
+				sd = map_id2sd(st->rid);
+			}
+			if (sd != NULL) {
+				clif_specialeffect_single(bl, type, sd->fd);
+			}
+		}
+	}
+	else {
+		clif_specialeffect(bl, type, target);
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif //#ifdef Pandas_ScriptCommand_unitspecialeffect
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31761,6 +31813,10 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
+#ifdef Pandas_ScriptCommand_unitspecialeffect
+		BUILDIN_DEF(unitspecialeffect, "ii??"),					// 给指定GID单位的添加一个特效 [人鱼姬的思念]
+#endif //Pandas_ScriptCommand_unitspecialeffect
+
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
