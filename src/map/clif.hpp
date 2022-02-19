@@ -640,6 +640,9 @@ void clif_authrefuse(int fd, uint8 error_code);
 void clif_authfail_fd(int fd, int type);
 void clif_charselectok(int id, uint8 ok);
 void clif_dropflooritem(struct flooritem_data* fitem, bool canShowEffect);
+#ifdef Pandas_ScriptCommand_MakeItem4
+void clif_dropflooritem2(struct flooritem_data* fitem, int Effectid);
+#endif // Pandas_ScriptCommand_MakeItem4
 void clif_clearflooritem(struct flooritem_data *fitem, int fd);
 
 void clif_clearunit_single(int id, clr_type type, int fd);

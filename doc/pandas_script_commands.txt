@@ -2878,3 +2878,19 @@ NPC名称:
 	危险程度仅次于焊雷管锯灯泡...
 
 --------------------------------------------------------------
+
+*makeitem4 <item id>,<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>,<enchantgrade>,<Effectid>;
+*makeitem4 "<item name>",<amount>,"<map name>",<X>,<Y>,<identify>,<refine>,<attribute>,<card1>,<card2>,<card3>,<card4>,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>,<enchantgrade>,<Effectid>;
+
+	作者 :人鱼姬的思念
+	描述: 地图制作可带有<装备评级>掉落在地上的物品,并产生掉落特效!(服务端版本20200902以上)
+	用法:
+	Effectid值:
+	参数说明
+	掉落光环颜色:
+	0 - 无光效
+	1 - 蓝色柱形掉落光效
+	2 - 黄色柱形掉落光效
+	3 - 紫色柱形掉落光效
+	4 - 绿色柱形掉落光效
+	5 - 橙色柱形掉落光效

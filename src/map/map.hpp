@@ -1227,7 +1227,9 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 #else
 int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect = false, struct map_session_data *sd = nullptr);
 #endif // Pandas_Fix_Item_Trade_FloorDropable
-
+#ifdef Pandas_ScriptCommand_MakeItem4
+int map_addflooritem2(struct item* item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, int Effectid);
+#endif // Pandas_ScriptCommand_MakeItem4
 // instances
 int map_addinstancemap(int src_m, int instance_id, bool no_mapflag);
 int map_delinstancemap(int m);
