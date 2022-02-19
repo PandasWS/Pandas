@@ -568,6 +568,7 @@ bool intif_send_guild_storage(uint32 account_id, struct s_storage *gstor)
 {
 	if (CheckForCharServer())
 		return false;
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	WFIFOHEAD(inter_fd,sizeof(struct s_storage)+12);
 	WFIFOW(inter_fd,0) = 0x3019;
 	WFIFOW(inter_fd,2) = (unsigned short)sizeof(struct s_storage)+12;
@@ -575,6 +576,16 @@ bool intif_send_guild_storage(uint32 account_id, struct s_storage *gstor)
 	WFIFOL(inter_fd,8) = gstor->id;
 	memcpy( WFIFOP(inter_fd,12),gstor, sizeof(struct s_storage) );
 	WFIFOSET(inter_fd,WFIFOW(inter_fd,2));
+#else
+	WFIFOHEAD(inter_fd,sizeof(struct s_storage)+12+2);
+	WFIFOW(inter_fd,0) = 0x3019;
+	WFIFOL(inter_fd,2) = (unsigned int)sizeof(struct s_storage)+12+2;
+
+	WFIFOL(inter_fd,4 + 2) = account_id;
+	WFIFOL(inter_fd,8 + 2) = gstor->id;
+	memcpy( WFIFOP(inter_fd,12 + 2),gstor, sizeof(struct s_storage) );
+	WFIFOSET(inter_fd,WFIFOL(inter_fd,2));
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	return true;
 }
 
@@ -1493,15 +1504,24 @@ int intif_parse_LoadGuildStorage(int fd)
 	struct map_session_data *sd;
 	int guild_id, flag;
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	guild_id = RFIFOL(fd,8);
 	flag = RFIFOL(fd,12);
+#else
+	guild_id = RFIFOL(fd,8+2);
+	flag = RFIFOL(fd,12+2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	if (guild_id <= 0)
 		return 0;
 
 	sd = map_id2sd( RFIFOL(fd,4) );
 	if (flag){ //If flag != 0, we attach a player and open the storage
 		if(sd == NULL){
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 			ShowError("intif_parse_LoadGuildStorage: user not found (AID: %d)\n",RFIFOL(fd,4));
+#else
+			ShowError("intif_parse_LoadGuildStorage: user not found (AID: %d)\n",RFIFOL(fd,4+2));
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 			return 0;
 		}
 	}
@@ -1518,6 +1538,8 @@ int intif_parse_LoadGuildStorage(int fd)
 		ShowWarning("intif_parse_LoadGuildStorage: received storage for an already modified non-saved storage! (User %d:%d)\n", flag?sd->status.account_id:1, flag?sd->status.char_id:1);
 		return 0;
 	}
+
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	if (RFIFOW(fd,2)-13 != sizeof(struct s_storage)) {
 		ShowError("intif_parse_LoadGuildStorage: data size error %d %" PRIuPTR "\n",RFIFOW(fd,2)-13 , sizeof(struct s_storage));
 		gstor->status = false;
@@ -1525,6 +1547,15 @@ int intif_parse_LoadGuildStorage(int fd)
 	}
 
 	memcpy(gstor,RFIFOP(fd,13),sizeof(struct s_storage));
+#else
+	if (RFIFOL(fd,2)-13-2 != sizeof(struct s_storage)) {
+		ShowError("intif_parse_LoadGuildStorage: data size error %d %" PRIuPTR "\n",RFIFOL(fd,2)-13-2 , sizeof(struct s_storage));
+		gstor->status = false;
+		return 0;
+	}
+
+	memcpy(gstor,RFIFOP(fd,13+2),sizeof(struct s_storage));
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	if( flag )
 		storage_guild_storageopen(sd);
 
@@ -3423,8 +3454,13 @@ void intif_parse_itembound_store2gstorage(int fd) {
  */
 static bool intif_parse_StorageReceived(int fd)
 {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	char type =  RFIFOB(fd,4);
 	uint32 account_id = RFIFOL(fd, 5);
+#else
+	char type =  RFIFOB(fd,4 + 2);
+	uint32 account_id = RFIFOL(fd, 5 + 2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	struct map_session_data *sd = map_id2sd(account_id);
 	struct s_storage *stor, *p; //storage
 	size_t sz_stor = sizeof(struct s_storage);
@@ -3434,12 +3470,20 @@ static bool intif_parse_StorageReceived(int fd)
 		return false;
 	}
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	if (!RFIFOB(fd, 9)) {
+#else
+	if (!RFIFOB(fd, 9 + 2)) {
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 		ShowError("intif_parse_StorageReceived: Failed to load! (AID: %d, type: %d)\n", account_id, type);
 		return false;
 	}
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	p = (struct s_storage *)RFIFOP(fd,10);
+#else
+	p = (struct s_storage *)RFIFOP(fd,10 + 2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 
 	switch (type) { 
 		case TABLE_INVENTORY:
@@ -3468,11 +3512,21 @@ static bool intif_parse_StorageReceived(int fd)
 			return false;
 		}
 	}
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	if (RFIFOW(fd,2)-10 != sz_stor) {
 		ShowError("intif_parse_StorageReceived: data size error %d %" PRIuPTR "\n",RFIFOW(fd,2)-10 , sz_stor);
 		stor->status = false;
 		return false;
 	}
+#else
+	// 原先使用 RFIFOW 读取数据, 由于类型提升现在需要换成 RFIFOL
+	// 之前封包头部总长度为 10 字节现在变成 12 字节所以需要再多减去一个 2 字节
+	if (RFIFOL(fd,2)-10-2 != sz_stor) {
+		ShowError("intif_parse_StorageReceived: data size error %d %" PRIuPTR "\n",RFIFOL(fd,2)-10-2 , sz_stor);
+		stor->status = false;
+		return false;
+	}
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 
 	memcpy(stor, p, sz_stor); //copy the items data to correct destination
 
@@ -3619,12 +3673,23 @@ static void intif_parse_StorageSaved(int fd)
  * Receive storage information
  **/
 void intif_parse_StorageInfo_recv(int fd) {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	int size = sizeof(struct s_storage_table), count = (RFIFOW(fd, 2) - 4) / size;
+#else
+	// 用于承载封包长度的第二个字段从 2 字节提升为 4 字节, 因此此处的 RFIFOW 需提升为 RFIFOL
+	// 其次封包头部信息也因为封包长度字段扩充的原因, 从 4 个字节变成了 6 个字节
+	int size = sizeof(struct s_storage_table), count = (RFIFOL(fd, 2) - 4 - 2) / size;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 
 	storage_db.clear();
 
 	for( int i = 0; i < count; i++ ){
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 		struct s_storage_table* ptr = (struct s_storage_table*)RFIFOP( fd, 4 + size * i );
+#else
+		// 封包头部信息也因为封包长度字段扩充的原因, 从 4 个字节变成了 6 个字节
+		struct s_storage_table* ptr = (struct s_storage_table*)RFIFOP( fd, 4 + 2 + size * i );
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 		std::shared_ptr<struct s_storage_table> storage = std::make_shared<struct s_storage_table>();
 
 		safestrncpy( storage->name, ptr->name, sizeof( storage->name ) );
@@ -3681,6 +3746,7 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 	if (CheckForCharServer())
 		return false;
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	WFIFOHEAD(inter_fd, stor_size+13);
 	WFIFOW(inter_fd, 0) = 0x308b;
 	WFIFOW(inter_fd, 2) = stor_size+13;
@@ -3689,6 +3755,23 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 	WFIFOL(inter_fd, 9) = sd->status.char_id;
 	memcpy(WFIFOP(inter_fd, 13), stor, stor_size);
 	WFIFOSET(inter_fd, stor_size+13);
+#else
+	if (stor->type == TABLE_STORAGE)
+		ShowDebug("intif_storage_save: storage size = %d\n", stor->amount);
+	// 由于封包长度字段的类型从 2 字节提升到 4 字节, 因此封包总长度需要增加 2 个字节
+	WFIFOHEAD(inter_fd, stor_size+13+2);
+	WFIFOW(inter_fd, 0) = 0x308b;
+
+	// 由于封包长度字段的类型提升, 需要将 WFIFOW 改成 WFIFOL
+	WFIFOL(inter_fd, 2) = stor_size+13+2;
+
+	// 后续字段因此需要将偏移量 + 2
+	WFIFOB(inter_fd, 4 + 2) = stor->type;
+	WFIFOL(inter_fd, 5 + 2) = sd->status.account_id;
+	WFIFOL(inter_fd, 9 + 2) = sd->status.char_id;
+	memcpy(WFIFOP(inter_fd, 13 + 2), stor, stor_size);
+	WFIFOSET(inter_fd, stor_size+13 + 2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	return true;
 }
 
@@ -3797,7 +3880,14 @@ int intif_parse(int fd)
 	if(packet_len==-1){
 		if(RFIFOREST(fd)<4)
 			return 2;
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 		packet_len = RFIFOW(fd,2);
+#else
+		if (cmd == 0x3818 || cmd == 0x388a || cmd == 0x388c)
+			packet_len = RFIFOL(fd,2);
+		else
+			packet_len = RFIFOW(fd,2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	}
 	if((int)RFIFOREST(fd)<packet_len){
 		return 2;

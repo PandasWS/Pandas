@@ -857,10 +857,26 @@ int WFIFOSET(int fd, size_t len)
 
 	if( len > 0xFFFF )
 	{
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 		// dynamic packets allow up to UINT16_MAX bytes (<packet_id>.W <packet_len>.W ...)
 		// all known fixed-size packets are within this limit, so use the same limit
 		ShowFatalError("WFIFOSET: Packet 0x%x is too big. (len=%u, max=%u)\n", (*(uint16*)(s->wdata + s->wdata_size)), (unsigned int)len, 0xFFFF);
 		exit(EXIT_FAILURE);
+#else
+		uint16 cmd = (*(uint16*)(s->wdata + s->wdata_size));
+		if (cmd == 0x388a || cmd == 0x308b) {
+			if (len > 0xFFFFF) {
+				ShowFatalError("WFIFOSET: Packet 0x%x is too big. (len=%u, max=%u)\n", (*(uint16*)(s->wdata + s->wdata_size)), (unsigned int)len, 0xFFFFF);
+				exit(EXIT_FAILURE);
+			}
+		}
+		else {
+			// dynamic packets allow up to UINT16_MAX bytes (<packet_id>.W <packet_len>.W ...)
+			// all known fixed-size packets are within this limit, so use the same limit
+			ShowFatalError("WFIFOSET: Packet 0x%x is too big. (len=%u, max=%u)\n", (*(uint16*)(s->wdata + s->wdata_size)), (unsigned int)len, 0xFFFF);
+			exit(EXIT_FAILURE);
+		}
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	}
 	else if( len == 0 )
 	{
