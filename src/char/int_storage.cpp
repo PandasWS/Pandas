@@ -582,6 +582,7 @@ void mapif_storage_saved(int fd, uint32 account_id, uint32 char_id, bool success
  * @param fd
  */
 bool mapif_parse_StorageLoad(int fd) {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	uint32 aid, cid;
 	int type;
 	uint8 stor_id, mode;
@@ -617,6 +618,51 @@ bool mapif_parse_StorageLoad(int fd) {
 
 	mapif_storage_data_loaded(fd, aid, type, &stor, res);
 	return true;
+#else
+	// 因为拓展了仓库容量上限, 在极端情况下 s_storage 的体积会比较大
+	// 这可能会导致栈空间耗尽. 在此将 s_storage 中栈转入到堆, 大多数行都需要调整, 但主逻辑不会变化
+	// ---------------------------------------------------------------------------------
+	uint32 aid, cid;
+	int type;
+	uint8 stor_id, mode;
+	struct s_storage* stor = (struct s_storage*)aMalloc(sizeof(struct s_storage));
+	bool res = true;
+
+	type = RFIFOB(fd, 2);
+	aid = RFIFOL(fd, 3);
+	cid = RFIFOL(fd, 7);
+	stor_id = RFIFOB(fd, 11);
+
+	memset(stor, 0, sizeof(struct s_storage));
+	stor->stor_id = stor_id;
+
+	//ShowInfo("Loading storage for AID=%d.\n", aid);
+	switch (type) {
+	case TABLE_INVENTORY: res = inventory_fromsql(cid, stor); break;
+	case TABLE_STORAGE:
+		if (!interServerDb.exists(stor_id)) {
+			ShowError("Invalid storage with id %d\n", stor_id);
+			if (stor) aFree(stor);
+			return false;
+		}
+
+		res = storage_fromsql(aid, stor);
+		break;
+	case TABLE_CART:      res = cart_fromsql(cid, stor);      break;
+	default:
+		if (stor) aFree(stor);
+		return false;
+	}
+
+	mode = RFIFOB(fd, 12);
+	stor->state.put = (mode & STOR_MODE_PUT) ? 1 : 0;
+	stor->state.get = (mode & STOR_MODE_GET) ? 1 : 0;
+
+	mapif_storage_data_loaded(fd, aid, type, stor, res);
+
+	if (stor) aFree(stor);
+	return true;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 }
 
 /**
@@ -625,27 +671,17 @@ bool mapif_parse_StorageLoad(int fd) {
  * @param fd
  */
 bool mapif_parse_StorageSave(int fd) {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	int aid, cid, type;
 	struct s_storage stor;
 
-	// todo: 栈使用过多, 考虑将数据移动到堆
-
 	RFIFOHEAD(fd);
-#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	type = RFIFOB(fd, 4);
 	aid = RFIFOL(fd, 5);
 	cid = RFIFOL(fd, 9);
 	
 	memset(&stor, 0, sizeof(struct s_storage));
 	memcpy(&stor, RFIFOP(fd, 13), sizeof(struct s_storage));
-#else
-	type = RFIFOB(fd, 4 + 2);
-	aid = RFIFOL(fd, 5 + 2);
-	cid = RFIFOL(fd, 9 + 2);
-
-	memset(&stor, 0, sizeof(struct s_storage));
-	memcpy(&stor, RFIFOP(fd, 13 + 2), sizeof(struct s_storage));
-#endif // Pandas_Unlock_Storage_Capacity_Limit
 
 	//ShowInfo("Saving storage data for AID=%d.\n", aid);
 	switch(type){
@@ -663,6 +699,42 @@ bool mapif_parse_StorageSave(int fd) {
 	}
 	mapif_storage_saved(fd, aid, cid, true, type, stor.stor_id);
 	return false;
+#else
+	// 因为拓展了仓库容量上限, 在极端情况下 s_storage 的体积会比较大
+	// 这可能会导致栈空间耗尽. 在此将 s_storage 中栈转入到堆, 大多数行都需要调整, 但主逻辑不会变化
+	// ---------------------------------------------------------------------------------
+	int aid, cid, type;
+	struct s_storage* stor = (struct s_storage*)aMalloc(sizeof(struct s_storage));
+
+	RFIFOHEAD(fd);
+	type = RFIFOB(fd, 4 + 2);
+	aid = RFIFOL(fd, 5 + 2);
+	cid = RFIFOL(fd, 9 + 2);
+
+	memset(stor, 0, sizeof(struct s_storage));
+	memcpy(stor, RFIFOP(fd, 13 + 2), sizeof(struct s_storage));
+
+	//ShowInfo("Saving storage data for AID=%d.\n", aid);
+	switch(type){
+		case TABLE_INVENTORY:	inventory_tosql(cid, stor); break;
+		case TABLE_STORAGE:
+			if( !interServerDb.exists( stor->stor_id ) ){
+				ShowError( "Invalid storage with id %d\n", stor->stor_id );
+				if (stor) aFree(stor);
+				return false;
+			}
+
+			storage_tosql(aid, stor);
+			break;
+		case TABLE_CART:	cart_tosql(cid, stor); break;
+		default:
+			if (stor) aFree(stor);
+			return false;
+	}
+	mapif_storage_saved(fd, aid, cid, true, type, stor->stor_id);
+	if (stor) aFree(stor);
+	return false;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 }
 
 

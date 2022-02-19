@@ -3760,8 +3760,6 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 	memcpy(WFIFOP(inter_fd, 13), stor, stor_size);
 	WFIFOSET(inter_fd, stor_size+13);
 #else
-	if (stor->type == TABLE_STORAGE)
-		ShowDebug("intif_storage_save: storage size = %d\n", stor->amount);
 	// 由于封包长度字段的类型从 2 字节提升到 4 字节, 因此封包总长度需要增加 2 个字节
 	WFIFOHEAD(inter_fd, stor_size+13+2);
 	WFIFOW(inter_fd, 0) = 0x308b;
