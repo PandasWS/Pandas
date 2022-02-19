@@ -446,6 +446,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcExpress_MER_LEAVE
 	"OnPCMerLeaveExpress",	// NPCX_MER_LEAVE		// mer_leave_express_name	// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+		"OnPCTalkExpress",	// NPCX_PC_TALK		// pc_talk_express_name	// 当玩家聊天触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 
 	// NPC related
