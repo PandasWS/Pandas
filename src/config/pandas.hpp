@@ -1982,8 +1982,8 @@
 	#define Pandas_ScriptCommand_GetQuestTime
 
 	// 是否启用 unitspecialeffect 脚本指令 [人鱼姬的思念]
-	// 给指定GID单位的添加一个特效
-	#define Pandas_ScriptCommand_unitspecialeffect
+	// 该指令用于使指定游戏单位可以显示某个特效, 并支持控制特效可见范围
+	#define Pandas_ScriptCommand_UnitSpecialEffect
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
