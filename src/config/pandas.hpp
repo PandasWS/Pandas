@@ -1984,6 +1984,11 @@
 	// 是否启用 getquesttime 脚本指令 [Sola丶小克]
 	// 该指令用于查询角色指定任务的时间信息 (感谢 "SSBoyz" 建议)
 	#define Pandas_ScriptCommand_GetQuestTime
+
+	// 是否启用 getenchantitem 脚本指令 [Sola丶小克]
+	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解的 getitem4 标准来实现
+	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
+	#define Pandas_ScriptCommand_GetEnchantItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

@@ -2878,3 +2878,42 @@ NPC名称:
 	危险程度仅次于焊雷管锯灯泡...
 
 --------------------------------------------------------------
+
+*getenchantitem <物品编号>,<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>,<附魔评级>{,<账号编号>};
+*getenchantitem "<物品名称>",<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>,<附魔评级>{,<账号编号>};
+
+创造带有指定附魔评级的道具, 按照目前大家理解的 getitem4 标准来实现.
+也就是在 getitem3 的基础上多增加一个附魔评级字段
+
+附魔评级:
+	可选值是 0 ~ 4, 复兴后最大值为 4, 复兴前不支持
+
+返回值:
+	该指令无论成功与否, 都不会有返回值
+
+提示信息:
+	之所以不使用 getitem4 命名, 是为了避免未来 rAthena 实现同名指令带来的兼容问题
+	若您现在有大量脚本使用了相同参数结构但指令名称为 getitem4 的话,
+	可以使用脚本 function 进行封装, 放到 npc\other\Global_Functions.txt 来兼容.
+
+封装脚本:
+
+function	script	getitem4	{
+	if (getargcount() == 13) {
+		getenchantitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
+			getarg(5), getarg(6), getarg(7), getarg(8), getarg(9), getarg(10),
+			getarg(11), getarg(12);
+	}
+	else if (getargcount() == 14) {
+		getenchantitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
+			getarg(5), getarg(6), getarg(7), getarg(8), getarg(9), getarg(10),
+			getarg(11), getarg(12), getarg(13);
+	}
+	else {
+		debugmes "buildin_getitem4: please pass the correct number of parameters (13 or 14 parameters)";
+	}
+	return;
+}
+
+--------------------------------------------------------------
+
