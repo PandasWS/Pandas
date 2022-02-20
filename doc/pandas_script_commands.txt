@@ -499,11 +499,11 @@ EQI装备位置:
 	如果为 0 则表示还没穿戴在身上, 位置请参考 EQP_* 开头的常量
 
 道具的绑定类型:
-	Bound_Account : 绑定账号的道具, 可放个人仓库, 全账号共享
-	Bound_Guild   : 绑定公会的道具, 可放公会仓库与他人共享, 拥有物品的人离开公会后物品消失
-	Bound_Party   : 绑定队伍的道具, 离开队伍后消失
-	Bound_Char    : 绑定角色的道具, 不能放个人仓库
-	Bound_None    : 没有绑定 (与 0 等价, 但更推荐用常量)
+	Bound_None      -   没有绑定 (与 0 等价, 但更推荐用常量)
+	Bound_Account   -   绑定账号的道具, 可放个人仓库, 全账号共享
+	Bound_Guild     -   绑定公会的道具, 可放公会仓库与他人共享, 拥有物品的人离开公会后物品消失
+	Bound_Party     -   绑定队伍的道具, 离开队伍后消失
+	Bound_Char      -   绑定角色的道具, 不能放个人仓库
 
 注意事项:
 	从 v1.0.6 版本开始,
@@ -565,11 +565,11 @@ EQI装备位置:
 	若将此处的编号设置为 0, 那么将会同时清空对应的 ROA_VALUE 和 ROA_PARAM 选项的值.
 
 道具的绑定类型:
-	Bound_Account : 绑定账号的道具, 可放个人仓库, 全账号共享
-	Bound_Guild   : 绑定公会的道具, 可放公会仓库与他人共享, 拥有物品的人离开公会后物品消失
-	Bound_Party   : 绑定队伍的道具, 离开队伍后消失
-	Bound_Char    : 绑定角色的道具, 不能放个人仓库
-	Bound_None    : 没有绑定 (与 0 等价, 但更推荐用常量)
+	Bound_None      -   没有绑定 (与 0 等价, 但更推荐用常量)
+	Bound_Account   -   绑定账号的道具, 可放个人仓库, 全账号共享
+	Bound_Guild     -   绑定公会的道具, 可放公会仓库与他人共享, 拥有物品的人离开公会后物品消失
+	Bound_Party     -   绑定队伍的道具, 离开队伍后消失
+	Bound_Char      -   绑定角色的道具, 不能放个人仓库
 
 过期时间:
 	当您要设置的类型是 10 (过期时间)时, 一定要注意这是个Unix时间戳.
@@ -2884,12 +2884,12 @@ NPC名称:
 对下一个掉落到地面上的物品进行特殊设置, 支持魔物掉落道具和 makeitem 系列指令
 
 道具绑定类型:
-	-1				-	不进行特殊设置
-	BOUND_NONE		-	不绑定
-	BOUND_ACCOUNT	-	绑定玩家账号
-	BOUND_GUILD		-	绑定公会
-	BOUND_PARTY		-	绑定队伍
-	BOUND_CHAR		-	绑定角色
+	-1              -   不进行特殊设置
+	Bound_None      -   没有绑定 (与 0 等价, 但更推荐用常量)
+	Bound_Account   -   绑定账号的道具, 可放个人仓库, 全账号共享
+	Bound_Guild     -   绑定公会的道具, 可放公会仓库与他人共享, 拥有物品的人离开公会后物品消失
+	Bound_Party     -   绑定队伍的道具, 离开队伍后消失
+	Bound_Char      -   绑定角色的道具, 不能放个人仓库
 
 租赁时长:
 	从道具掉落时刻起开始计时, 当达到 <租赁时长> 指定的秒数之后道具将从背包被移除
@@ -2898,16 +2898,16 @@ NPC名称:
 掉落光柱颜色:
 	物品掉落光柱需要客户端版本大于等于 20180418 才支持, 旧版本客户端没有光柱
 
-	-1							-	不进行特殊设置
-	DROPEFFECT_CLIENT			-	使用客户端的物品光柱配置
-	DROPEFFECT_BLUE_PILLAR		-	蓝色光柱
-	DROPEFFECT_YELLOW_PILLAR	-	黄色光柱
-	DROPEFFECT_PURPLE_PILLAR	-	紫色光柱
-	DROPEFFECT_GREEN_PILLAR		-	绿色光柱, 在 20200304 之前会变成橙色光柱
-	DROPEFFECT_RED_PILLAR		-	红色光柱
+	-1                          -   不进行特殊设置
+	DROPEFFECT_CLIENT           -   使用客户端的物品光柱配置
+	DROPEFFECT_BLUE_PILLAR      -   蓝色光柱
+	DROPEFFECT_YELLOW_PILLAR    -   黄色光柱
+	DROPEFFECT_PURPLE_PILLAR    -   紫色光柱
+	DROPEFFECT_GREEN_PILLAR     -   绿色光柱, 在 20200304 之前会变成橙色光柱
+	DROPEFFECT_RED_PILLAR       -   红色光柱
 
-	DROPEFFECT_WHITE_PILLAR		-	白色光柱, 20200304 之后被取消
-	DROPEFFECT_ORANGE_PILLAR	-	橙色光柱, 20200304 之后被绿色光柱替换
+	DROPEFFECT_WHITE_PILLAR     -   白色光柱, 20200304 之后被取消
+	DROPEFFECT_ORANGE_PILLAR    -   橙色光柱, 20200304 之后被绿色光柱替换
 
 返回值:
 	该指令无论成功与否, 都不会有返回值
