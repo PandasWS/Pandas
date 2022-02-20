@@ -326,6 +326,8 @@ Body:
   Translation: "%s: 指定的战斗记录类型无效, 请检查.\n"
 - Original: "%s: The counter name '%s' is not exists, please initialize before using.\n"
   Translation: "%s: 性能计数器 '%s' 不存在, 在使用之前请先初始化它.\n"
+- Original: "%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n"
+  Translation: "%s: 发现准备执行的脚本代码已被提前释放, 程序灵巧的躲过了一次崩溃, 请将信息上报给开发者 (崩溃触发点: %d).\n"
 - Original: "%s: Title System it requires PACKETVER 2015-05-13 or newer...\n"
   Translation: ""
 - Original: "%s: Too many subnets defined, skipping line %d...\n"
