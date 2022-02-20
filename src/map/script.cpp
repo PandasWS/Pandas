@@ -31808,7 +31808,6 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_UnitSpecialEffect
 	BUILDIN_DEF(unitspecialeffect, "ii??"),				// 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围 [人鱼姬的思念]
 #endif // Pandas_ScriptCommand_UnitSpecialEffect
-
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
