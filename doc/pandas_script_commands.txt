@@ -2878,3 +2878,48 @@ NPC名称:
 	危险程度仅次于焊雷管锯灯泡...
 
 --------------------------------------------------------------
+
+*next_dropitem_special <道具绑定类型>,<租赁时长>,<掉落光柱颜色>;
+
+对下一个掉落到地面上的物品进行特殊设置, 支持魔物掉落道具和 makeitem 系列指令
+
+道具绑定类型:
+	-1				-	不进行特殊设置
+	BOUND_NONE		-	不绑定
+	BOUND_ACCOUNT	-	绑定玩家账号
+	BOUND_GUILD		-	绑定公会
+	BOUND_PARTY		-	绑定队伍
+	BOUND_CHAR		-	绑定角色
+
+租赁时长:
+	从道具掉落时刻起开始计时, 当达到 <租赁时长> 指定的秒数之后道具将从背包被移除
+	单位为秒, 若该值非 0 则道具将会被视为租赁道具
+
+掉落光柱颜色:
+	物品掉落光柱需要客户端版本大于等于 20180418 才支持, 旧版本客户端没有光柱
+
+	-1							-	不进行特殊设置
+	DROPEFFECT_CLIENT			-	使用客户端的物品光柱配置
+	DROPEFFECT_BLUE_PILLAR		-	蓝色光柱
+	DROPEFFECT_YELLOW_PILLAR	-	黄色光柱
+	DROPEFFECT_PURPLE_PILLAR	-	紫色光柱
+	DROPEFFECT_GREEN_PILLAR		-	绿色光柱, 在 20200304 之前会变成橙色光柱
+	DROPEFFECT_RED_PILLAR		-	红色光柱
+
+	DROPEFFECT_WHITE_PILLAR		-	白色光柱, 20200304 之后被取消
+	DROPEFFECT_ORANGE_PILLAR	-	橙色光柱, 20200304 之后被绿色光柱替换
+
+返回值:
+	该指令无论成功与否, 都不会有返回值
+
+注意事项:
+	<掉落光环颜色> 的优先级高于 makeitem 系列指令的 <canShowEffect> 字段设置
+
+	若希望对 makeitem / makeitem2 / makeitem3 生效, 那么请在使用这些 makeitem 指令
+	之前, 紧挨着使用 next_dropitem_special, 例如:
+
+	next_dropitem_special -1,0,DROPEFFECT_BLUE_PILLAR;
+	getmapxy(.@mapname$, .@mapx, .@mapy);
+	makeitem 501,1,.@mapname$,.@mapx,.@mapy;
+
+--------------------------------------------------------------

@@ -1984,6 +1984,10 @@
 	// 是否启用 getquesttime 脚本指令 [Sola丶小克]
 	// 该指令用于查询角色指定任务的时间信息 (感谢 "SSBoyz" 建议)
 	#define Pandas_ScriptCommand_GetQuestTime
+
+	// 是否启用 next_dropitem_special 脚本指令 [Sola丶小克]
+	// 该指令用于对下一个掉落到地面上的物品进行特殊设置, 支持魔物掉落道具和 makeitem 系列指令
+	#define Pandas_ScriptCommand_Next_Dropitem_Special
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
