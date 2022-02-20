@@ -8303,7 +8303,7 @@ BUILDIN_FUNC(getitem2)
 
 #ifdef Pandas_ScriptCommand_GetEnchantItem
 	if (strcmpi(command, "getenchantitem") == 0) {
-		offset = 11;
+		offset = 12;
 		script_mapid2sd(15, sd);
 	}
 	else
@@ -8393,7 +8393,7 @@ BUILDIN_FUNC(getitem2)
 
 #ifdef Pandas_ScriptCommand_GetEnchantItem
 		if (strcmpi(command, "getenchantitem") == 0) {
-			item_tmp.enchantgrade = cap_value(script_getnum(st, offset+3), 0, MAX_ENCHANTGRADE);
+			item_tmp.enchantgrade = cap_value(script_getnum(st, offset-1), 0, MAX_ENCHANTGRADE);
 		}
 #endif // Pandas_ScriptCommand_GetEnchantItem
 
@@ -31812,7 +31812,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
 #ifdef Pandas_ScriptCommand_GetEnchantItem
-	BUILDIN_DEF2(getitem2,"getenchantitem","viiiiiiiirrri?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
+	BUILDIN_DEF2(getitem2,"getenchantitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetEnchantItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
