@@ -2879,10 +2879,10 @@ NPC名称:
 
 --------------------------------------------------------------
 
-*getenchantitem <物品编号>,<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<装备的附魔评级>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>{,<账号编号>};
-*getenchantitem "<物品名称>",<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<装备的附魔评级>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>{,<账号编号>};
+*getgradeitem <物品编号>,<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<装备的附魔评级>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>{,<账号编号>};
+*getgradeitem "<物品名称>",<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<装备的附魔评级>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>{,<账号编号>};
 
-创造带有指定附魔评级的道具, 按照目前大家理解的 getitem4 标准来实现.
+创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现.
 也就是在 getitem3 的基础上多增加一个附魔评级字段
 
 装备的附魔评级:
@@ -2900,12 +2900,12 @@ NPC名称:
 
 function	script	getitem4	{
 	if (getargcount() == 13) {
-		getenchantitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
+		getgradeitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
 			getarg(5), getarg(6), getarg(7), getarg(8), getarg(9), getarg(10),
 			getarg(11), getarg(12);
 	}
 	else if (getargcount() == 14) {
-		getenchantitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
+		getgradeitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
 			getarg(5), getarg(6), getarg(7), getarg(8), getarg(9), getarg(10),
 			getarg(11), getarg(12), getarg(13);
 	}

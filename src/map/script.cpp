@@ -8301,13 +8301,13 @@ BUILDIN_FUNC(getitem2)
 	const char* command = script_getfuncname(st);
 	int offset = 0;
 
-#ifdef Pandas_ScriptCommand_GetEnchantItem
-	if (strcmpi(command, "getenchantitem") == 0) {
+#ifdef Pandas_ScriptCommand_GetGradeItem
+	if (strcmpi(command, "getgradeitem") == 0) {
 		offset = 12;
 		script_mapid2sd(15, sd);
 	}
 	else
-#endif // Pandas_ScriptCommand_GetEnchantItem
+#endif // Pandas_ScriptCommand_GetGradeItem
 	if( !strncmp(command,"getitembound",12) ) {
 		int aid_pos = 12;
 		bound = script_getnum(st,11);
@@ -8391,11 +8391,11 @@ BUILDIN_FUNC(getitem2)
 		item_tmp.card[3] = c4;
 		item_tmp.bound = bound;
 
-#ifdef Pandas_ScriptCommand_GetEnchantItem
-		if (strcmpi(command, "getenchantitem") == 0) {
+#ifdef Pandas_ScriptCommand_GetGradeItem
+		if (strcmpi(command, "getgradeitem") == 0) {
 			item_tmp.enchantgrade = cap_value(script_getnum(st, offset-1), 0, MAX_ENCHANTGRADE);
 		}
-#endif // Pandas_ScriptCommand_GetEnchantItem
+#endif // Pandas_ScriptCommand_GetGradeItem
 
 		if (offset != 0) {
 			int res = script_getitem_randomoption(st, sd, &item_tmp, command, offset);
@@ -31811,9 +31811,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
-#ifdef Pandas_ScriptCommand_GetEnchantItem
-	BUILDIN_DEF2(getitem2,"getenchantitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
-#endif // Pandas_ScriptCommand_GetEnchantItem
+#ifdef Pandas_ScriptCommand_GetGradeItem
+	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetGradeItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
