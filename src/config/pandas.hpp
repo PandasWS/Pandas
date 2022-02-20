@@ -1023,7 +1023,7 @@
 	// 修正转职到没有基础攻速数据的职业时会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ASPD_Base_Empty
 
-	// 修正脚本引擎在定时器唤醒后可能导致的潜在崩溃 [Sola丶小克]
+	// 规避脚本引擎在定时器唤醒后可能导致的潜在崩溃 [Sola丶小克]
 	// 
 	// 目前常看到的崩溃调用堆栈是:
 	// 在脚本被 sleep / sleep2 定时机制安排在未来继续执行某脚本时,
@@ -1032,6 +1032,9 @@
 	// 具体: 从 run_script_timer 恢复进入 run_script_main 之后崩溃
 	// 至于什么地方会在脚本还没恢复执行之前就将 script_code 释放暂时还没有特别明确的线索
 	#define Pandas_Crashfix_Invaild_Script_Code
+
+	// 规避在 map_addblock 和 map_delblock 因检查不严而导致崩溃的问题 [Renee]
+	#define Pandas_Crashfix_MapBlock_Operation
 #endif // Pandas_Crashfix
 
 // ============================================================================
