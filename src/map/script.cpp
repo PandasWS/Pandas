@@ -4505,6 +4505,16 @@ TIMER_FUNC(run_script_timer){
 	}
 	if(st->state != RERUNLINE)
 		st->sleep.tick = 0;
+
+#ifdef Pandas_Crashfix_Invaild_Script_Code
+	if (st && (st->script == nullptr || st->script->script_buf == nullptr)) {
+		ShowError("%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n", __func__, 1);
+		script_reportsrc(st);
+		st->state = END;
+		return 0;
+	}
+#endif // Pandas_Crashfix_Invaild_Script_Code
+
 	run_script_main(st);
 	return 0;
 }
@@ -4678,12 +4688,24 @@ void script_attach_state(struct script_state* st){
  *------------------------------------------*/
 void run_script_main(struct script_state *st)
 {
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+	nullpo_retv(st);
+#endif // Pandas_Crashfix_Prevent_NullPointer
 	int cmdcount = script_config.check_cmdcount;
 	int gotocount = script_config.check_gotocount;
 	TBL_PC *sd;
 	struct script_stack *stack = st->stack;
 
 	script_attach_state(st);
+
+#ifdef Pandas_Crashfix_Invaild_Script_Code
+	if (st && (st->script == nullptr || st->script->script_buf == nullptr)) {
+		ShowError("%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n", __func__, 2);
+		script_reportsrc(st);
+		st->state = END;
+		return;
+	}
+#endif // Pandas_Crashfix_Invaild_Script_Code
 
 	if(st->state == RERUNLINE) {
 		run_func(st);
@@ -4693,6 +4715,15 @@ void run_script_main(struct script_state *st)
 		st->state = RUN;
 
 	while(st->state == RUN) {
+#ifdef Pandas_Crashfix_Invaild_Script_Code
+		if (st && (st->script == nullptr || st->script->script_buf == nullptr)) {
+			ShowError("%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n", __func__, 3);
+			script_reportsrc(st);
+			st->state = END;
+			return;
+		}
+#endif // Pandas_Crashfix_Invaild_Script_Code
+
 		enum c_op c = get_com(st->script->script_buf,&st->pos);
 		switch(c){
 		case C_EOL:
@@ -27010,6 +27041,25 @@ BUILDIN_FUNC( openstylist ){
 #endif
 }
 
+BUILDIN_FUNC(getitempos) {
+	struct map_session_data* sd;
+
+	if ( !script_rid2sd(sd) ){
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( current_equip_item_index == -1 ){
+		ShowError( "buildin_getitempos: Invalid usage detected. This command should only be used inside item scripts.\n" );
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	script_pushint(st, sd->inventory.u.items_inventory[current_equip_item_index].equip);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 #include "../custom/script.inc"
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -29321,7 +29371,7 @@ BUILDIN_FUNC(storagegetitem) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (sd->state.storage_flag == 1) {
+	if (sd->state.storage_flag == 1 || sd->state.storage_flag == 3) {
 		script_pushint(st, -5);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -29347,8 +29397,7 @@ BUILDIN_FUNC(storagegetitem) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	for (i = 0; i < amount; i += get_count)
-	{
+	for (i = 0; i < amount; i += get_count) {
 		if (storage_additem(sd, &sd->storage, &it, get_count, true)) {
 			if (pc_candrop(sd, &it))
 				map_addflooritem(&it, get_count, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 0, 0);
@@ -29356,8 +29405,6 @@ BUILDIN_FUNC(storagegetitem) {
 				script_pushint(st, -9);
 		}
 	}
-
-	clif_storageclose(sd);
 
 	script_pushint(st, 0);
 	return SCRIPT_CMD_SUCCESS;
@@ -30908,6 +30955,50 @@ BUILDIN_FUNC(getquesttime) {
 }
 #endif // Pandas_ScriptCommand_GetQuestTime
 
+#ifdef Pandas_ScriptCommand_UnitSpecialEffect
+/* ===========================================================
+ * 指令: unitspecialeffect
+ * 描述: 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围
+ * 用法: unitspecialeffect <游戏单位编号>,<特效编号>{,<谁能看见特效>{,<能看见特效的账号编号>}};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitspecialeffect) {
+	struct block_list* bl = nullptr;
+	int type = script_getnum(st, 3);
+	enum send_target target = AREA;
+
+	bl = map_id2bl(script_getnum(st, 2));
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 4)) {
+		target = (send_target)script_getnum(st, 4);
+	}
+
+	if (type <= EF_NONE || type >= EF_MAX) {
+		ShowError("buildin_unitspecialeffect: unsupported effect id %d\n", type);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (target != SELF) {
+		clif_specialeffect(bl, type, target);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct map_session_data* sd = nullptr;
+	if (!script_mapid2sd(5, sd)) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd && sd->bl.type == BL_PC) {
+		clif_specialeffect_single(bl, type, sd->fd);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnitSpecialEffect
+
 #ifdef Pandas_ScriptCommand_Next_Dropitem_Special
 /* ===========================================================
  * 指令: next_dropitem_special
@@ -30923,7 +31014,6 @@ BUILDIN_FUNC(next_dropitem_special) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special
-
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31596,6 +31686,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(setinstancevar,"rvi"),
 	BUILDIN_DEF(openstylist, "?"),
 
+	BUILDIN_DEF(getitempos,""),
+
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
 	// -----------------------------------------------------------------
@@ -31840,6 +31932,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
+#ifdef Pandas_ScriptCommand_UnitSpecialEffect
+	BUILDIN_DEF(unitspecialeffect, "ii??"),				// 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_UnitSpecialEffect
 #ifdef Pandas_ScriptCommand_Next_Dropitem_Special
 	BUILDIN_DEF(next_dropitem_special,"iii"),			// 对下一个掉落到地面上的物品进行特殊设置 [Sola丶小克]
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special

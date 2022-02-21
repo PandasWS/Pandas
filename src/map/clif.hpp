@@ -1225,6 +1225,9 @@ void clif_inventory_expansion_info( struct map_session_data* sd );
 void clif_barter_open( struct map_session_data& sd, struct npc_data& nd );
 void clif_barter_extended_open( struct map_session_data& sd, struct npc_data& nd );
 
+void clif_summon_init(struct mob_data& md);
+void clif_summon_hp_bar(struct mob_data& md);
+
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
 void clif_change_title_ack(struct map_session_data* sd, unsigned char result, unsigned long title_id);
