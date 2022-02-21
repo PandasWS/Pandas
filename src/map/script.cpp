@@ -30929,6 +30929,50 @@ BUILDIN_FUNC(getquesttime) {
 }
 #endif // Pandas_ScriptCommand_GetQuestTime
 
+#ifdef Pandas_ScriptCommand_UnitSpecialEffect
+/* ===========================================================
+ * 指令: unitspecialeffect
+ * 描述: 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围
+ * 用法: unitspecialeffect <游戏单位编号>,<特效编号>{,<谁能看见特效>{,<能看见特效的账号编号>}};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitspecialeffect) {
+	struct block_list* bl = nullptr;
+	int type = script_getnum(st, 3);
+	enum send_target target = AREA;
+
+	bl = map_id2bl(script_getnum(st, 2));
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 4)) {
+		target = (send_target)script_getnum(st, 4);
+	}
+
+	if (type <= EF_NONE || type >= EF_MAX) {
+		ShowError("buildin_unitspecialeffect: unsupported effect id %d\n", type);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (target != SELF) {
+		clif_specialeffect(bl, type, target);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct map_session_data* sd = nullptr;
+	if (!script_mapid2sd(5, sd)) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd && sd->bl.type == BL_PC) {
+		clif_specialeffect_single(bl, type, sd->fd);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnitSpecialEffect
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31847,6 +31891,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
+#ifdef Pandas_ScriptCommand_UnitSpecialEffect
+	BUILDIN_DEF(unitspecialeffect, "ii??"),				// 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_UnitSpecialEffect
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
