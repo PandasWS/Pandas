@@ -909,6 +909,16 @@
 	//
 	// 感谢 "红狐狸" 提醒此问题
 	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
+
+	// 修正在保存 s_storage 数据期间如果发生了存储内容的增删改时,
+	// 特定操作流程下可能诱发数据丢失的问题 [Sola丶小克]
+	//
+	// 可能的重现步骤:
+	// - 编写一个脚本, 调用 atcommand("@clearstorage"); 之后立刻调用 storagegetitem 501,1;
+	// - 执行上述脚本后立刻小退, 重复多次
+	// - 观察每次角色进入地图服务器时, 角色服务器提示加载到的仓库物品数量
+	// - 如果角色服务器在保存仓库数据时比较慢, 那么你会看到反复小退仓库的数量是: 1、0、1、0...
+	#define Pandas_Fix_Storage_DirtyFlag_Override
 #endif // Pandas_Bugfix
 
 // ============================================================================

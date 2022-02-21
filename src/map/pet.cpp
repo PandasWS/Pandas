@@ -972,6 +972,9 @@ bool pet_return_egg( struct map_session_data *sd, struct pet_data *pd ){
  
 	sd->inventory.u.items_inventory[i].attribute = 0;
 	sd->inventory.dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	sd->inventory.dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 	pd->pet.incubate = 1;
 #if PACKETVER >= 20180704
 	clif_inventorylist(sd);
