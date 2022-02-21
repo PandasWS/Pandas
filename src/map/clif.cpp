@@ -3287,7 +3287,11 @@ void clif_inventorylist( struct map_session_data *sd ){
 			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ), 1 );
 #endif // Pandas_FuncParams_Clif_Item_Equip
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 			if( equip == MAX_INVENTORY_ITEM_PACKET_NORMAL ){
+#else
+			if( equip == MAX_INVENTORY_ITEM_PACKET_EQUIP ){
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 				itemlist_equip.PacketType  = inventorylistequipType;
 				itemlist_equip.PacketLength = ( sizeof( itemlist_equip ) - sizeof( itemlist_equip.list ) ) + ( sizeof( struct EQUIPITEM_INFO ) * equip );
 #if PACKETVER_RE_NUM >= 20180912 || PACKETVER_ZERO_NUM >= 20180919 || PACKETVER_MAIN_NUM >= 20181002
