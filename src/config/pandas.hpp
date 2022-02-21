@@ -2019,6 +2019,10 @@
 	// 是否启用 unitspecialeffect 脚本指令 [人鱼姬的思念]
 	// 该指令用于使指定游戏单位可以显示某个特效, 并支持控制特效可见范围
 	#define Pandas_ScriptCommand_UnitSpecialEffect
+
+	// 是否启用 next_dropitem_special 脚本指令 [Sola丶小克]
+	// 该指令用于对下一个掉落到地面上的物品进行特殊设置, 支持魔物掉落道具和 makeitem 系列指令
+	#define Pandas_ScriptCommand_Next_Dropitem_Special
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

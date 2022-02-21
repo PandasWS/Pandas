@@ -71,6 +71,10 @@
 #include <math.h>
 #endif // defined(Pandas_Fix_Progressbar_Refresh_Stuck) && (!defined(__WIN32))
 
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+s_next_dropitem_special next_dropitem_special;
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
 using namespace rathena;
 
 static inline uint32 client_tick( t_tick tick ){
@@ -959,6 +963,15 @@ void clif_dropflooritem( struct flooritem_data* fitem, bool canShowEffect ){
 		p.showdropeffect = 0;
 		p.dropeffectmode = DROPEFFECT_NONE;
 	}
+
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+	if (next_dropitem_special.drop_effect != -1) {
+		p.showdropeffect = 1;
+		p.dropeffectmode = next_dropitem_special.drop_effect - 1;
+		next_dropitem_special.drop_effect = -1;
+	}
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
 #endif
 	clif_send( &p, sizeof(p), &fitem->bl, AREA );
 }
