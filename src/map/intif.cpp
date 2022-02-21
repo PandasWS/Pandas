@@ -3650,9 +3650,16 @@ static void intif_parse_StorageSaved(int fd)
 						}
 					}
 
+#ifndef Pandas_Fix_Storage_DirtyFlag_Override
 					if( stor ){
 						stor->dirty = false;
 					}
+#else
+					// 只有在保存期间没有任何增删改操作, 才能将 dirty 标记设置为 false
+					if (stor && !stor->dirty_when_saving) {
+						stor->dirty = false;
+					}
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 				}
 				break;
 			case TABLE_CART: // cart
@@ -3749,6 +3756,12 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 
 	if (CheckForCharServer())
 		return false;
+
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	// 当地图服务器同时角色服务器企图保存某一个 storage 的数据时
+	// 将这个仓库的 dirty_when_saving 设置为 false, 这样在保存期间有任何增删改操作才能通过这个标记反应出来.
+	stor->dirty_when_saving = false;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 
 #ifndef Pandas_Unlock_Storage_Capacity_Limit
 	WFIFOHEAD(inter_fd, stor_size+13);
