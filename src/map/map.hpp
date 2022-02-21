@@ -698,6 +698,7 @@ enum e_mapflag : int16 {
 	MF_NORODEX,
 	MF_NORENEWALEXPPENALTY,
 	MF_NORENEWALDROPPENALTY,
+	MF_NOPETCAPTURE,
 #ifdef Pandas_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // Pandas_MapFlag_Mobinfo
@@ -919,7 +920,7 @@ struct map_data {
 	int users_pvp;
 	int iwall_num; // Total of invisible walls in this map
 
-	std::unordered_map<int16, int> flag;
+	std::vector<int> flag;
 	struct point save;
 	std::vector<s_drop_list> drop_list;
 	uint32 zone; // zone number (for item/skill restrictions)
