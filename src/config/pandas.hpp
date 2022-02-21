@@ -735,6 +735,14 @@
 	// 启用此选项后, 我们将支持在 packet_athena.conf 中设置这些健康检查的服务器 IP 区段
 	// 在不影响他们对我们正常服务器进行探测的情况下, 不再显示出大量无价值信息到终端干扰游戏管理员观察服务器状态.
 	#define Pandas_Health_Monitors_Silent
+
+	// 解锁仓库以及背包的最大容量限制 [Sola丶小克]
+	// 目前经过本地测试可以到 2000 个道具不会出现其他问题, 但建议大家不要设置太大
+	//
+	// 注意事项:
+	// 如果对仓库容量有扩充需求, 应该优先考虑开设多个仓库, 而不是提高单个仓库的容量,
+	// 因为过大的容量在每次打开仓库或者背包的时候会带来客户端有些卡顿的感觉 (服务端送来超多内容然后客户端填充他们)
+	#define Pandas_Unlock_Storage_Capacity_Limit
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -909,6 +917,16 @@
 	//
 	// 感谢 "红狐狸" 提醒此问题
 	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
+
+	// 修正在保存 s_storage 数据期间如果发生了存储内容的增删改时,
+	// 特定操作流程下可能诱发数据丢失的问题 [Sola丶小克]
+	//
+	// 可能的重现步骤:
+	// - 编写一个脚本, 调用 atcommand("@clearstorage"); 之后立刻调用 storagegetitem 501,1;
+	// - 执行上述脚本后立刻小退, 重复多次
+	// - 观察每次角色进入地图服务器时, 角色服务器提示加载到的仓库物品数量
+	// - 如果角色服务器在保存仓库数据时比较慢, 那么你会看到反复小退仓库的数量是: 1、0、1、0...
+	#define Pandas_Fix_Storage_DirtyFlag_Override
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1022,6 +1040,19 @@
 
 	// 修正转职到没有基础攻速数据的职业时会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_ASPD_Base_Empty
+
+	// 规避脚本引擎在定时器唤醒后可能导致的潜在崩溃 [Sola丶小克]
+	// 
+	// 目前常看到的崩溃调用堆栈是:
+	// 在脚本被 sleep / sleep2 定时机制安排在未来继续执行某脚本时,
+	// 如果在脚本恢复执行之前, 就因为其他原因把整个脚本释放掉, 就会在恢复执行脚本的时候导致地图服务器崩溃.
+	//
+	// 具体: 从 run_script_timer 恢复进入 run_script_main 之后崩溃
+	// 至于什么地方会在脚本还没恢复执行之前就将 script_code 释放暂时还没有特别明确的线索
+	#define Pandas_Crashfix_Invaild_Script_Code
+
+	// 规避在 map_addblock 和 map_delblock 因检查不严而导致崩溃的问题 [Renee]
+	#define Pandas_Crashfix_MapBlock_Operation
 #endif // Pandas_Crashfix
 
 // ============================================================================
@@ -1984,6 +2015,14 @@
 	// 是否启用 getquesttime 脚本指令 [Sola丶小克]
 	// 该指令用于查询角色指定任务的时间信息 (感谢 "SSBoyz" 建议)
 	#define Pandas_ScriptCommand_GetQuestTime
+
+	// 是否启用 unitspecialeffect 脚本指令 [人鱼姬的思念]
+	// 该指令用于使指定游戏单位可以显示某个特效, 并支持控制特效可见范围
+	#define Pandas_ScriptCommand_UnitSpecialEffect
+
+	// 是否启用 next_dropitem_special 脚本指令 [Sola丶小克]
+	// 该指令用于对下一个掉落到地面上的物品进行特殊设置, 支持魔物掉落道具和 makeitem 系列指令
+	#define Pandas_ScriptCommand_Next_Dropitem_Special
 
 	// 是否启用 getgradeitem 脚本指令 [Sola丶小克]
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现

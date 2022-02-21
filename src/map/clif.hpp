@@ -627,6 +627,15 @@ enum e_memorial_dungeon_command : uint16 {
 	COMMAND_MEMORIALDUNGEON_DESTROY_FORCE = 0x3,
 };
 
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+struct s_next_dropitem_special {
+	uint32 rent_duration = 0;		// 租赁时长, 单位: 秒 (租赁时间大于 0 的道具将会在时间到之后过期)
+	int8 bound = -1;				// 道具绑定类型 (设为 -1 表示不进行特殊控制)
+	int8 drop_effect = -1;			// 道具掉落到地面的光柱 (设为 -1 表示尊重 DB 中的配置)
+};
+extern s_next_dropitem_special next_dropitem_special;
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
 void clif_setport(uint16 port);
@@ -1215,6 +1224,9 @@ void clif_inventory_expansion_info( struct map_session_data* sd );
 // Barter System
 void clif_barter_open( struct map_session_data& sd, struct npc_data& nd );
 void clif_barter_extended_open( struct map_session_data& sd, struct npc_data& nd );
+
+void clif_summon_init(struct mob_data& md);
+void clif_summon_hp_bar(struct mob_data& md);
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
