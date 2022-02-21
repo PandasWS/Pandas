@@ -11,18 +11,6 @@
   <a href="https://github.com/PandasWS/Pandas/actions/workflows/build-and-test.yml">
     <img alt="Build Status" src="https://img.shields.io/github/workflow/status/PandasWS/Pandas/Build%20And%20Test?style=flat-square">
   </a>
-  <!-- LGTM Alerts -->
-  <a href="https://lgtm.com/projects/g/PandasWS/Pandas/alerts/">
-    <img alt="LGTM Alerts" src="https://img.shields.io/lgtm/alerts/github/PandasWS/Pandas?style=flat-square">
-  </a>
-  <!-- LGTM Cpp Grade -->
-  <a href="https://lgtm.com/projects/g/PandasWS/Pandas/context: cpp">
-    <img alt="LGTM Cpp Grade" src="https://img.shields.io/lgtm/grade/cpp/github/PandasWS/Pandas?style=flat-square">
-  </a>
-  <!-- LGTM Python Grade -->
-  <a href="https://lgtm.com/projects/g/PandasWS/Pandas/context: python">
-    <img alt="LGTM Python Grade" src="https://img.shields.io/lgtm/grade/python/github/PandasWS/Pandas?style=flat-square">
-  </a>
   <!-- GitHub contributors -->
   <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
     <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/PandasWS/Pandas?style=flat-square">
@@ -70,7 +58,9 @@
 </div>
 
 ## 神奇的小目录
+
 -   [背景](#背景)
+-   [熊猫专业版](#熊猫专业版)
 -   [模拟器特色功能](#模拟器特色功能)
 -   [编译说明](#编译说明)
 -   [常见问题](#常见问题)
@@ -81,6 +71,7 @@
 -   [许可协议](#许可协议)
 
 ## 背景
+
 仙境传说是一款非常经典的游戏，伴随着绝大多数玩家们的成长。感谢这款游戏，我们在茫茫人海中
 认识了彼此，虽然我们不在同一个城市，但都彼此各自成长。从商业上看她可能不是一款最好的游戏，
 但是情感上她已经成为了我们记忆中的一部分。
@@ -94,7 +85,20 @@
 因此我们将站在 rAthena 的巨人肩膀上二次开发了 Pandas 模拟器 ( 熊猫模拟器 ) ，我们的定位
 也非常朴素和简单：对中文用户友好的仙境传说模拟器。
 
+## 熊猫专业版
+
+熊猫专业版已经正式上线了！截止 2022年2月22日 专业版包含以下功能：
+
+- FEATURE-1000: 实装人工生命体 S 的 250 级支持及其 16 个新技能
+- FEATURE-1001: 实装 6 个次上位拓展职业共计 97 个技能
+- FEATURE-1002: 实装韩服 2021 年第三、第四季度的技能改进
+- FEATURE-1003: 四转职业技能和状态表现错误修正补丁
+- FEATURE-1004: 实装 EnchantGrade UI 附魔评级交互界面
+
+各功能包售价以及详细介绍, 请移步查阅: https://www.craft.do/s/miY7MUKvn8gQSj
+
 ## 模拟器特色功能
+
 主要是与 rAthena 模拟器相比的差异化功能，这些功能可能其他闭源模拟器已经实现，但在熊猫里面
 相关代码是开源的，方便您学习或者随意修改。欢迎您阅读熊猫模拟器的 [功能配置文件]
 来了解我们做过的所有功能改动。甚至通过此文件，您也可以直接关闭熊猫模拟器对某些功能的更改，
@@ -103,6 +107,7 @@
 ![程序预览](.github/PREVIEW.gif)
 
 ### 值得一提的功能
+
 -   __终端信息汉化__ —— 汉化绝大部分终端提示的文本信息，兼容简体和繁体中文
 -   __变态服拓展包__ —— 解锁角色的素质上限， 可以给角色几百万的 STR 等六维素质值
 -   __疾风缓存__ —— 大幅加速 YAML 数据文件的读取速度 ( 大幅缓解焦虑， 提高调试效率 )
@@ -114,6 +119,7 @@
 -   __崩溃转储生成__ —— 程序崩溃时能自动生成并上报转储文件，帮助研发人员解决问题
 
 ### 指令集和事件拓展
+
 在 rAthena 原来的指令集和事件基础上我们拓展了更多的小玩意，使脚本作者们能够充分发挥自己
 的想象力，给玩家带来有趣和好玩的游戏体验。具体详情请见对应的说明文档：
 
@@ -123,85 +129,11 @@
 -   [地图标记 ( Mapflags )](doc/pandas_mapflags.txt)
 -   [效果调整器 ( Bonus )](doc/pandas_bonus.txt)
 
-> 若您有拓展需求或者想法，劳驾请您 [反馈] 给我们，或者
- [加入爱好者社区](#加入爱好者社区) 给管理员进行反馈，我们将挑选优质且有远见的需求优先进行实现。
+若您有拓展需求或者想法，请您 [反馈] 给我们，或者 [加入爱好者社区](#加入爱好者社区) 进行反馈。
 
 ## 编译说明
-熊猫模拟器是一个开源项目，因此当您获取源码后需要手动进行编译才能获得可以运行的二进制文件；
-亦或者您可以前往 [下载页面] 直接下载预编译好的版本，直接使用 ( 新手推荐 ) 。
 
-> 注意：此处的编译说明仅提供最精简的指引信息，完成编译之后还需要搭建 MySQL 服务器并进行
-配置才能使模拟器成功运行起来。关于从编译到完成配置的全环节详细信息请见 [熊猫使用手册] 。
-
-### Windows 环境下编译
-
--   安装 Visual Studio 2019 社区版，安装时请勾选 __「使用 C++ 的桌面开发」__ 模块
--   获取模拟器源代码 ( 推荐使用 Git 克隆而不是直接下载源代码，因为会丢失仓库信息 )
-  -   建议将仓库存放到纯英文路径，因为某些第三方库对中文支持不友好 ( 即全路径中不要出现中文 )
--   解压源代码后先双击 `3rdparty\boost\bootstrap.bat` 编译 `Boost Libraries`
--   打开 `rAthena.sln` 选择编译模式 ( 调试用 Debug，正常用 Release ) 并生成解决方案
-
-> 您可能会发现仓库中 `db` 目录里的各类信息并未汉化，而且与直接从 [下载页面]
-获取到的压缩包目录结构并不一致 ( 有很多散乱的文件 ) 。这是为了与 rAthena 仓库保持最小
-改动而有意为之，您可以通过预置的辅助脚本来完成编译和发布打包操作，以此来获得一个对使用者
-友好的压缩包。
-
-### Unix 环境下编译
-
-熊猫模拟器并不支持 rAthena 官方的 `.\configure && make` 编译方式，仅留下了相对好维护的
-CMake 编译方式，对于这一点有经验的同学注意一下，避免被坑。在本例子中，我们将使用
-`Ubuntu 18.04` 发行版进行演示。
-
-```shell
-## 获取最新的 package list 以及更新本地程序包
-$ sudo apt-get update -y && sudo apt-get upgrade -y
-
-## 安装 git / git-lfs / wget / gcc 编译组件
-$ sudo apt install git git-lfs wget build-essential -y
-
-## 确认 gcc 的版本 ( 预期返回版本号 ≥ 7.4.0 )
-$ gcc --version
-
-## 安装编译 cmake 的所需依赖库 ( openssl )
-$ sudo apt install openssl libssl-dev -y
-
-## 接下来下载、解压、配置，并编译安装 cmake 3.16 版本
-$ wget https://github.com/Kitware/CMake/releases/download/v3.16.0-rc1/cmake-3.16.0-rc1.tar.gz \
-  && tar -xzvf cmake-3.16.0-rc1.tar.gz \
-  && cd cmake-3.16.0-rc1 \
-  && ./bootstrap && make -j4 && sudo make install
-
-## 此时你可以移除上一步中下载的 cmake 压缩包以及解压后的目录
-$ cd .. && rm -rf cmake-*
-
-## 确认 cmake 的版本 ( 预期返回版本号 ≥ 3.16.0 )
-$ cmake --version
-
-## 找个位置，然后克隆熊猫模拟器源代码 ( 此处我们将其放在用户主目录中 )
-$ git clone https://github.com/PandasWS/Pandas.git ~/Pandas
-
-## 安装熊猫模拟器的依赖
-$ sudo apt install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
-
-## 编译熊猫模拟器自带的 Boost Libraries
-## 下列指令中的第一个 cd 若您保存熊猫模拟器仓库的位置有变，请自行更改
-$ cd ~/Pandas/3rdparty/boost/ && bash bootstrap.sh && ./b2
-
-## 编译熊猫模拟器: 先建立 cbuild 临时目录并进入到目录中
-$ cd ~/Pandas && mkdir cbuild && cd cbuild
-
-## 生成 makefile 文件
-$ cmake -G "Unix Makefiles" ..
-
-## 执行编译 ( 以后想重新编译只需进入 cbuild 目录执行 make 即可 )
-$ make
-
-## 返回仓库根目录即可看到编译产物
-$ cd ~/Pandas
-
-## 配置正确的数据库连接后，就可以启动模拟器啦
-$ ./athena-start start
-```
+查阅如何在 Windows 和 Unix 环境下编译熊猫模拟器, 请移步阅读 [熊猫使用手册] 。
 
 ## 常见问题
 
@@ -284,21 +216,27 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 -   [unityro] - 基于 Unity3D 实现的仙境传说客户端 ( 近期活跃，值得关注 )
 
 ## 维护者
--   [CairoLee] —— 项目主持人 ( AKA: Sola 丶小克 )
+
+-   [CairoLee] —— 很难被研发忽悠瘸的产品经理 ( AKA: Sola 丶小克 )
+-   [Renee] —— 心情好就会忘记回消息的乐天派
 
 ## 如何作出贡献
-有关如何为熊猫模拟器做出贡献的详细信息， 请参见 [贡献说明] 。
+
+有关如何为熊猫模拟器做出贡献的详细信息，请参见 [作出贡献] 。
 
 ### 主要贡献者
+
 -   [HongShin] —— 积极的发现了很多缺陷和故障，使得项目的稳定性、健壮性得以提升
 -   [西瓜] 与 [小纪] —— 无条件捐献了熊猫模拟器若干个月的服务器租赁费用
 
 ### 活跃贡献者
+
 特别感谢近期活跃的贡献者，排名不分先后 ( 通常后加入的写最前面 )
 
-[聽風]、[Renee]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
+[聽風]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
 
 ## 许可协议
+
 版权所有 © 熊猫模拟器开发团队 - 授权许可协议 [GNU General Public License v3.0](LICENSE)
 
 [下载页面]: https://github.com/PandasWS/Pandas/releases
@@ -308,7 +246,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [LeeClient]: https://github.com/PandasWS/LeeClient
 [腾讯 QQ]: https://im.qq.com
 [Discord]: https://discord.com/
-[贡献说明]: .github/CONTRIBUTING.md
+[作出贡献]: https://docs.pandas.ws/contributing
 
 [rAthena]: https://github.com/rathena/rathena
 [Hercules]: https://github.com/HerculesWS/Hercules
