@@ -404,6 +404,28 @@ int map_addblock(struct block_list* bl)
 		return 1;
 	}
 
+#ifdef Pandas_Crashfix_MapBlock_Operation
+	if (mapdata == nullptr) {
+		ShowError("map_addblock: trying to add a block into non-existent map (map id: %d,%d,%d).\n", m, x, y);
+		return 1;
+	}
+
+	if (mapdata->block == nullptr || (bl->type == BL_MOB && mapdata->block_mob == nullptr)) {
+		ShowError("map_addblock: mapdata block is invalid (map name: \"%s\").\n", mapdata->name);
+		return 1;
+	}
+
+	if (mapdata->instance_src_map && mapdata->name[0] == '\0') {
+		if (map_getmapdata(mapdata->instance_src_map)) {
+			ShowError("map_addblock: trying to add a block into freed instance map (src map: \"%s\").\n", map_getmapdata(mapdata->instance_src_map)->name);
+		}
+		else {
+			ShowError("map_addblock: trying to add a block into freed instance map.\n");
+		}
+		return 1;
+	}
+#endif Pandas_Crashfix_MapBlock_Operation
+
 	pos = x/BLOCK_SIZE+(y/BLOCK_SIZE)*mapdata->bxs;
 
 	if (bl->type == BL_MOB) {
@@ -447,6 +469,28 @@ int map_delblock(struct block_list* bl)
 #endif
 
 	struct map_data *mapdata = map_getmapdata(bl->m);
+
+#ifdef Pandas_Crashfix_MapBlock_Operation
+	if (mapdata == nullptr) {
+		ShowError("map_delblock: trying to remove a block from non-existent map (map id: %d).\n", bl->m);
+		return 0;
+	}
+
+	if (mapdata->block == nullptr || (bl->type == BL_MOB && mapdata->block_mob == nullptr)) {
+		ShowError("map_delblock: mapdata block is invalid (map name: \"%s\").\n", mapdata->name);
+		return 0;
+	}
+
+	if (mapdata->instance_src_map && mapdata->name[0] == '\0') {
+		if (map_getmapdata(mapdata->instance_src_map)) {
+			ShowError("map_delblock: trying to remove a block from freed instance map (src map: \"%s\").\n", map_getmapdata(mapdata->instance_src_map)->name);
+		}
+		else {
+			ShowError("map_delblock: trying to remove a block from freed instance map.\n");
+		}
+		return 0;
+	}
+#endif // Pandas_Crashfix_MapBlock_Operation
 
 	pos = bl->x/BLOCK_SIZE+(bl->y/BLOCK_SIZE)*mapdata->bxs;
 
