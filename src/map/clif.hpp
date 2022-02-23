@@ -49,6 +49,8 @@ struct guild_log_entry;
 enum e_guild_storage_log : uint16;
 enum e_bg_queue_apply_ack : uint16;
 enum e_instance_notify : uint8;
+struct s_laphine_synthesis;
+struct s_laphine_upgrade;
 
 enum e_PacketDBVersion { // packet DB
 	MIN_PACKET_DB  = 0x064,
@@ -1227,6 +1229,10 @@ void clif_barter_extended_open( struct map_session_data& sd, struct npc_data& nd
 
 void clif_summon_init(struct mob_data& md);
 void clif_summon_hp_bar(struct mob_data& md);
+
+// Laphine System
+void clif_laphine_synthesis_open( struct map_session_data *sd, std::shared_ptr<s_laphine_synthesis> synthesis );
+void clif_laphine_upgrade_open( struct map_session_data* sd, std::shared_ptr<s_laphine_upgrade> upgrade );
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
