@@ -4099,6 +4099,11 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+		case SP_PANDAS_ABSORBDMGMAXHP2: // bonus bAbsorbDmgMaxHP2,n;
+			sd->bonus.absorb_dmg_maxhp2 = max(sd->bonus.absorb_dmg_maxhp2, val);
+			break;
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 		// PYHELP - BONUS - INSERT POINT - <Section 6>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC

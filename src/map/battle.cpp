@@ -1054,12 +1054,24 @@ static void battle_absorb_damage(struct block_list *bl, struct Damage *d) {
 				struct map_session_data *sd = BL_CAST(BL_PC, bl);
 				if (!sd)
 					return;
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+				dmg_ori = dmg_new = d->damage + d->damage2;
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 				if (sd->bonus.absorb_dmg_maxhp) {
 					int hp = sd->bonus.absorb_dmg_maxhp * status_get_max_hp(bl) / 100;
+#ifndef Pandas_Bonus_bAbsorbDmgMaxHP2
 					dmg_ori = dmg_new = d->damage + d->damage2;
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 					if (dmg_ori > hp)
 						dmg_new = dmg_ori - hp;
 				}
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+				if (sd->bonus.absorb_dmg_maxhp2) {
+					int hp = sd->bonus.absorb_dmg_maxhp2 * status_get_max_hp(bl) / 100;
+					if (dmg_ori > hp)
+						dmg_new = hp;
+				}
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 			}
 			break;
 	}

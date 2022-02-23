@@ -1172,6 +1172,10 @@
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
 #endif // Pandas_Bonus_bFinalAddClass
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
+	export_constant2("bAbsorbDmgMaxHP2", SP_PANDAS_ABSORBDMGMAXHP2);
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
