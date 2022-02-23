@@ -4505,6 +4505,16 @@ TIMER_FUNC(run_script_timer){
 	}
 	if(st->state != RERUNLINE)
 		st->sleep.tick = 0;
+
+#ifdef Pandas_Crashfix_Invaild_Script_Code
+	if (st && (st->script == nullptr || st->script->script_buf == nullptr)) {
+		ShowError("%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n", __func__, 1);
+		script_reportsrc(st);
+		st->state = END;
+		return 0;
+	}
+#endif // Pandas_Crashfix_Invaild_Script_Code
+
 	run_script_main(st);
 	return 0;
 }
@@ -4678,12 +4688,24 @@ void script_attach_state(struct script_state* st){
  *------------------------------------------*/
 void run_script_main(struct script_state *st)
 {
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+	nullpo_retv(st);
+#endif // Pandas_Crashfix_Prevent_NullPointer
 	int cmdcount = script_config.check_cmdcount;
 	int gotocount = script_config.check_gotocount;
 	TBL_PC *sd;
 	struct script_stack *stack = st->stack;
 
 	script_attach_state(st);
+
+#ifdef Pandas_Crashfix_Invaild_Script_Code
+	if (st && (st->script == nullptr || st->script->script_buf == nullptr)) {
+		ShowError("%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n", __func__, 2);
+		script_reportsrc(st);
+		st->state = END;
+		return;
+	}
+#endif // Pandas_Crashfix_Invaild_Script_Code
 
 	if(st->state == RERUNLINE) {
 		run_func(st);
@@ -4693,6 +4715,15 @@ void run_script_main(struct script_state *st)
 		st->state = RUN;
 
 	while(st->state == RUN) {
+#ifdef Pandas_Crashfix_Invaild_Script_Code
+		if (st && (st->script == nullptr || st->script->script_buf == nullptr)) {
+			ShowError("%s: The script that was resumed has been released, please report this to the developer (Trigger Point: %d).\n", __func__, 3);
+			script_reportsrc(st);
+			st->state = END;
+			return;
+		}
+#endif // Pandas_Crashfix_Invaild_Script_Code
+
 		enum c_op c = get_com(st->script->script_buf,&st->pos);
 		switch(c){
 		case C_EOL:
@@ -8301,6 +8332,13 @@ BUILDIN_FUNC(getitem2)
 	const char* command = script_getfuncname(st);
 	int offset = 0;
 
+#ifdef Pandas_ScriptCommand_GetGradeItem
+	if (strcmpi(command, "getgradeitem") == 0) {
+		offset = 12;
+		script_mapid2sd(15, sd);
+	}
+	else
+#endif // Pandas_ScriptCommand_GetGradeItem
 	if( !strncmp(command,"getitembound",12) ) {
 		int aid_pos = 12;
 		bound = script_getnum(st,11);
@@ -8383,6 +8421,12 @@ BUILDIN_FUNC(getitem2)
 		item_tmp.card[2] = c3;
 		item_tmp.card[3] = c4;
 		item_tmp.bound = bound;
+
+#ifdef Pandas_ScriptCommand_GetGradeItem
+		if (strcmpi(command, "getgradeitem") == 0) {
+			item_tmp.enchantgrade = cap_value(script_getnum(st, offset-1), 0, MAX_ENCHANTGRADE);
+		}
+#endif // Pandas_ScriptCommand_GetGradeItem
 
 		if (offset != 0) {
 			int res = script_getitem_randomoption(st, sd, &item_tmp, command, offset);
@@ -8709,6 +8753,19 @@ BUILDIN_FUNC(makeitem) {
 		item_tmp.identify = (battle_config.force_identified & 32 ? 1 : item_tmp.identify);
 #endif // Pandas_BattleConfig_Force_Identified
 
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+	if (next_dropitem_special.bound != -1) {
+		item_tmp.bound = cap_value(next_dropitem_special.bound, BOUND_NONE, BOUND_MAX - 1);
+		next_dropitem_special.bound = -1;
+	}
+	if (next_dropitem_special.rent_duration != 0) {
+		item_tmp.expire_time = (unsigned int)(time(NULL) + next_dropitem_special.rent_duration);
+		next_dropitem_special.rent_duration = 0;
+	}
+	// 提示: 在这里无需处理 next_dropitem_special.drop_effect,
+	// 这部分放在了 clif_dropflooritem 进行, 底部的 map_addflooritem 最终会调用它
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
 	map_addflooritem(&item_tmp, amount, m, x, y, 0, 0, 0, 4, 0, canShowEffect);
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -8794,6 +8851,19 @@ BUILDIN_FUNC(makeitem2) {
 		item_tmp.card[1] = script_getnum(st,11);
 		item_tmp.card[2] = script_getnum(st,12);
 		item_tmp.card[3] = script_getnum(st,13);
+
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+		if (next_dropitem_special.bound != -1) {
+			item_tmp.bound = cap_value(next_dropitem_special.bound, BOUND_NONE, BOUND_MAX - 1);
+			next_dropitem_special.bound = -1;
+		}
+		if (next_dropitem_special.rent_duration != 0) {
+			item_tmp.expire_time = (unsigned int)(time(NULL) + next_dropitem_special.rent_duration);
+			next_dropitem_special.rent_duration = 0;
+		}
+		// 提示: 在这里无需处理 next_dropitem_special.drop_effect,
+		// 这部分放在了 clif_dropflooritem 进行, 底部的 map_addflooritem 最终会调用它
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
 
 		if (funcname[strlen(funcname)-1] == '3') {
 			int res = script_getitem_randomoption(st, nullptr, &item_tmp, funcname, 14);
@@ -10165,13 +10235,13 @@ BUILDIN_FUNC(successrefitem) {
 		{ // Fame point system [DracoRPG]
 			switch( sd->inventory_data[i]->weapon_level ){
 				case 1:
-					pc_addfame(sd, battle_config.fame_refine_lv1); // Success to refine to +10 a lv1 weapon you forged = +1 fame point
+					pc_addfame(*sd, battle_config.fame_refine_lv1); // Success to refine to +10 a lv1 weapon you forged = +1 fame point
 					break;
 				case 2:
-					pc_addfame(sd, battle_config.fame_refine_lv2); // Success to refine to +10 a lv2 weapon you forged = +25 fame point
+					pc_addfame(*sd, battle_config.fame_refine_lv2); // Success to refine to +10 a lv2 weapon you forged = +25 fame point
 					break;
 				case 3:
-					pc_addfame(sd, battle_config.fame_refine_lv3); // Success to refine to +10 a lv3 weapon you forged = +1000 fame point
+					pc_addfame(*sd, battle_config.fame_refine_lv3); // Success to refine to +10 a lv3 weapon you forged = +1000 fame point
 					break;
 			 }
 		}
@@ -19927,8 +19997,8 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_BODY2: clif_changelook(bl, LOOK_BODY2, (unsigned short)value); break;
 			case UMOB_GROUP_ID: md->ud.group_id = value; unit_refresh(bl); break;
 			case UMOB_IGNORE_CELL_STACK_LIMIT: md->ud.state.ignore_cell_stack_limit = value > 0; break;
-			case UMOB_RES: md->base_status->res = (short)value; calc_status = true; break;
-			case UMOB_MRES: md->base_status->mres = (short)value; calc_status = true; break;
+			case UMOB_RES: md->base_status->res = (pec_short)value; calc_status = true; break;
+			case UMOB_MRES: md->base_status->mres = (pec_short)value; calc_status = true; break;
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
@@ -22741,6 +22811,42 @@ BUILDIN_FUNC(instance_live_info)
 		script_pushint(st, im->owner_id);
 		break;
 	}
+	return SCRIPT_CMD_SUCCESS;
+}
+/*==========================================
+ * instance_list(<"map name">{,<instance mode>});
+ * set '.@instance_list' to a list of the live instance ids for the map with the mode.
+ * return the array size of '.@instance_list'
+ *------------------------------------------*/
+BUILDIN_FUNC(instance_list)
+{
+	int src_id = map_mapname2mapid(script_getstr(st, 2));
+	if (src_id == 0) {
+		ShowError("buildin_instance_list: map '%s' doesn't exist\n", script_getstr(st, 2));
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	e_instance_mode mode = IM_MAX;
+	if (script_hasdata(st, 3)) {
+		mode = static_cast<e_instance_mode>(script_getnum(st, 3));
+		if (mode < IM_NONE || mode >= IM_MAX) {
+			ShowError("buildin_instance_list: Unknown instance mode %d for '%s'\n", mode, script_getstr(st, 3));
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	int j = 0;
+	for (int i = instance_start; i < map_num; i++) {
+		struct map_data* mapdata = &map[i];
+		if (mapdata->instance_src_map == src_id) {
+			std::shared_ptr<s_instance_data> idata = util::umap_find(instances, mapdata->instance_id);
+			if (idata && (mode == IM_MAX || idata->mode == mode)) {
+				setd_sub_num(st, nullptr, ".@instance_list", j, mapdata->instance_id, nullptr);
+				j++;
+			}
+		}
+	}
+	script_pushint(st, j);
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -26948,6 +27054,93 @@ BUILDIN_FUNC( openstylist ){
 #endif
 }
 
+BUILDIN_FUNC(getitempos) {
+	struct map_session_data* sd;
+
+	if ( !script_rid2sd(sd) ){
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( current_equip_item_index == -1 ){
+		ShowError( "buildin_getitempos: Invalid usage detected. This command should only be used inside item scripts.\n" );
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	script_pushint(st, sd->inventory.u.items_inventory[current_equip_item_index].equip);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC( laphine_synthesis ){
+	struct map_session_data* sd;
+
+	if( !script_rid2sd( sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( sd->itemid == 0 ){
+		ShowError( "buildin_laphine_synthesis: Called outside of an item script without item id.\n" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( sd->inventory_data[sd->itemindex]->flag.delay_consume == 0 ){
+		ShowError( "buildin_laphine_synthesis: Called from item %u, which is not a consumed delayed.\n", sd->itemid );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( sd->state.laphine_synthesis != 0 ){
+		ShowError( "buildin_laphine_synthesis: Laphine Synthesis window was already open. Player %s (AID: %u, CID: %u) with item id %u.\n", sd->status.name, sd->status.account_id, sd->status.char_id, sd->itemid );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	std::shared_ptr<s_laphine_synthesis> synthesis = laphine_synthesis_db.find( sd->itemid );
+
+	if( synthesis == nullptr ){
+		ShowError( "buildin_laphine_synthesis: %u is not a valid Laphine Synthesis item.\n", sd->itemid );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_laphine_synthesis_open( sd, synthesis );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC( laphine_upgrade ){
+	struct map_session_data* sd;
+
+	if( !script_rid2sd( sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( sd->itemid == 0 ){
+		ShowError( "buildin_laphine_upgrade: Called outside of an item script without item id.\n" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( sd->inventory_data[sd->itemindex]->flag.delay_consume == 0 ){
+		ShowError( "buildin_laphine_upgrade: Called from item %u, which is not a consumed delayed.\n", sd->itemid );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( sd->state.laphine_upgrade != 0 ){
+		ShowError( "buildin_laphine_upgrade: Laphine Upgrade window was already open. Player %s (AID: %u, CID: %u) with item id %u.\n", sd->status.name, sd->status.account_id, sd->status.char_id, sd->itemid );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	std::shared_ptr<s_laphine_upgrade> upgrade = laphine_upgrade_db.find( sd->itemid );
+
+	if( upgrade == nullptr ){
+		ShowError( "buildin_laphine_upgrade: %u is not a valid Laphine Upgrade item.\n", sd->itemid );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_laphine_upgrade_open( sd, upgrade );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 #include "../custom/script.inc"
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -29259,7 +29452,7 @@ BUILDIN_FUNC(storagegetitem) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (sd->state.storage_flag == 1) {
+	if (sd->state.storage_flag == 1 || sd->state.storage_flag == 3) {
 		script_pushint(st, -5);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -29285,8 +29478,7 @@ BUILDIN_FUNC(storagegetitem) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	for (i = 0; i < amount; i += get_count)
-	{
+	for (i = 0; i < amount; i += get_count) {
 		if (storage_additem(sd, &sd->storage, &it, get_count, true)) {
 			if (pc_candrop(sd, &it))
 				map_addflooritem(&it, get_count, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 0, 0);
@@ -29294,8 +29486,6 @@ BUILDIN_FUNC(storagegetitem) {
 				script_pushint(st, -9);
 		}
 	}
-
-	clif_storageclose(sd);
 
 	script_pushint(st, 0);
 	return SCRIPT_CMD_SUCCESS;
@@ -30846,6 +31036,65 @@ BUILDIN_FUNC(getquesttime) {
 }
 #endif // Pandas_ScriptCommand_GetQuestTime
 
+#ifdef Pandas_ScriptCommand_UnitSpecialEffect
+/* ===========================================================
+ * 指令: unitspecialeffect
+ * 描述: 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围
+ * 用法: unitspecialeffect <游戏单位编号>,<特效编号>{,<谁能看见特效>{,<能看见特效的账号编号>}};
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitspecialeffect) {
+	struct block_list* bl = nullptr;
+	int type = script_getnum(st, 3);
+	enum send_target target = AREA;
+
+	bl = map_id2bl(script_getnum(st, 2));
+	if (!bl) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (script_hasdata(st, 4)) {
+		target = (send_target)script_getnum(st, 4);
+	}
+
+	if (type <= EF_NONE || type >= EF_MAX) {
+		ShowError("buildin_unitspecialeffect: unsupported effect id %d\n", type);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (target != SELF) {
+		clif_specialeffect(bl, type, target);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct map_session_data* sd = nullptr;
+	if (!script_mapid2sd(5, sd)) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (sd && sd->bl.type == BL_PC) {
+		clif_specialeffect_single(bl, type, sd->fd);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnitSpecialEffect
+
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+/* ===========================================================
+ * 指令: next_dropitem_special
+ * 描述: 对下一个掉落到地面上的物品进行特殊设置
+ * 用法: next_dropitem_special <道具绑定类型>,<租赁时长>,<掉落光柱颜色>;
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(next_dropitem_special) {
+	next_dropitem_special.bound = cap_value(script_getnum(st, 2), BOUND_NONE, BOUND_MAX - 1);
+	next_dropitem_special.rent_duration = cap_value(script_getnum(st, 3), 0, INT32_MAX);
+	next_dropitem_special.drop_effect = cap_value(script_getnum(st, 4), -1, DROPEFFECT_MAX - 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -31352,6 +31601,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(instance_check_clan,"i???"),
 	BUILDIN_DEF(instance_info,"si?"),
 	BUILDIN_DEF(instance_live_info,"i?"),
+	BUILDIN_DEF(instance_list, "s?"),
 	/**
 	 * 3rd-related
 	 **/
@@ -31516,6 +31766,10 @@ struct script_function buildin_func[] = {
 
 	BUILDIN_DEF(setinstancevar,"rvi"),
 	BUILDIN_DEF(openstylist, "?"),
+
+	BUILDIN_DEF(getitempos,""),
+	BUILDIN_DEF(laphine_synthesis, ""),
+	BUILDIN_DEF(laphine_upgrade, ""),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
@@ -31761,6 +32015,15 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetQuestTime
 	BUILDIN_DEF(getquesttime,"i??"),					// 查询角色指定任务的时间信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetQuestTime
+#ifdef Pandas_ScriptCommand_UnitSpecialEffect
+	BUILDIN_DEF(unitspecialeffect, "ii??"),				// 使指定游戏单位可以显示某个特效, 并支持控制特效可见范围 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_UnitSpecialEffect
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+	BUILDIN_DEF(next_dropitem_special,"iii"),			// 对下一个掉落到地面上的物品进行特殊设置 [Sola丶小克]
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+#ifdef Pandas_ScriptCommand_GetGradeItem
+	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetGradeItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

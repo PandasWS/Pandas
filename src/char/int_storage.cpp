@@ -199,6 +199,7 @@ bool mapif_load_guild_storage(int fd,uint32 account_id,int guild_id, char flag)
 		Sql_ShowDebug(sql_handle);
 	else if( Sql_NumRows(sql_handle) > 0 )
 	{// guild exists
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 		WFIFOHEAD(fd, sizeof(struct s_storage)+13);
 		WFIFOW(fd,0) = 0x3818;
 		WFIFOW(fd,2) = sizeof(struct s_storage)+13;
@@ -207,16 +208,45 @@ bool mapif_load_guild_storage(int fd,uint32 account_id,int guild_id, char flag)
 		WFIFOB(fd,12) = flag; //1 open storage, 0 don't open
 		guild_storage_fromsql(guild_id, (struct s_storage*)WFIFOP(fd,13));
 		WFIFOSET(fd, WFIFOW(fd,2));
+#else
+		// 由于封包长度字段提升, 从占用 2 个字节提升到 4 个字节, 因此封包总长度需要 + 2
+		WFIFOHEAD(fd, sizeof(struct s_storage)+13+2);
+		WFIFOW(fd,0) = 0x3818;
+		// 由于封包长度字段提升, 写入数据需要从 WFIFOW 改用 WFIFOL
+		// 由于封包长度字段提升, 从占用 2 个字节提升到 4 个字节, 因此封包总长度需要 + 2
+		WFIFOL(fd,2) = sizeof(struct s_storage)+13+2;
+
+		// 后续几个字段的长度偏移值都需要因此 + 2
+		WFIFOL(fd,4 + 2) = account_id;
+		WFIFOL(fd,8 + 2) = guild_id;
+		WFIFOB(fd,12 + 2) = flag; //1 open storage, 0 don't open
+
+		// 由于封包长度字段提升, 从占用 2 个字节提升到 4 个字节, 因此封包总长度需要 + 2
+		guild_storage_fromsql(guild_id, (struct s_storage*)WFIFOP(fd,13+2));
+
+		// 由于封包长度字段提升, 写入数据需要从 WFIFOW 改用 WFIFOL
+		WFIFOSET(fd, WFIFOL(fd,2));
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 		return true;
 	}
 	// guild does not exist
 	Sql_FreeResult(sql_handle);
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	WFIFOHEAD(fd, 12);
 	WFIFOW(fd,0) = 0x3818;
 	WFIFOW(fd,2) = 12;
 	WFIFOL(fd,4) = account_id;
 	WFIFOL(fd,8) = 0;
 	WFIFOSET(fd, 12);
+#else
+	// 由于封包长度字段类型提升, 以下也需要一起调整
+	WFIFOHEAD(fd, 12+2);
+	WFIFOW(fd,0) = 0x3818;
+	WFIFOL(fd,2) = 12 + 2;
+	WFIFOL(fd,4 + 2) = account_id;
+	WFIFOL(fd,8 + 2) = 0;
+	WFIFOSET(fd, 12 + 2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	return false;
 }
 
@@ -249,6 +279,7 @@ bool mapif_parse_SaveGuildStorage(int fd)
 	int guild_id;
 	int len;
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	RFIFOHEAD(fd);
 	guild_id = RFIFOL(fd,8);
 	len = RFIFOW(fd,2);
@@ -271,6 +302,30 @@ bool mapif_parse_SaveGuildStorage(int fd)
 		Sql_FreeResult(sql_handle);
 	}
 	mapif_save_guild_storage_ack(fd, RFIFOL(fd,4), guild_id, 1);
+#else
+	RFIFOHEAD(fd);
+	guild_id = RFIFOL(fd, 8 + 2);
+	len = RFIFOL(fd, 2);
+
+	if( sizeof(struct s_storage) != len - 12 - 2 )
+	{
+		ShowError("inter storage: data size error %" PRIuPTR " != %d\n", sizeof(struct s_storage), len - 12 - 2);
+	}
+	else
+	{
+		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `guild_id` FROM `%s` WHERE `guild_id`='%d'", schema_config.guild_db, guild_id) )
+			Sql_ShowDebug(sql_handle);
+		else if( Sql_NumRows(sql_handle) > 0 )
+		{// guild exists
+			Sql_FreeResult(sql_handle);
+			guild_storage_tosql(guild_id, (struct s_storage*)RFIFOP(fd,12 + 2));
+			mapif_save_guild_storage_ack(fd, RFIFOL(fd,4 + 2), guild_id, 0);
+			return false;
+		}
+		Sql_FreeResult(sql_handle);
+	}
+	mapif_save_guild_storage_ack(fd, RFIFOL(fd,4 + 2), guild_id, 1);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	return true;
 }
 
@@ -470,6 +525,7 @@ bool mapif_parse_itembound_retrieve(int fd)
  * @param result
  */
 void mapif_storage_data_loaded(int fd, uint32 account_id, char type, struct s_storage* entries, bool result) {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	uint16 size = sizeof(struct s_storage) + 10;
 	
 	WFIFOHEAD(fd, size);
@@ -480,6 +536,24 @@ void mapif_storage_data_loaded(int fd, uint32 account_id, char type, struct s_st
 	WFIFOB(fd, 9) = result;
 	memcpy(WFIFOP(fd, 10), entries, sizeof(struct s_storage));
 	WFIFOSET(fd, size);
+#else
+	// 将 size 的变量类型从 uint16 提升到 uint32
+	// 此外由于 size 的类型提升, 导致整个封包的长度需要增加 2 个字节
+	uint32 size = sizeof(struct s_storage) + 10 + 2;
+
+	WFIFOHEAD(fd, size);
+	WFIFOW(fd, 0) = 0x388a;
+
+	// 从 WORD 类型的 2 字节变成 LONG 类型的 4 字节
+	WFIFOL(fd, 2) = size;
+
+	// 随后其他数据的偏移量都需要 + 2
+	WFIFOB(fd, 4 + 2) = type;
+	WFIFOL(fd, 5 + 2) = account_id;
+	WFIFOB(fd, 9 + 2) = result;
+	memcpy(WFIFOP(fd, 10 + 2), entries, sizeof(struct s_storage));
+	WFIFOSET(fd, size);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 }
 
 /**
@@ -508,6 +582,7 @@ void mapif_storage_saved(int fd, uint32 account_id, uint32 char_id, bool success
  * @param fd
  */
 bool mapif_parse_StorageLoad(int fd) {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	uint32 aid, cid;
 	int type;
 	uint8 stor_id, mode;
@@ -543,6 +618,51 @@ bool mapif_parse_StorageLoad(int fd) {
 
 	mapif_storage_data_loaded(fd, aid, type, &stor, res);
 	return true;
+#else
+	// 因为拓展了仓库容量上限, 在极端情况下 s_storage 的体积会比较大
+	// 这可能会导致栈空间耗尽. 在此将 s_storage 中栈转入到堆, 大多数行都需要调整, 但主逻辑不会变化
+	// ---------------------------------------------------------------------------------
+	uint32 aid, cid;
+	int type;
+	uint8 stor_id, mode;
+	struct s_storage* stor = (struct s_storage*)aMalloc(sizeof(struct s_storage));
+	bool res = true;
+
+	type = RFIFOB(fd, 2);
+	aid = RFIFOL(fd, 3);
+	cid = RFIFOL(fd, 7);
+	stor_id = RFIFOB(fd, 11);
+
+	memset(stor, 0, sizeof(struct s_storage));
+	stor->stor_id = stor_id;
+
+	//ShowInfo("Loading storage for AID=%d.\n", aid);
+	switch (type) {
+	case TABLE_INVENTORY: res = inventory_fromsql(cid, stor); break;
+	case TABLE_STORAGE:
+		if (!interServerDb.exists(stor_id)) {
+			ShowError("Invalid storage with id %d\n", stor_id);
+			if (stor) aFree(stor);
+			return false;
+		}
+
+		res = storage_fromsql(aid, stor);
+		break;
+	case TABLE_CART:      res = cart_fromsql(cid, stor);      break;
+	default:
+		if (stor) aFree(stor);
+		return false;
+	}
+
+	mode = RFIFOB(fd, 12);
+	stor->state.put = (mode & STOR_MODE_PUT) ? 1 : 0;
+	stor->state.get = (mode & STOR_MODE_GET) ? 1 : 0;
+
+	mapif_storage_data_loaded(fd, aid, type, stor, res);
+
+	if (stor) aFree(stor);
+	return true;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 }
 
 /**
@@ -551,6 +671,7 @@ bool mapif_parse_StorageLoad(int fd) {
  * @param fd
  */
 bool mapif_parse_StorageSave(int fd) {
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	int aid, cid, type;
 	struct s_storage stor;
 
@@ -578,6 +699,42 @@ bool mapif_parse_StorageSave(int fd) {
 	}
 	mapif_storage_saved(fd, aid, cid, true, type, stor.stor_id);
 	return false;
+#else
+	// 因为拓展了仓库容量上限, 在极端情况下 s_storage 的体积会比较大
+	// 这可能会导致栈空间耗尽. 在此将 s_storage 中栈转入到堆, 大多数行都需要调整, 但主逻辑不会变化
+	// ---------------------------------------------------------------------------------
+	int aid, cid, type;
+	struct s_storage* stor = (struct s_storage*)aMalloc(sizeof(struct s_storage));
+
+	RFIFOHEAD(fd);
+	type = RFIFOB(fd, 4 + 2);
+	aid = RFIFOL(fd, 5 + 2);
+	cid = RFIFOL(fd, 9 + 2);
+
+	memset(stor, 0, sizeof(struct s_storage));
+	memcpy(stor, RFIFOP(fd, 13 + 2), sizeof(struct s_storage));
+
+	//ShowInfo("Saving storage data for AID=%d.\n", aid);
+	switch(type){
+		case TABLE_INVENTORY:	inventory_tosql(cid, stor); break;
+		case TABLE_STORAGE:
+			if( !interServerDb.exists( stor->stor_id ) ){
+				ShowError( "Invalid storage with id %d\n", stor->stor_id );
+				if (stor) aFree(stor);
+				return false;
+			}
+
+			storage_tosql(aid, stor);
+			break;
+		case TABLE_CART:	cart_tosql(cid, stor); break;
+		default:
+			if (stor) aFree(stor);
+			return false;
+	}
+	mapif_storage_saved(fd, aid, cid, true, type, stor->stor_id);
+	if (stor) aFree(stor);
+	return false;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 }
 
 

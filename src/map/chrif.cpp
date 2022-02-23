@@ -1279,24 +1279,14 @@ int chrif_disconnectplayer(int fd) {
 /*==========================================
  * Request/Receive top 10 Fame character list
  *------------------------------------------*/
-int chrif_updatefamelist(struct map_session_data* sd) {
-	char type;
-
+int chrif_updatefamelist(map_session_data &sd, e_rank ranktype) {
 	chrif_check(-1);
-
-	switch(sd->class_ & MAPID_UPPERMASK) {
-		case MAPID_BLACKSMITH: type = RANK_BLACKSMITH; break;
-		case MAPID_ALCHEMIST:  type = RANK_ALCHEMIST; break;
-		case MAPID_TAEKWON:    type = RANK_TAEKWON; break;
-		default:
-			return 0;
-	}
 
 	WFIFOHEAD(char_fd, 11);
 	WFIFOW(char_fd,0) = 0x2b10;
-	WFIFOL(char_fd,2) = sd->status.char_id;
-	WFIFOL(char_fd,6) = sd->status.fame;
-	WFIFOB(char_fd,10) = type;
+	WFIFOL(char_fd,2) = sd.status.char_id;
+	WFIFOL(char_fd,6) = sd.status.fame;
+	WFIFOB(char_fd,10) = ranktype;
 	WFIFOSET(char_fd,11);
 
 	return 0;
@@ -2051,10 +2041,17 @@ void do_init_chrif(void) {
 		exit(EXIT_FAILURE);
 	}
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	if (sizeof(struct s_storage) > 0xFFFF) {
 		ShowError("s_storage size = %" PRIuPTR " is too big to be transmitted. (must be below 0xFFFF)\n", sizeof(struct s_storage));
 		exit(EXIT_FAILURE);
 	}
+#else
+	if (sizeof(struct s_storage) > 0xFFFFF) {
+		ShowError("s_storage size = %" PRIuPTR " is too big to be transmitted. (must be below 0xFFFFF)\n", sizeof(struct s_storage));
+		exit(EXIT_FAILURE);
+	}
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 
 	if((sizeof(struct bonus_script_data) * MAX_PC_BONUS_SCRIPT) > 0xFFFF){
 		ShowError("bonus_script_data size = %d is too big, please reduce MAX_PC_BONUS_SCRIPT (%d) size. (must be below 0xFFFF).\n",

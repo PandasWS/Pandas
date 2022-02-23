@@ -763,26 +763,28 @@ void pc_delabyssball( struct map_session_data& sd, int count ){
 * Increases a player's fame points and displays a notice to him
 * @param sd Player
 * @param count Fame point
+* @return true: on success, false: on error
 */
-void pc_addfame(struct map_session_data *sd,int count)
+bool pc_addfame(map_session_data &sd, int count)
 {
 	enum e_rank ranktype;
-	nullpo_retv(sd);
-	sd->status.fame += count;
-	if(sd->status.fame > MAX_FAME)
-		sd->status.fame = MAX_FAME;
 
-	switch(sd->class_&MAPID_UPPERMASK){
+	sd.status.fame += count;
+	if (sd.status.fame > MAX_FAME)
+		sd.status.fame = MAX_FAME;
+
+	switch(sd.class_&MAPID_UPPERMASK){
 		case MAPID_BLACKSMITH:	ranktype = RANK_BLACKSMITH; break;
 		case MAPID_ALCHEMIST:	ranktype = RANK_ALCHEMIST; break;
 		case MAPID_TAEKWON:		ranktype = RANK_TAEKWON; break;
 		default:
-			ShowWarning( "pc_addfame: Trying to add fame to class '%s'(%d).\n", job_name(sd->status.class_), sd->status.class_ );
-			return;
+			ShowWarning( "pc_addfame: Trying to add fame to class '%s'(%d).\n", job_name(sd.status.class_), sd.status.class_ );
+			return false;
 	}
 
-	clif_update_rankingpoint(sd,ranktype,count);
-	chrif_updatefamelist(sd);
+	clif_update_rankingpoint(sd, ranktype, count);
+	chrif_updatefamelist(sd, ranktype);
+	return true;
 }
 
 /**
@@ -3410,10 +3412,10 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 			if(sd->state.lr_flag != 2) {
 #ifdef RENEWAL
 				bonus = sd->bonus.eatk + val;
-				sd->bonus.eatk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				sd->bonus.eatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 #else
 				bonus = status->batk + val;
-				status->batk = cap_value(bonus, 0, USHRT_MAX);
+				status->batk = cap_value(bonus, 0, PEC_USHRT_MAX);
 #endif
 			}
 			break;
@@ -3481,37 +3483,37 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 		case SP_PATK:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->patk + val;
-				status->patk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->patk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_SMATK:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->smatk + val;
-				status->smatk = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->smatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_RES:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->res + val;
-				status->res = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->res = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_MRES:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->mres + val;
-				status->mres = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->mres = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_HPLUS:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->hplus + val;
-				status->hplus = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->hplus = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_CRATE:
 			if (sd->state.lr_flag != 2) {
 				bonus = status->crate + val;
-				status->crate = cap_value(bonus, SHRT_MIN, SHRT_MAX);
+				status->crate = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_ATKELE:
@@ -6286,6 +6288,11 @@ int pc_useitem(struct map_session_data *sd,int n)
 			pc_delitem(sd,n,1,1,0,LOG_TYPE_CONSUME);
 		}
 		return 0;/* regardless, effect is not run */
+	}
+
+	if (pet_db_search(id->nameid, PET_CATCH) != nullptr && map_getmapflag(sd->bl.m, MF_NOPETCAPTURE)) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 669)); // You can't catch any pet on this map.
+		return 0;
 	}
 
 	sd->itemid = item.nameid;
@@ -10533,8 +10540,6 @@ bool pc_setparam(struct map_session_data *sd,int64 type,int64 val_tmp)
 		pc_setglobalreg(sd, add_str(PCDIECOUNTER_VAR), sd->die_counter);
 		return true;
 	case SP_COOKMASTERY:
-		if (val < 0)
-			return false;
 		if (sd->cook_mastery == val)
 			return true;
 		val = cap_value(val, 0, 1999);
