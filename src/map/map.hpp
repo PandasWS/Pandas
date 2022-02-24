@@ -598,6 +598,9 @@ enum _sp {
 	#ifdef Pandas_Bonus_bFinalAddClass
 		SP_PANDAS_FINALADDCLASS,	// 调整器名称: bFinalAddClass / 说明: 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	#endif // Pandas_Bonus_bFinalAddClass
+	#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+		SP_PANDAS_ABSORBDMGMAXHP2,	// 调整器名称: bAbsorbDmgMaxHP2 / 说明: 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
+	#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses

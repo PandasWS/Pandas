@@ -693,6 +693,9 @@ struct map_session_data {
 #ifdef Pandas_Bonus_bRebirthWithHeal
 		int rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp;
 #endif // Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+		uint8 absorb_dmg_maxhp2;
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 		// PYHELP - BONUS - INSERT POINT - <Section 5>
 	} bonus;
 	// zeroed vars end here.

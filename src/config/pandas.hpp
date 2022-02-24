@@ -1663,6 +1663,13 @@
 	// 变量位置: map_session_data / 变量名称: finaladd_class
 	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
 	#define Pandas_Bonus_bFinalAddClass
+
+	// 是否启用 bAbsorbDmgMaxHP2 效果调整器 [secretdataz]
+	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
+	// 常量名称: SP_PANDAS_ABSORBDMGMAXHP2 / 调整器名称: bAbsorbDmgMaxHP2
+	// 变量位置: map_session_data.bonus / 变量名称: absorb_dmg_maxhp2
+	// 使用原型: bonus bAbsorbDmgMaxHP2,n;
+	#define Pandas_Bonus_bAbsorbDmgMaxHP2
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 
