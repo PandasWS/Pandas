@@ -87,11 +87,7 @@ Header:
   Type: ITEM_DB
   Version: 2
 
-Footer:
-  Imports:
-  - Path: db/pre-re/item_db.yml
-    Mode: Prerenewal
-  - Path: db/re/item_db.yml
-    Mode: Renewal
-  - Path: db/pandas/item_db.yml
-  - Path: db/import/item_db.yml
+Body:
+  - Id: 4610
+    Script: |
+      bonus bAbsorbDmgMaxHP2,40;
