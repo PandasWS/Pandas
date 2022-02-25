@@ -134,12 +134,12 @@ enum e_skill_require : uint16 {
 	SKILL_REQ_APRATECOST = 0x4000,
 };
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 enum e_skill_require_ex : uint32 {
 	SKILL_REQ_AMMO_COUNT = 0x10000,
 	SKILL_REQ_PRODUCTMAT_COUNT = 0x20000,
 };
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 /// Constants for skill cast near NPC.
 enum e_skill_nonear_npc : uint8 {
