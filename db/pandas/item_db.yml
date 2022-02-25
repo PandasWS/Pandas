@@ -90,4 +90,4 @@ Header:
 Body:
   - Id: 4610
     Script: |
-      bonus bAbsorbDmgMaxHP2,40;
+      bonus2 bAbsorbDmgMaxHP,100,40;
