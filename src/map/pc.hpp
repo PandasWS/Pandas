@@ -696,6 +696,9 @@ struct map_session_data {
 #ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
 		uint8 absorb_dmg_maxhp2;
 #endif // Pandas_Bonus_bAbsorbDmgMaxHP2
+#ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
+		uint8 absorb_dmg_trigger_hpratio, absorb_dmg_cap_ratio;
+#endif // Pandas_Bonus2_bAbsorbDmgMaxHP
 		// PYHELP - BONUS - INSERT POINT - <Section 5>
 	} bonus;
 	// zeroed vars end here.

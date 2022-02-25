@@ -1054,24 +1054,34 @@ static void battle_absorb_damage(struct block_list *bl, struct Damage *d) {
 				struct map_session_data *sd = BL_CAST(BL_PC, bl);
 				if (!sd)
 					return;
-#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
-				dmg_ori = dmg_new = d->damage + d->damage2;
-#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
+
 				if (sd->bonus.absorb_dmg_maxhp) {
 					int hp = sd->bonus.absorb_dmg_maxhp * status_get_max_hp(bl) / 100;
-#ifndef Pandas_Bonus_bAbsorbDmgMaxHP2
 					dmg_ori = dmg_new = d->damage + d->damage2;
-#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 					if (dmg_ori > hp)
 						dmg_new = dmg_ori - hp;
 				}
+
 #ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
 				if (sd->bonus.absorb_dmg_maxhp2) {
-					int hp = sd->bonus.absorb_dmg_maxhp2 * status_get_max_hp(bl) / 100;
+					int hp = min(sd->bonus.absorb_dmg_maxhp2, 100) * status_get_max_hp(bl) / 100;
+					dmg_ori = dmg_new = d->damage + d->damage2;
 					if (dmg_ori > hp)
 						dmg_new = hp;
 				}
 #endif // Pandas_Bonus_bAbsorbDmgMaxHP2
+
+#ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
+				if (sd->bonus.absorb_dmg_trigger_hpratio && sd->bonus.absorb_dmg_cap_ratio) {
+					dmg_ori = dmg_new = d->damage + d->damage2;
+					double dmg_ratio = (double)dmg_ori / status_get_max_hp(bl);
+
+					if (dmg_ratio * 100 >= min(sd->bonus.absorb_dmg_trigger_hpratio, 100)) {
+						int hp = min(sd->bonus.absorb_dmg_cap_ratio, 100) * status_get_max_hp(bl) / 100;
+						dmg_new = hp;
+					}
+				}
+#endif // Pandas_Bonus2_bAbsorbDmgMaxHP
 			}
 			break;
 	}
