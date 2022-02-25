@@ -193,21 +193,21 @@ extern unsigned int equip_bitmask[EQI_MAX];
 
 #define equip_index_check(i) ( (i) >= EQI_ACC_L && (i) < EQI_MAX )
 
-#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+#if defined(Pandas_Bonus4_bStatusAddDamage) || defined(Pandas_Bonus4_bStatusAddDamageRate)
 struct s_sc_damage {
 	sc_type type;
 	short rate, battle_flag;
 	int val;
 };
-#endif // defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+#endif // defined(Pandas_Bonus4_bStatusAddDamage) || defined(Pandas_Bonus4_bStatusAddDamageRate)
 
-#if defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+#if defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 struct s_final_damage {
 	int8 type;
 	short battle_flag;
 	int damage_rate;
 };
-#endif // defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+#endif // defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 
 /// Miscellaneous item bonus struct
 struct s_item_bonus {
@@ -605,30 +605,30 @@ struct map_session_data {
 	std::vector<s_addeffectonskill> addeff_onskill;
 	std::vector<s_item_bonus> skillatk, skillusesprate, skillusesp, skillheal, skillheal2, skillblown, skillcastrate, skillfixcastrate, subskill, skillcooldown, skillfixcast,
 		skillvarcast, skilldelay, itemhealrate, add_def, add_mdef, add_mdmg, reseff, itemgrouphealrate, itemsphealrate, itemgroupsphealrate;
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 	std::vector<s_item_bonus> addskillrange;
-#endif // Pandas_Bonus_bAddSkillRange
-#ifdef Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bAddSkillRange
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	std::vector<s_item_bonus> skillnorequire;
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
 	std::vector<s_addrace2> subrace3;
 	std::vector<std::shared_ptr<s_autobonus>> autobonus, autobonus2, autobonus3; //Auto script on attack, when attacked, on skill usage
 
-#ifdef Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	std::vector<s_sc_damage> status_damage_adjust;
-#endif // Pandas_Bonus_bStatusAddDamage
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	std::vector<s_sc_damage> status_damagerate_adjust;
-#endif // Pandas_Bonus_bStatusAddDamageRate
-#ifdef Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus4_bStatusAddDamageRate
+#ifdef Pandas_Bonus3_bFinalAddRace
 	std::vector<s_final_damage> finaladd_race[RC_MAX];
-#endif // Pandas_Bonus_bFinalAddRace
-#ifdef Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddClass
 	std::vector<s_final_damage> finaladd_class[CLASS_MAX];
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
 
 	// zeroed structures start here
 	struct s_regen {
@@ -690,9 +690,9 @@ struct map_session_data {
 		uint8 absorb_dmg_maxhp; // [Cydh]
 		short critical_rangeatk;
 		short weapon_atk_rate, weapon_matk_rate;
-#ifdef Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus3_bRebirthWithHeal
 		int rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp;
-#endif // Pandas_Bonus_bRebirthWithHeal
+#endif // Pandas_Bonus3_bRebirthWithHeal
 #ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
 		uint8 absorb_dmg_maxhp2;
 #endif // Pandas_Bonus_bAbsorbDmgMaxHP2
@@ -1552,9 +1552,9 @@ void pc_checkitem(struct map_session_data*);
 void pc_check_available_item(struct map_session_data *sd, uint8 type);
 int pc_useitem(struct map_session_data*,int);
 
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id);
-#endif // Pandas_Bonus_bAddSkillRange
+#endif // Pandas_Bonus2_bAddSkillRange
 int pc_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_sub_skillatk_bonus(struct map_session_data *sd, uint16 skill_id);
 int pc_skillheal_bonus(struct map_session_data *sd, uint16 skill_id);

@@ -8840,7 +8840,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	if (sd && src && src->type == BL_PC && tsc) {
 		int total_rate = 100;
 		for (auto& it : sd->status_damagerate_adjust) {
@@ -8864,9 +8864,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamageRate
 
-#ifdef Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	if (sd && src && src->type == BL_PC && tsc) {
 		for (auto& it : sd->status_damage_adjust) {
 			if (!tsc->data[it.type])
@@ -8883,9 +8883,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bStatusAddDamage
+#endif // Pandas_Bonus4_bStatusAddDamage
 
-#ifdef Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddRace
 	if (sd && tstatus) {
 		int total_rate = 100;
 
@@ -8920,9 +8920,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus3_bFinalAddRace
 
-#ifdef Pandas_Bonus_bFinalAddClass
+#ifdef Pandas_Bonus3_bFinalAddClass
 	if (sd && tstatus) {
 		int total_rate = 100;
 
@@ -8957,7 +8957,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && target && damage > 0) {

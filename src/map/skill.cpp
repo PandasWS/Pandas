@@ -369,13 +369,13 @@ int skill_get_range2(struct block_list *bl, uint16 skill_id, uint16 skill_lv, bo
 	if( !range && bl->type != BL_PC )
 		return 9; // Enable non players to use self skills on others. [Skotlex]
 
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 	if (bl->type == BL_PC) {
 		TBL_PC *sd = (TBL_PC*)bl;
 		range += pc_addskillrange_bonus(sd, skill_id);
 		range = cap_value(range, 0, 14);
 	}
-#endif // Pandas_Bonus_bAddSkillRange
+#endif // Pandas_Bonus2_bAddSkillRange
 
 	return range;
 }
@@ -3780,7 +3780,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 	//combo handling
 	skill_combo(src,dsrc,bl,skill_id,skill_lv,tick);
 
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	if (sd && src && src->type == BL_PC && tsc) {
 		int total_rate = 100;
 		for (auto& it : sd->status_damagerate_adjust) {
@@ -3804,9 +3804,9 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 		damage = dmg.damage + dmg.damage2;
 	}
-#endif // Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamageRate
 
-#ifdef Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	if (sd && src && src->type == BL_PC && tsc) {
 		for (auto& it : sd->status_damage_adjust) {
 			if (!tsc->data[it.type])
@@ -3823,9 +3823,9 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 		}
 		damage = dmg.damage + dmg.damage2;
 	}
-#endif // Pandas_Bonus_bStatusAddDamage
+#endif // Pandas_Bonus4_bStatusAddDamage
 
-#ifdef Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddRace
 	if (sd && tstatus) {
 		int total_rate = 100;
 
@@ -3860,9 +3860,9 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 		damage = dmg.damage + dmg.damage2;
 	}
-#endif // Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus3_bFinalAddRace
 
-#ifdef Pandas_Bonus_bFinalAddClass
+#ifdef Pandas_Bonus3_bFinalAddClass
 	if (sd && tstatus) {
 		int total_rate = 100;
 
@@ -3897,7 +3897,7 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 		damage = dmg.damage + dmg.damage2;
 	}
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && bl && damage > 0) {
@@ -18544,7 +18544,7 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 
 	std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	int noreq_opt = 0;
 
 	for (auto& it : sd->skillnorequire) {
@@ -18553,7 +18553,7 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		noreq_opt = it.val;
 		break;
 	}
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 	req.hp = skill->require.hp[skill_lv - 1];
 	hp_rate = skill->require.hp_rate[skill_lv - 1];
@@ -18575,7 +18575,7 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 	if( sd->dsprate != 100 )
 		req.sp = req.sp * sd->dsprate / 100;
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	// 若指定忽略 SKILL_REQ_HPRATECOST / SKILL_REQ_SPRATECOST 条件
 	// 那么下面的代码将回滚 req.hp 和 req.sp 来覆盖掉 hp_rate 和 sp_rate 做出的调整
 	if ((noreq_opt & SKILL_REQ_HPRATECOST)) {
@@ -18587,7 +18587,7 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		if ((sd->skill_id_old == BD_ENCORE) && skill_id == sd->skill_id_dance)
 			req.sp /= 2;
 	}
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 	for (auto &it : sd->skillusesprate) {
 		if (it.id == skill_id) {
@@ -18916,7 +18916,7 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 			req.ap_rate = 0;
 	}
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	// 以下这部分代码直接从上面这一段代码中拷贝下来使用
 	// 若未来 rAthena 有更新的话两部分最好都同时更新, 以便使 bSkillNoRequire 能支持新选项
 
@@ -18959,7 +18959,7 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 	if (noreq_opt & SKILL_REQ_AMMO_COUNT) {
 		req.ammo_qty = 0;
 	}
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 	return req;
 }
@@ -21691,7 +21691,7 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 		}
 	}
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	int noreq_opt = 0;
 	uint16 req_skill = skill_produce_db[i].req_skill;
 
@@ -21706,7 +21706,7 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 			break;
 		}
 	}
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 	// Check on player's inventory
 	for (j = 0; j < MAX_PRODUCE_RESOURCE; j++) {
@@ -21723,13 +21723,13 @@ short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int tr
 			for (idx = 0, amt = 0; idx < MAX_INVENTORY; idx++)
 				if (sd->inventory.u.items_inventory[idx].nameid == nameid_produce)
 					amt += sd->inventory.u.items_inventory[idx].amount;
-#ifndef Pandas_Bonus_bSkillNoRequire
+#ifndef Pandas_Bonus2_bSkillNoRequire
 			if (amt < qty * skill_produce_db[i].mat_amount[j])
 				return 0;
 #else
 			if (amt < qty * skill_produce_db[i].mat_amount[j] && !(noreq_opt & SKILL_REQ_PRODUCTMAT_COUNT))
 				return 0;
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 		}
 	}
 	return i + 1;
@@ -21801,7 +21801,7 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 		}
 	}
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	int noreq_opt = 0;
 
 	if (skill_id) {
@@ -21812,7 +21812,7 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 			break;
 		}
 	}
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 	for (i = 0; i < MAX_PRODUCE_RESOURCE; i++) {
 		short x, j;
@@ -21828,12 +21828,12 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 			j = pc_search_inventory(sd,id);
 
 			if (j >= 0) {
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 				if (noreq_opt & SKILL_REQ_PRODUCTMAT_COUNT) {
 					x = 0;
 					continue;
 				}
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 				y = sd->inventory.u.items_inventory[j].amount;
 				if (y > x)
 					y = x;

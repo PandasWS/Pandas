@@ -2828,7 +2828,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 		return (int)(hp+sp+ap);
 	}
 
-#ifdef Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus3_bRebirthWithHeal
 	if (target && target->type == BL_PC) {
 		TBL_PC* tsd = BL_CAST(BL_PC, target);
 #ifdef Pandas_MapFlag_NoToken
@@ -2848,7 +2848,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 			return (int)(hp + sp + ap);
 		}
 	}
-#endif // Pandas_Bonus_bRebirthWithHeal
+#endif // Pandas_Bonus3_bRebirthWithHeal
 
 	status_change_clear(target,0);
 
@@ -4994,7 +4994,7 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->hp_vanish.clear();
 	sd->itemsphealrate.clear();
 	sd->itemgroupsphealrate.clear();
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 	// 若 addskillrange 中存在被调整过攻击距离的技能,
 	// 那么在重置之前先将技能编号保存下来
 	std::vector<uint16> skillid_list;
@@ -5011,27 +5011,27 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	for (auto& it : skillid_list) {
 		clif_skillinfo(sd, it, 0);
 	}
-#endif // Pandas_Bonus_bAddSkillRange
-#ifdef Pandas_Bonus_bStatusAddDamage
+#endif // Pandas_Bonus2_bAddSkillRange
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	sd->status_damage_adjust.clear();
-#endif // Pandas_Bonus_bStatusAddDamage
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	sd->status_damagerate_adjust.clear();
-#endif // Pandas_Bonus_bStatusAddDamageRate
-#ifdef Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus4_bStatusAddDamageRate
+#ifdef Pandas_Bonus3_bFinalAddRace
 	for (auto &it : sd->finaladd_race) {
 		it.clear();
 	}
-#endif // Pandas_Bonus_bFinalAddRace
-#ifdef Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddClass
 	for (auto& it : sd->finaladd_class) {
 		it.clear();
 	}
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	sd->skillnorequire.clear();
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
@@ -6094,11 +6094,11 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	}
 	status_cpy(&sd->battle_status, base_status);
 
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 	for (auto &it : sd->addskillrange) {
 		clif_skillinfo(sd, it.id, 0);
 	}
-#endif // Pandas_Bonus_bAddSkillRang
+#endif // Pandas_Bonus2_bAddSkillRang
 
 // ----- CLIENT-SIDE REFRESH -----
 	if(!sd->bl.prev) {

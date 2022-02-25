@@ -1608,63 +1608,63 @@
 // ============================================================================
 
 #ifdef Pandas_Bonuses
-	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
+	// 是否启用 bonus bNoFieldGemStone 效果调整器 [Sola丶小克]
 	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
 	// 变量位置: map_session_data.special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
 
-	// 是否启用 bRebirthWithHeal 效果调整器 [聽風]
+	// 是否启用 bonus3 bRebirthWithHeal 效果调整器 [聽風]
 	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
 	// 常量名称: SP_PANDAS_REBIRTHWITHHEAL / 调整器名称: bRebirthWithHeal
 	// 变量位置: map_session_data.bonus / 变量名称: rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp
 	// 使用原型: bonus3 bRebirthWithHeal,r,h,s;
-	#define Pandas_Bonus_bRebirthWithHeal
+	#define Pandas_Bonus3_bRebirthWithHeal
 
-	// 是否启用 bAddSkillRange 效果调整器 [聽風]
+	// 是否启用 bonus2 bAddSkillRange 效果调整器 [聽風]
 	// 增加 sk 技能 n 格攻击距离
 	// 常量名称: SP_PANDAS_ADDSKILLRANGE / 调整器名称: bAddSkillRange
 	// 变量位置: map_session_data / 变量名称: addskillrange
 	// 使用原型: bonus2 bAddSkillRange,sk,n;
-	#define Pandas_Bonus_bAddSkillRange
+	#define Pandas_Bonus2_bAddSkillRange
 
-	// 是否启用 Pandas_Bonus_bSkillNoRequire 效果调整器 [聽風]
+	// 是否启用 bonus2 bSkillNoRequire 效果调整器 [聽風]
 	// 解除 sk 技能中由 n 指定的前置施法条件限制
 	// 常量名称: SP_PANDAS_SKILLNOREQUIRE / 调整器名称: bSkillNoRequire
 	// 变量位置: map_session_data / 变量名称: skillnorequire
 	// 使用原型: bonus2 bSkillNoRequire,sk,n;
-	#define Pandas_Bonus_bSkillNoRequire
+	#define Pandas_Bonus2_bSkillNoRequire
 
-	// 是否启用 bStatusAddDamage 效果调整器 [聽風]
+	// 是否启用 bonus4 bStatusAddDamage 效果调整器 [聽風]
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	// 常量名称: SP_PANDAS_STATUSADDDAMAGE / 调整器名称: bStatusAddDamage
 	// 变量位置: map_session_data / 变量名称: status_damage_adjust
 	// 使用原型: bonus4 bStatusAddDamage,sc,n,r,bf;
-	#define Pandas_Bonus_bStatusAddDamage
+	#define Pandas_Bonus4_bStatusAddDamage
 
-	// 是否启用 bStatusAddDamageRate 效果调整器 [聽風]
+	// 是否启用 bonus4 bStatusAddDamageRate 效果调整器 [聽風]
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	// 常量名称: SP_PANDAS_STATUSADDDAMAGERATE / 调整器名称: bStatusAddDamageRate
 	// 变量位置: map_session_data / 变量名称: status_damagerate_adjust
 	// 使用原型: bonus4 bStatusAddDamageRate,sc,n,r,bf;
-	#define Pandas_Bonus_bStatusAddDamageRate
+	#define Pandas_Bonus4_bStatusAddDamageRate
 
-	// 是否启用 bFinalAddRace 效果调整器 [聽風]
+	// 是否启用 bonus3 bFinalAddRace 效果调整器 [聽風]
 	// 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	// 常量名称: SP_PANDAS_FINALADDRACE / 调整器名称: bFinalAddRace
 	// 变量位置: map_session_data / 变量名称: finaladd_race
 	// 使用原型: bonus3 bFinalAddRace,r,x,bf;
-	#define Pandas_Bonus_bFinalAddRace
+	#define Pandas_Bonus3_bFinalAddRace
 
-	// 是否启用 bFinalAddClass 效果调整器 [聽風]
+	// 是否启用 bonus3 bFinalAddClass 效果调整器 [聽風]
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	// 常量名称: SP_PANDAS_FINALADDCLASS / 调整器名称: bFinalAddClass
 	// 变量位置: map_session_data / 变量名称: finaladd_class
 	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
-	#define Pandas_Bonus_bFinalAddClass
+	#define Pandas_Bonus3_bFinalAddClass
 
-	// 是否启用 bAbsorbDmgMaxHP2 效果调整器 [secretdataz]
+	// 是否启用 bonus bAbsorbDmgMaxHP2 效果调整器 [secretdataz]
 	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
 	// 常量名称: SP_PANDAS_ABSORBDMGMAXHP2 / 调整器名称: bAbsorbDmgMaxHP2
 	// 变量位置: map_session_data.bonus / 变量名称: absorb_dmg_maxhp2
@@ -2084,6 +2084,7 @@
 	// 是否解决终端看到客户端发来的中文乱码问题 [Sola丶小克]
 	//
 	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 但我们的终端程序通常不是工作在 UTF8 编码环境下,
+	// 
 	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码.
 	// 启用该选项后将会对客户端发送来的 UTF8 信息在输出时转换成当前终端使用的编码再打印到终端
 	#define Pandas_WebServer_Console_EncodingAdaptive
