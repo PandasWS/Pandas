@@ -496,6 +496,10 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
 	md->pandas.damagetaken = -1;
 #endif // Pandas_Struct_Mob_Data_DamageTaken
 
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+	md->pandas.special_setunitdata = new std::map<uint16, int64>;
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
 	map_addiddb(&md->bl);
 	return md;
 }

@@ -191,6 +191,10 @@
 		// 使 mob_data 结构体可记录此魔物的 damagetaken 承伤倍率 [Sola丶小克]
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.damagetaken
 		#define Pandas_Struct_Mob_Data_DamageTaken
+
+		// 使 mob_data 结构体可记录此魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
+		// 结构体修改定位 mob.hpp -> mob_data.pandas.special_setunitdata
+		#define Pandas_Struct_Mob_Data_Special_SetUnitData
 	#endif // Pandas_Struct_Mob_Data_Pandas
 
 	// 对离线挂店 autotrade 的定义进行拓展处理 [Sola丶小克]
@@ -743,6 +747,12 @@
 	// 如果对仓库容量有扩充需求, 应该优先考虑开设多个仓库, 而不是提高单个仓库的容量,
 	// 因为过大的容量在每次打开仓库或者背包的时候会带来客户端有些卡顿的感觉 (服务端送来超多内容然后客户端填充他们)
 	#define Pandas_Unlock_Storage_Capacity_Limit
+
+	// 使 setunitdata 针对魔物单位的基础状态设置不会被能力过程直接洗刷掉 [Sola丶小克]
+	// 此选项依赖 Pandas_Struct_Mob_Data_Special_SetUnitData 的拓展
+	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+		#define Pandas_Respect_SetUnitData_For_StatusData
+	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 #endif // Pandas_CreativeWork
 
 // ============================================================================
