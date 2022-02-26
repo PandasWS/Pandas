@@ -794,7 +794,7 @@ struct Battle_Config
 	int itemdb_warning_policy;				// 是否关闭加载物品数据库时的一些警告信息 [Sola丶小克]
 #endif // Pandas_BattleConfig_ItemDB_Warning_Policy
 #ifdef Pandas_BattleConfig_MobDB_DamageMotion_Min
-	int monster_damagemotion_min;			// 用于控制魔物数据的动画速度时间最小值 [Renee]
+	int mob_default_damagemotion;			// 当魔物被攻击时受伤动画的默认播放时长, 值越小看起来越快 (单位为: 毫秒) [Renee]
 #endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 

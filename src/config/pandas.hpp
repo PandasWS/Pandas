@@ -357,8 +357,8 @@
 	// 此选项用于控制是否关闭加载物品数据库时的一些警告信息
 	#define Pandas_BattleConfig_ItemDB_Warning_Policy
 
-	// 是否启用 monster_damagemotion_min 配置选项及其功能 [Renee]
-	// 此选项用于控制魔物数据的动画速度时间最小值
+	// 是否启用 mob_default_damagemotion 配置选项及其功能 [Renee]
+	// 此选项用于控制当魔物被攻击时受伤动画的默认播放时长, 值越小看起来越快 (单位为: 毫秒)
 	#define Pandas_BattleConfig_MobDB_DamageMotion_Min
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure

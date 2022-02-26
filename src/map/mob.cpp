@@ -5057,10 +5057,8 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 			mob->status.dmotion = 0;
 #else
 		if (!exists) {
-			if(battle_config.monster_damagemotion_min) {
-				uint16 speed;
-
-				speed = battle_config.monster_damagemotion_min;
+			if(battle_config.mob_default_damagemotion) {
+				uint16 speed = battle_config.mob_default_damagemotion;
 
 				if (battle_config.monster_damage_delay_rate != 100)
 					speed = speed * battle_config.monster_damage_delay_rate / 100;
