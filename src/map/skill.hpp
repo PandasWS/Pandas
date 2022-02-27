@@ -601,6 +601,15 @@ int skill_get_status_count( uint16 skill_id );
 int skill_get_spiritball( uint16 skill_id, uint16 skill_lv );
 unsigned short skill_dummy2skill_id(unsigned short skill_id);
 
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+int skill_get_delaynodex( uint16 skill_id );
+int skill_get_unit_layout_type(uint16 skill_id, uint16 skill_lv);
+int skill_get_unit_interval( uint16 skill_id );
+#ifdef RENEWAL_CAST
+int skill_get_fixed_cast(uint16 skill_id, uint16 skill_lv);
+#endif // RENEWAL_CAST
+#endif // Pandas_ScriptCommand_GetSkillInfo
+
 uint16 skill_name2id(const char* name);
 
 int skill_isammotype(struct map_session_data *sd, unsigned short skill_id);
