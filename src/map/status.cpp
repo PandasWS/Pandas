@@ -7366,59 +7366,80 @@ void status_calc_bl_main(struct block_list *bl, uint64 flag)
 // Description: 恢复部分已经被 setunitdata 修改过的基础状态设置
 // Access:      public 
 // Parameter:   struct mob_data * md
-// Parameter:   struct status_data * base_status
+// Parameter:   struct status_data * status
+// Parameter:   struct status_data * previous_status
+// Parameter:   uint8 type
 // Returns:     void
-// Author:      Sola丶小克(CairoLee)  2022/02/26 22:47
+// Author:      Sola丶小克(CairoLee)  2022/02/27 17:57
 //************************************ 
-void respect_special_unitdata(struct mob_data* md, struct status_data* base_status) {
-	if (!md || !base_status)
+void respect_special_unitdata(struct mob_data* md, struct status_data* status, struct status_data* previous_status, uint8 type) {
+	if (!md || !previous_status)
 		return;
 
 	if (md->bl.type != BL_MOB)
 		return;
 
-	if (!md->base_status) {
-		md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
-		memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
+	if (previous_status->max_hp = 0)
+		return;
 
-		for (auto& it : *md->pandas.special_setunitdata) {
+	if (!md->pandas.special_setunitdata || !md->pandas.special_setunitdata->size())
+		return;
+
+	for (auto& it : *md->pandas.special_setunitdata) {
+
+		if (type & 1) {
+			// 正在尝试恢复的目标 status 是战斗状态 (md->status) 而不是基础状态 (md->base_status),
+			// 以下这些字段我们允许他高优先的覆盖掉根据六维属性计算出来的值.
+			//
+			// 大多数的字段其实会尊重基础状态 (base_status), 尊重基础状态的字段不用在此特别设置.
+			// 只有类似 UMOB_ATKMIN 和 UMOB_ATKMAX 下面这四个才不会参考基础状态, 因此他们需要被特殊处理.
 			switch (it.first) {
-			case UMOB_SIZE: md->base_status->size = base_status->size; break;
-			case UMOB_MAXHP: md->base_status->max_hp = base_status->max_hp; md->base_status->hp = base_status->hp; break;
-			case UMOB_HP: md->base_status->hp = base_status->hp; break;
-			case UMOB_SPEED: md->base_status->speed = base_status->speed; break;
-			case UMOB_MODE: md->base_status->mode = base_status->mode; break;
-			case UMOB_STR: md->base_status->str = base_status->str; break;
-			case UMOB_AGI: md->base_status->agi = base_status->agi; break;
-			case UMOB_VIT: md->base_status->vit = base_status->vit; break;
-			case UMOB_INT: md->base_status->int_ = base_status->int_; break;
-			case UMOB_DEX: md->base_status->dex = base_status->dex; break;
-			case UMOB_LUK: md->base_status->luk = base_status->luk; break;
-			//case UMOB_SLAVECPYMSTRMD: md->base_status->mode = base_status->mode; break;
-
-			case UMOB_ATKRANGE: md->base_status->rhw.range = base_status->rhw.range; break;
-			case UMOB_ATKMIN: md->base_status->rhw.atk = base_status->rhw.atk; break;
-			case UMOB_ATKMAX: md->base_status->rhw.atk2 = base_status->rhw.atk2; break;
-			case UMOB_MATKMIN: md->base_status->matk_min = base_status->matk_min; break;
-			case UMOB_MATKMAX: md->base_status->matk_max = base_status->matk_max; break;
-			case UMOB_DEF: md->base_status->def = base_status->def; break;
-			case UMOB_MDEF: md->base_status->mdef = base_status->mdef; break;
-			case UMOB_HIT: md->base_status->hit = base_status->hit; break;
-			case UMOB_FLEE: md->base_status->flee = base_status->flee; break;
-			case UMOB_PDODGE: md->base_status->flee2 = base_status->flee2; break;
-			case UMOB_CRIT: md->base_status->cri = base_status->cri; break;
-			case UMOB_RACE: md->base_status->race = base_status->race; break;
-			case UMOB_ELETYPE: md->base_status->def_ele = base_status->def_ele; break;
-			case UMOB_ELELEVEL: md->base_status->ele_lv = base_status->ele_lv; break;
-			case UMOB_AMOTION: md->base_status->amotion = base_status->amotion; break;
-			case UMOB_ADELAY: md->base_status->adelay = base_status->adelay; break;
-			case UMOB_DMOTION: md->base_status->dmotion = base_status->dmotion; break;
-
-			case UMOB_RES: md->base_status->res = base_status->res; break;
-			case UMOB_MRES: md->base_status->mres = base_status->mres; break;
-			default:
+			case UMOB_ATKMIN:
+			case UMOB_ATKMAX:
+			case UMOB_MATKMIN:
+			case UMOB_MATKMAX:
 				break;
+			default:
+				continue;
 			}
+		}
+
+		switch (it.first) {
+		case UMOB_SIZE: status->size = previous_status->size; break;
+		case UMOB_MAXHP: status->max_hp = previous_status->max_hp; status->hp = previous_status->hp; break;
+		case UMOB_HP: status->hp = previous_status->hp; break;
+		case UMOB_SPEED: status->speed = previous_status->speed; break;
+		case UMOB_MODE: status->mode = previous_status->mode; break;
+		case UMOB_STR: status->str = previous_status->str; break;
+		case UMOB_AGI: status->agi = previous_status->agi; break;
+		case UMOB_VIT: status->vit = previous_status->vit; break;
+		case UMOB_INT: status->int_ = previous_status->int_; break;
+		case UMOB_DEX: status->dex = previous_status->dex; break;
+		case UMOB_LUK: status->luk = previous_status->luk; break;
+		//case UMOB_SLAVECPYMSTRMD: status->mode = base_status->mode; break;
+
+		case UMOB_ATKRANGE: status->rhw.range = previous_status->rhw.range; break;
+		case UMOB_ATKMIN: status->rhw.atk = previous_status->rhw.atk; break;
+		case UMOB_ATKMAX: status->rhw.atk2 = previous_status->rhw.atk2; break;
+		case UMOB_MATKMIN: status->matk_min = previous_status->matk_min; break;
+		case UMOB_MATKMAX: status->matk_max = previous_status->matk_max; break;
+		case UMOB_DEF: status->def = previous_status->def; break;
+		case UMOB_MDEF: status->mdef = previous_status->mdef; break;
+		case UMOB_HIT: status->hit = previous_status->hit; break;
+		case UMOB_FLEE: status->flee = previous_status->flee; break;
+		case UMOB_PDODGE: status->flee2 = previous_status->flee2; break;
+		case UMOB_CRIT: status->cri = previous_status->cri; break;
+		case UMOB_RACE: status->race = previous_status->race; break;
+		case UMOB_ELETYPE: status->def_ele = previous_status->def_ele; break;
+		case UMOB_ELELEVEL: status->ele_lv = previous_status->ele_lv; break;
+		case UMOB_AMOTION: status->amotion = previous_status->amotion; break;
+		case UMOB_ADELAY: status->adelay = previous_status->adelay; break;
+		case UMOB_DMOTION: status->dmotion = previous_status->dmotion; break;
+
+		case UMOB_RES: status->res = previous_status->res; break;
+		case UMOB_MRES: status->mres = previous_status->mres; break;
+		default:
+			break;
 		}
 	}
 }
@@ -7454,6 +7475,11 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 	status = status_get_status_data(bl);
 	memcpy(&b_status, status, sizeof(struct status_data));
 
+#ifdef Pandas_Respect_SetUnitData_For_StatusData
+	struct status_data previous_b_status = { 0 };
+	memcpy(&previous_b_status, status_get_base_status(bl), sizeof(struct status_data));
+#endif // Pandas_Respect_SetUnitData_For_StatusData
+
 	if( flag&SCB_BASE ) { // Calculate the object's base status too
 		switch( bl->type ) {
 		case BL_PC:  status_calc_pc_(BL_CAST(BL_PC,bl), opt);          break;
@@ -7469,10 +7495,16 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 #ifdef Pandas_Respect_SetUnitData_For_StatusData
 	// 如果是魔物且魔物曾经被 setunitdata 设置过一些字段,
 	// 那么恢复这些字段对魔物的特殊设置 (注意: 只会恢复与 base_status 相关的设置)
-	if (bl->type == BL_MOB) {
+	if ((flag & SCB_BASE) && bl->type == BL_MOB) {
 		struct mob_data* md = BL_CAST(BL_MOB, bl);
-		if (md && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
-			respect_special_unitdata(md, &b_status);
+		if (md && !md->base_status && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
+			// 若魔物的 base_status 是空指针, 那么说明在上面 status_calc_mob_ 计算过程中被释放了,
+			// 这里直接根据 db 中的 status 直接建立一个副本用来承接即将刷入的数据
+			md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
+			memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
+
+			// 再将之前备份的 previous_b_status 按要求刷入到当前的 base_status 中
+			respect_special_unitdata(md, md->base_status, &previous_b_status, 0);
 		}
 	}
 #endif // Pandas_Respect_SetUnitData_For_StatusData
@@ -7484,6 +7516,19 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 		return; // Assume there will be no statuses active
 
 	status_calc_bl_main(bl, flag);
+
+#ifdef Pandas_Respect_SetUnitData_For_StatusData
+	// 上面的 status_calc_bl_main 会根据魔物的 STR 等六维属性来计算 matk_min、matk_max 等战斗时的具体数值.
+	// 这会导致我们使用 setunitdata 刻意调整的 matk_min、matk_max 直接失效,
+	// 因此这里需要再将他们还原回来到我们调用 setunitdata 之后预期的数值
+	if (bl->type == BL_MOB) {
+		struct mob_data* md = BL_CAST(BL_MOB, bl);
+		if (md && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
+			respect_special_unitdata(md, &md->status, &previous_b_status, 1);
+		}
+	}
+#endif // Pandas_Respect_SetUnitData_For_StatusData
+
 
 	if (opt&SCO_FIRST && bl->type == BL_HOM)
 		return; // Client update handled by caller
