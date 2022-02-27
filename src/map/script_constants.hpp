@@ -5274,6 +5274,11 @@
 	export_constant(UMOB_DAMAGETAKEN_DB);
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
 
+#ifdef Pandas_ScriptParams_UnitData_EXP
+	export_constant(UMOB_MOBBASEEXP);
+	export_constant(UMOB_MOBJOBEXP);
+#endif // Pandas_ScriptParams_UnitData_EXP
+
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);
 	export_constant(NAV_SCROLL_ONLY);

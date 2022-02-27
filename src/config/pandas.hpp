@@ -2060,6 +2060,11 @@
 	#ifdef Pandas_Struct_Mob_Data_DamageTaken
 		#define Pandas_ScriptParams_UnitData_DamageTaken
 	#endif // Pandas_Struct_Mob_Data_DamageTaken
+
+	// 是否拓展 setunitdata / getunitdata 指令的参数
+	// 使之能设置或者读取指定魔物实例的经验值 (EXP/JOBEXP) [人鱼姬的思念]
+	// 此选项依赖 Pandas_Struct_Mob_Data_EXP 的拓展
+	#define Pandas_ScriptParams_UnitData_EXP
 #endif // Pandas_ScriptParams
 
 // ============================================================================
