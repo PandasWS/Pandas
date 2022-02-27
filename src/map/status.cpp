@@ -7371,50 +7371,54 @@ void status_calc_bl_main(struct block_list *bl, uint64 flag)
 // Author:      Sola丶小克(CairoLee)  2022/02/26 22:47
 //************************************ 
 void respect_special_unitdata(struct mob_data* md, struct status_data* base_status) {
-	if (!md || !base_status) return;
+	if (!md || !base_status)
+		return;
+
+	if (md->bl.type != BL_MOB)
+		return;
 
 	if (!md->base_status) {
 		md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
 		memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
-	}
 
-	for (auto& it : *md->pandas.special_setunitdata) {
-		switch (it.first) {
-		case UMOB_SIZE: md->base_status->size = base_status->size; break;
-		case UMOB_MAXHP: md->base_status->max_hp = base_status->max_hp; md->base_status->hp = base_status->hp; break;
-		case UMOB_HP: md->base_status->hp = base_status->hp; break;
-		case UMOB_SPEED: md->base_status->speed = base_status->speed; break;
-		case UMOB_MODE: md->base_status->mode = base_status->mode; break;
-		case UMOB_STR: md->base_status->str = base_status->str; break;
-		case UMOB_AGI: md->base_status->agi = base_status->agi; break;
-		case UMOB_VIT: md->base_status->vit = base_status->vit; break;
-		case UMOB_INT: md->base_status->int_ = base_status->int_; break;
-		case UMOB_DEX: md->base_status->dex = base_status->dex; break;
-		case UMOB_LUK: md->base_status->luk = base_status->luk; break;
-		// case UMOB_SLAVECPYMSTRMD: break; ?
+		for (auto& it : *md->pandas.special_setunitdata) {
+			switch (it.first) {
+			case UMOB_SIZE: md->base_status->size = base_status->size; break;
+			case UMOB_MAXHP: md->base_status->max_hp = base_status->max_hp; md->base_status->hp = base_status->hp; break;
+			case UMOB_HP: md->base_status->hp = base_status->hp; break;
+			case UMOB_SPEED: md->base_status->speed = base_status->speed; break;
+			case UMOB_MODE: md->base_status->mode = base_status->mode; break;
+			case UMOB_STR: md->base_status->str = base_status->str; break;
+			case UMOB_AGI: md->base_status->agi = base_status->agi; break;
+			case UMOB_VIT: md->base_status->vit = base_status->vit; break;
+			case UMOB_INT: md->base_status->int_ = base_status->int_; break;
+			case UMOB_DEX: md->base_status->dex = base_status->dex; break;
+			case UMOB_LUK: md->base_status->luk = base_status->luk; break;
+				// case UMOB_SLAVECPYMSTRMD: break; ?
 
-		case UMOB_ATKRANGE: md->base_status->rhw.range = base_status->rhw.range; break;
-		case UMOB_ATKMIN: md->base_status->rhw.atk = base_status->rhw.atk; break;
-		case UMOB_ATKMAX: md->base_status->rhw.atk2 = base_status->rhw.atk2; break;
-		case UMOB_MATKMIN: md->base_status->matk_min = base_status->matk_min; break;
-		case UMOB_MATKMAX: md->base_status->matk_max = base_status->matk_max; break;
-		case UMOB_DEF: md->base_status->def = base_status->def; break;
-		case UMOB_MDEF: md->base_status->mdef = base_status->mdef; break;
-		case UMOB_HIT: md->base_status->hit = base_status->hit; break;
-		case UMOB_FLEE: md->base_status->flee = base_status->flee; break;
-		case UMOB_PDODGE: md->base_status->flee2 = base_status->flee2; break;
-		case UMOB_CRIT: md->base_status->cri = base_status->cri; break;
-		case UMOB_RACE: md->base_status->race = base_status->race; break;
-		case UMOB_ELETYPE: md->base_status->def_ele = base_status->def_ele; break;
-		case UMOB_ELELEVEL: md->base_status->ele_lv = base_status->ele_lv; break;
-		case UMOB_AMOTION: md->base_status->amotion = base_status->amotion; break;
-		case UMOB_ADELAY: md->base_status->adelay = base_status->adelay; break;
-		case UMOB_DMOTION: md->base_status->dmotion = base_status->dmotion; break;
+			case UMOB_ATKRANGE: md->base_status->rhw.range = base_status->rhw.range; break;
+			case UMOB_ATKMIN: md->base_status->rhw.atk = base_status->rhw.atk; break;
+			case UMOB_ATKMAX: md->base_status->rhw.atk2 = base_status->rhw.atk2; break;
+			case UMOB_MATKMIN: md->base_status->matk_min = base_status->matk_min; break;
+			case UMOB_MATKMAX: md->base_status->matk_max = base_status->matk_max; break;
+			case UMOB_DEF: md->base_status->def = base_status->def; break;
+			case UMOB_MDEF: md->base_status->mdef = base_status->mdef; break;
+			case UMOB_HIT: md->base_status->hit = base_status->hit; break;
+			case UMOB_FLEE: md->base_status->flee = base_status->flee; break;
+			case UMOB_PDODGE: md->base_status->flee2 = base_status->flee2; break;
+			case UMOB_CRIT: md->base_status->cri = base_status->cri; break;
+			case UMOB_RACE: md->base_status->race = base_status->race; break;
+			case UMOB_ELETYPE: md->base_status->def_ele = base_status->def_ele; break;
+			case UMOB_ELELEVEL: md->base_status->ele_lv = base_status->ele_lv; break;
+			case UMOB_AMOTION: md->base_status->amotion = base_status->amotion; break;
+			case UMOB_ADELAY: md->base_status->adelay = base_status->adelay; break;
+			case UMOB_DMOTION: md->base_status->dmotion = base_status->dmotion; break;
 
-		case UMOB_RES: md->base_status->res = base_status->res; break;
-		case UMOB_MRES: md->base_status->mres = base_status->mres; break;
-		default:
-			break;
+			case UMOB_RES: md->base_status->res = base_status->res; break;
+			case UMOB_MRES: md->base_status->mres = base_status->mres; break;
+			default:
+				break;
+			}
 		}
 	}
 }
