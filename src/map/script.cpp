@@ -20018,7 +20018,14 @@ BUILDIN_FUNC(setunitdata)
 #ifdef Pandas_Respect_SetUnitData_For_StatusData
 		// 使用 setunitdata 对此魔物进行了什么项目的修改, 都记录下来
 		if (md->pandas.special_setunitdata) {
-			(*md->pandas.special_setunitdata)[type] = value;
+			int data_type = type;
+
+			// UMOB_SLAVECPYMSTRMD 最终修改的还是 base_status->mode 的值
+			// 因此如果设置的数据类型是 UMOB_SLAVECPYMSTRMD 则把他视为 UMOB_MODE 来处理
+			if (type == UMOB_SLAVECPYMSTRMD)
+				data_type = UMOB_MODE;
+
+			(*md->pandas.special_setunitdata)[data_type] = value;
 		}
 #endif // Pandas_Respect_SetUnitData_For_StatusData
 

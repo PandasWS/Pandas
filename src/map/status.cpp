@@ -7394,7 +7394,7 @@ void respect_special_unitdata(struct mob_data* md, struct status_data* base_stat
 			case UMOB_INT: md->base_status->int_ = base_status->int_; break;
 			case UMOB_DEX: md->base_status->dex = base_status->dex; break;
 			case UMOB_LUK: md->base_status->luk = base_status->luk; break;
-				// case UMOB_SLAVECPYMSTRMD: break; ?
+			//case UMOB_SLAVECPYMSTRMD: md->base_status->mode = base_status->mode; break;
 
 			case UMOB_ATKRANGE: md->base_status->rhw.range = base_status->rhw.range; break;
 			case UMOB_ATKMIN: md->base_status->rhw.atk = base_status->rhw.atk; break;
