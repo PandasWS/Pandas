@@ -7373,7 +7373,7 @@ void status_calc_bl_main(struct block_list *bl, uint64 flag)
 // Author:      Sola丶小克(CairoLee)  2022/02/27 17:57
 //************************************ 
 void respect_special_unitdata(struct mob_data* md, struct status_data* status, struct status_data* previous_status, uint8 type) {
-	if (!md || !previous_status)
+	if (!md || !status || !previous_status)
 		return;
 
 	if (md->bl.type != BL_MOB)
@@ -7477,7 +7477,11 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 
 #ifdef Pandas_Respect_SetUnitData_For_StatusData
 	struct status_data previous_b_status = { 0 };
-	memcpy(&previous_b_status, status_get_base_status(bl), sizeof(struct status_data));
+	bool backed_up = false;
+	if (status_get_base_status(bl) && bl->type == BL_MOB) {
+		memcpy(&previous_b_status, status_get_base_status(bl), sizeof(struct status_data));
+		backed_up = true;
+	}
 #endif // Pandas_Respect_SetUnitData_For_StatusData
 
 	if( flag&SCB_BASE ) { // Calculate the object's base status too
@@ -7495,7 +7499,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 #ifdef Pandas_Respect_SetUnitData_For_StatusData
 	// 如果是魔物且魔物曾经被 setunitdata 设置过一些字段,
 	// 那么恢复这些字段对魔物的特殊设置 (注意: 只会恢复与 base_status 相关的设置)
-	if ((flag & SCB_BASE) && bl->type == BL_MOB) {
+	if ((flag & SCB_BASE) && bl->type == BL_MOB && backed_up) {
 		struct mob_data* md = BL_CAST(BL_MOB, bl);
 		if (md && !md->base_status && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
 			// 若魔物的 base_status 是空指针, 那么说明在上面 status_calc_mob_ 计算过程中被释放了,
@@ -7521,7 +7525,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 	// 上面的 status_calc_bl_main 会根据魔物的 STR 等六维属性来计算 matk_min、matk_max 等战斗时的具体数值.
 	// 这会导致我们使用 setunitdata 刻意调整的 matk_min、matk_max 直接失效,
 	// 因此这里需要再将他们还原回来到我们调用 setunitdata 之后预期的数值
-	if (bl->type == BL_MOB) {
+	if (bl->type == BL_MOB && backed_up) {
 		struct mob_data* md = BL_CAST(BL_MOB, bl);
 		if (md && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
 			respect_special_unitdata(md, &md->status, &previous_b_status, 1);
