@@ -2434,7 +2434,11 @@ int status_set_maxhp(struct block_list *bl, unsigned int maxhp, int flag)
 	if (maxhp == status->max_hp)
 		return 0;
 
+#ifndef Pandas_Fix_Potential_Arithmetic_Overflow
 	heal = maxhp - status->max_hp;
+#else
+	heal = (int32)maxhp - (int32)status->max_hp;
+#endif // Pandas_Fix_Potential_Arithmetic_Overflow
 	status->max_hp = maxhp;
 
 	if (heal > 0)
@@ -7479,8 +7483,11 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 	struct status_data previous_b_status = { 0 };
 	bool backed_up = false;
 	if (status_get_base_status(bl) && bl->type == BL_MOB) {
-		memcpy(&previous_b_status, status_get_base_status(bl), sizeof(struct status_data));
-		backed_up = true;
+		struct mob_data* md = BL_CAST(BL_MOB, bl);
+		if (md && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
+			memcpy(&previous_b_status, status_get_base_status(bl), sizeof(struct status_data));
+			backed_up = true;
+		}
 	}
 #endif // Pandas_Respect_SetUnitData_For_StatusData
 
