@@ -31095,6 +31095,27 @@ BUILDIN_FUNC(next_dropitem_special) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
+BUILDIN_FUNC(settitleicon)
+{
+	struct unit_data* ud;
+	struct block_list* bl;
+	const char* title = script_getstr(st, 4);
+
+	if (!script_rid2bl(2, bl))
+		return SCRIPT_CMD_FAILURE;
+
+	if (!bl || bl->type == BL_PC)
+		return SCRIPT_CMD_SUCCESS;
+
+	if ((ud = unit_bl2ud(bl)) == NULL)
+		return SCRIPT_CMD_FAILURE;
+
+		ud->group_id = script_getnum(st, 3);
+		safestrncpy(ud->title, title, NAME_LENGTH);
+		clif_name_area(bl);
+		return SCRIPT_CMD_SUCCESS;
+}
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32024,6 +32045,8 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetGradeItem
 	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetGradeItem
+
+	BUILDIN_DEF(settitleicon, "iis"),
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
