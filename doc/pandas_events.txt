@@ -995,3 +995,21 @@
 	@mer_y						佣兵所在的 Y 坐标
 
 --------------------------------------------------------------
+*OnSelectCancelEvent:
+	当使用select指令时候.点击取消时 触发的事件 [人鱼姬的思念]
+	关联当前使用者
+
+示例:
+
+
+prontera,153,139,6	script	我是一个NPC	419,{
+	reselect:
+	select("我是小可爱:不要不要");
+	end;
+
+OnSelectCancelEvent:
+	mes "你想取消我.没事,给我继续点";
+	goto reselect;
+	end;
+
+}
