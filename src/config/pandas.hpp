@@ -2079,6 +2079,10 @@
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
 
+	// 是否启用 getequipgrade 脚本指令 [人鱼姬的思念]
+	// 该指令用于获取指定位置装备的附魔评级等级
+	#define Pandas_ScriptCommand_GetEquipGrade
+
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
 	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
 	#define Pandas_ScriptCommand_GetRateIdx

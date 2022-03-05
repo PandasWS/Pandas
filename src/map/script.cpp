@@ -31397,6 +31397,49 @@ BUILDIN_FUNC(next_dropitem_special) {
 }
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special
 
+#ifdef Pandas_ScriptCommand_GetEquipGrade
+/* ===========================================================
+ * 指令: getequipgrade
+ * 描述: 获取指定位置装备的评级等级
+ * 用法: getequipgrade <EQI装备位置>{,<角色编号>};
+ * 返回: 获取失败返回各种负数, 非 0 的正数表示获取到的装备的评级等级
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getequipgrade)
+{
+	int i, num;
+	TBL_PC* sd;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (script_hasdata(st, 2))
+		num = script_getnum(st, 2);
+	else
+		num = EQI_COMPOUND_ON;
+
+	if (num == EQI_COMPOUND_ON)
+		i = current_equip_item_index;
+	else if (equip_index_check(num)) // get inventory position of item
+		i = pc_checkequip(sd, equip_bitmask[num]);
+	else {
+		ShowError("buildin_getequipgrade: Unknown equip index '%d'\n", num);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (i >= 0 && i < MAX_INVENTORY && sd->inventory.u.items_inventory[i].enchantgrade)
+		script_pushint(st, sd->inventory.u.items_inventory[i].enchantgrade);
+
+	else
+		script_pushint(st, -1);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetEquipGrade
+
 #ifdef Pandas_ScriptCommand_GetRateIdx
 /* ===========================================================
  * 指令: getrateidx
@@ -32700,6 +32743,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetGradeItem
 	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetGradeItem
+#ifdef Pandas_ScriptCommand_GetEquipGrade
+	BUILDIN_DEF(getequipgrade,"??"),					// 获取指定位置装备的评级等级 [人鱼姬的思念]
+#endif //Pandas_ScriptCommand_GetEquipGrade
 #ifdef Pandas_ScriptCommand_GetRateIdx
 	BUILDIN_DEF(getrateidx,"*"),						// 随机获取一个数值型数组的索引序号 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetRateIdx
