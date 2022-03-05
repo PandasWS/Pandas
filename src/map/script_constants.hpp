@@ -140,6 +140,10 @@
 #ifdef Pandas_NpcEvent_UNEQUIP
 	export_constant(NPCE_UNEQUIP);	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_SelectCancel
+	export_constant(NPCE_SELECTCANCEL);	// 当玩家使用脚本指令select 点击取消时触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcEvent_SelectCancel
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 12>
 
 	/************************************************************************/
