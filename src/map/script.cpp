@@ -31096,26 +31096,33 @@ BUILDIN_FUNC(next_dropitem_special) {
 }
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special
 
+#ifdef Pandas_ScriptCommand_SettitleIcon
+/* ===========================================================
+ * 指令: settitleicon
+ * 描述:使一个NPC 显示<BMP图标>和<标题>,
+ * 用法: settitleicon <NPC的GID>,<BMP图标组ID>,<标题>;
+ * 返回: 该指令无论成功与否, 都不会有返回值
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
 BUILDIN_FUNC(settitleicon)
 {
-	struct unit_data* ud;
+	struct unit_data* unit;
 	struct block_list* bl;
 	const char* title = script_getstr(st, 4);
-
 	if (!script_rid2bl(2, bl))
 		return SCRIPT_CMD_FAILURE;
 
-	if (!bl || bl->type == BL_PC)
+	if (!bl || bl->type != BL_NPC)
 		return SCRIPT_CMD_SUCCESS;
 
-	if ((ud = unit_bl2ud(bl)) == NULL)
+	if ((unit = unit_bl2ud(bl)) == NULL)
 		return SCRIPT_CMD_FAILURE;
-
-		ud->group_id = script_getnum(st, 3);
-		safestrncpy(ud->title, title, NAME_LENGTH);
+		unit->group_id = script_getnum(st, 3);
+		safestrncpy(unit->title, title, NAME_LENGTH);
 		clif_name_area(bl);
 		return SCRIPT_CMD_SUCCESS;
 }
+#endif //Pandas_ScriptCommand_SettitleIcon
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32045,8 +32052,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetGradeItem
 	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetGradeItem
-
+#ifdef Pandas_ScriptCommand_SettitleIcon
 	BUILDIN_DEF(settitleicon, "iis"),
+#endif //Pandas_ScriptCommand_SettitleIcon
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

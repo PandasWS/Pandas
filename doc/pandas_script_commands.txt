@@ -2993,3 +2993,21 @@ function	script	getitem4	{
 
 --------------------------------------------------------------
 
+*settitleicon <NPC的GID>,<BMP图标组ID>,<标题>;
+
+使用说明:
+	使用指令 getnpcid(0) 获得
+	使一个NPC 显示<BMP图标>和<标题>, 
+	可以使用客户端自带的ID图片 也可以自定义图片
+	添加客户端自定义图片路径: data\texture\蜡历牢磐其捞胶\group\group_3.bmp
+	group_3.bmp 其中 3 为BMP图标组ID
+	
+	作者 :人鱼姬的思念
+示例:
+
+prontera,150,139,6	script	我是一个NPC	419,{
+	end;
+Oninit:
+	settitleicon getnpcid(0),3,"npc图标";
+	end;
+}
