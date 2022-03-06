@@ -7383,7 +7383,7 @@ void respect_special_unitdata(struct mob_data* md, struct status_data* status, s
 	if (md->bl.type != BL_MOB)
 		return;
 
-	if (previous_status->max_hp = 0)
+	if (previous_status->max_hp == 0)
 		return;
 
 	if (!md->pandas.special_setunitdata || !md->pandas.special_setunitdata->size())
