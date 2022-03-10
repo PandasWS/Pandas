@@ -31100,7 +31100,7 @@ BUILDIN_FUNC(next_dropitem_special) {
 #ifdef Pandas_ScriptCommand_PcIsAlive
 /* ===========================================================
  * 指令: pcisalive
- * 描述: 该指令检查玩家存活状态, 
+ * 描述: 该指令检查玩家存活状态 
  * 用法: pcisalive <char_id|角色名|AID账号>;
  * 返回: 返回 1 表示存活,0表示死亡或不在线
  * 作者: 人鱼姬的思念
@@ -32060,7 +32060,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetGradeItem
 #ifdef Pandas_ScriptCommand_PcIsAlive
-		BUILDIN_DEF(pcisalive, "v"),	// 该指令检查单位死亡状态, 返回 1 表示未死亡,0表示未死亡(如果是玩家.不在线也返回为0) 
+		BUILDIN_DEF(pcisalive, "v"),	// 该指令检查玩家存活状态 [人鱼姬的思念]
 #endif // Pandas_ScriptCommand_PcIsAlive
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
