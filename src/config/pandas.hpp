@@ -2028,6 +2028,10 @@
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
+
+	// 是否启用 pcisalive 脚本指令 [人鱼姬的思念]
+	// 该指令检查玩家是否死亡, 活着返回 1, 死亡或者不在线时返回 0 
+	#define Pandas_ScriptCommand_PcIsAlive
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
