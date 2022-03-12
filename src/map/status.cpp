@@ -7245,7 +7245,7 @@ void status_calc_bl_main(struct block_list *bl, uint64 flag)
 			// 而是基于 b_status->amotion 已经被 status_calc_aspd_rate 和 status_calc_fix_aspd 修正过的值
 			pec_ushort amotion_origin = status->amotion;
 
-			if (map_getmapflag(bl->m, MF_MAXASPD) && amotion_origin) {
+			if (bl->m != -1 && map_getmapflag(bl->m, MF_MAXASPD) && amotion_origin) {
 				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 0);
 				if (val) {
 					// 地图标记预期的延迟时间
