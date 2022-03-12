@@ -19898,11 +19898,11 @@ BUILDIN_FUNC(setunitdata)
 		if (!md->base_status) {
 			md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
 			memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
-#ifdef Pandas_Respect_SetUnitData_For_StatusData
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 			if (md->pandas.special_setunitdata) {
 				md->pandas.special_setunitdata->clear();
 			}
-#endif // Pandas_Respect_SetUnitData_For_StatusData
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 		}
 
 		// Check if the view data will be modified
@@ -20015,7 +20015,7 @@ BUILDIN_FUNC(setunitdata)
 				return SCRIPT_CMD_FAILURE;
 			}
 
-#ifdef Pandas_Respect_SetUnitData_For_StatusData
+#ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 		// 使用 setunitdata 对此魔物进行了什么项目的修改, 都记录下来
 		if (md->pandas.special_setunitdata) {
 			int data_type = type;
@@ -20027,7 +20027,7 @@ BUILDIN_FUNC(setunitdata)
 
 			(*md->pandas.special_setunitdata)[data_type] = value;
 		}
-#endif // Pandas_Respect_SetUnitData_For_StatusData
+#endif // Pandas_Persistent_SetUnitData_For_Monster_StatusData
 
 			if (calc_status)
 				status_calc_bl(&md->bl, SCB_BATTLE);

@@ -7364,10 +7364,10 @@ void status_calc_bl_main(struct block_list *bl, uint64 flag)
 		status_calc_regen_rate(bl, status_get_regen_data(bl), sc);
 }
 
-#ifdef Pandas_Respect_SetUnitData_For_StatusData
+#ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 //************************************
-// Method:      respect_special_unitdata
-// Description: 恢复部分已经被 setunitdata 修改过的基础状态设置
+// Method:      restore_special_unitdata_for_mob
+// Description: 针对魔物单位高优先级恢复已经被 setunitdata 修改过的基础状态设置
 // Access:      public 
 // Parameter:   struct mob_data * md
 // Parameter:   struct status_data * status
@@ -7376,7 +7376,7 @@ void status_calc_bl_main(struct block_list *bl, uint64 flag)
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2022/02/27 17:57
 //************************************ 
-void respect_special_unitdata(struct mob_data* md, struct status_data* status, struct status_data* previous_status, uint8 type) {
+void restore_special_unitdata_for_mob(struct mob_data* md, struct status_data* status, struct status_data* previous_status, uint8 type) {
 	if (!md || !status || !previous_status)
 		return;
 
@@ -7384,6 +7384,9 @@ void respect_special_unitdata(struct mob_data* md, struct status_data* status, s
 		return;
 
 	if (previous_status->max_hp == 0)
+		return;
+
+	if (!battle_config.mob_setunitdata_persistence)
 		return;
 
 	if (!md->pandas.special_setunitdata || !md->pandas.special_setunitdata->size())
@@ -7447,7 +7450,7 @@ void respect_special_unitdata(struct mob_data* md, struct status_data* status, s
 		}
 	}
 }
-#endif // Pandas_Respect_SetUnitData_For_StatusData
+#endif // Pandas_Persistent_SetUnitData_For_Monster_StatusData
 
 /**
  * Recalculates parts of an objects status according to specified flags
@@ -7479,7 +7482,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 	status = status_get_status_data(bl);
 	memcpy(&b_status, status, sizeof(struct status_data));
 
-#ifdef Pandas_Respect_SetUnitData_For_StatusData
+#ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	struct status_data previous_b_status = { 0 };
 	bool backed_up = false;
 	if (status_get_base_status(bl) && bl->type == BL_MOB) {
@@ -7489,7 +7492,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 			backed_up = true;
 		}
 	}
-#endif // Pandas_Respect_SetUnitData_For_StatusData
+#endif // Pandas_Persistent_SetUnitData_For_Monster_StatusData
 
 	if( flag&SCB_BASE ) { // Calculate the object's base status too
 		switch( bl->type ) {
@@ -7503,7 +7506,7 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 		}
 	}
 
-#ifdef Pandas_Respect_SetUnitData_For_StatusData
+#ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	// 如果是魔物且魔物曾经被 setunitdata 设置过一些字段,
 	// 那么恢复这些字段对魔物的特殊设置 (注意: 只会恢复与 base_status 相关的设置)
 	if ((flag & SCB_BASE) && bl->type == BL_MOB && backed_up) {
@@ -7515,10 +7518,10 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 			memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
 
 			// 再将之前备份的 previous_b_status 按要求刷入到当前的 base_status 中
-			respect_special_unitdata(md, md->base_status, &previous_b_status, 0);
+			restore_special_unitdata_for_mob(md, md->base_status, &previous_b_status, 0);
 		}
 	}
-#endif // Pandas_Respect_SetUnitData_For_StatusData
+#endif // Pandas_Persistent_SetUnitData_For_Monster_StatusData
 
 	if( bl->type == BL_PET )
 		return; // Pets are not affected by statuses
@@ -7528,17 +7531,17 @@ void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_ca
 
 	status_calc_bl_main(bl, flag);
 
-#ifdef Pandas_Respect_SetUnitData_For_StatusData
+#ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	// 上面的 status_calc_bl_main 会根据魔物的 STR 等六维属性来计算 matk_min、matk_max 等战斗时的具体数值.
 	// 这会导致我们使用 setunitdata 刻意调整的 matk_min、matk_max 直接失效,
 	// 因此这里需要再将他们还原回来到我们调用 setunitdata 之后预期的数值
 	if (bl->type == BL_MOB && backed_up) {
 		struct mob_data* md = BL_CAST(BL_MOB, bl);
 		if (md && md->pandas.special_setunitdata && md->pandas.special_setunitdata->size()) {
-			respect_special_unitdata(md, &md->status, &previous_b_status, 1);
+			restore_special_unitdata_for_mob(md, &md->status, &previous_b_status, 1);
 		}
 	}
-#endif // Pandas_Respect_SetUnitData_For_StatusData
+#endif // Pandas_Persistent_SetUnitData_For_Monster_StatusData
 
 
 	if (opt&SCO_FIRST && bl->type == BL_HOM)

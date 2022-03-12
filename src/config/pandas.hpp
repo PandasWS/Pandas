@@ -360,6 +360,10 @@
 	// 是否启用 itemdb_warning_policy 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制是否关闭加载物品数据库时的一些警告信息
 	#define Pandas_BattleConfig_ItemDB_Warning_Policy
+
+	// 是否启用 mob_setunitdata_persistence 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制是否高优先级持久化保存 setunitdata 对魔物的设置
+	#define Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -751,7 +755,7 @@
 	// 使 setunitdata 针对魔物单位的基础状态设置不会被能力过程直接洗刷掉 [Sola丶小克]
 	// 此选项依赖 Pandas_Struct_Mob_Data_Special_SetUnitData 的拓展
 	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
-		#define Pandas_Respect_SetUnitData_For_StatusData
+		#define Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 #endif // Pandas_CreativeWork
 
