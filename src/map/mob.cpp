@@ -5056,8 +5056,23 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 
 		mob->status.dmotion = speed;
 	} else {
+#ifndef Pandas_BattleConfig_MobDB_DamageMotion_Min
 		if (!exists)
 			mob->status.dmotion = 0;
+#else
+		if (!exists) {
+			if(battle_config.mob_default_damagemotion) {
+				uint16 speed = battle_config.mob_default_damagemotion;
+
+				if (battle_config.monster_damage_delay_rate != 100)
+					speed = speed * battle_config.monster_damage_delay_rate / 100;
+
+				mob->status.dmotion = speed;
+			} else {
+				mob->status.dmotion = 0;
+			}
+		}
+#endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
 	}
 	
 	if (this->nodeExists(node, "DamageTaken")) {

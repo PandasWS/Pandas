@@ -10430,6 +10430,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_ItemDB_Warning_Policy
 	{ "itemdb_warning_policy",             &battle_config.itemdb_warning_policy,            0,      0,      3,              },
 #endif // Pandas_BattleConfig_ItemDB_Warning_Policy
+#ifdef Pandas_BattleConfig_MobDB_DamageMotion_Min
+	{ "mob_default_damagemotion",          &battle_config.mob_default_damagemotion,         0,      0,      UINT16_MAX,     },
+#endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
 #ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	{ "mob_setunitdata_persistence",       &battle_config.mob_setunitdata_persistence,      1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
