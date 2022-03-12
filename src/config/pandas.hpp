@@ -1198,7 +1198,9 @@
 
 #ifdef Pandas_YamlBlastCache
 	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
-	#define Pandas_YamlBlastCache_Serialize
+	#ifndef MINICORE
+		#define Pandas_YamlBlastCache_Serialize
+	#endif // MINICORE
 
 	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
 	#ifdef Pandas_YamlBlastCache_Serialize
