@@ -2111,6 +2111,24 @@ bool ItemGroupDatabase::doSerialize(const std::string& type, void* archive) {
 void ItemGroupDatabase::afterSerialize() {
 	// no thing need to do after serialize
 }
+
+//************************************
+// Method:      getAdditionalCacheHash
+// Description: 额外追加的缓存散列特征
+// Access:      public 
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 20:50
+//************************************ 
+std::string ItemGroupDatabase::getAdditionalCacheHash() {
+	// 在 ItemGroupDatabase 中使用到了 ITEM_DB 和 RANDOM_OPTION_GROUP 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string additional = boost::str(
+		boost::format("%1%|%2%") %
+		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB") %
+		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_GROUP")
+	);
+	return additional;
+}
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 
 /** Searches for the item_data. Use this to check if item exists or not.
@@ -3776,6 +3794,23 @@ bool RandomOptionGroupDatabase::doSerialize(const std::string& type, void* archi
 //************************************ 
 void RandomOptionGroupDatabase::afterSerialize() {
 	// no thing need to do after serialize
+}
+
+//************************************
+// Method:      getAdditionalCacheHash
+// Description: 额外追加的缓存散列特征
+// Access:      public 
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 20:59
+//************************************ 
+std::string RandomOptionGroupDatabase::getAdditionalCacheHash() {
+	// 在 RandomOptionGroupDatabase 中使用到了 RANDOM_OPTION_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string additional = boost::str(
+		boost::format("%1%") %
+		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_DB")
+	);
+	return additional;
 }
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 

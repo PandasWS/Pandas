@@ -1067,6 +1067,7 @@ public:
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	bool doSerialize(const std::string& type, void* archive);
 	void afterSerialize();
+	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
@@ -1339,6 +1340,7 @@ public:
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
 	bool doSerialize(const std::string& type, void* archive);
 	void afterSerialize();
+	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 };
 

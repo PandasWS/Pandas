@@ -224,15 +224,17 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 	if (filehash.length() == 0)
 		return "";
 
+	std::string additional = this->getAdditionalCacheHash();
+
 	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%") %
+		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%|%8%") %
 		getPandasVersion() %
 		BLASTCACHE_VERSION %
 		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
 		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
 		this->version %
 		this->datatypeSize %
-		filehash
+		filehash % additional
 	);
 
 	return crypto_GetStringMD5(content);
@@ -361,6 +363,19 @@ bool YamlDatabase::saveToSerialize() {
 		return false;
 	}
 };
+
+//************************************
+// Method:      getSpecifyDatabaseBlashCacheHash
+// Description: 读取指定数据库当前在 rocket.ini 记录的散列值
+// Access:      public 
+// Parameter:   const std::string & db_name
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 20:27
+//************************************ 
+std::string YamlDatabase::getSpecifyDatabaseBlashCacheHash(const std::string& db_name) {
+	IniParser rocketConfig("db/cache/rocket.ini");
+	return rocketConfig.Get<std::string>(db_name + ".BlastCacheHash", "");
+}
 #endif // Pandas_YamlBlastCache_Serialize
 
 bool YamlDatabase::load(){
