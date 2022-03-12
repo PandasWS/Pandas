@@ -1137,6 +1137,7 @@
 	export_constant2("bReduceDamageReturn",SP_REDUCE_DAMAGE_RETURN);
 	export_constant2("bAddItemSPHealRate", SP_ADD_ITEM_SPHEAL_RATE);
 	export_constant2("bAddItemGroupSPHealRate", SP_ADD_ITEMGROUP_SPHEAL_RATE);
+	export_constant2("bWeaponSubSize", SP_WEAPON_SUBSIZE);
 
 #ifdef Pandas_Bonuses
 
@@ -4391,6 +4392,7 @@
 	export_constant(RC2_WERNER_LAB);
 	export_constant(RC2_TEMPLE_DEMON);
 	export_constant(RC2_ILLUSION_VAMPIRE);
+	export_constant(RC2_MALANGDO);
 	export_constant(RC2_MAX);
 
 	/* monster ai */
