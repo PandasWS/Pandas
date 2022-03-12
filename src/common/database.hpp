@@ -41,6 +41,7 @@ private:
 	bool saveToSerialize();
 	bool loadFromSerialize();
 	bool isCacheEffective();
+	bool removeSerialize();
 
 	std::string getBlashCacheHash(const std::string& path);
 	std::string getBlastCachePath();

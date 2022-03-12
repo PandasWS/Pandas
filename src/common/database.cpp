@@ -174,6 +174,21 @@ bool YamlDatabase::isCacheEffective() {
 }
 
 //************************************
+// Method:      removeSerialize
+// Description: 移除当前数据库的序列号缓存文件
+// Access:      private 
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/03/12 19:03
+//************************************ 
+bool YamlDatabase::removeSerialize() {
+	std::string blashCachePath = this->getBlastCachePath();
+	if (isFileExists(blashCachePath)) {
+		return deleteFile(blashCachePath);
+	}
+	return false;
+}
+
+//************************************
 // Method:      getBlastCachePath
 // Description: 获取当前数据库的缓存文件保存路径
 // Access:      private 
@@ -363,11 +378,19 @@ bool YamlDatabase::load(){
 		return true;
 	}
 
+	// 重制用来记录加载过程中是否存在错误和警告的相关变量
+	yaml_load_completely_success = true;
+
 	// 如果缓存失效, 那么下面执行全新加载
 	bool ret = this->load( this->getDefaultLocation() );
 
-	// 如果加载成功, 那么将加载成功后的数据进行缓存
-	if (ret) {
+	// 失败的话直接把之前的缓存文件也干掉
+	if (!yaml_load_completely_success) {
+		this->removeSerialize();
+	}
+
+	// 如果加载成功且过程中没有出现任何错误和警告, 那么将加载成功后的数据进行缓存
+	if (ret && yaml_load_completely_success) {
 		this->saveToSerialize();
 	}
 
