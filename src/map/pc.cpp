@@ -2306,6 +2306,10 @@ void pc_calc_skilltree(struct map_session_data *sd)
 			if (!fail) {
 				std::shared_ptr<s_skill_db> skill = skill_db.find(skid);
 
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+				if (!skill) continue;
+#endif // Pandas_Crashfix_Prevent_NullPointer
+
 				if (!sd->status.skill[sk_idx].lv && (
 					(skill->inf2[INF2_ISQUEST] && !battle_config.quest_skill_learn) ||
 					skill->inf2[INF2_ISWEDDING] ||
