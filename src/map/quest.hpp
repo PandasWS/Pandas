@@ -75,6 +75,7 @@ public:
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 	bool doSerialize(const std::string& type, void* archive);
+	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_QuestDatabase
 };
 

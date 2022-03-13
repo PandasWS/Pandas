@@ -174,6 +174,21 @@ bool YamlDatabase::isCacheEffective() {
 }
 
 //************************************
+// Method:      removeSerialize
+// Description: 移除当前数据库的序列号缓存文件
+// Access:      private 
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/03/12 19:03
+//************************************ 
+bool YamlDatabase::removeSerialize() {
+	std::string blashCachePath = this->getBlastCachePath();
+	if (isFileExists(blashCachePath)) {
+		return deleteFile(blashCachePath);
+	}
+	return false;
+}
+
+//************************************
 // Method:      getBlastCachePath
 // Description: 获取当前数据库的缓存文件保存路径
 // Access:      private 
@@ -209,15 +224,17 @@ std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
 	if (filehash.length() == 0)
 		return "";
 
+	std::string additional = this->getAdditionalCacheHash();
+
 	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%") %
+		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%|%8%") %
 		getPandasVersion() %
 		BLASTCACHE_VERSION %
 		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
 		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
 		this->version %
 		this->datatypeSize %
-		filehash
+		filehash % additional
 	);
 
 	return crypto_GetStringMD5(content);
@@ -346,6 +363,19 @@ bool YamlDatabase::saveToSerialize() {
 		return false;
 	}
 };
+
+//************************************
+// Method:      getSpecifyDatabaseBlashCacheHash
+// Description: 读取指定数据库当前在 rocket.ini 记录的散列值
+// Access:      public 
+// Parameter:   const std::string & db_name
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 20:27
+//************************************ 
+std::string YamlDatabase::getSpecifyDatabaseBlashCacheHash(const std::string& db_name) {
+	IniParser rocketConfig("db/cache/rocket.ini");
+	return rocketConfig.Get<std::string>(db_name + ".BlastCacheHash", "");
+}
 #endif // Pandas_YamlBlastCache_Serialize
 
 bool YamlDatabase::load(){
@@ -363,11 +393,19 @@ bool YamlDatabase::load(){
 		return true;
 	}
 
+	// 重制用来记录加载过程中是否存在错误和警告的相关变量
+	yaml_load_completely_success = true;
+
 	// 如果缓存失效, 那么下面执行全新加载
 	bool ret = this->load( this->getDefaultLocation() );
 
-	// 如果加载成功, 那么将加载成功后的数据进行缓存
-	if (ret) {
+	// 失败的话直接把之前的缓存文件也干掉
+	if (!yaml_load_completely_success) {
+		this->removeSerialize();
+	}
+
+	// 如果加载成功且过程中没有出现任何错误和警告, 那么将加载成功后的数据进行缓存
+	if (ret && yaml_load_completely_success) {
 		this->saveToSerialize();
 	}
 

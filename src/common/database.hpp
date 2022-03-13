@@ -41,6 +41,7 @@ private:
 	bool saveToSerialize();
 	bool loadFromSerialize();
 	bool isCacheEffective();
+	bool removeSerialize();
 
 	std::string getBlashCacheHash(const std::string& path);
 	std::string getBlastCachePath();
@@ -132,12 +133,18 @@ public:
 	virtual uint64 parseBodyNode( const YAML::Node& node ) = 0;
 
 #ifdef Pandas_YamlBlastCache_Serialize
+	std::string getSpecifyDatabaseBlashCacheHash(const std::string& db_name);
+
 	virtual bool doSerialize(const std::string& type, void* archive) {
 		return false;
 	}
 
 	virtual void afterSerialize() {
 
+	}
+
+	virtual std::string getAdditionalCacheHash() {
+		return "";
 	}
 #endif // Pandas_YamlBlastCache_Serialize
 
