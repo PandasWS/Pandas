@@ -14,3 +14,11 @@ ALTER TABLE `picklog`
 ALTER TABLE `zenylog`
 	MODIFY `type` enum('T','V','P','M','S','N','D','C','A','E','I','B','K','J') NOT NULL default 'S'
 ;
+
+-- -----------------------------------------------
+-- 在 zenylog 中额外添加个 X 类型
+-- -----------------------------------------------
+
+ALTER TABLE `zenylog`
+	MODIFY `type` enum('T','V','P','M','S','N','D','C','A','E','I','B','K','J','X') NOT NULL default 'S'
+;
