@@ -409,17 +409,9 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 	struct item_data* data = itemdb_search(stor->u.items_storage[index].nameid);
 	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
-	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
-	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
-	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
-	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
-	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
-	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_storid"), stor->stor_id); // 取出的仓库编号
-	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
-	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
-	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
 	if (npc_script_filter(sd, NPCF_STORAGE_DEL)) {
 		clif_storageitemremoved(sd, index, 0);
 		return;
@@ -498,17 +490,9 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 	struct item_data* data = itemdb_search(stor->u.items_storage[index].nameid);
 	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
-	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
-	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
-	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
-	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
-	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
-	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_storid"), stor->stor_id); // 取出的仓库编号
-	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
-	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
-	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
 	if (npc_script_filter(sd, NPCF_STORAGE_DEL)) {
 		clif_storageitemremoved(sd, index, 0);
 		return;
@@ -1026,17 +1010,9 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 	struct item_data* data = itemdb_search(stor->u.items_guild[index].nameid);
 	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
-	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
-	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
-	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
-	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
-	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
-	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_storid"), -1); // 取出的仓库编号
-	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
-	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
-	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
 	if (npc_script_filter(sd, NPCF_STORAGE_DEL)) {
 		clif_storageitemremoved(sd, index, 0);
 		return;
@@ -1115,17 +1091,9 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 	struct item_data* data = itemdb_search(stor->u.items_guild[index].nameid);
 	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
-	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
-	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
-	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
-	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
-	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
-	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
 	pc_setreg(sd, add_str("@retr_storid"), -1); // 取出的仓库编号
-	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
-	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
-	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
 	if (npc_script_filter(sd, NPCF_STORAGE_DEL)) {
 		clif_storageitemremoved(sd, index, 0);
 		return;
