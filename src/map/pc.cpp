@@ -6493,6 +6493,21 @@ void pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 		return;
 	}
 
+#ifdef Pandas_NpcFilter_CART_ADD//当玩家准备将道具从背包存入手推车时
+	struct item_data* data = itemdb_search(sd->inventory.u.items_inventory[idx].nameid);
+	pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
+	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
+	pc_setreg(sd, add_str("@recv_type"), data->type); // 存入的道具种类
+	pc_setreg(sd, add_str("@recv_subtype"), data->subtype); // 存入的道具武器类型
+	pc_setreg(sd, add_str("@recv_equip"), data->equip); // 存入的道具装备位置
+	pc_setreg(sd, add_str("@recv_viewid"), data->look); // 存入的道具外观编号
+	pc_setreg(sd, add_str("@recv_idx"), idx); // 存入的道具来源位置序号
+	if (npc_script_filter(sd, NPCF_CART_ADD)) {
+		clif_delitem(sd, idx, 0, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_CART_ADD
+
 	enum e_additem_result flag = pc_cart_additem(sd,item_data,amount,LOG_TYPE_NONE);
 
 	if (flag == ADDITEM_SUCCESS)

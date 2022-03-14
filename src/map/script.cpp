@@ -368,6 +368,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_DROPITEM
 	"OnPCDropItemFilter",	// NPCF_DROPITEM		// dropitem_filter_name	// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CART_ADD
+	"OnPCCartAddFilter",	// NPCF_CART_ADD		// cart_add_filter_name	// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_CART_ADD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/

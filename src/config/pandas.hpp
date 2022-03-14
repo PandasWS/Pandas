@@ -1370,6 +1370,11 @@
 		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
 		// 常量名称: NPCF_DROPITEM / 变量名称: dropitem_filter_name
 		#define Pandas_NpcFilter_DROPITEM
+
+		// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCCartAddFilter
+		// 常量名称: NPCF_CART_ADD / 变量名称: cart_add_filter_name
+		#define Pandas_NpcFilter_CART_ADD
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

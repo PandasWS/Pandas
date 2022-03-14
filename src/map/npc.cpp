@@ -6267,6 +6267,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_DROPITEM
 		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CART_ADD
+		NPCF_CART_ADD,	// cart_add_filter_name	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_CART_ADD
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6477,6 +6481,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_DROPITEM:
 		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CART_ADD
+	case NPCF_CART_ADD:
+		return script_config.cart_add_filter_name;	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_CART_ADD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
