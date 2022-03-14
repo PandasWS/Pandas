@@ -1568,6 +1568,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_DROPITEM
 	NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_STOREAGE_ADD
+	NPCF_STOREAGE_ADD,	// storeage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_STOREAGE_ADD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
