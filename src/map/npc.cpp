@@ -6268,9 +6268,9 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
 
-#ifdef Pandas_NpcFilter_STOREAGE_ADD
-		NPCF_STOREAGE_ADD,	// storeage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
-#endif // Pandas_NpcFilter_STOREAGE_ADD
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+		NPCF_STORAGE_ADD,	// storage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_STORAGE_ADD
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6482,10 +6482,10 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
 
-#ifdef Pandas_NpcFilter_STOREAGE_ADD
-	case NPCF_STOREAGE_ADD:
-		return script_config.storeage_add_filter_name;	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
-#endif // Pandas_NpcFilter_STOREAGE_ADD
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	case NPCF_STORAGE_ADD:
+		return script_config.storage_add_filter_name;	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_STORAGE_ADD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

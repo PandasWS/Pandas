@@ -372,7 +372,7 @@ void storage_storageadd(struct map_session_data* sd, struct s_storage *stor, int
 		return;
 	else if (result == STORAGE_ADD_OK) {
 
-#ifdef Pandas_NpcFilter_STOREAGE_ADD//将道具从背包存入普通仓库或扩展仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从背包存入普通仓库或扩展仓库
 		struct item_data* data = itemdb_search(sd->inventory.u.items_inventory[index].nameid);
 		pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
 		pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
@@ -387,11 +387,11 @@ void storage_storageadd(struct map_session_data* sd, struct s_storage *stor, int
 		pc_setreg(sd, add_str("@recv_storowner"), stor->id); // 仓库拥有者编号
 		pc_setreg(sd, add_str("@recv_storamount"), stor->amount); // 仓库已储存的道具种类数量
 		pc_setreg(sd, add_str("@recv_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
-		if (npc_script_filter(sd, NPCF_STOREAGE_ADD)) {
+		if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
 			clif_dropitem(sd, index, 0);
 			return;
 		}
-#endif // Pandas_NpcFilter_STOREAGE_ADD
+#endif // Pandas_NpcFilter_STORAGE_ADD
 
 		switch( storage_additem(sd, stor, &sd->inventory.u.items_inventory[index], amount) ){
 			case 0:
@@ -457,7 +457,7 @@ void storage_storageaddfromcart(struct map_session_data *sd, struct s_storage *s
 		return;
 	else if (result == STORAGE_ADD_OK) {
 
-#ifdef Pandas_NpcFilter_STOREAGE_ADD//将道具从手推车存入普通仓库或扩展仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从手推车存入普通仓库或扩展仓库
 		struct item_data* data = itemdb_search(sd->cart.u.items_cart[index].nameid);
 		pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
 		pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
@@ -472,11 +472,11 @@ void storage_storageaddfromcart(struct map_session_data *sd, struct s_storage *s
 		pc_setreg(sd, add_str("@recv_storowner"), stor->id); // 仓库拥有者编号
 		pc_setreg(sd, add_str("@recv_storamount"), stor->amount); // 仓库已储存的道具种类数量
 		pc_setreg(sd, add_str("@recv_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
-		if (npc_script_filter(sd, NPCF_STOREAGE_ADD)) {
+		if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
 			clif_cart_delitem(sd, index, 0);
 			return;
 		}
-#endif // Pandas_NpcFilter_STOREAGE_ADD
+#endif // Pandas_NpcFilter_STORAGE_ADD
 
 		switch( storage_additem(sd, stor, &sd->cart.u.items_cart[index], amount) ){
 			case 0:
@@ -984,7 +984,7 @@ void storage_guild_storageadd(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
-#ifdef Pandas_NpcFilter_STOREAGE_ADD//将道具从背包存入公会仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从背包存入公会仓库
 	struct item_data* data = itemdb_search(sd->inventory.u.items_inventory[index].nameid);
 	pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
 	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
@@ -999,11 +999,11 @@ void storage_guild_storageadd(struct map_session_data* sd, int index, int amount
 	pc_setreg(sd, add_str("@recv_storowner"), stor->id); // 仓库拥有者编号
 	pc_setreg(sd, add_str("@recv_storamount"), stor->amount); // 仓库已储存的道具种类数量
 	pc_setreg(sd, add_str("@recv_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
-	if (npc_script_filter(sd, NPCF_STOREAGE_ADD)) {
+	if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
 		clif_dropitem(sd, index, 0);
 		return;
 	}
-#endif // Pandas_NpcFilter_STOREAGE_ADD
+#endif // Pandas_NpcFilter_STORAGE_ADD
 
 	if(storage_guild_additem(sd,stor,&sd->inventory.u.items_inventory[index],amount))
 		pc_delitem(sd,index,amount,0,4,LOG_TYPE_GSTORAGE);
@@ -1078,7 +1078,7 @@ void storage_guild_storageaddfromcart(struct map_session_data* sd, int index, in
 	if( amount < 1 || amount > sd->cart.u.items_cart[index].amount )
 		return;
 
-#ifdef Pandas_NpcFilter_STOREAGE_ADD//将道具从手推车存入公会仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从手推车存入公会仓库
 	struct item_data* data = itemdb_search(sd->cart.u.items_cart[index].nameid);
 	pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
 	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
@@ -1093,11 +1093,11 @@ void storage_guild_storageaddfromcart(struct map_session_data* sd, int index, in
 	pc_setreg(sd, add_str("@recv_storowner"), stor->id); // 仓库拥有者编号
 	pc_setreg(sd, add_str("@recv_storamount"), stor->amount); // 仓库已储存的道具种类数量
 	pc_setreg(sd, add_str("@recv_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
-	if (npc_script_filter(sd, NPCF_STOREAGE_ADD)) {
+	if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
 		clif_cart_delitem(sd, index, 0);
 		return;
 	}
-#endif // Pandas_NpcFilter_STOREAGE_ADD
+#endif // Pandas_NpcFilter_STORAGE_ADD
 
 	if(storage_guild_additem(sd,stor,&sd->cart.u.items_cart[index],amount))
 		pc_cart_delitem(sd,index,amount,0,LOG_TYPE_GSTORAGE);
