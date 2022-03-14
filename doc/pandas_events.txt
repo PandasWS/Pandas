@@ -720,17 +720,9 @@
 携带参数:
 	@recv_nameid		存入的道具编号
 	@recv_amount		存入的道具数量
-	@recv_type			存入的道具种类
-	@recv_subtype		存入的道具武器类型
-	@recv_equip			存入的道具装备位置
-	@recv_viewid		存入的道具外观编号
 	@recv_source		存入的道具来源(1 - 背包, 2 - 手推车)
 	@recv_idx			存入的道具来源位置序号
-	@recv_target		存入的道具去处(3 - 普通、扩展仓库, 4 - 公会仓库)
 	@recv_storid		存入的仓库编号(-1 - 公会仓库, 0 - 普通仓库, >0 - 扩展仓库)
-	@recv_storowner		存入的仓库拥有者编号(普通、扩展仓库返回<account_id>，公会仓库返回<guild_id>)
-	@recv_storamount	存入的仓库已经储存的道具种类数量
-	@recv_stormax		存入的仓库可以储存的最大道具种类数量
 
 //============================================================
 // 熊猫模拟器 - 实时事件
