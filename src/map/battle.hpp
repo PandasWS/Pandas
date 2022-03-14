@@ -713,86 +713,92 @@ struct Battle_Config
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
-	int force_loadevent;					// 强制触发 OnPCLoadMapEvent 事件 [Sola丶小克]
+	int force_loadevent;					// 强制触发 OnPCLoadMapEvent 事件
 #endif // Pandas_BattleConfig_Force_LoadEvent
 #ifdef Pandas_BattleConfig_Force_Identified
-	int force_identified;					// 强制特定渠道获得的装备自动变成已鉴定 [Sola丶小克]
+	int force_identified;					// 强制特定渠道获得的装备自动变成已鉴定
 #endif // Pandas_BattleConfig_Force_Identified
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
-	int cashmount_useitem_limit;			// 乘坐“商城坐骑”时禁止使用特定类型的物品 [Sola丶小克]
+	int cashmount_useitem_limit;			// 乘坐“商城坐骑”时禁止使用特定类型的物品
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 #ifdef Pandas_BattleConfig_MaxAspdForPVP
-	int max_aspd_for_pvp;					// 限制玩家在 PVP 地图上的最大攻速 [Sola丶小克]
+	int max_aspd_for_pvp;					// 限制玩家在 PVP 地图上的最大攻速
 #endif // Pandas_BattleConfig_MaxAspdForPVP
 #ifdef Pandas_BattleConfig_MaxAspdForGVG
-	int max_aspd_for_gvg;					// 限制玩家在 GVG 地图上的最大攻速 [Sola丶小克]
+	int max_aspd_for_gvg;					// 限制玩家在 GVG 地图上的最大攻速
 #endif // Pandas_BattleConfig_MaxAspdForGVG
 #ifdef Pandas_BattleConfig_AtCmd_No_Permission
-	int atcmd_no_permission;				// 当没有权限的玩家执行了 GM 指令时的处理策略 [Sola丶小克]
+	int atcmd_no_permission;				// 当没有权限的玩家执行了 GM 指令时的处理策略
 #endif // Pandas_BattleConfig_AtCmd_No_Permission
 #ifdef Pandas_BattleConfig_Suspend_MonsterIgnore
-	int suspend_monsterignore;				// 当玩家使用挂机系列指令时, 处于哪些模式不会被魔物攻击 [Sola丶小克]
+	int suspend_monsterignore;				// 当玩家使用挂机系列指令时, 处于哪些模式不会被魔物攻击
 #endif // Pandas_BattleConfig_Suspend_MonsterIgnore
 #ifdef Pandas_BattleConfig_Suspend_Whisper_Response
-	int suspend_whisper_response;			// 当玩家使用挂机系列指令时, 处于哪些模式会自动回复私聊讯息 [Sola丶小克]
+	int suspend_whisper_response;			// 当玩家使用挂机系列指令时, 处于哪些模式会自动回复私聊讯息
 #endif // Pandas_BattleConfig_Suspend_Whisper_Response
 #ifdef Pandas_BattleConfig_Suspend_Offline_BodyDirection
-	int suspend_offline_bodydirection;		// 当玩家进入离线挂机模式时, 地图服务器重启后的身体朝向哪里 [Sola丶小克]
+	int suspend_offline_bodydirection;		// 当玩家进入离线挂机模式时, 地图服务器重启后的身体朝向哪里
 #endif // Pandas_BattleConfig_Suspend_Offline_BodyDirection
 #ifdef Pandas_BattleConfig_Suspend_Offline_HeadDirection
-	int suspend_offline_headdirection;		// 当玩家进入离线挂机模式时, 地图服务器重启后的头部朝向哪里 [Sola丶小克]
+	int suspend_offline_headdirection;		// 当玩家进入离线挂机模式时, 地图服务器重启后的头部朝向哪里
 #endif // Pandas_BattleConfig_Suspend_Offline_HeadDirection
 #ifdef Pandas_BattleConfig_Suspend_Offline_Sitdown
-	int suspend_offline_sitdown;			// 当玩家进入离线挂机模式时, 地图服务器重启后处于站立还是坐下状态 [Sola丶小克]
+	int suspend_offline_sitdown;			// 当玩家进入离线挂机模式时, 地图服务器重启后处于站立还是坐下状态
 #endif // Pandas_BattleConfig_Suspend_Offline_Sitdown
 #ifdef Pandas_BattleConfig_Suspend_AFK_BodyDirection
-	int suspend_afk_bodydirection;			// 当玩家进入离开模式时, 地图服务器重启后的身体朝向哪里 [Sola丶小克]
+	int suspend_afk_bodydirection;			// 当玩家进入离开模式时, 地图服务器重启后的身体朝向哪里
 #endif // Pandas_BattleConfig_Suspend_AFK_BodyDirection
 #ifdef Pandas_BattleConfig_Suspend_AFK_Headdirection
-	int suspend_afk_headdirection;			// 当玩家进入离开模式时, 地图服务器重启后的头部朝向哪里 [Sola丶小克]
+	int suspend_afk_headdirection;			// 当玩家进入离开模式时, 地图服务器重启后的头部朝向哪里
 #endif // Pandas_BattleConfig_Suspend_AFK_Headdirection
 #ifdef Pandas_BattleConfig_Suspend_AFK_Sitdown
-	int suspend_afk_sitdown;				// 当玩家进入离开模式时, 地图服务器重启后处于站立还是坐下状态 [Sola丶小克]
+	int suspend_afk_sitdown;				// 当玩家进入离开模式时, 地图服务器重启后处于站立还是坐下状态
 #endif // Pandas_BattleConfig_Suspend_AFK_Sitdown
 #ifdef Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
-	int suspend_afk_headtop_viewid;			// 当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号 [Sola丶小克]
+	int suspend_afk_headtop_viewid;			// 当玩家进入离开模式时, 将头饰上的更换为哪一个指定的头饰外观编号
 #endif // Pandas_BattleConfig_Suspend_AFK_HeadTop_ViewID
 #ifdef Pandas_BattleConfig_Suspend_Normal_BodyDirection
-	int suspend_normal_bodydirection;		// 当玩家进入普通模式时, 被拉上线的角色身体朝向哪里 [Sola丶小克]
+	int suspend_normal_bodydirection;		// 当玩家进入普通模式时, 被拉上线的角色身体朝向哪里
 #endif // Pandas_BattleConfig_Suspend_Normal_BodyDirection
 #ifdef Pandas_BattleConfig_Suspend_Normal_HeadDirection
-	int suspend_normal_headdirection;		// 当玩家进入普通模式时, 被拉上线的角色头部朝向哪里 [Sola丶小克]
+	int suspend_normal_headdirection;		// 当玩家进入普通模式时, 被拉上线的角色头部朝向哪里
 #endif // Pandas_BattleConfig_Suspend_Normal_HeadDirection
 #ifdef Pandas_BattleConfig_Suspend_Normal_Sitdown
-	int suspend_normal_sitdown;				// 当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态 [Sola丶小克]
+	int suspend_normal_sitdown;				// 当玩家进入普通模式时, 被拉上线的角色处于站立还是坐下状态
 #endif // Pandas_BattleConfig_Suspend_Normal_Sitdown
 #ifdef Pandas_BattleConfig_Multiplayer_Recall_Behavior
-	int multiplayer_recall_behavior;		// 控制多人召唤时是否避开在线摆摊玩家 [Sola丶小克]
+	int multiplayer_recall_behavior;		// 控制多人召唤时是否避开在线摆摊玩家
 #endif // Pandas_BattleConfig_Multiplayer_Recall_Behavior
 #ifdef Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
-	int always_trigger_npc_killevent;		// 当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件 [Sola丶小克]
+	int always_trigger_npc_killevent;		// 当魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnNPCKillEvent 事件
 #endif // Pandas_BattleConfig_AlwaysTriggerNPCKillEvent
 #ifdef Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
-	int always_trigger_mvp_killevent;		// 当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件 [Sola丶小克]
+	int always_trigger_mvp_killevent;		// 当 MVP 魔物拥有且触发了自己的死亡事件标签后, 是否还会继续触发 OnPCKillMvpEvent 事件
 #endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 #ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
-	int batrec_autoenabled_unit;			// 有哪些单位默认开启战斗记录 [Sola丶小克]
+	int batrec_autoenabled_unit;			// 有哪些单位默认开启战斗记录
 #endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 #ifdef Pandas_BattleConfig_Repeat_ClearUnit_Interval
-	int repeat_clearunit_interval;			// 重发魔物死亡封包的间隔时间 [Sola丶小克]
+	int repeat_clearunit_interval;			// 重发魔物死亡封包的间隔时间
 #endif // Pandas_BattleConfig_Repeat_ClearUnit_Interval
 #ifdef Pandas_BattleConfig_Dead_Area_Size
-	int dead_area_size;						// 魔物死亡封包将会发送给周围多少个格的玩家 [Sola丶小克]
+	int dead_area_size;						// 魔物死亡封包将会发送给周围多少个格的玩家
 #endif // Pandas_BattleConfig_Dead_Area_Size
 #ifdef Pandas_BattleConfig_Remove_Manhole_With_Status
-	int remove_manhole_with_status;			// 当"人孔/黑洞陷阱"地面陷阱被移除的时候, 是否同时使被捕获的玩家立即脱困 [Sola丶小克]
+	int remove_manhole_with_status;			// 当"人孔/黑洞陷阱"地面陷阱被移除的时候, 是否同时使被捕获的玩家立即脱困
 #endif // Pandas_BattleConfig_Remove_Manhole_With_Status
 #ifdef Pandas_BattleConfig_Restore_Mes_Logic
-	int restore_mes_logic;					// 使 2021-11-03 及更新版本的客户端在执行 mes 指令时使用经典换行策略 [Sola丶小克]
+	int restore_mes_logic;					// 使 2021-11-03 及更新版本的客户端在执行 mes 指令时使用经典换行策略
 #endif // Pandas_BattleConfig_Restore_Mes_Logic
 #ifdef Pandas_BattleConfig_ItemDB_Warning_Policy
-	int itemdb_warning_policy;				// 是否关闭加载物品数据库时的一些警告信息 [Sola丶小克]
+	int itemdb_warning_policy;				// 是否关闭加载物品数据库时的一些警告信息
 #endif // Pandas_BattleConfig_ItemDB_Warning_Policy
+#ifdef Pandas_BattleConfig_MobDB_DamageMotion_Min
+	int mob_default_damagemotion;			// 当魔物被攻击时受伤动画的默认播放时长, 值越小看起来越快 (单位为: 毫秒)
+#endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
+#ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
+	int mob_setunitdata_persistence;		// 是否高优先级持久化保存 setunitdata 对魔物的设置
+#endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 
 #include "../custom/battle_config_struct.inc"

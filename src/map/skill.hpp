@@ -134,12 +134,12 @@ enum e_skill_require : uint16 {
 	SKILL_REQ_APRATECOST = 0x4000,
 };
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 enum e_skill_require_ex : uint32 {
 	SKILL_REQ_AMMO_COUNT = 0x10000,
 	SKILL_REQ_PRODUCTMAT_COUNT = 0x20000,
 };
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 /// Constants for skill cast near NPC.
 enum e_skill_nonear_npc : uint8 {
@@ -366,6 +366,7 @@ public:
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 	bool doSerialize(const std::string& type, void* archive);
 	void afterSerialize();
+	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_SkillDatabase
 };
 
@@ -600,6 +601,15 @@ int skill_get_state(uint16 skill_id);
 int skill_get_status_count( uint16 skill_id );
 int skill_get_spiritball( uint16 skill_id, uint16 skill_lv );
 unsigned short skill_dummy2skill_id(unsigned short skill_id);
+
+#ifdef Pandas_ScriptCommand_GetSkillInfo
+int skill_get_delaynodex( uint16 skill_id );
+int skill_get_unit_layout_type(uint16 skill_id, uint16 skill_lv);
+int skill_get_unit_interval( uint16 skill_id );
+#ifdef RENEWAL_CAST
+int skill_get_fixed_cast(uint16 skill_id, uint16 skill_lv);
+#endif // RENEWAL_CAST
+#endif // Pandas_ScriptCommand_GetSkillInfo
 
 uint16 skill_name2id(const char* name);
 

@@ -496,6 +496,10 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
 	md->pandas.damagetaken = -1;
 #endif // Pandas_Struct_Mob_Data_DamageTaken
 
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+	md->pandas.special_setunitdata = new std::map<uint16, int64>;
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
 	map_addiddb(&md->bl);
 	return md;
 }
@@ -4431,6 +4435,23 @@ void MobDatabase::afterSerialize() {
 		mob->skill.clear();
 	}
 }
+
+//************************************
+// Method:      getAdditionalCacheHash
+// Description: 额外追加的缓存散列特征
+// Access:      public 
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 21:04
+//************************************ 
+std::string MobDatabase::getAdditionalCacheHash() {
+	// 在 MobDatabase 中使用到了 ITEM_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string additional = boost::str(
+		boost::format("%1%") %
+		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB")
+	);
+	return additional;
+}
 #endif // Pandas_YamlBlastCache_MobDatabase
 
 const std::string MobDatabase::getDefaultLocation() {
@@ -5052,8 +5073,23 @@ uint64 MobDatabase::parseBodyNode(const YAML::Node &node) {
 
 		mob->status.dmotion = speed;
 	} else {
+#ifndef Pandas_BattleConfig_MobDB_DamageMotion_Min
 		if (!exists)
 			mob->status.dmotion = 0;
+#else
+		if (!exists) {
+			if(battle_config.mob_default_damagemotion) {
+				uint16 speed = battle_config.mob_default_damagemotion;
+
+				if (battle_config.monster_damage_delay_rate != 100)
+					speed = speed * battle_config.monster_damage_delay_rate / 100;
+
+				mob->status.dmotion = speed;
+			} else {
+				mob->status.dmotion = 0;
+			}
+		}
+#endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
 	}
 	
 	if (this->nodeExists(node, "DamageTaken")) {
@@ -5433,7 +5469,7 @@ static int mob_read_sqldb(void)
 	for( uint8 fi = 0; fi < ARRAYLENGTH(mob_db_name); ++fi ) {
 		// retrieve all rows from the mob database
 		if( SQL_ERROR == Sql_Query(mmysql_handle, "SELECT `id`,`name_aegis`,`name_english`,`name_japanese`,`level`,`hp`,`sp`,`base_exp`,`job_exp`,`mvp_exp`,`attack`,`attack2`,`defense`,`magic_defense`,`str`,`agi`,`vit`,`int`,`dex`,`luk`,`attack_range`,`skill_range`,`chase_range`,`size`,`race`,"
-			"`racegroup_goblin`,`racegroup_kobold`,`racegroup_orc`,`racegroup_golem`,`racegroup_guardian`,`racegroup_ninja`,`racegroup_gvg`,`racegroup_battlefield`,`racegroup_treasure`,`racegroup_biolab`,`racegroup_manuk`,`racegroup_splendide`,`racegroup_scaraba`,`racegroup_ogh_atk_def`,`racegroup_ogh_hidden`,`racegroup_bio5_swordman_thief`,`racegroup_bio5_acolyte_merchant`,`racegroup_bio5_mage_archer`,`racegroup_bio5_mvp`,`racegroup_clocktower`,`racegroup_thanatos`,`racegroup_faceworm`,`racegroup_hearthunter`,`racegroup_rockridge`,`racegroup_werner_lab`,`racegroup_temple_demon`,`racegroup_illusion_vampire`,"
+			"`racegroup_goblin`,`racegroup_kobold`,`racegroup_orc`,`racegroup_golem`,`racegroup_guardian`,`racegroup_ninja`,`racegroup_gvg`,`racegroup_battlefield`,`racegroup_treasure`,`racegroup_biolab`,`racegroup_manuk`,`racegroup_splendide`,`racegroup_scaraba`,`racegroup_ogh_atk_def`,`racegroup_ogh_hidden`,`racegroup_bio5_swordman_thief`,`racegroup_bio5_acolyte_merchant`,`racegroup_bio5_mage_archer`,`racegroup_bio5_mvp`,`racegroup_clocktower`,`racegroup_thanatos`,`racegroup_faceworm`,`racegroup_hearthunter`,`racegroup_rockridge`,`racegroup_werner_lab`,`racegroup_temple_demon`,`racegroup_illusion_vampire`,`racegroup_malangdo`,"
 			"`element`,`element_level`,`walk_speed`,`attack_delay`,`attack_motion`,`damage_motion`,`damage_taken`,`ai`,`class`,"
 			"`mode_canmove`,`mode_looter`,`mode_aggressive`,`mode_assist`,`mode_castsensoridle`,`mode_norandomwalk`,`mode_nocast`,`mode_canattack`,`mode_castsensorchase`,`mode_changechase`,`mode_angry`,`mode_changetargetmelee`,`mode_changetargetchase`,`mode_targetweak`,`mode_randomtarget`,`mode_ignoremelee`,`mode_ignoremagic`,`mode_ignoreranged`,`mode_mvp`,`mode_ignoremisc`,`mode_knockbackimmune`,`mode_teleportblock`,`mode_fixeditemdrop`,`mode_detector`,`mode_statusimmune`,`mode_skillimmune`,"
 			"`mvpdrop1_item`,`mvpdrop1_rate`,`mvpdrop1_option`,`mvpdrop1_index`,`mvpdrop2_item`,`mvpdrop2_rate`,`mvpdrop2_option`,`mvpdrop2_index`,`mvpdrop3_item`,`mvpdrop3_rate`,`mvpdrop3_option`,`mvpdrop3_index`,"

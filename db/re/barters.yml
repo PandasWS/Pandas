@@ -64,3 +64,7 @@ Header:
 #           - Index: 1
 #             Item: Jellopy
 #             Amount: 1
+
+Footer:
+  Imports:
+  - Path: npc/re/merchants/barters/Extended_Ammunition.yml

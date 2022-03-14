@@ -1137,6 +1137,7 @@
 	export_constant2("bReduceDamageReturn",SP_REDUCE_DAMAGE_RETURN);
 	export_constant2("bAddItemSPHealRate", SP_ADD_ITEM_SPHEAL_RATE);
 	export_constant2("bAddItemGroupSPHealRate", SP_ADD_ITEMGROUP_SPHEAL_RATE);
+	export_constant2("bWeaponSubSize", SP_WEAPON_SUBSIZE);
 
 #ifdef Pandas_Bonuses
 
@@ -1144,34 +1145,38 @@
 	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	export_constant2("bNoFieldGemStone", SP_PANDAS_NOFIELDGEMSTONE);
 #endif // Pandas_Bonus_bNoFieldGemStone
-#ifdef Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus3_bRebirthWithHeal
 	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
 	export_constant2("bRebirthWithHeal", SP_PANDAS_REBIRTHWITHHEAL);
-#endif // Pandas_Bonus_bRebirthWithHeal
-#ifdef Pandas_Bonus_bAddSkillRange
+#endif // Pandas_Bonus3_bRebirthWithHeal
+#ifdef Pandas_Bonus2_bAddSkillRange
 	// 增加 sk 技能 n 格攻击距离
 	export_constant2("bAddSkillRange", SP_PANDAS_ADDSKILLRANGE);
-#endif // Pandas_Bonus_bAddSkillRange
-#ifdef Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bAddSkillRange
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	// 解除 sk 技能中由 n 指定的前置施法条件限制
 	export_constant2("bSkillNoRequire", SP_PANDAS_SKILLNOREQUIRE);
-#endif // Pandas_Bonus_bSkillNoRequire
-#ifdef Pandas_Bonus_bStatusAddDamage
+#endif // Pandas_Bonus2_bSkillNoRequire
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	export_constant2("bStatusAddDamage", SP_PANDAS_STATUSADDDAMAGE);
-#endif // Pandas_Bonus_bStatusAddDamage
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	export_constant2("bStatusAddDamageRate", SP_PANDAS_STATUSADDDAMAGERATE);
-#endif // Pandas_Bonus_bStatusAddDamageRate
-#ifdef Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus4_bStatusAddDamageRate
+#ifdef Pandas_Bonus3_bFinalAddRace
 	// 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	export_constant2("bFinalAddRace", SP_PANDAS_FINALADDRACE);
-#endif // Pandas_Bonus_bFinalAddRace
-#ifdef Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddClass
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
+	export_constant2("bAbsorbDmgMaxHP2", SP_PANDAS_ABSORBDMGMAXHP2);
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
@@ -4387,6 +4392,7 @@
 	export_constant(RC2_WERNER_LAB);
 	export_constant(RC2_TEMPLE_DEMON);
 	export_constant(RC2_ILLUSION_VAMPIRE);
+	export_constant(RC2_MALANGDO);
 	export_constant(RC2_MAX);
 
 	/* monster ai */
@@ -8821,10 +8827,10 @@
 	export_constant(SKILL_REQ_APCOST);
 	export_constant(SKILL_REQ_APRATECOST);
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	export_constant(SKILL_REQ_AMMO_COUNT);
 	export_constant(SKILL_REQ_PRODUCTMAT_COUNT);
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 	/* skill require state */
 	export_constant(ST_NONE);

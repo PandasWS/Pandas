@@ -218,13 +218,14 @@ CREATE TABLE IF NOT EXISTS `picklog` (
 # (B)uying Store
 # Ban(K) Transactions
 # Barter Shop (J)
+# (X) Other
 
 CREATE TABLE IF NOT EXISTS `zenylog` (
   `id` int(11) NOT NULL auto_increment,
   `time` datetime NOT NULL,
   `char_id` int(11) NOT NULL default '0',
   `src_id` int(11) NOT NULL default '0',
-  `type` enum('T','V','P','M','S','N','D','C','A','E','I','B','K','J') NOT NULL default 'S',
+  `type` enum('T','V','P','M','S','N','D','C','A','E','I','B','K','J','X') NOT NULL default 'S',
   `amount` int(11) NOT NULL default '0',
   `map` varchar(11) NOT NULL default '',
   PRIMARY KEY  (`id`),

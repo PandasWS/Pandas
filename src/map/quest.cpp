@@ -939,6 +939,24 @@ bool QuestDatabase::doSerialize(const std::string& type, void* archive) {
 	}
 	return false;
 }
+
+//************************************
+// Method:      getAdditionalCacheHash
+// Description: 额外追加的缓存散列特征
+// Access:      public 
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 21:07
+//************************************ 
+std::string QuestDatabase::getAdditionalCacheHash() {
+	// 在 QuestDatabase 中使用到了 ITEM_DB 和 MOB_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string additional = boost::str(
+		boost::format("%1%|%2%") %
+		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB") %
+		this->getSpecifyDatabaseBlashCacheHash("MOB_DB")
+	);
+	return additional;
+}
 #endif // Pandas_YamlBlastCache_QuestDatabase
 
 QuestDatabase quest_db;

@@ -1054,12 +1054,34 @@ static void battle_absorb_damage(struct block_list *bl, struct Damage *d) {
 				struct map_session_data *sd = BL_CAST(BL_PC, bl);
 				if (!sd)
 					return;
+
 				if (sd->bonus.absorb_dmg_maxhp) {
 					int hp = sd->bonus.absorb_dmg_maxhp * status_get_max_hp(bl) / 100;
 					dmg_ori = dmg_new = d->damage + d->damage2;
 					if (dmg_ori > hp)
 						dmg_new = dmg_ori - hp;
 				}
+
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+				if (sd->bonus.absorb_dmg_maxhp2) {
+					int hp = min(sd->bonus.absorb_dmg_maxhp2, 100) * status_get_max_hp(bl) / 100;
+					dmg_ori = dmg_new = d->damage + d->damage2;
+					if (dmg_ori > hp)
+						dmg_new = hp;
+				}
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
+
+#ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
+				if (sd->bonus.absorb_dmg_trigger_hpratio && sd->bonus.absorb_dmg_cap_ratio) {
+					dmg_ori = dmg_new = d->damage + d->damage2;
+					double dmg_ratio = (double)dmg_ori / status_get_max_hp(bl);
+
+					if (dmg_ratio * 100 >= min(sd->bonus.absorb_dmg_trigger_hpratio, 100)) {
+						int hp = min(sd->bonus.absorb_dmg_cap_ratio, 100) * status_get_max_hp(bl) / 100;
+						dmg_new = hp;
+					}
+				}
+#endif // Pandas_Bonus2_bAbsorbDmgMaxHP
 			}
 			break;
 	}
@@ -8828,7 +8850,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	if (sd && src && src->type == BL_PC && tsc) {
 		int total_rate = 100;
 		for (auto& it : sd->status_damagerate_adjust) {
@@ -8852,9 +8874,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamageRate
 
-#ifdef Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	if (sd && src && src->type == BL_PC && tsc) {
 		for (auto& it : sd->status_damage_adjust) {
 			if (!tsc->data[it.type])
@@ -8871,9 +8893,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bStatusAddDamage
+#endif // Pandas_Bonus4_bStatusAddDamage
 
-#ifdef Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddRace
 	if (sd && tstatus) {
 		int total_rate = 100;
 
@@ -8908,9 +8930,9 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus3_bFinalAddRace
 
-#ifdef Pandas_Bonus_bFinalAddClass
+#ifdef Pandas_Bonus3_bFinalAddClass
 	if (sd && tstatus) {
 		int total_rate = 100;
 
@@ -8945,7 +8967,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		damage = wd.damage + wd.damage2;
 	}
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && target && damage > 0) {
@@ -10408,6 +10430,12 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_ItemDB_Warning_Policy
 	{ "itemdb_warning_policy",             &battle_config.itemdb_warning_policy,            0,      0,      3,              },
 #endif // Pandas_BattleConfig_ItemDB_Warning_Policy
+#ifdef Pandas_BattleConfig_MobDB_DamageMotion_Min
+	{ "mob_default_damagemotion",          &battle_config.mob_default_damagemotion,         0,      0,      UINT16_MAX,     },
+#endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
+#ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
+	{ "mob_setunitdata_persistence",       &battle_config.mob_setunitdata_persistence,      1,      0,      1,              },
+#endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
 };
@@ -10662,10 +10690,10 @@ void battle_adjust_conf()
 	}
 #endif
 
-#if !( PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114 )
+#if !( PACKETVER_MAIN_NUM >= 20190116 || PACKETVER_RE_NUM >= 20190116 || PACKETVER_ZERO_NUM >= 20181226 )
 	if( battle_config.feature_barter ){
 #ifndef BUILDBOT
-		ShowWarning("conf/battle/feature.conf barter shop system is enabled but it requires PACKETVER 2018-07-04 or newer, disabling...\n");
+		ShowWarning("conf/battle/feature.conf barter shop system is enabled but it requires PACKETVER 2019-01-16 or newer, disabling...\n");
 #endif
 		battle_config.feature_barter = 0;
 	}

@@ -2306,6 +2306,10 @@ void pc_calc_skilltree(struct map_session_data *sd)
 			if (!fail) {
 				std::shared_ptr<s_skill_db> skill = skill_db.find(skid);
 
+#ifdef Pandas_Crashfix_Prevent_NullPointer
+				if (!skill) continue;
+#endif // Pandas_Crashfix_Prevent_NullPointer
+
 				if (!sd->status.skill[sk_idx].lv && (
 					(skill->inf2[INF2_ISQUEST] && !battle_config.quest_skill_learn) ||
 					skill->inf2[INF2_ISWEDDING] ||
@@ -2799,7 +2803,7 @@ static void pc_bonus_addeff_onskill(std::vector<s_addeffectonskill> &effect, enu
 	effect.push_back(entry);
 }
 
-#if defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+#if defined(Pandas_Bonus4_bStatusAddDamage) || defined(Pandas_Bonus4_bStatusAddDamageRate)
 static void pc_bonus_status_damage(std::vector<s_sc_damage>& dmgrule, enum sc_type sc, short rate, short battle_flag, int val)
 {
 	if (dmgrule.size() == MAX_PC_BONUS) {
@@ -2841,9 +2845,9 @@ static void pc_bonus_status_damage(std::vector<s_sc_damage>& dmgrule, enum sc_ty
 
 	dmgrule.push_back(entry);
 }
-#endif // defined(Pandas_Bonus_bStatusAddDamage) || defined(Pandas_Bonus_bStatusAddDamageRate)
+#endif // defined(Pandas_Bonus4_bStatusAddDamage) || defined(Pandas_Bonus4_bStatusAddDamageRate)
 
-#if defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+#if defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 static void pc_bonus_final_damage(std::vector<s_final_damage>& dmgrule, int8 type, short battle_flag, int damage_rate)
 {
 	if (dmgrule.size() == MAX_PC_BONUS) {
@@ -2880,7 +2884,7 @@ static void pc_bonus_final_damage(std::vector<s_final_damage>& dmgrule, int8 typ
 
 	dmgrule.push_back(entry);
 }
-#endif // defined(Pandas_Bonus_bFinalAddRace) || defined(Pandas_Bonus_bFinalAddClass)
+#endif // defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 
 /**
  * Adjust/add drop rate modifier for player
@@ -3277,7 +3281,7 @@ static void pc_bonus_itembonus(std::vector<s_item_bonus> &bonus, uint16 id, int 
 	bonus.push_back(entry);
 }
 
-#ifdef Pandas_Bonus_bSkillNoRequire
+#ifdef Pandas_Bonus2_bSkillNoRequire
 //************************************
 // Method:      pc_bonus_itembonus_swtich
 // Description: 按位运算开关类型的 s_item_bonus 处理函数
@@ -3308,7 +3312,7 @@ static void pc_bonus_itembonus_swtich(std::vector<s_item_bonus>& bonus, uint16 i
 		entry.val |= val;
 	bonus.push_back(entry);
 }
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 
 /**
  * Remove HP/SP to player when attacking
@@ -4099,6 +4103,11 @@ void pc_bonus(struct map_session_data *sd,int type,int val)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
+		case SP_PANDAS_ABSORBDMGMAXHP2: // bonus bAbsorbDmgMaxHP2,n;
+			sd->bonus.absorb_dmg_maxhp2 = max(sd->bonus.absorb_dmg_maxhp2, val);
+			break;
+#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 		// PYHELP - BONUS - INSERT POINT - <Section 6>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -4742,7 +4751,7 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 
 		pc_bonus_itembonus( sd->itemgroupsphealrate, type2, val, false );
 		break;
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 	case SP_PANDAS_ADDSKILLRANGE: // bonus2 bAddSkillRange,sk,n;
 		if (sd->state.lr_flag == 2) {
 			break;
@@ -4755,8 +4764,8 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 
 		pc_bonus_itembonus(sd->addskillrange, type2, val, false);
 		break;
-#endif // Pandas_Bonus_bAddSkillRange
-#ifdef Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bAddSkillRange
+#ifdef Pandas_Bonus2_bSkillNoRequire
 	case SP_PANDAS_SKILLNOREQUIRE: // bonus2 bSkillNoRequire,sk,n;
 		if (sd->state.lr_flag == 2) {
 			break;
@@ -4769,7 +4778,15 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 
 		pc_bonus_itembonus_swtich(sd->skillnorequire, type2, val, true);
 		break;
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
+#ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
+	case SP_ABSORB_DMG_MAXHP:	// bonus2 bAbsorbDmgMaxHP, n, x;
+		if (sd->state.lr_flag != 2) {
+			sd->bonus.absorb_dmg_trigger_hpratio = max(sd->bonus.absorb_dmg_trigger_hpratio, type2);
+			sd->bonus.absorb_dmg_cap_ratio = max(sd->bonus.absorb_dmg_cap_ratio, val);
+		}
+		break;
+#endif // Pandas_Bonus2_bAbsorbDmgMaxHP
 		// PYHELP - BONUS - INSERT POINT - <Section 7>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -4922,7 +4939,7 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		sd->norecover_state_race[type2].tick = val;
 		break;
 
-#ifdef Pandas_Bonus_bRebirthWithHeal
+#ifdef Pandas_Bonus3_bRebirthWithHeal
 	case SP_PANDAS_REBIRTHWITHHEAL: // bonus3 bRebirthWithHeal,r,h,s;
 		if (sd->state.lr_flag != 2) {
 			sd->bonus.rebirth_rate += type2;
@@ -4934,25 +4951,25 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 			sd->bonus.rebirth_heal_percent_sp = cap_value(sd->bonus.rebirth_heal_percent_sp, 0, 100);
 		}
 		break;
-#endif // Pandas_Bonus_bRebirthWithHeal
+#endif // Pandas_Bonus3_bRebirthWithHeal
 
-#ifdef Pandas_Bonus_bFinalAddRace
+#ifdef Pandas_Bonus3_bFinalAddRace
 	case SP_PANDAS_FINALADDRACE: // bonus3 bFinalAddRace,r,x,bf;
 		PC_BONUS_CHK_RACE(type2, SP_PANDAS_FINALADDRACE);
 		if (sd->state.lr_flag == 2)
 			break;
 		pc_bonus_final_damage(sd->finaladd_race[type2], type2, val, type3);
 		break;
-#endif // Pandas_Bonus_bFinalAddRace
+#endif // Pandas_Bonus3_bFinalAddRace
 
-#ifdef Pandas_Bonus_bFinalAddClass
+#ifdef Pandas_Bonus3_bFinalAddClass
 	case SP_PANDAS_FINALADDCLASS: // bonus3 bFinalAddClass,c,x,bf;
 		PC_BONUS_CHK_CLASS(type2, SP_PANDAS_FINALADDCLASS);
 		if (sd->state.lr_flag == 2)
 			break;
 		pc_bonus_final_damage(sd->finaladd_class[type2], type2, val, type3);
 		break;
-#endif // Pandas_Bonus_bFinalAddClass
+#endif // Pandas_Bonus3_bFinalAddClass
 		// PYHELP - BONUS - INSERT POINT - <Section 8>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -5047,19 +5064,19 @@ void pc_bonus4(struct map_session_data *sd,int type,int type2,int type3,int type
 		sd->mdef_set_race[type2].value = val;
 		break;
 
-#ifdef Pandas_Bonus_bStatusAddDamage
+#ifdef Pandas_Bonus4_bStatusAddDamage
 	case SP_PANDAS_STATUSADDDAMAGE: // bonus4 bStatusAddDamage,sc,n,r,bf;
 		if (sd->state.lr_flag != 2)
 			pc_bonus_status_damage(sd->status_damage_adjust, (sc_type)type2, type4, val, type3);
 		break;
-#endif // Pandas_Bonus_bStatusAddDamage
+#endif // Pandas_Bonus4_bStatusAddDamage
 
-#ifdef Pandas_Bonus_bStatusAddDamageRate
+#ifdef Pandas_Bonus4_bStatusAddDamageRate
 	case SP_PANDAS_STATUSADDDAMAGERATE: // bonus4 bStatusAddDamageRate,sc,n,r,bf;
 		if (sd->state.lr_flag != 2)
 			pc_bonus_status_damage(sd->status_damagerate_adjust, (sc_type)type2, type4, val, type3);
 		break;
-#endif // Pandas_Bonus_bStatusAddDamageRate
+#endif // Pandas_Bonus4_bStatusAddDamageRate
 		// PYHELP - BONUS - INSERT POINT - <Section 9>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -9417,7 +9434,7 @@ int pc_resethate(struct map_session_data* sd)
 	return 0;
 }
 
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id) {
 	nullpo_ret(sd);
 
@@ -9433,7 +9450,7 @@ int pc_addskillrange_bonus(struct map_session_data* sd, uint16 skill_id) {
 
 	return bonus;
 }
-#endif // Pandas_Bonus_bAddSkillRange
+#endif // Pandas_Bonus2_bAddSkillRange
 
 int pc_skillatk_bonus(struct map_session_data *sd, uint16 skill_id)
 {
@@ -13801,6 +13818,23 @@ bool SkillTreeDatabase::doSerialize(const std::string& type, void* archive) {
 //************************************ 
 void SkillTreeDatabase::afterSerialize() {
 
+}
+
+//************************************
+// Method:      getAdditionalCacheHash
+// Description: 额外追加的缓存散列特征
+// Access:      public 
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 21:05
+//************************************ 
+std::string SkillTreeDatabase::getAdditionalCacheHash() {
+	// 在 SkillTreeDatabase 中使用到了 SKILL_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string additional = boost::str(
+		boost::format("%1%") %
+		this->getSpecifyDatabaseBlashCacheHash("SKILL_DB")
+	);
+	return additional;
 }
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 

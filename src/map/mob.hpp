@@ -299,6 +299,7 @@ public:
 #ifdef Pandas_YamlBlastCache_MobDatabase
 	bool doSerialize(const std::string& type, void* archive);
 	void afterSerialize();
+	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_MobDatabase
 };
 
@@ -377,8 +378,11 @@ struct mob_data {
 #ifdef Pandas_Struct_Mob_Data_Pandas
 	struct {
 #ifdef Pandas_Struct_Mob_Data_DamageTaken
-		int damagetaken = -1;	// 魔物实例的承伤倍率, 若为 -1 则表示使用 db 中设置的承伤倍率 [Sola丶小克] 
+		int damagetaken = -1;							// 魔物实例的承伤倍率, 若为 -1 则表示使用 db 中设置的承伤倍率 [Sola丶小克] 
 #endif // Pandas_Struct_Mob_Data_DamageTaken
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+		std::map<uint16, int64>* special_setunitdata;	// 记录魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 	} pandas;
 #endif // Pandas_Struct_Mob_Data_Pandas
 

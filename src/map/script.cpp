@@ -10518,12 +10518,12 @@ BUILDIN_FUNC(bonus)
 		case SP_SKILL_DELAY:
 		case SP_SKILL_USE_SP:
 		case SP_SUB_SKILL:
-#ifdef Pandas_Bonus_bAddSkillRange
+#ifdef Pandas_Bonus2_bAddSkillRange
 		case SP_PANDAS_ADDSKILLRANGE:
-#endif // Pandas_Bonus_bAddSkillRange
-#ifdef Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bAddSkillRange
+#ifdef Pandas_Bonus2_bSkillNoRequire
 		case SP_PANDAS_SKILLNOREQUIRE:
-#endif // Pandas_Bonus_bSkillNoRequire
+#endif // Pandas_Bonus2_bSkillNoRequire
 			// these bonuses support skill names
 			if (script_isstring(st, 3)) {
 				const char *name = script_getstr(st, 3);
@@ -19898,6 +19898,11 @@ BUILDIN_FUNC(setunitdata)
 		if (!md->base_status) {
 			md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
 			memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+			if (md->pandas.special_setunitdata) {
+				md->pandas.special_setunitdata->clear();
+			}
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 		}
 
 		// Check if the view data will be modified
@@ -20009,6 +20014,21 @@ BUILDIN_FUNC(setunitdata)
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;
 			}
+
+#ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
+		// 使用 setunitdata 对此魔物进行了什么项目的修改, 都记录下来
+		if (md->pandas.special_setunitdata) {
+			int data_type = type;
+
+			// UMOB_SLAVECPYMSTRMD 最终修改的还是 base_status->mode 的值
+			// 因此如果设置的数据类型是 UMOB_SLAVECPYMSTRMD 则把他视为 UMOB_MODE 来处理
+			if (type == UMOB_SLAVECPYMSTRMD)
+				data_type = UMOB_MODE;
+
+			(*md->pandas.special_setunitdata)[data_type] = value;
+		}
+#endif // Pandas_Persistent_SetUnitData_For_Monster_StatusData
+
 			if (calc_status)
 				status_calc_bl(&md->bl, SCB_BATTLE);
 		break;
@@ -30843,54 +30863,54 @@ BUILDIN_FUNC(getskillinfo) {
 
 	switch (type) {
 		case SKI_CASTTYPE: script_pushint(st, skill_get_casttype(skill_id)); break;
-		case SKI_NAME: script_pushstrcopy(st, skill->name); break;
-		case SKI_DESCRIPTION: script_pushstrcopy(st, skill->desc); break;
+		case SKI_NAME: script_pushstrcopy(st, skill_get_name(skill_id)); break;
+		case SKI_DESCRIPTION: script_pushstrcopy(st, skill_get_desc(skill_id)); break;
 		case SKI_MAXLEVEL_IN_SKILLTREE: script_pushint(st, skill_tree_get_max(skill_id,skill_lv)); break;
 		case SKI_SKILLTYPE: script_pushint(st, skill_get_type(skill_id)); break;
-		case SKI_HIT: script_pushint(st, skill->hit); break;
-		case SKI_TARGETTYPE: script_pushint(st, skill->inf); break;
-		case SKI_ELEMENT: script_pushint(st, skill->element[skill_lv]); break;
+		case SKI_HIT: script_pushint(st, skill_get_hit(skill_id)); break;
+		case SKI_TARGETTYPE: script_pushint(st, skill_get_inf(skill_id)); break;
+		case SKI_ELEMENT: script_pushint(st, skill_get_ele(skill_id,skill_lv)); break;
 		case SKI_MAXLEVEL: script_pushint(st, skill_get_max(skill_id)); break;
-		case SKI_RANGE: script_pushint(st, skill->range[skill_lv]); break;
-		case SKI_SPLASHAREA: script_pushint(st, skill->splash[skill_lv]); break;
-		case SKI_HITCOUNT: script_pushint(st, skill->num[skill_lv]); break;
-		case SKI_CASTTIME: script_pushint(st, skill->cast[skill_lv]); break;
+		case SKI_RANGE: script_pushint(st, skill_get_range(skill_id,skill_lv)); break;
+		case SKI_SPLASHAREA: script_pushint(st, skill_get_splash(skill_id,skill_lv)); break;
+		case SKI_HITCOUNT: script_pushint(st, skill_get_num(skill_id,skill_lv)); break;
+		case SKI_CASTTIME: script_pushint(st, skill_get_cast(skill_id,skill_lv)); break;
 #ifdef RENEWAL_CAST
-		case SKI_FIXEDCASTTIME: script_pushint(st, skill->fixed_cast[skill_lv]); break;
+		case SKI_FIXEDCASTTIME: script_pushint(st, skill_get_fixed_cast(skill_id,skill_lv)); break;
 #else
 		case SKI_FIXEDCASTTIME: script_pushint(st, -1); break;
 #endif // RENEWAL_CAST
-		case SKI_AFTERCASTACTDELAY: script_pushint(st, skill->delay[skill_lv]); break;
-		case SKI_AFTERCASTWALKDELAY: script_pushint(st, skill->walkdelay[skill_lv]); break;
-		case SKI_DURATION1: script_pushint(st, skill->upkeep_time[skill_lv]); break;
-		case SKI_DURATION2: script_pushint(st, skill->upkeep_time2[skill_lv]); break;
-		case SKI_CASTTIMEFLAGS: script_pushint(st, skill->castnodex); break;
-		case SKI_CASTDELAYFLAGS: script_pushint(st, skill->delaynodex); break;
-		case SKI_CASTDEFENSEREDUCTION: script_pushint(st, skill->cast_def_rate); break;
-		case SKI_CASTCANCEL: script_pushint(st, skill->castcancel); break;
-		case SKI_ACTIVEINSTANCE: script_pushint(st, skill->maxcount[skill_lv]); break;
-		case SKI_KNOCKBACK: script_pushint(st, skill->blewcount[skill_lv]); break;
-		case SKI_COOLDOWN: script_pushint(st, skill->cooldown[skill_lv]); break;
+		case SKI_AFTERCASTACTDELAY: script_pushint(st, skill_get_delay(skill_id,skill_lv)); break;
+		case SKI_AFTERCASTWALKDELAY: script_pushint(st, skill_get_walkdelay(skill_id,skill_lv)); break;
+		case SKI_DURATION1: script_pushint(st, skill_get_time(skill_id,skill_lv)); break;
+		case SKI_DURATION2: script_pushint(st, skill_get_time2(skill_id,skill_lv)); break;
+		case SKI_CASTTIMEFLAGS: script_pushint(st, skill_get_castnodex(skill_id)); break;
+		case SKI_CASTDELAYFLAGS: script_pushint(st, skill_get_delaynodex(skill_id)); break;
+		case SKI_CASTDEFENSEREDUCTION: script_pushint(st, skill_get_castdef(skill_id)); break;
+		case SKI_CASTCANCEL: script_pushint(st, skill_get_castcancel(skill_id)); break;
+		case SKI_ACTIVEINSTANCE: script_pushint(st, skill_get_maxcount(skill_id,skill_lv)); break;
+		case SKI_KNOCKBACK: script_pushint(st, skill_get_blewcount(skill_id,skill_lv)); break;
+		case SKI_COOLDOWN: script_pushint(st, skill_get_cooldown(skill_id,skill_lv)); break;
 		case SKI_NONEARNPC_TYPE: script_pushint(st, skill->unit_nonearnpc_type); break;
 		case SKI_NONEARNPC_ADDITIONALRANGE: script_pushint(st, skill->unit_nonearnpc_range); break;
 		case SKI_COPYFLAGS_SKILL: script_pushint(st, skill->copyable.option); break;
-		case SKI_UNIT_ID: script_pushint(st, skill->unit_id); break;
-		case SKI_UNIT_ALTERNATEID: script_pushint(st, skill->unit_id2); break;
-		case SKI_UNIT_LAYOUT: script_pushint(st, skill->unit_layout_type[skill_lv]); break;
-		case SKI_UNIT_RANGE: script_pushint(st, skill->unit_range[skill_lv]); break;
-		case SKI_UNIT_INTERVAL: script_pushint(st, skill->unit_interval); break;
-		case SKI_UNIT_TARGET: script_pushint(st, skill->unit_target); break;
-		case SKI_REQUIRES_HPCOST: script_pushint(st, skill->require.hp[skill_lv]); break;
-		case SKI_REQUIRES_SPCOST: script_pushint(st, skill->require.sp[skill_lv]); break;
-		case SKI_REQUIRES_MAXHPTRIGGER: script_pushint(st, skill->require.mhp[skill_lv]); break;
-		case SKI_REQUIRES_HPRATECOST: script_pushint(st, skill->require.hp_rate[skill_lv]); break;
-		case SKI_REQUIRES_SPRATECOST: script_pushint(st, skill->require.sp_rate[skill_lv]); break;
-		case SKI_REQUIRES_ZENYCOST: script_pushint(st, skill->require.zeny[skill_lv]); break;
-		case SKI_REQUIRES_WEAPON: script_pushint(st, skill->require.weapon); break;
-		case SKI_REQUIRES_AMMO: script_pushint(st, skill->require.ammo); break;
-		case SKI_REQUIRES_AMMOAMOUNT: script_pushint(st, skill->require.ammo_qty[skill_lv]); break;
-		case SKI_REQUIRES_STATE: script_pushint(st, skill->require.state); break;
-		case SKI_REQUIRES_SPHERECOST: script_pushint(st, skill->require.spiritball[skill_lv]); break;
+		case SKI_UNIT_ID: script_pushint(st, skill_get_unit_id(skill_id)); break;
+		case SKI_UNIT_ALTERNATEID: script_pushint(st, skill_get_unit_id2(skill_id)); break;
+		case SKI_UNIT_LAYOUT: script_pushint(st, skill_get_unit_layout_type(skill_id,skill_lv)); break;
+		case SKI_UNIT_RANGE: script_pushint(st, skill_get_unit_range(skill_id,skill_lv)); break;
+		case SKI_UNIT_INTERVAL: script_pushint(st, skill_get_unit_interval(skill_id)); break;
+		case SKI_UNIT_TARGET: script_pushint(st, skill_get_unit_target(skill_id)); break;
+		case SKI_REQUIRES_HPCOST: script_pushint(st, skill_get_hp(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_SPCOST: script_pushint(st, skill_get_sp(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_MAXHPTRIGGER: script_pushint(st, skill_get_mhp(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_HPRATECOST: script_pushint(st, skill_get_hp_rate(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_SPRATECOST: script_pushint(st, skill_get_sp_rate(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_ZENYCOST: script_pushint(st, skill_get_zeny(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_WEAPON: script_pushint(st, skill_get_weapontype(skill_id)); break;
+		case SKI_REQUIRES_AMMO: script_pushint(st, skill_get_ammotype(skill_id)); break;
+		case SKI_REQUIRES_AMMOAMOUNT: script_pushint(st, skill_get_ammo_qty(skill_id,skill_lv)); break;
+		case SKI_REQUIRES_STATE: script_pushint(st, skill_get_state(skill_id)); break;
+		case SKI_REQUIRES_SPHERECOST: script_pushint(st, skill_get_spiritball(skill_id,skill_lv)); break;
 
 		case SKI_REQUIRES_STATUS:
 			for (const auto& sc : skill->require.status) {
