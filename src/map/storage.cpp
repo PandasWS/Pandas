@@ -405,6 +405,27 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 	if (result != STORAGE_ADD_OK)
 		return;
 
+#ifdef Pandas_NpcFilter_STOREAGE_DEL//将道具从普通仓库或扩展仓库取回背包
+	struct item_data* data = itemdb_search(stor->u.items_storage[index].nameid);
+	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
+	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
+	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
+	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
+	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
+	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
+	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_storid"), stor->stor_id); // 取出的仓库编号
+	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
+	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
+	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
+	if (npc_script_filter(sd, NPCF_STOREAGE_DEL)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STOREAGE_DEL
+
 	if ((flag = pc_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE)) == ADDITEM_SUCCESS)
 		storage_delitem(sd,stor,index,amount);
 	else {
@@ -472,6 +493,27 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 	result = storage_canGetItem(stor, index, amount);
 	if (result != STORAGE_ADD_OK)
 		return;
+
+#ifdef Pandas_NpcFilter_STOREAGE_DEL//将道具从普通仓库或扩展仓库取回手推车
+	struct item_data* data = itemdb_search(stor->u.items_storage[index].nameid);
+	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
+	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
+	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
+	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
+	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
+	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
+	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_storid"), stor->stor_id); // 取出的仓库编号
+	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
+	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
+	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
+	if (npc_script_filter(sd, NPCF_STOREAGE_DEL)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STOREAGE_DEL
 
 	if ((flag = pc_cart_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE)) == 0)
 		storage_delitem(sd,stor,index,amount);
@@ -980,6 +1022,27 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
+#ifdef Pandas_NpcFilter_STOREAGE_DEL//将道具从公会仓库取回背包
+	struct item_data* data = itemdb_search(stor->u.items_guild[index].nameid);
+	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
+	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
+	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
+	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
+	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
+	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
+	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_storid"), -1); // 取出的仓库编号
+	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
+	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
+	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
+	if (npc_script_filter(sd, NPCF_STOREAGE_DEL)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STOREAGE_DEL
+
 	if((flag = pc_additem(sd,&stor->u.items_guild[index],amount,LOG_TYPE_GSTORAGE)) == 0)
 		storage_guild_delitem(sd,stor,index,amount);
 	else { // inform fail
@@ -1047,6 +1110,27 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 
 	if(amount < 1 || amount > stor->u.items_guild[index].amount)
 		return;
+
+#ifdef Pandas_NpcFilter_STOREAGE_DEL//将道具从公会仓库取回手推车
+	struct item_data* data = itemdb_search(stor->u.items_guild[index].nameid);
+	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
+	pc_setreg(sd, add_str("@retr_type"), data->type); // 取出的道具种类
+	pc_setreg(sd, add_str("@retr_subtype"), data->subtype); // 取出的道具武器类型
+	pc_setreg(sd, add_str("@retr_equip"), data->equip); // 取出的道具装备位置
+	pc_setreg(sd, add_str("@retr_viewid"), data->look); // 取出的道具外观编号
+	pc_setreg(sd, add_str("@retr_source"), stor->type); // 取出的道具来源
+	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
+	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
+	pc_setreg(sd, add_str("@retr_storid"), -1); // 取出的仓库编号
+	pc_setreg(sd, add_str("@retr_storowner"), stor->id); // 仓库拥有者编号
+	pc_setreg(sd, add_str("@retr_storamount"), stor->amount); // 仓库已储存的道具种类数量
+	pc_setreg(sd, add_str("@retr_stormax"), stor->max_amount); // 仓库可储存的最大道具种类数量
+	if (npc_script_filter(sd, NPCF_STOREAGE_DEL)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STOREAGE_DEL
 
 	if((flag = pc_cart_additem(sd,&stor->u.items_guild[index],amount,LOG_TYPE_GSTORAGE)) == 0)
 		storage_guild_delitem(sd,stor,index,amount);

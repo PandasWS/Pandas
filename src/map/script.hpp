@@ -245,6 +245,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_DROPITEM
 	const char* dropitem_filter_name;	// NPCF_DROPITEM	// OnPCDropItemFilter	// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_STOREAGE_DEL
+	const char* storeage_del_filter_name;	// NPCF_STOREAGE_DEL	// OnPCStorageDelFilter	// 当玩家准备将道具取出仓库时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_STOREAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
