@@ -728,7 +728,7 @@
 	@retr_idx			取出的道具来源位置序号
 	@retr_target		取出的道具去处(1 = 背包, 2 = 手推车)
 	@retr_storid		取出的仓库编号(-1 = 公会仓库, 0 = 普通仓库, >0 = 扩展仓库)
-	@retr_storowner		取出的仓库拥有者编号(普通、扩展仓库返回账号编号，公会仓库返回公会编号)
+	@retr_storowner		取出的仓库拥有者编号(普通、扩展仓库返回<account_id>，公会仓库返回<guild_id>)
 	@retr_storamount	取出的仓库已经储存的道具种类数量
 	@retr_stormax		取出的仓库可以储存的最大道具种类数量
 
