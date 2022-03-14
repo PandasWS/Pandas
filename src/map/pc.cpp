@@ -6497,10 +6497,6 @@ void pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 	struct item_data* data = itemdb_search(sd->inventory.u.items_inventory[idx].nameid);
 	pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
 	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
-	pc_setreg(sd, add_str("@recv_type"), data->type); // 存入的道具种类
-	pc_setreg(sd, add_str("@recv_subtype"), data->subtype); // 存入的道具武器类型
-	pc_setreg(sd, add_str("@recv_equip"), data->equip); // 存入的道具装备位置
-	pc_setreg(sd, add_str("@recv_viewid"), data->look); // 存入的道具外观编号
 	pc_setreg(sd, add_str("@recv_idx"), idx); // 存入的道具来源位置序号
 	if (npc_script_filter(sd, NPCF_CART_ADD)) {
 		clif_delitem(sd, idx, 0, 0);
