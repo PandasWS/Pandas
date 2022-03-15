@@ -405,7 +405,7 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 	if (result != STORAGE_ADD_OK)
 		return;
 
-#ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从普通仓库或扩展仓库取回背包
+#ifdef Pandas_NpcFilter_STORAGE_DEL
 	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_storage[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
@@ -485,7 +485,7 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 	if (result != STORAGE_ADD_OK)
 		return;
 
-#ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从普通仓库或扩展仓库取回手推车
+#ifdef Pandas_NpcFilter_STORAGE_DEL
 	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_storage[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
@@ -1004,7 +1004,7 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
-#ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从公会仓库取回背包
+#ifdef Pandas_NpcFilter_STORAGE_DEL
 	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_guild[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
@@ -1084,7 +1084,7 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 	if(amount < 1 || amount > stor->u.items_guild[index].amount)
 		return;
 
-#ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从公会仓库取回手推车
+#ifdef Pandas_NpcFilter_STORAGE_DEL
 	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_guild[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
