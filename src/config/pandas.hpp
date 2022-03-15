@@ -1370,6 +1370,11 @@
 		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
 		// 常量名称: NPCF_DROPITEM / 变量名称: dropitem_filter_name
 		#define Pandas_NpcFilter_DROPITEM
+
+		// 当玩家准备将道具移回普通栏位时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCFavoriteDelFilter
+		// 常量名称: NPCF_FAVORITE_DEL / 变量名称: favorite_del_filter_name
+		#define Pandas_NpcFilter_FAVORITE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
