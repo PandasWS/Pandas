@@ -20731,9 +20731,9 @@ void clif_parse_MoveItem(int fd, struct map_session_data *sd) {
 	else if( type == 0 )
 #ifdef Pandas_NpcFilter_FAVORITE_ADD
 	{
-		pc_setreg(sd, add_str("@move_nameid"), sd->inventory.u.items_inventory[index].nameid); // 移入的道具编号
-		pc_setreg(sd, add_str("@move_amount"), sd->inventory.u.items_inventory[index].amount); // 移入的道具数量
-		pc_setreg(sd, add_str("@move_idx"), index); // 移入的道具位置序号
+		pc_setreg(sd, add_str("@recv_nameid"), sd->inventory.u.items_inventory[index].nameid); // 移入的道具编号
+		pc_setreg(sd, add_str("@recv_amount"), sd->inventory.u.items_inventory[index].amount); // 移入的道具数量
+		pc_setreg(sd, add_str("@recv_idx"), index); // 移入的道具位置序号
 
 		if (npc_script_filter(sd, NPCF_FAVORITE_ADD))
 			return;
