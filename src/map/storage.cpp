@@ -406,8 +406,7 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 		return;
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从普通仓库或扩展仓库取回背包
-	struct item_data* data = itemdb_search(stor->u.items_storage[index].nameid);
-	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_storage[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
 	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
@@ -487,8 +486,7 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 		return;
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从普通仓库或扩展仓库取回手推车
-	struct item_data* data = itemdb_search(stor->u.items_storage[index].nameid);
-	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_storage[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
 	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
@@ -1007,8 +1005,7 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 	}
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从公会仓库取回背包
-	struct item_data* data = itemdb_search(stor->u.items_guild[index].nameid);
-	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_guild[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_INVENTORY); // 取出的道具去处
 	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
@@ -1088,8 +1085,7 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 		return;
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL//将道具从公会仓库取回手推车
-	struct item_data* data = itemdb_search(stor->u.items_guild[index].nameid);
-	pc_setreg(sd, add_str("@retr_nameid"), data->nameid); // 取出的道具编号
+	pc_setreg(sd, add_str("@retr_nameid"), stor->u.items_guild[index].nameid); // 取出的道具编号
 	pc_setreg(sd, add_str("@retr_amount"), amount); // 取出的道具数量
 	pc_setreg(sd, add_str("@retr_target"), TABLE_CART); // 取出的道具去处
 	pc_setreg(sd, add_str("@retr_idx"), index); // 取出的道具来源位置序号
