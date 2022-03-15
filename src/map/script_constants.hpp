@@ -107,6 +107,10 @@
 #ifdef Pandas_NpcFilter_DROPITEM
 	export_constant(NPCF_DROPITEM);	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CART_DEL
+	export_constant(NPCF_CART_DEL);	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_CART_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
