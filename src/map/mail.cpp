@@ -287,7 +287,7 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 		sd->mail.item[i].details.equip = sd->inventory.u.items_inventory[idx].equip;
 		sd->mail.item[i].details.equipSwitch = sd->inventory.u.items_inventory[idx].equipSwitch;
 
-		for (int j = sd->inventory_data[idx]->slots; j < MAX_SLOTS; j++)
+		for (int j = 0; j < MAX_SLOTS; j++)
 			sd->mail.item[i].details.card[j] = sd->inventory.u.items_inventory[idx].card[j];
 
 		for (int j = 0; j < MAX_ITEM_RDM_OPT; j++) {
