@@ -372,7 +372,7 @@ void storage_storageadd(struct map_session_data* sd, struct s_storage *stor, int
 		return;
 	else if (result == STORAGE_ADD_OK) {
 
-#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从背包存入普通仓库或扩展仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD
 		pc_setreg(sd, add_str("@recv_nameid"), sd->inventory.u.items_inventory[index].nameid); // 存入的道具编号
 		pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
 		pc_setreg(sd, add_str("@recv_source"), TABLE_INVENTORY); // 存入的道具来源
@@ -448,7 +448,7 @@ void storage_storageaddfromcart(struct map_session_data *sd, struct s_storage *s
 		return;
 	else if (result == STORAGE_ADD_OK) {
 
-#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从手推车存入普通仓库或扩展仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD
 		pc_setreg(sd, add_str("@recv_nameid"), sd->cart.u.items_cart[index].nameid); // 存入的道具编号
 		pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
 		pc_setreg(sd, add_str("@recv_source"), TABLE_CART); // 存入的道具来源
@@ -966,7 +966,7 @@ void storage_guild_storageadd(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
-#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从背包存入公会仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD
 	pc_setreg(sd, add_str("@recv_nameid"), sd->inventory.u.items_inventory[index].nameid); // 存入的道具编号
 	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
 	pc_setreg(sd, add_str("@recv_source"), TABLE_INVENTORY); // 存入的道具来源
@@ -1051,7 +1051,7 @@ void storage_guild_storageaddfromcart(struct map_session_data* sd, int index, in
 	if( amount < 1 || amount > sd->cart.u.items_cart[index].amount )
 		return;
 
-#ifdef Pandas_NpcFilter_STORAGE_ADD//将道具从手推车存入公会仓库
+#ifdef Pandas_NpcFilter_STORAGE_ADD
 	pc_setreg(sd, add_str("@recv_nameid"), sd->cart.u.items_cart[index].nameid); // 存入的道具编号
 	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
 	pc_setreg(sd, add_str("@recv_source"), TABLE_CART); // 存入的道具来源
