@@ -4718,13 +4718,13 @@ Body:
   - Jobs:
       Baby_Ninja: true
     MaxWeight: 26000
-    HpFactor: 75
+    HpFactor: 80
+    HpMultiplicator: 0
     SpFactor: 540
     BaseASPD:
-      Fist: 40
-      Dagger: 43
-      Huuma: 55
-      Shield: 6
+      Fist: 400
+      Dagger: 500
+      Huuma: 750
     BonusStats:
       - Level: 1
         Agi: 1
@@ -4782,31 +4782,7 @@ Body:
     HpFactor: 70
     SpFactor: 200
     BaseASPD:
-      Fist: 40
-      Dagger: 50
-      1hSword: 50
-      2hSword: 50
-      1hSpear: 50
-      2hSpear: 50
-      1hAxe: 50
-      2hAxe: 50
-      Mace: 50
-      2hMace: 50
-      Staff: 50
-      Bow: 50
-      Knuckle: 50
-      Musical: 50
-      Whip: 50
-      Book: 50
-      Katar: 50
-      Revolver: 50
-      Rifle: 50
-      Gatling: 50
-      Shotgun: 50
-      Grenade: 50
-      Huuma: 50
-      2hStaff: 50
-      Shield: 6
+      Fist: 400
     BonusStats:
       - Level: 1
         Str: 1
@@ -4852,31 +4828,8 @@ Body:
     HpMultiplicator: 650
     SpFactor: 470
     BaseASPD:
-      Fist: 40
-      Dagger: 50
-      1hSword: 50
-      2hSword: 50
-      1hSpear: 50
-      2hSpear: 50
-      1hAxe: 50
-      2hAxe: 50
-      Mace: 50
-      2hMace: 50
-      Staff: 50
-      Bow: 50
-      Knuckle: 50
-      Musical: 50
-      Whip: 50
-      Book: 50
-      Katar: 50
-      Revolver: 50
-      Rifle: 50
-      Gatling: 50
-      Shotgun: 50
-      Grenade: 50
-      Huuma: 50
-      2hStaff: 50
-      Shield: 6
+      Fist: 400
+      Book: 500
     BonusStats:
       - Level: 1
         Str: 1
@@ -4944,11 +4897,10 @@ Body:
     HpFactor: 75
     SpFactor: 900
     BaseASPD:
-      Fist: 50
-      Dagger: 50
-      Staff: 53
-      2hStaff: 55
-      Shield: 8
+      Fist: 500
+      Dagger: 575
+      Staff: 625
+      2hStaff: 625
     BonusStats:
       - Level: 1
         Int: 1
@@ -5013,17 +4965,16 @@ Body:
   - Jobs:
       Baby_Gunslinger: true
     MaxWeight: 28000
-    HpFactor: 90
-    HpMultiplicator: 650
+    HpFactor: 89
+    HpMultiplicator: 0
     SpFactor: 469
     BaseASPD:
-      Fist: 54
-      Revolver: 49
-      Rifle: 59
-      Gatling: 54
-      Shotgun: 94
-      Grenade: 104
-      Shield: 6
+      Fist: 500
+      Revolver: 700
+      Rifle: 750
+      Gatling: 700
+      Shotgun: 1500
+      Grenade: 1500
     BonusStats:
       - Level: 1
         Dex: 1
