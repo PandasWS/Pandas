@@ -5119,12 +5119,12 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 
 #ifdef Pandas_MapFlag_MobDroprate
 		case MF_MOBDROPRATE:
-			return map_getmapflag_param(m, mapflag, args, 0);
+			return map_getmapflag_param(m, mapflag, args, 100);
 #endif // Pandas_MapFlag_MobDroprate
 
 #ifdef Pandas_MapFlag_MvpDroprate
 		case MF_MVPDROPRATE:
-			return map_getmapflag_param(m, mapflag, args, 0);
+			return map_getmapflag_param(m, mapflag, args, 100);
 #endif // Pandas_MapFlag_MvpDroprate
 
 #ifdef Pandas_MapFlag_MaxHeal
