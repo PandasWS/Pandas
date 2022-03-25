@@ -107,6 +107,10 @@
 #ifdef Pandas_NpcFilter_DROPITEM
 	export_constant(NPCF_DROPITEM);	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_PRODUCE
+	export_constant(NPCF_PRODUCE);	// 当玩家准备制作物品时触发过滤器 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PRODUCE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/

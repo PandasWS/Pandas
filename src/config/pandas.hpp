@@ -1370,6 +1370,11 @@
 		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
 		// 常量名称: NPCF_DROPITEM / 变量名称: dropitem_filter_name
 		#define Pandas_NpcFilter_DROPITEM
+
+		// 当玩家准备制作物品时触发过滤器 [人鱼姬的思念]
+		// 事件类型: Filter / 事件名称: OnPCProduceFilter
+		// 常量名称: NPCF_PRODUCE / 变量名称: produce_filter_name
+		#define Pandas_NpcFilter_PRODUCE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
