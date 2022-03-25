@@ -424,7 +424,7 @@ int map_addblock(struct block_list* bl)
 		}
 		return 1;
 	}
-#endif Pandas_Crashfix_MapBlock_Operation
+#endif // Pandas_Crashfix_MapBlock_Operation
 
 	pos = x/BLOCK_SIZE+(y/BLOCK_SIZE)*mapdata->bxs;
 
