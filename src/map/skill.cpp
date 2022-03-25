@@ -22160,7 +22160,7 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 	pc_setreg(sd, add_str("@produce_make_per"), make_per);
 	if (npc_script_filter(sd, NPCF_PRODUCE)) {
 		qty = (int)cap_value(pc_readreg(sd, add_str("@produce_qty")), 0, 10000);
-		make_per = (int)cap_value(pc_readreg(sd, add_str("@produce_per")), 0, 10000);
+		make_per = (int)cap_value(pc_readreg(sd, add_str("@produce_make_per")), 0, 10000);
 	}
 #endif // Pandas_NpcFilter_PRODUCE
 
