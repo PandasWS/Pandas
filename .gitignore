@@ -151,6 +151,11 @@ Thumbs.db
 # Dlls
 /dbghelp.dll
 
+# VMProtect
+/VMProtectSDK32.dll
+/VMProtectSDK64.dll
+/VMProtectLicense.ini
+
 # CrashDump
 /dumps/*
 
