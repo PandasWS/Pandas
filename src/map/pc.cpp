@@ -5139,12 +5139,12 @@ void pc_bonus5(struct map_session_data *sd,int type,int type2,int type3,int type
 		// PYHELP - BONUS - INSERT POINT - <Section 10>
 
 	default:
- #ifdef Pandas_NpcExpress_STATCALC
+#ifdef Pandas_NpcExpress_STATCALC
 		if (running_npc_stat_calc_event) {
 			ShowWarning("pc_bonus5: unknown bonus type %d %d %d %d %d %d in OnPCStatCalcEvent!\n", type, type2, type3, type4, type5, val);
 		}
 		else 
- #endif // Pandas_NpcExpress_STATCALC
+#endif // Pandas_NpcExpress_STATCALC
 		if (current_equip_combo_pos > 0) {
 			ShowWarning("pc_bonus5: unknown bonus type %d %d %d %d %d %d in a combo with item #%u\n", type, type2, type3, type4, type5, val, sd->inventory_data[pc_checkequip( sd, current_equip_combo_pos )]->nameid);
 		}

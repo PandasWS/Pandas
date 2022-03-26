@@ -1060,7 +1060,7 @@ void clif_clearunit_area(struct block_list* bl, clr_type type)
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA : AREA_WOS);
 #else
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA_DEAD : AREA_WOS);
-#endif //Pandas_Ease_Mob_Stuck_After_Dead
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 
 	if(disguised(bl)) {
 		WBUFL(buf,2) = disguised_bl_id( bl->id );

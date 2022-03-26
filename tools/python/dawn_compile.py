@@ -237,7 +237,7 @@ def compile_sub(define_val, name, scheme = 'Release|Win32'):
     Common.cmd_execute([
         '"%s" x86' % vcvarsall,
         'set CL=%s' % define_val,
-        'Devenv rAthena.sln /clean',
+        'Devenv rAthena.sln /clean "%s"' % scheme,
         'Devenv rAthena.sln /Rebuild "%s"' % scheme
     ], project_slndir, modetag, slndir(compile_logfile))
 
