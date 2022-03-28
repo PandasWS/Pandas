@@ -2072,6 +2072,11 @@
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
+
+	// 是否启用 settitleicon 脚本指令 [人鱼姬的思念]
+	// 该指令用于使一个NPC 显示<图标>和<标题>, 
+	#define Pandas_ScriptCommand_SettitleIcon
+
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
