@@ -31156,7 +31156,7 @@ BUILDIN_FUNC(getrateidx) {
 
 	// 如果不是一个数组, 那么将参数逐个累加
 	if (!data_isreference(data)) {
-		for (int i = 0; script_lastdata(st) - 1; i++) {
+		for (int i = 0; i < script_lastdata(st) - 1; i++) {
 			uint64 weight = script_getnum(st, i + 2);
 			weights.push_back(weight);
 			total_weight += weight;
@@ -31185,14 +31185,14 @@ BUILDIN_FUNC(getrateidx) {
 		}
 
 		// 获取数组的元素个数, 并判断是否在有效范围内
-		int64 array_size = script_array_highest_key(st, sd, varname, reference_getref(data)) - 1;
-		if (array_size < 0 || array_size > SCRIPT_MAX_ARRAYSIZE) {
+		uint32 array_size = script_array_highest_key(st, sd, varname, reference_getref(data));
+		if (array_size == 0 || array_size > SCRIPT_MAX_ARRAYSIZE) {
 			ShowError("buildin_getrateidx: The size of '%s' is not in valid range.\n", varname);
 			script_abort(st);
 			return SCRIPT_CMD_FAILURE;
 		}
 
-		for (int i = 0; i < array_size; i++) {
+		for (uint32 i = 0; i < array_size; i++) {
 			uint64 weight = get_val2_num(st, reference_uid(varid, i), reference_getref(data));
 			weights.push_back(weight);
 			total_weight += weight;
