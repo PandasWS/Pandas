@@ -2072,6 +2072,10 @@
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
+
+	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
+	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
+	#define Pandas_ScriptCommand_GetRateIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
