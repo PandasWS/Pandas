@@ -2062,6 +2062,10 @@
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
+
+	// 是否启用 instance_name 脚本指令 [人鱼姬的思念]
+	// 该指令用于获取玩家所拥有的副本的名字。
+	#define Pandas_ScriptCommand_InstanceName
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

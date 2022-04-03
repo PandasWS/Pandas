@@ -31115,6 +31115,45 @@ BUILDIN_FUNC(next_dropitem_special) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
+#ifdef Pandas_ScriptCommand_InstanceName
+/* ===========================================================
+ * 指令: instance_name
+ * 描述: 该指令用于获取玩家所拥有的副本的名字。
+ * 用法: instance_name {<副本ID>};
+ * 作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(instance_name)
+{
+	const char* name;
+	int instance_id;
+	if (script_hasdata(st, 2))
+		instance_id = script_getnum(st, 2);
+	else
+		instance_id = script_instancegetid(st);
+
+	std::shared_ptr<s_instance_data> idata = util::umap_find(instances, instance_id);
+	std::shared_ptr<s_instance_db> db = instance_db.find(idata->id);
+
+	if (instance_id == 0) {
+		ShowError("buildin_instance_name: Trying to get invalid instance_name %d.\n", instance_id);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (!db) {
+		script_pushconststr(st, "null");
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!idata) {
+		script_pushconststr(st, "null");
+		return SCRIPT_CMD_SUCCESS;
+	}
+	name = db->name.c_str();
+	script_pushstrcopy(st, name);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_InstanceName
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32044,8 +32083,12 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetGradeItem
 	BUILDIN_DEF2(getitem2,"getgradeitem","viiiiiiiiirrr?"),		// 创造带有指定附魔评级的道具 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetGradeItem
+#ifdef Pandas_ScriptCommand_InstanceName
+		BUILDIN_DEF(instance_name, "?"),		// 该指令用于获取玩家所拥有的副本的名字。 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_InstanceName
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
+	
 #include "../custom/script_def.inc"
 
 	{NULL,NULL,NULL},
