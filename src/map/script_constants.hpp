@@ -6064,6 +6064,16 @@
 	export_constant(IG_PIERCING_MIX);
 	export_constant(IG_HASTY_MIX);
 	export_constant(IG_ENCHANTSTONE_RECIPE_4M);
+	export_constant(IG_SHADOW_CUBE);
+	export_constant(IG_SHADOW_CUBE_PENDANT);
+	export_constant(IG_SHADOW_CUBE_EARING);
+	export_constant(IG_ANGELPORING_BOX);
+	export_constant(IG_HELM_OF_FAITH_BOX);
+	export_constant(IG_2022_LUNARNEWYEARS_BOX);
+	export_constant(IG_2020_REWARD_BOX);
+	export_constant(IG_COSTUME_MILE_PACK_26_1);
+	export_constant(IG_COSTUME_MILE_PACK_26_2);
+	export_constant(IG_COSTUME_MILE_PACK_26_3);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -9186,7 +9196,6 @@
 	export_constant(SCB_RANGE);
 	export_constant(SCB_REGEN);
 	export_constant(SCB_DYE);
-	export_constant(SCB_BATTLE);
 	export_constant(SCB_MAXAP);
 	export_constant(SCB_POW);
 	export_constant(SCB_STA);
@@ -9200,7 +9209,6 @@
 	export_constant(SCB_MRES);
 	export_constant(SCB_HPLUS);
 	export_constant(SCB_CRATE);
-	export_constant(SCB_ALL);
 
 	/* status change states */
 	export_constant(SCS_NONE);
@@ -9315,6 +9323,8 @@
 	export_constant(SCF_SENDVAL1);
 	export_constant(SCF_SENDVAL2);
 	export_constant(SCF_SENDVAL3);
+	export_constant(SCF_NOFORCEDEND);
+	export_constant(SCF_NOWARNING);
 
 #ifdef Pandas_BattleRecord
 	export_constant(BRT_DMG_RECEIVE);

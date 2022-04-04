@@ -2884,7 +2884,7 @@ bool unit_can_attack(struct block_list *bl, int target_id) {
 	if (bl->type == BL_PC) {
 		map_session_data *sd = ((TBL_PC *)bl);
 
-		if (sd && (sd->state.block_action & PCBLOCK_ATTACK))
+		if (sd && ((sd->state.block_action & PCBLOCK_ATTACK) || pc_isridingwug(sd)))
 			return false;
 	}
 
@@ -3088,9 +3088,6 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 	ud->attackabletime = ud->canmove_tick /*= ud->canact_tick*/ = gettick();
 
 	if(sc && sc->count ) { // map-change/warp dispells.
-		if (sc->cant.warp)
-			return 0;
-
 		status_db.removeByStatusFlag(bl, { SCF_REMOVEONCHANGEMAP });
 
 		// Ensure the bl is a PC; if so, we'll handle the removal of cloaking and cloaking exceed later

@@ -5621,7 +5621,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
 			if (!bl || bl->m != m)
 				continue;
-			status_calc_bl_(bl, SCB_ALL, SCO_FORCE);
+			status_calc_bl_(bl, status_db.getSCB_ALL(), SCO_FORCE);
 		}
 		mapit_free(iter);
 		break;

@@ -6843,7 +6843,7 @@ void clif_status_change(struct block_list *bl, int type, int flag, t_tick tick, 
 	if (type == EFST_ILLUSION && !battle_config.display_hallucination) // Disable Hallucination.
 		return;
 
-#if PACKETVER_MAIN_NUM < 20191120 || PACKETVER_RE_NUM < 20191106
+#if !( PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106 )
 	// Older clients display normal riding icon.
 	if (type == EFST_MADOGEAR)
 		type = EFST_RIDING;
@@ -24281,6 +24281,16 @@ void clif_parse_laphine_synthesis( int fd, struct map_session_data* sd ){
 			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
 			return;
 		}
+
+		if( item->equip != 0 ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
+
+		if( item->equipSwitch != 0 ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
 	}
 
 	int16 index = pc_search_inventory( sd, sd->state.laphine_synthesis );
@@ -24291,7 +24301,7 @@ void clif_parse_laphine_synthesis( int fd, struct map_session_data* sd ){
 	}
 
 	if( ( sd->inventory_data[index]->flag.delay_consume & DELAYCONSUME_NOCONSUME ) == 0 ){
-		if( pc_delitem( sd, index, 1, 0, 0, LOG_TYPE_CONSUME ) != 0 ){
+		if( pc_delitem( sd, index, 1, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
 			return;
 		}
 	}
@@ -24414,6 +24424,12 @@ void clif_parse_laphine_upgrade( int fd, struct map_session_data* sd ){
 		return;
 	}
 
+	// If target item is in equipswitch
+	if( item->equipSwitch != 0 ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
 	// Check minimum refine requirement
 	if( item->refine < upgrade->minimumRefine ){
 		clif_laphine_upgrade_result( sd, true );
@@ -24460,7 +24476,7 @@ void clif_parse_laphine_upgrade( int fd, struct map_session_data* sd ){
 	}
 
 	if( ( sd->inventory_data[index2]->flag.delay_consume & DELAYCONSUME_NOCONSUME ) == 0 ){
-		if( pc_delitem( sd, index2, 1, 0, 0, LOG_TYPE_CONSUME ) != 0 ){
+		if( pc_delitem( sd, index2, 1, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
 			return;
 		}
 	}
