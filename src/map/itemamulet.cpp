@@ -164,12 +164,14 @@ void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone) {
 }
 
 //************************************
-// Method:		amulet_status_calc
-// Description:	重新应用角色身上全部护身符道具的脚本效果
-// Parameter:	struct map_session_data * sd
-// Returns:		void
-//************************************
-void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt) {
+// Method:      amulet_status_calc
+// Description: 重新应用角色身上全部护身符道具的脚本效果
+// Parameter:   struct map_session_data * sd
+// Parameter:   uint8 opt
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2022/04/04 18:03
+//************************************ 
+void amulet_status_calc(struct map_session_data *sd, uint8 opt) {
 	nullpo_retv(sd);
 
 	if (!sd || sd->pandas.amulet_calculating)
