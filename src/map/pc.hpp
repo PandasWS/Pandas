@@ -688,14 +688,12 @@ struct map_session_data {
 		int ematk; // matk bonus from equipment
 		int eatk; // atk bonus from equipment
 		uint8 absorb_dmg_maxhp; // [Cydh]
+		uint8 absorb_dmg_maxhp2;
 		short critical_rangeatk;
 		short weapon_atk_rate, weapon_matk_rate;
 #ifdef Pandas_Bonus3_bRebirthWithHeal
 		int rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp;
 #endif // Pandas_Bonus3_bRebirthWithHeal
-#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
-		uint8 absorb_dmg_maxhp2;
-#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 #ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
 		uint8 absorb_dmg_trigger_hpratio, absorb_dmg_cap_ratio;
 #endif // Pandas_Bonus2_bAbsorbDmgMaxHP

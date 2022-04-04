@@ -1054,26 +1054,21 @@ static void battle_absorb_damage(struct block_list *bl, struct Damage *d) {
 				struct map_session_data *sd = BL_CAST(BL_PC, bl);
 				if (!sd)
 					return;
-
+				dmg_ori = dmg_new = d->damage + d->damage2;
 				if (sd->bonus.absorb_dmg_maxhp) {
 					int hp = sd->bonus.absorb_dmg_maxhp * status_get_max_hp(bl) / 100;
-					dmg_ori = dmg_new = d->damage + d->damage2;
 					if (dmg_ori > hp)
 						dmg_new = dmg_ori - hp;
 				}
-
-#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
 				if (sd->bonus.absorb_dmg_maxhp2) {
-					int hp = min(sd->bonus.absorb_dmg_maxhp2, 100) * status_get_max_hp(bl) / 100;
-					dmg_ori = dmg_new = d->damage + d->damage2;
-					if (dmg_ori > hp)
+					int hp = sd->bonus.absorb_dmg_maxhp2 * status_get_max_hp(bl) / 100;
+					if (dmg_ori > hp) {
 						dmg_new = hp;
+					}
 				}
-#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 
 #ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
 				if (sd->bonus.absorb_dmg_trigger_hpratio && sd->bonus.absorb_dmg_cap_ratio) {
-					dmg_ori = dmg_new = d->damage + d->damage2;
 					double dmg_ratio = (double)dmg_ori / status_get_max_hp(bl);
 
 					if (dmg_ratio * 100 >= min(sd->bonus.absorb_dmg_trigger_hpratio, 100)) {
@@ -1306,8 +1301,13 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		} else {
 			clif_skill_nodamage(target, target, CR_AUTOGUARD, sce->val1, 1);
 			unit_set_walkdelay(target, gettick(), delay, 1);
+#ifdef RENEWAL
+			if (sc->data[SC_SHRINK])
+				sc_start(src, target, SC_STUN, 50, skill_lv, skill_get_time2(skill_id, skill_lv));
+#else
 			if (sc->data[SC_SHRINK] && rnd() % 100 < 5 * sce->val1)
 				skill_blown(target, src, skill_get_blewcount(CR_SHRINK, 1), -1, BLOWN_NONE);
+#endif
 			d->dmg_lv = ATK_MISS;
 			return false;
 		}
@@ -3019,7 +3019,11 @@ static bool is_attack_hitting(struct Damage* wd, struct block_list *src, struct 
 				break;
 			case AS_SONICBLOW:
 				if(sd && pc_checkskill(sd,AS_SONICACCEL) > 0)
+#ifdef RENEWAL
+					hitrate += hitrate * 90 / 100;
+#else
 					hitrate += hitrate * 50 / 100;
+#endif
 				break;
 #ifdef RENEWAL
 			case RG_BACKSTAP:
@@ -4415,7 +4419,13 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 		case NJ_KUNAI:
 			skillratio += -100 + 100 * skill_lv;
 			break;
-#endif
+		case KN_CHARGEATK:
+			skillratio += 600;
+			break;
+		case AS_VENOMKNIFE:
+			skillratio += 400;
+			break;
+#else
 		case KN_CHARGEATK: { // +100% every 3 cells of distance but hard-limited to 500%
 				int k = (wd->miscflag-1)/3;
 				if (k < 0)
@@ -4425,11 +4435,20 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 				skillratio += 100 * k;
 			}
 			break;
+#endif
 		case HT_PHANTASMIC:
+#ifdef RENEWAL
+			skillratio += 400;
+#else
 			skillratio += 50;
+#endif
 			break;
 		case MO_BALKYOUNG:
+#ifdef RENEWAL
+			skillratio += 700;
+#else
 			skillratio += 200;
+#endif
 			break;
 		case HFLI_MOON: //[orn]
 			skillratio += 10 + 110 * skill_lv;
@@ -5799,7 +5818,11 @@ static void battle_calc_attack_post_defense(struct Damage* wd, struct block_list
 	switch (skill_id) {
 		case AS_SONICBLOW:
 			if(sd && pc_checkskill(sd,AS_SONICACCEL)>0)
+#ifdef RENEWAL
+				ATK_ADDRATE(wd->damage, wd->damage2, 90);
+#else
 				ATK_ADDRATE(wd->damage, wd->damage2, 10);
+#endif
 			break;
 	}
 }
@@ -7107,6 +7130,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						skillratio += -100 + 500 + 150 * skill_lv;
 						RE_LVL_DMOD(100);
 						break;
+					case WZ_SIGHTBLASTER:
+						skillratio += 500;
+						break;
 #else
 					case WZ_VERMILION:
 						skillratio += 20 * skill_lv - 20;
@@ -7763,17 +7789,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					struct Damage wd = battle_calc_weapon_attack(src,target,skill_id,skill_lv,mflag);
 
 					ad.damage = battle_attr_fix(src, target, wd.damage + ad.damage, s_ele, tstatus->def_ele, tstatus->ele_lv) * (100 + 40 * skill_lv) / 100;
-#ifdef RENEWAL
-					if (src == target)
-						ad.damage = 0;
-#else
 					if(src == target) {
 						if(src->type == BL_PC)
 							ad.damage = ad.damage / 2;
 						else
 							ad.damage = 0;
 					}
-#endif
 				}
 				break;
 		}
@@ -10065,7 +10086,7 @@ static const struct _battle_data {
 	{ "display_hallucination",              &battle_config.display_hallucination,           1,      0,      1,              },
 	{ "use_statpoint_table",                &battle_config.use_statpoint_table,             1,      0,      1,              },
 	{ "debuff_on_logout",                   &battle_config.debuff_on_logout,                0,      0,      1|2,            },
-	{ "monster_ai",                         &battle_config.mob_ai,                          0x000,  0x000,  0x77F,          },
+	{ "monster_ai",                         &battle_config.mob_ai,                          0x000,  0x000,  0xFFF,          },
 	{ "hom_setting",                        &battle_config.hom_setting,                     0xFFFF, 0x0000, 0xFFFF,         },
 	{ "dynamic_mobs",                       &battle_config.dynamic_mobs,                    1,      0,      1,              },
 	{ "mob_remove_damaged",                 &battle_config.mob_remove_damaged,              1,      0,      1,              },
