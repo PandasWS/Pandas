@@ -1694,13 +1694,6 @@
 	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
 	#define Pandas_Bonus3_bFinalAddClass
 
-	// 是否启用 bonus bAbsorbDmgMaxHP2 效果调整器 [secretdataz]
-	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
-	// 常量名称: SP_PANDAS_ABSORBDMGMAXHP2 / 调整器名称: bAbsorbDmgMaxHP2
-	// 变量位置: map_session_data.bonus / 变量名称: absorb_dmg_maxhp2
-	// 使用原型: bonus bAbsorbDmgMaxHP2,n;
-	#define Pandas_Bonus_bAbsorbDmgMaxHP2
-
 	// 是否启用 bonus2 bAbsorbDmgMaxHP 效果调整器 [Sola丶小克]
 	// 受到超过自己总血量 n% 的伤害时只会受到总血量 x% 的伤害
 	// 常量名称: SP_ABSORB_DMG_MAXHP / 调整器名称: bAbsorbDmgMaxHP

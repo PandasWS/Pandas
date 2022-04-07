@@ -347,6 +347,7 @@ void merc_contract_init(s_mercenary_data *md) {
 bool mercenary_recv_data(s_mercenary *merc, bool flag)
 {
 	map_session_data *sd;
+	t_tick tick = gettick();
 
 	if( (sd = map_charid2sd(merc->char_id)) == NULL )
 		return false;
@@ -380,6 +381,10 @@ bool mercenary_recv_data(s_mercenary *merc, bool flag)
 		unit_calc_pos(&md->bl, sd->bl.x, sd->bl.y, sd->ud.dir);
 		md->bl.x = md->ud.to_x;
 		md->bl.y = md->ud.to_y;
+
+		// Ticks need to be initialized before adding bl to map_addiddb
+		md->regen.tick.hp = tick;
+		md->regen.tick.sp = tick;
 
 #ifdef Pandas_BattleRecord
 		batrec_new(&md->bl);

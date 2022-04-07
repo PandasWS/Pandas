@@ -566,7 +566,7 @@ enum _sp {
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY, //2088-2092
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
 	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN, SP_ADD_ITEM_SPHEAL_RATE, SP_ADD_ITEMGROUP_SPHEAL_RATE, // 2098-2101
-	SP_WEAPON_SUBSIZE // 2102
+	SP_WEAPON_SUBSIZE, SP_ABSORB_DMG_MAXHP2 // 2102-2103
 #ifdef Pandas_ScriptParams_ReadParam
 	,
 	SP_EXTEND_UNUSED = 3100,
@@ -599,9 +599,6 @@ enum _sp {
 	#ifdef Pandas_Bonus3_bFinalAddClass
 		SP_PANDAS_FINALADDCLASS,	// 调整器名称: bFinalAddClass / 说明: 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	#endif // Pandas_Bonus3_bFinalAddClass
-	#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
-		SP_PANDAS_ABSORBDMGMAXHP2,	// 调整器名称: bAbsorbDmgMaxHP2 / 说明: 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
-	#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
