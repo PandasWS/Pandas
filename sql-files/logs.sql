@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS `npclog` (
 # (X) Other
 # (D) Stolen from mobs
 # (U) MVP Prizes
+# ($) Cash
 # (F) Guild/Party Bound retrieval
 # Lotter(Y)
 # (Z) Merged Items
@@ -208,13 +209,17 @@ CREATE TABLE IF NOT EXISTS `picklog` (
 -- Table structure for table `zenylog`
 --
 # ZenyLog types
-# (M)onsters
 # (T)rade
 # (V)ending Sell/Buy
+# (P)layers Drop/Take
+# (M)onsters
 # (S)hop Sell/Buy
 # (N)PC Change amount
+# (D) Stolen from mobs
+# (C)onsumable Items
 # (A)dministrators
 # (E)Mail
+# Auct(I)on
 # (B)uying Store
 # Ban(K) Transactions
 # Barter Shop (J)

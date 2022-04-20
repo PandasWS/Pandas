@@ -49,8 +49,8 @@ if( BUILD_MAPCACHE )
 		"${CMAKE_CURRENT_SOURCE_DIR}/mapcache.cpp"
 	)
 
-	# 设置依赖项目, 这里设置了依赖 breakpad cryptopp-static libopencc libuchardet 这几个项目
-	set( DEPENDENCIES breakpad cryptopp-static yaml-cpp libopencc libuchardet )
+	# 设置依赖项目, 这里设置了依赖 breakpad cryptopp-static yaml-cpp ryml libopencc libuchardet 这几个项目
+	set( DEPENDENCIES breakpad cryptopp-static yaml-cpp ryml libopencc libuchardet )
 
 	# 设置依赖的库文件
 	# 包括 GLOBAL_LIBRARIES, ZLIB_LIBRARIES, 包括依赖项目的库文件

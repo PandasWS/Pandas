@@ -49,7 +49,7 @@ public:
 	}
 
 	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 
 	void parsePropertiesToItemDB(ItemDatabase& item_db);
 	std::shared_ptr<s_item_properties> getProperty(uint32 nameid);
