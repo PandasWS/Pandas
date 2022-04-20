@@ -1729,8 +1729,10 @@
 	#define Pandas_ScriptCommand_SetBodyDir
 
 	// 是否启用 openbank 脚本指令 [Sola丶小克]
-	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
-	//#define Pandas_ScriptCommand_OpenBank
+	// 2022-4-20 修订备注:
+	// 由于 rAthena 官方已经实现了 openbank 指令且重名,
+	// 因此这里的开关只控制 openbank 指令是否如以前版本一样给予返回值
+	#define Pandas_ScriptCommand_OpenBank
 
 	// 是否启用 instance_users 脚本指令 [Sola丶小克]
 	// 获取指定的副本实例中已经进入副本地图的人数

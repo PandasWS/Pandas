@@ -27233,15 +27233,33 @@ BUILDIN_FUNC(openbank){
 	struct map_session_data* sd = nullptr;
 
 	if (!script_charid2sd(2, sd)) {
+#ifdef Pandas_ScriptCommand_OpenBank
+		script_pushint(st, 0);
+#endif // Pandas_ScriptCommand_OpenBank
 		return SCRIPT_CMD_FAILURE;
 	}
 
 	if( !battle_config.feature_banking ){
 		ShowError( "buildin_openbank: banking is disabled.\n" );
+#ifdef Pandas_ScriptCommand_OpenBank
+		script_pushint(st, 0);
+#endif // Pandas_ScriptCommand_OpenBank
 		return SCRIPT_CMD_FAILURE;
 	}
 
+#ifdef Pandas_MapFlag_NoBank
+	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
+		// This map prohibit using the bank system.
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+#endif // Pandas_MapFlag_NoBank
+
 	clif_ui_open( sd, OUT_UI_BANK, 0 );
+#ifdef Pandas_ScriptCommand_OpenBank
+	script_pushint(st, 1);
+#endif // Pandas_ScriptCommand_OpenBank
 	return SCRIPT_CMD_SUCCESS;
 #endif
 }
@@ -27436,28 +27454,6 @@ BUILDIN_FUNC(setbodydir) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_SetBodyDir
-
-#ifdef Pandas_ScriptCommand_OpenBank
-/* ===========================================================
- * 指令: openbank
- * 描述: 让指定的角色立刻打开银行界面
- * 用法: openbank {<角色编号>};
- * 返回: 若指定角色不在线则返回 0, 成功则返回 1
- * 作者: Sola丶小克
- * -----------------------------------------------------------*/
-BUILDIN_FUNC(openbank) {
-	struct map_session_data *sd = nullptr;
-
-	if (!script_charid2sd(2, sd) || !sd) {
-		script_pushint(st, 0);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	clif_parse_BankOpen(sd->fd, sd);
-	script_pushint(st, 1);
-	return SCRIPT_CMD_SUCCESS;
-}
-#endif // Pandas_ScriptCommand_OpenBank
 
 #ifdef Pandas_ScriptCommand_InstanceUsers
 /* ===========================================================
@@ -32080,9 +32076,6 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_SetBodyDir
 	BUILDIN_DEF(setbodydir, "i?"),						// 用于调整角色纸娃娃身体的朝向 [Sola丶小克]
 #endif // Pandas_ScriptCommand_SetBodyDir
-#ifdef Pandas_ScriptCommand_OpenBank
-	BUILDIN_DEF(openbank, "?"),							// 让指定的角色立刻打开银行界面 [Sola丶小克]
-#endif // Pandas_ScriptCommand_OpenBank
 #ifdef Pandas_ScriptCommand_InstanceUsers
 	BUILDIN_DEF(instance_users, "i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
 #endif // Pandas_ScriptCommand_InstanceUsers
