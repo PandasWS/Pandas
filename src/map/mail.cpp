@@ -488,9 +488,9 @@ bool mail_invalid_operation(struct map_session_data *sd)
 		clif_displaymessage( sd->fd, msg_txt( sd, 796 ) ); // You cannot use RODEX on this map.
 		return true;
 	}
+#endif
 
 	return false;
-#endif
 }
 
 /**
