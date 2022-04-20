@@ -691,7 +691,7 @@ const std::string ElementalDatabase::getDefaultLocation() {
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 ElementalDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 ElementalDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	int32 id;
 
 	if (!this->asInt32(node, "Id", id))
@@ -1082,10 +1082,11 @@ uint64 ElementalDatabase::parseBodyNode(const YAML::Node &node) {
 	elemental->status.aspd_rate = 1000;
 
 	if (this->nodeExists(node, "Mode")) {
-		const YAML::Node &ModeNode = node["Mode"];
+		const ryml::NodeRef& ModeNode = node["Mode"];
 
 		for (const auto &Modeit : ModeNode) {
-			std::string mode_name = Modeit.first.as<std::string>();
+			std::string mode_name;
+			c4::from_chars(Modeit.key(), &mode_name);
 
 			std::string mode_constant = "EL_SKILLMODE_" + mode_name;
 			int64 constant;
@@ -1103,7 +1104,7 @@ uint64 ElementalDatabase::parseBodyNode(const YAML::Node &node) {
 			if (!mode_exists)
 				entry = std::make_shared<s_elemental_skill>();
 
-			const YAML::Node &SkillNode = ModeNode[mode_name];
+			const ryml::NodeRef& SkillNode = ModeNode[Modeit.key()];
 			std::string skill_name;
 
 			if (!this->asString(SkillNode, "Skill", skill_name))

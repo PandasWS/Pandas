@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <yaml-cpp/yaml.h>
+#include <ryml_std.hpp>
+#include <ryml.hpp>
 
 #include "../config/core.hpp"
 
@@ -57,41 +58,41 @@ private:
 	uint16 quietLevel;	// 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误
 #endif // Pandas_Database_Yaml_BeQuiet
 
-	bool verifyCompatibility( const YAML::Node& rootNode );
+	bool verifyCompatibility( const ryml::Tree& rootNode );
 	bool load( const std::string& path );
-	void parse( const YAML::Node& rootNode );
+	void parse( const ryml::Tree& rootNode );
 #ifndef Pandas_YamlBlastCache_Serialize
-	void parseImports( const YAML::Node& rootNode );
+	void parseImports( const ryml::Tree& rootNode );
 #else
-	bool parseImports( const YAML::Node& rootNode );
+	bool parseImports( const ryml::Tree& rootNode );
 #endif // Pandas_YamlBlastCache_Serialize
-	template <typename R> bool asType( const YAML::Node& node, const std::string& name, R& out );
-
-#ifdef Pandas_Database_Yaml_Support_UTF8BOM
-	YAML::Node LoadFile(const std::string& filename);
-#endif // Pandas_Database_Yaml_Support_UTF8BOM
+	template <typename R> bool asType( const ryml::NodeRef& node, const std::string& name, R& out );
 
 // These should be visible/usable by the implementation provider
 protected:
+	ryml::Parser parser;
+
 	// Helper functions
-	bool nodeExists( const YAML::Node& node, const std::string& name );
-	bool nodesExist( const YAML::Node& node, std::initializer_list<const std::string> names );
-	void invalidWarning( const YAML::Node &node, const char* fmt, ... );
+	bool nodeExists( const ryml::NodeRef& node, const std::string& name );
+	bool nodesExist( const ryml::NodeRef& node, std::initializer_list<const std::string> names );
+	int32 getLineNumber(const ryml::NodeRef& node);
+	int32 getColumnNumber(const ryml::NodeRef& node);
+	void invalidWarning( const ryml::NodeRef& node, const char* fmt, ... );
 	std::string getCurrentFile();
 
 	// Conversion functions
-	bool asBool(const YAML::Node &node, const std::string &name, bool &out);
-	bool asInt16(const YAML::Node& node, const std::string& name, int16& out );
-	bool asUInt16(const YAML::Node& node, const std::string& name, uint16& out);
-	bool asInt32(const YAML::Node &node, const std::string &name, int32 &out);
-	bool asUInt32(const YAML::Node &node, const std::string &name, uint32 &out);
-	bool asInt64(const YAML::Node &node, const std::string &name, int64 &out);
-	bool asUInt64(const YAML::Node &node, const std::string &name, uint64 &out);
-	bool asFloat(const YAML::Node &node, const std::string &name, float &out);
-	bool asDouble(const YAML::Node &node, const std::string &name, double &out);
-	bool asString(const YAML::Node &node, const std::string &name, std::string &out);
-	bool asUInt16Rate(const YAML::Node& node, const std::string& name, uint16& out, uint16 maximum=10000);
-	bool asUInt32Rate(const YAML::Node& node, const std::string& name, uint32& out, uint32 maximum=10000);
+	bool asBool(const ryml::NodeRef& node, const std::string &name, bool &out);
+	bool asInt16(const ryml::NodeRef& node, const std::string& name, int16& out );
+	bool asUInt16(const ryml::NodeRef& node, const std::string& name, uint16& out);
+	bool asInt32(const ryml::NodeRef& node, const std::string &name, int32 &out);
+	bool asUInt32(const ryml::NodeRef& node, const std::string &name, uint32 &out);
+	bool asInt64(const ryml::NodeRef& node, const std::string &name, int64 &out);
+	bool asUInt64(const ryml::NodeRef& node, const std::string &name, uint64 &out);
+	bool asFloat(const ryml::NodeRef& node, const std::string &name, float &out);
+	bool asDouble(const ryml::NodeRef& node, const std::string &name, double &out);
+	bool asString(const ryml::NodeRef& node, const std::string &name, std::string &out);
+	bool asUInt16Rate(const ryml::NodeRef& node, const std::string& name, uint16& out, uint16 maximum=10000);
+	bool asUInt32Rate(const ryml::NodeRef& node, const std::string& name, uint32& out, uint32 maximum=10000);
 
 	virtual void loadingFinished();
 
@@ -111,7 +112,7 @@ protected:
 #endif // Pandas_YamlBlastCache_Serialize
 
 public:
-	YamlDatabase( const std::string type_, uint16 version_, uint16 minimumVersion_ ){
+	YamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ){
 		this->type = type_;
 		this->version = version_;
 		this->minimumVersion = minimumVersion_;
@@ -130,7 +131,7 @@ public:
 	// Functions that need to be implemented for each type
 	virtual void clear() = 0;
 	virtual const std::string getDefaultLocation() = 0;
-	virtual uint64 parseBodyNode( const YAML::Node& node ) = 0;
+	virtual uint64 parseBodyNode( const ryml::NodeRef& node ) = 0;
 
 #ifdef Pandas_YamlBlastCache_Serialize
 	std::string getSpecifyDatabaseBlashCacheHash(const std::string& db_name);
@@ -188,7 +189,7 @@ protected:
 	std::unordered_map<keytype, std::shared_ptr<datatype>> data;
 
 public:
-	TypesafeYamlDatabase( const std::string type_, uint16 version_, uint16 minimumVersion_ ) : YamlDatabase( type_, version_, minimumVersion_ ){
+	TypesafeYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : YamlDatabase( type_, version_, minimumVersion_ ){
 #ifdef Pandas_YamlBlastCache_Serialize
 		this->datatypeSize = sizeof(datatype);
 #endif // Pandas_YamlBlastCache_Serialize
@@ -276,7 +277,7 @@ private:
 	std::vector<std::shared_ptr<datatype>> cache;
 
 public:
-	TypesafeCachedYamlDatabase( const std::string type_, uint16 version_, uint16 minimumVersion_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, minimumVersion_ ){
+	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, minimumVersion_ ){
 #ifdef Pandas_YamlBlastCache_Serialize
 		this->datatypeSize = sizeof(datatype);
 #endif // Pandas_YamlBlastCache_Serialize
@@ -312,7 +313,7 @@ public:
 			size_t key = this->calculateCacheKey(pair.first);
 
 			// Check if the key fits into the current cache size
-			if (this->cache.capacity() < key) {
+			if (this->cache.capacity() <= key) {
 				// Double the current size, so we do not have to resize that often
 				size_t new_size = key * 2;
 
@@ -328,6 +329,8 @@ public:
 		this->cache.shrink_to_fit();
 	}
 };
+
+void do_init_database();
 
 #ifdef Pandas_YamlBlastCache_Serialize
 namespace boost {
