@@ -401,6 +401,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	"OnPCUnequipEvent",	// NPCE_UNEQUIP		// unequip_event_name	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_SelectCancel
+	"OnSelectCancelEvent",	// 当玩家使用脚本指令select 点击取消时触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcEvent_SelectCancel
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
 
 	/************************************************************************/
@@ -5959,6 +5963,9 @@ BUILDIN_FUNC(select)
 	} else if( sd->npc_menu == 0xff ) {// Cancel was pressed
 		sd->state.menu_or_input = 0;
 		st->state = END;
+#ifdef Pandas_NpcEvent_SelectCancel
+		npc_script_event(sd, NPCE_SELECTCANCEL);
+#endif // Pandas_NpcEvent_SelectCancel
 	} else {// return selected option
 		int menu = 0;
 

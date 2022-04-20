@@ -1423,6 +1423,10 @@
 	#define Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
+	// 当玩家使用脚本指令select 点击取消时触发事件 [人鱼姬的思念]
+	// 事件类型: Event / 事件名称: OnSelectCancelEvent
+	// 常量名称: NPCE_SELECTCANCEL / 变量名称: select_cancel_event
+	#define Pandas_NpcEvent_SelectCancel
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
 	/************************************************************************/
