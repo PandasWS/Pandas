@@ -598,7 +598,7 @@
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码则会给与提示
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑会根据操作
 	//   系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文则直接
-    //   使用当前数据库的 `character_set_database` 编码.
+	//   使用当前数据库的 `character_set_database` 编码.
 	//
 	// --------------------------------------
 	// 改动三：用 mysql_set_character_set 来设置 MySQL 的编码字符集
@@ -782,7 +782,7 @@
 	// 复制对应的技能编号保存在变量: SKILL_VAR_REPRODUCE 等级是 SKILL_VAR_REPRODUCE_LV
 	#define Pandas_Fix_ShadowChaser_Lose_Skill
 
-	// 缓解魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
+	// 解决魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
 	//
 	// 造成问题存在几个可能的原因, 且这些原因在逻辑上都是合理存在的, 因此每种情况都要进行规避:
 	//
@@ -806,6 +806,15 @@
 	//     最后导致看起来和没收到 clif_clearunit_area 的 CLR_DEAD 封包一样, 客户端就无法移除它
 	//
 	//     缓解措施是: 在发送 clif_clearunit_area 的 CLR_DEAD 封包时, 给与一个更大的 AREA_SIZE
+	//
+	// 第三钟情况:
+	//     这是剩下的实际上能在特定机器上重现, 并最终验证解决了的情况.
+	//
+	//     魔物死亡时候的 CLR_DEAD 封包发送是使用 clif_clearunit_delayed 延迟发送的
+	//     如果在 clif_clearunit_delayed 发送之后服务端又给客户端发送了移动封包,
+	//     那么客户端将再次生成一个空血魔物, 有时甚至能看到魔物空血了还在移动
+	// 
+	//     确定且经过验证的解决方案: 魔物只要死亡就立刻停止移动 (感谢 "Mr.Siu" 提供环境配合验证)
 	//
 	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
 	#define Pandas_Ease_Mob_Stuck_After_Dead
