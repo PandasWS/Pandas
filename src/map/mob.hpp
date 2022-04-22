@@ -272,23 +272,13 @@ struct s_mob_db {
 	e_mob_bosstype get_bosstype();
 };
 
-class MobDatabase : public TypesafeCachedYamlDatabase <uint32, s_mob_db> {
+class MobDatabase : public TypesafeCachedYamlDatabase <uint32, s_mob_db>, public BlastCacheEnabled {
 private:
 	bool parseDropNode(std::string nodeName, const ryml::NodeRef& node, uint8 max, s_mob_drop *drops);
 
 public:
-	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1) {
-#ifdef Pandas_YamlBlastCache_MobDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(624);	// Win32 + PEC + PRE
-		this->validDatatypeSize.push_back(656);	// Win32 + PEC + RENEWAL
-		this->validDatatypeSize.push_back(544);	// Win32 + NOPEC + PRE
-		this->validDatatypeSize.push_back(560);	// Win32 + NOPEC + RENEWAL
+	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1), BlastCacheEnabled(this) {
 
-		this->validDatatypeSize.push_back(680);	// x64 + PEC + PRE
-		this->validDatatypeSize.push_back(712);	// x64 + PEC + RENEWAL
-		this->validDatatypeSize.push_back(616);	// x64 + NOPEC + BOTH
-#endif // Pandas_YamlBlastCache_MobDatabase
 	}
 
 	const std::string getDefaultLocation() override;
@@ -296,9 +286,9 @@ public:
 	void loadingFinished() override;
 
 #ifdef Pandas_YamlBlastCache_MobDatabase
+	void afterCacheRestore();
+	const std::string getDependsHash();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_MobDatabase
 };
 

@@ -18,9 +18,9 @@ using namespace rathena;
 #endif // Pandas_YamlBlastCache_Serialize
 
 #ifdef Pandas_Database_Yaml_BeQuiet
-	#define ShowError if ((this->quietLevel & 4) != 4) ::ShowError
-	#define ShowWarning if ((this->quietLevel & 2) != 2) ::ShowWarning
-	#define ShowStatus if ((this->quietLevel & 1) != 1) ::ShowStatus
+	#define ShowError if (!this->p || (((YamlDatabase*)this->p)->quietLevel & 4) != 4) ::ShowError
+	#define ShowWarning if (!this->p || (((YamlDatabase*)this->p)->quietLevel & 2) != 2) ::ShowWarning
+	#define ShowStatus if (!this->p || (((YamlDatabase*)this->p)->quietLevel & 1) != 1) ::ShowStatus
 #endif // Pandas_Database_Yaml_BeQuiet
 
 bool YamlDatabase::nodeExists( const ryml::NodeRef& node, const std::string& name ){
@@ -86,262 +86,19 @@ bool YamlDatabase::verifyCompatibility( const ryml::Tree& tree ){
 	return true;
 }
 
-#ifdef Pandas_YamlBlastCache_Serialize
-//************************************
-// Method:      isCacheEffective
-// Description: 当前序列化缓存是否还有效
-// Access:      private 
-// Returns:     bool 有效返回 true 否则返回 false
-// Author:      Sola丶小克(CairoLee)  2021/01/17 20:32
-//************************************ 
-bool YamlDatabase::isCacheEffective() {
-	IniParser rocketConfig("db/cache/rocket.ini");
-	std::string blashCachePath = this->getBlastCachePath();
-	std::string blashCacheHash = this->getBlashCacheHash(blashCachePath);
-	uint32 count = rocketConfig.Get<uint32>(this->type + ".RelatedFileCount", 0);
-
-	if (rocketConfig.Get<std::string>(this->type + ".BlastCachePath", "") != blashCachePath) {
-		return false;
-	}
-
-	if (blashCacheHash.length() == 0 ||
-		rocketConfig.Get<std::string>(this->type + ".BlastCacheHash", "") != blashCacheHash) {
-		return false;
-	}
-
-	for (uint32 cur = 0; cur < count; cur++) {
-		std::string cfg_path = rocketConfig.Get<std::string>(this->type + ".RelatedFile" + std::to_string(cur) + "_Path", "");
-		std::string cfg_hash = rocketConfig.Get<std::string>(this->type + ".RelatedFile" + std::to_string(cur) + "_Hash", "");
-
-		if (!isFileExists(cfg_path) || cfg_hash.length() == 0) {
-			return false;
-		}
-
-		std::string current_hash = crypto_GetFileMD5(cfg_path);
-		if (current_hash != cfg_hash) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-//************************************
-// Method:      removeSerialize
-// Description: 移除当前数据库的序列号缓存文件
-// Access:      private 
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2022/03/12 19:03
-//************************************ 
-bool YamlDatabase::removeSerialize() {
-	std::string blashCachePath = this->getBlastCachePath();
-	if (isFileExists(blashCachePath)) {
-		return deleteFile(blashCachePath);
-	}
-	return false;
-}
-
-//************************************
-// Method:      getBlastCachePath
-// Description: 获取当前数据库的缓存文件保存路径
-// Access:      private 
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2021/01/19 22:52
-//************************************ 
-std::string YamlDatabase::getBlastCachePath() {
-#if defined(PRERE) || !defined(RENEWAL)
-	std::string mode("pre");
-#else
-	std::string mode("re");
-#endif // defined(PRERE) || !defined(RENEWAL)
-	return std::string(
-		"db/cache/" +
-		boost::algorithm::to_lower_copy(this->type) + "_" +
-		mode + ".blast"
-	);
-}
-
-//************************************
-// Method:      getBlashCacheHash
-// Description: 获取缓存文件的散列特征
-// Access:      private 
-// Parameter:   const std::string & path
-// Returns:     std::string 失败则返回空字符串, 成功则返回 MD5 散列
-// Author:      Sola丶小克(CairoLee)  2021/01/24 13:54
-//************************************ 
-std::string YamlDatabase::getBlashCacheHash(const std::string& path) {
-	if (!isFileExists(path))
-		return "";
-
-	std::string filehash = crypto_GetFileMD5(path);
-	if (filehash.length() == 0)
-		return "";
-
-	std::string additional = this->getAdditionalCacheHash();
-
-	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%|%8%") %
-		getPandasVersion() %
-		BLASTCACHE_VERSION %
-		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
-		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
-		this->version %
-		this->datatypeSize %
-		filehash % additional
-	);
-
-	return crypto_GetStringMD5(content);
-}
-
-//************************************
-// Method:      isEnableSerialize
-// Description: 获取当前疾风缓存是否处于开启状态
-// Access:      private 
-// Parameter:   bool bNoWarning
-//              是否不展现任何警告信息
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2022/01/08 19:12
-//************************************ 
-bool YamlDatabase::isEnableSerialize(bool bNoWarning) {
-	if (!this->supportSerialize) {
-		return false;
-	}
-
-	for (auto &size : this->validDatatypeSize) {
-		if (size == this->datatypeSize) {
-			return true;
-		}
-	}
-
-	if (!bNoWarning) {
-		ShowWarning("Blast Cache: Struct size of database '%s' does not meet expectations, current size is: %d\n", this->type.c_str(), this->datatypeSize);
-	}
-
-	return false;
-}
-
-//************************************
-// Method:      loadFromSerialize
-// Description: 从序列化缓存文件中恢复当前对象
-// Access:      private 
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
-//************************************ 
-bool YamlDatabase::loadFromSerialize() {
-	if (!this->isEnableSerialize()) {
-		return false;
-	}
-
-	try
-	{
-		std::string blashPath = this->getBlastCachePath();
-		if (this->isCacheEffective() && isFileExists(blashPath)) {
-			performance_create_and_start("blastcache");
-			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
-
-			std::ifstream file(blashPath, SERIALIZE_LOAD_STREAM_FLAG);
-			SERIALIZE_LOAD_ARCHIVE loadArchive(file);
-			if (this->fireSerialize<SERIALIZE_LOAD_ARCHIVE>(loadArchive)) {
-				performance_stop("blastcache");
-				ShowStatus("Done reading " CL_WHITE "%s" CL_RESET " from blast cache, took %" PRIu64 " milliseconds...\n", this->type.c_str(), performance_get_milliseconds("blastcache"));
-				performance_destory("blastcache");
-
-				this->afterSerialize();
-				return true;
-			}
-			else {
-				performance_destory("blastcache");
-			}
-		}
-		return false;
-	}
-	catch (const std::exception& e)
-	{
-		ShowError("%s: %s\n", __func__, e.what());
-		return false;
-	}
-};
-
-//************************************
-// Method:      saveToSerialize
-// Description: 将当前对象保存到序列化缓存文件中去
-// Access:      private 
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/01/14 00:21
-//************************************ 
-bool YamlDatabase::saveToSerialize() {
-	if (!this->isEnableSerialize(true)) {
-		return false;
-	}
-
-	try
-	{
-		uint32 i = 0;
-		IniParser rocketConfig("db/cache/rocket.ini");
-
-		// 遍历所有关联的文件, 写入他们的路径和 Hash
-		for (auto f : this->includeFiles) {
-			std::string hash = crypto_GetFileMD5(f);
-			rocketConfig.Set(this->type + ".RelatedFile" + std::to_string(i) + "_Path", f.c_str());
-			rocketConfig.Set(this->type + ".RelatedFile" + std::to_string(i) + "_Hash", hash.c_str());
-			i++;
-		}
-
-		// 记录关联文件的总数
-		rocketConfig.Set(this->type + ".RelatedFileCount", std::to_string(i));
-
-		// 记录序列化缓存文件的所在路径
-		std::string blashPath = this->getBlastCachePath();
-		rocketConfig.Set(this->type + ".BlastCachePath", blashPath);
-
-		// 执行序列化 (保存缓存数据)
-		bool fireResult = false;
-		{
-			std::ofstream file(blashPath, SERIALIZE_SAVE_STREAM_FLAG);
-			SERIALIZE_SAVE_ARCHIVE saveArchive(file);
-			fireResult = this->fireSerialize<SERIALIZE_SAVE_ARCHIVE>(saveArchive);
-		}
-
-		// 如果缓存成功, 那么记录缓存的 Hash 和版本号
-		if (fireResult) {
-			std::string blashHash = this->getBlashCacheHash(blashPath);
-			rocketConfig.Set(this->type + ".BlastCacheHash", blashHash);
-		}
-
-		return fireResult;
-	}
-	catch (const std::exception& e)
-	{
-		ShowError("%s: %s\n", __func__, e.what());
-		return false;
-	}
-};
-
-//************************************
-// Method:      getSpecifyDatabaseBlashCacheHash
-// Description: 读取指定数据库当前在 rocket.ini 记录的散列值
-// Access:      public 
-// Parameter:   const std::string & db_name
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 20:27
-//************************************ 
-std::string YamlDatabase::getSpecifyDatabaseBlashCacheHash(const std::string& db_name) {
-	IniParser rocketConfig("db/cache/rocket.ini");
-	return rocketConfig.Get<std::string>(db_name + ".BlastCacheHash", "");
-}
-#endif // Pandas_YamlBlastCache_Serialize
-
-bool YamlDatabase::load(){
+bool YamlDatabase::load() {
 #ifndef Pandas_YamlBlastCache_Serialize
-	bool ret = this->load( this->getDefaultLocation() );
+	bool ret = this->load(this->getDefaultLocation());
 
 	this->loadingFinished();
+
+	return ret;
 #else
 	// 清空关联文件记录
 	this->includeFiles.clear();
 
 	// 如果已经从缓存加载, 那么执行 loadingFinished 后直接返回
-	if (this->loadFromSerialize()) {
+	if (this->loadFromCache()) {
 		this->loadingFinished();
 		return true;
 	}
@@ -350,23 +107,23 @@ bool YamlDatabase::load(){
 	yaml_load_completely_success = true;
 
 	// 如果缓存失效, 那么下面执行全新加载
-	bool ret = this->load( this->getDefaultLocation() );
+	bool ret = this->load(this->getDefaultLocation());
 
 	// 失败的话直接把之前的缓存文件也干掉
 	if (!yaml_load_completely_success) {
-		this->removeSerialize();
+		this->removeCache();
 	}
 
 	// 如果加载成功且过程中没有出现任何错误和警告, 那么将加载成功后的数据进行缓存
 	if (ret && yaml_load_completely_success) {
-		this->saveToSerialize();
+		this->saveToCache();
 	}
 
 	// 并执行 loadingFinished 进行一些数据初始化工作
 	this->loadingFinished();
-#endif // Pandas_YamlBlastCache_Serialize
 
 	return ret;
+#endif // Pandas_YamlBlastCache_Serialize
 }
 
 bool YamlDatabase::reload(){
@@ -683,3 +440,169 @@ void on_yaml_error( const char* msg, size_t len, ryml::Location loc, void *user_
 void do_init_database(){
 	ryml::set_callbacks( ryml::Callbacks( nullptr, nullptr, nullptr, on_yaml_error ) );
 }
+
+#ifdef Pandas_YamlBlastCache_Serialize
+bool BlastCache::saveToCache() {
+	if (!this->bEnabledCache) {
+		return false;
+	}
+
+	try
+	{
+		uint32 i = 0;
+		IniParser rocketConfig("db/cache/rocket.ini");
+
+		// 遍历所有关联的文件, 写入他们的路径和 Hash
+		for (const auto& f : this->includeFiles) {
+			std::string hash = crypto_GetFileMD5(f);
+			rocketConfig.Set(this->type + ".RelatedFile" + std::to_string(i) + "_Path", f.c_str());
+			rocketConfig.Set(this->type + ".RelatedFile" + std::to_string(i) + "_Hash", hash.c_str());
+			i++;
+		}
+
+		// 记录关联文件的总数
+		rocketConfig.Set(this->type + ".RelatedFileCount", std::to_string(i));
+
+		// 记录序列化缓存文件的所在路径
+		std::string blashPath = this->getCachePath();
+		rocketConfig.Set(this->type + ".BlastCachePath", blashPath);
+
+		// 执行序列化 (保存缓存数据)
+		bool fireResult = false;
+		{
+			std::ofstream file(blashPath, SERIALIZE_SAVE_STREAM_FLAG);
+			SERIALIZE_SAVE_ARCHIVE saveArchive(file);
+			fireResult = this->fireSerialize<SERIALIZE_SAVE_ARCHIVE>(saveArchive);
+		}
+
+		// 如果缓存成功, 那么记录缓存的 Hash 和版本号
+		if (fireResult) {
+			std::string blashHash = this->getCacheHash(blashPath);
+			rocketConfig.Set(this->type + ".BlastCacheHash", blashHash);
+		}
+
+		return fireResult;
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("%s: %s\n", __func__, e.what());
+		return false;
+	}
+}
+
+bool BlastCache::loadFromCache() {
+	if (!this->bEnabledCache) {
+		return false;
+	}
+
+	try
+	{
+		std::string blashPath = this->getCachePath();
+		if (this->isCacheEffective() && isFileExists(blashPath)) {
+			performance_create_and_start("blastcache");
+			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
+
+			std::ifstream file(blashPath, SERIALIZE_LOAD_STREAM_FLAG);
+			SERIALIZE_LOAD_ARCHIVE loadArchive(file);
+			if (this->fireSerialize<SERIALIZE_LOAD_ARCHIVE>(loadArchive)) {
+				performance_stop("blastcache");
+				ShowStatus("Done reading " CL_WHITE "%s" CL_RESET " from blast cache, took %" PRIu64 " milliseconds...\n", this->type.c_str(), performance_get_milliseconds("blastcache"));
+				performance_destory("blastcache");
+
+				this->afterCacheRestore();
+				return true;
+			}
+			else {
+				performance_destory("blastcache");
+			}
+		}
+		return false;
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("%s: %s\n", __func__, e.what());
+		return false;
+	}
+}
+
+bool BlastCache::isCacheEffective() {
+	IniParser rocketConfig("db/cache/rocket.ini");
+	std::string blastCachePath = this->getCachePath();
+	std::string blastCacheHash = this->getCacheHash(blastCachePath);
+	uint32 count = rocketConfig.Get<uint32>(this->type + ".RelatedFileCount", 0);
+
+	if (rocketConfig.Get<std::string>(this->type + ".BlastCachePath", "") != blastCachePath) {
+		return false;
+	}
+
+	if (blastCacheHash.length() == 0 ||
+		rocketConfig.Get<std::string>(this->type + ".BlastCacheHash", "") != blastCacheHash) {
+		return false;
+	}
+
+	for (uint32 cur = 0; cur < count; cur++) {
+		std::string cfg_path = rocketConfig.Get<std::string>(this->type + ".RelatedFile" + std::to_string(cur) + "_Path", "");
+		std::string cfg_hash = rocketConfig.Get<std::string>(this->type + ".RelatedFile" + std::to_string(cur) + "_Hash", "");
+
+		if (!isFileExists(cfg_path) || cfg_hash.length() == 0) {
+			return false;
+		}
+
+		std::string current_hash = crypto_GetFileMD5(cfg_path);
+		if (current_hash != cfg_hash) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool BlastCache::removeCache() {
+	std::string blashCachePath = this->getCachePath();
+	if (isFileExists(blashCachePath)) {
+		return deleteFile(blashCachePath);
+	}
+	return false;
+}
+
+const std::string BlastCache::getCacheHash(const std::string& path) {
+	if (!isFileExists(path))
+		return "";
+
+	std::string filehash = crypto_GetFileMD5(path);
+	if (filehash.length() == 0)
+		return "";
+
+	std::string depends = this->getDependsHash();
+
+	std::string content = boost::str(
+		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%") %
+		getPandasVersion() %
+		BLASTCACHE_VERSION %
+		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
+		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
+		this->version %
+		filehash % depends
+	);
+
+	return crypto_GetStringMD5(content);
+}
+
+const std::string BlastCache::getCacheHashByName(const std::string& db_name) {
+ 	IniParser rocketConfig("db/cache/rocket.ini");
+ 	return rocketConfig.Get<std::string>(db_name + ".BlastCacheHash", "");
+}
+
+const std::string BlastCache::getCachePath() {
+#if defined(PRERE) || !defined(RENEWAL)
+	std::string mode("pre");
+#else
+	std::string mode("re");
+#endif // defined(PRERE) || !defined(RENEWAL)
+	return std::string(
+		"db/cache/" +
+		boost::algorithm::to_lower_copy(this->type) + "_" +
+		mode + ".blast"
+	);
+}
+#endif // Pandas_YamlBlastCache_Serialize

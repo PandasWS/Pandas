@@ -316,7 +316,7 @@ struct s_skill_db {
 	sc_type sc;									///< Default SC for skill
 };
 
-class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db> {
+class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db>, public BlastCacheEnabled {
 private:
 	/// Skill ID to Index lookup: skill_index = skill_get_index(skill_id) - [FWI] 20160423 the whole index thing should be removed.
 	uint16 skilldb_id2idx[(UINT16_MAX + 1)];
@@ -338,18 +338,8 @@ private:
 #endif // Pandas_YamlBlastCache_SkillDatabase
 
 public:
-	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 3, 1) {
+	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 3, 1), BlastCacheEnabled(this) {
 		this->clear();
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(1600);	// Win32 + PRE
-		this->validDatatypeSize.push_back(1648);	// Win32 + RENEWAL
-		this->validDatatypeSize.push_back(1632);	// x64 + PRE
-		this->validDatatypeSize.push_back(1688);	// x64 + RENEWAL
-
-		this->validDatatypeSize.push_back(1640);	// Linux + PRE
-		this->validDatatypeSize.push_back(1696);	// Linux + RENEWAL
-#endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
 	const std::string getDefaultLocation() override;
@@ -361,9 +351,9 @@ public:
 	uint16 get_index( uint16 skill_id, bool silent, const char* func, const char* file, int line );
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
+	void afterCacheRestore();
+	const std::string getDependsHash();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_SkillDatabase
 };
 

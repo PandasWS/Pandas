@@ -1226,7 +1226,7 @@
 		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
 		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
 		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-				#define Pandas_YamlBlastCache_ItemDatabase
+			#define Pandas_YamlBlastCache_ItemDatabase
 		#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]

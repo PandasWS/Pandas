@@ -4419,13 +4419,13 @@ bool MobDatabase::doSerialize(const std::string& type, void* archive) {
 }
 
 //************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 mob_db 中的对象进行加工处理
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 mob_db 中的对象进行加工处理
 // Access:      public 
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:31
 //************************************ 
-void MobDatabase::afterSerialize() {
+void MobDatabase::afterCacheRestore() {
 	for (const auto& it : *this) {
 		auto mob = it.second;
 
@@ -4438,20 +4438,20 @@ void MobDatabase::afterSerialize() {
 }
 
 //************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Returns:     std::string
+// Returns:     const std::string
 // Author:      Sola丶小克(CairoLee)  2022/03/12 21:04
 //************************************ 
-std::string MobDatabase::getAdditionalCacheHash() {
+const std::string MobDatabase::getDependsHash() {
 	// 在 MobDatabase 中使用到了 ITEM_DB 的信息
 	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
+	std::string depends = boost::str(
 		boost::format("%1%") %
-		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB")
+		this->getCacheHashByName("ITEM_DB")
 	);
-	return additional;
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_MobDatabase
 

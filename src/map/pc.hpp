@@ -1153,16 +1153,10 @@ struct s_job_info {
 	} noenter_map;
 };
 
-class JobDatabase : public TypesafeCachedYamlDatabase<uint16, s_job_info> {
+class JobDatabase : public TypesafeCachedYamlDatabase<uint16, s_job_info>, public BlastCacheEnabled {
 public:
-	JobDatabase() : TypesafeCachedYamlDatabase("JOB_STATS", 1) {
-#ifdef Pandas_YamlBlastCache_JobDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(4144);	// Win32 + PEC
-		this->validDatatypeSize.push_back(4120);	// Win32 + NOPEC
-		this->validDatatypeSize.push_back(4200);	// x64 + PEC
-		this->validDatatypeSize.push_back(4176);	// x64 + NOPEC
-#endif // Pandas_YamlBlastCache_JobDatabase
+	JobDatabase() : TypesafeCachedYamlDatabase("JOB_STATS", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1177,8 +1171,8 @@ public:
 	int32 get_maxWeight(uint16 job_id);
 
 #ifdef Pandas_YamlBlastCache_JobDatabase
+	void afterCacheRestore();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
 #endif // Pandas_YamlBlastCache_JobDatabase
 };
 
@@ -1651,16 +1645,10 @@ struct s_skill_tree {
 	std::unordered_map<uint16, std::shared_ptr<s_skill_tree_entry>> skills;	/// skill_id, entry
 };
 
-class SkillTreeDatabase : public TypesafeYamlDatabase<uint16, s_skill_tree> {
+class SkillTreeDatabase : public TypesafeYamlDatabase<uint16, s_skill_tree>, public BlastCacheEnabled {
 public:
-	SkillTreeDatabase() : TypesafeYamlDatabase("SKILL_TREE_DB", 1) {
-#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(44);	// Win32
-		this->validDatatypeSize.push_back(88);	// x64
+	SkillTreeDatabase() : TypesafeYamlDatabase("SKILL_TREE_DB", 1), BlastCacheEnabled(this) {
 
-		this->validDatatypeSize.push_back(80);	// Linux
-#endif // Pandas_YamlBlastCache_SkillTreeDatabase
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1671,9 +1659,8 @@ public:
 	std::shared_ptr<s_skill_tree_entry> get_skill_data(int class_, uint16 skill_id);
 
 #ifdef Pandas_YamlBlastCache_SkillTreeDatabase
+	const std::string getDependsHash();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 };
 

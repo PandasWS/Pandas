@@ -1084,14 +1084,10 @@ public:
 	void apply( struct item& item );
 };
 
-class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
+class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data>, public BlastCacheEnabled {
 public:
-	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(56);	// Win32
-		this->validDatatypeSize.push_back(80);	// x64
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
+	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1103,22 +1099,17 @@ public:
 	bool option_get_id(std::string name, uint16 &id);
 
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+	void afterCacheRestore();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 };
 
 extern RandomOptionDatabase random_option_db;
 
-class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
+class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group>, public BlastCacheEnabled {
 public:
-	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(52);	// Win32
-		this->validDatatypeSize.push_back(88);	// x64
-		this->validDatatypeSize.push_back(120);	// Linux
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
+	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1130,9 +1121,8 @@ public:
 	bool option_get_id(std::string name, uint16 &id);
 
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+	const std::string getDependsHash();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
@@ -1326,7 +1316,7 @@ struct item_data
 	int inventorySlotNeeded(int quantity);
 };
 
-class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
+class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data>, public BlastCacheEnabled {
 private:
 	std::unordered_map<std::string, std::shared_ptr<item_data>> nameToItemDataMap;
 	std::unordered_map<std::string, std::shared_ptr<item_data>> aegisNameToItemDataMap;
@@ -1348,13 +1338,8 @@ private:
 	e_sex defaultGender( const ryml::NodeRef& node, std::shared_ptr<item_data> id );
 
 public:
-	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(368);	// Win32 + BOTH
-		this->validDatatypeSize.push_back(448);	// x64 + PRE
-		this->validDatatypeSize.push_back(456);	// x64 + RENEWAL
-#endif // Pandas_YamlBlastCache_ItemDatabase
+	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1372,23 +1357,17 @@ public:
 	std::shared_ptr<item_data> search_aegisname( const char *name );
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
+	void afterCacheRestore();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
 #endif // Pandas_YamlBlastCache_ItemDatabase
 };
 
 extern ItemDatabase item_db;
 
-class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
+class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db>, public BlastCacheEnabled {
 public:
-	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(36);	// Win32
-		this->validDatatypeSize.push_back(72);	// x64
+	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 2, 1), BlastCacheEnabled(this) {
 
-		this->validDatatypeSize.push_back(64);	// Linux
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1403,9 +1382,8 @@ public:
 	uint8 pc_get_itemgroup(uint16 group_id, bool identify, map_session_data *sd);
 
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+	const std::string getDependsHash();
 	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 };
 
@@ -1696,7 +1674,7 @@ namespace boost {
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 
 
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
+#if defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
 namespace boost {
 	namespace serialization {
 		// ======================================================================
@@ -1726,6 +1704,6 @@ namespace boost {
 		}
 	} // namespace serialization
 } // namespace boost
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
+#endif // defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
 
 #endif /* ITEMDB_HPP */

@@ -57,14 +57,10 @@ enum e_quest_check_type : uint8 {
 	HUNTING,   ///< Check if the given hunting quest's requirements have been met
 };
 
-class QuestDatabase : public TypesafeYamlDatabase<uint32, s_quest_db> {
+class QuestDatabase : public TypesafeYamlDatabase<uint32, s_quest_db>, public BlastCacheEnabled {
 public:
-	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_QuestDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(72);	// Win32
-		this->validDatatypeSize.push_back(104);	// x64
-#endif // Pandas_YamlBlastCache_QuestDatabase
+	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -75,7 +71,7 @@ public:
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 	bool doSerialize(const std::string& type, void* archive);
-	std::string getAdditionalCacheHash();
+ 	const std::string getDependsHash();
 #endif // Pandas_YamlBlastCache_QuestDatabase
 };
 

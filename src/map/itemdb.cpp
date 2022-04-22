@@ -1322,13 +1322,13 @@ bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
 }
 
 //************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 item_db 中的对象进行加工处理
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 item_db 中的对象进行加工处理
 // Access:      public 
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:33
 //************************************ 
-void ItemDatabase::afterSerialize() {
+void ItemDatabase::afterCacheRestore() {
 	for (const auto& it : *this) {
 		auto item = it.second;
 
@@ -2093,32 +2093,21 @@ bool ItemGroupDatabase::doSerialize(const std::string& type, void* archive) {
 }
 
 //************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 itemdb_group 中的对象进行加工处理
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
-//************************************ 
-void ItemGroupDatabase::afterSerialize() {
-	// no thing need to do after serialize
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
+// Returns:     const std::string
 // Author:      Sola丶小克(CairoLee)  2022/03/12 20:50
 //************************************ 
-std::string ItemGroupDatabase::getAdditionalCacheHash() {
+const std::string ItemGroupDatabase::getDependsHash() {
 	// 在 ItemGroupDatabase 中使用到了 ITEM_DB 和 RANDOM_OPTION_GROUP 的信息
 	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
+	std::string depends = boost::str(
 		boost::format("%1%|%2%") %
-		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB") %
-		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_GROUP")
+		this->getCacheHashByName("ITEM_DB") %
+		this->getCacheHashByName("RANDOM_OPTION_GROUP")
 	);
-	return additional;
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 
@@ -3509,13 +3498,13 @@ bool RandomOptionDatabase::doSerialize(const std::string& type, void* archive) {
 }
 
 //************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 random_option_db 中的对象进行加工处理
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 random_option_db 中的对象进行加工处理
 // Access:      public 
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
 //************************************ 
-void RandomOptionDatabase::afterSerialize() {
+void RandomOptionDatabase::afterCacheRestore() {
 	for (const auto& pair : *this) {
 		// ==================================================================
 		// 根据脚本明文重新生成脚本指令序列
@@ -3821,31 +3810,20 @@ bool RandomOptionGroupDatabase::doSerialize(const std::string& type, void* archi
 }
 
 //************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 random_option_group 中的对象进行加工处理
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
-//************************************ 
-void RandomOptionGroupDatabase::afterSerialize() {
-	// no thing need to do after serialize
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
+// Returns:     const std::string
 // Author:      Sola丶小克(CairoLee)  2022/03/12 20:59
 //************************************ 
-std::string RandomOptionGroupDatabase::getAdditionalCacheHash() {
+const std::string RandomOptionGroupDatabase::getDependsHash() {
 	// 在 RandomOptionGroupDatabase 中使用到了 RANDOM_OPTION_DB 的信息
 	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
+	std::string depends = boost::str(
 		boost::format("%1%") %
-		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_DB")
+		this->getCacheHashByName("RANDOM_OPTION_DB")
 	);
-	return additional;
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 
