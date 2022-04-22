@@ -26,6 +26,22 @@
 #define ARCHIVEPTR_REGISTER_TYPE(x,type) x->template register_type<type>()
 #define SERIALIZE_SET_MEMORY_ZERO(x) memset(&x, 0, sizeof(x))
 
+#define DOSERIALIZE_HANDLE(x) { \
+	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) { \
+		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive; \
+		ARCHIVEPTR_REGISTER_TYPE(ar, x); \
+		*ar & *this; \
+		return true; \
+	} \
+	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) { \
+		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive; \
+		ARCHIVEPTR_REGISTER_TYPE(ar, x); \
+		*ar & *this; \
+		return true; \
+	} \
+	return false; \
+	}
+
 //************************************
 // 此处的疾风缓存版本会被纳入缓存散列的计算过程中
 // 注意: 变缓存版本会导致所有缓存过期

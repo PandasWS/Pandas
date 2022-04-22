@@ -1100,7 +1100,9 @@ public:
 
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
 	void afterCacheRestore();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(RandomOptionDatabase);
+	}
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 };
 
@@ -1122,7 +1124,9 @@ public:
 
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 	const std::string getDependsHash();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(RandomOptionGroupDatabase);
+	}
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
@@ -1358,7 +1362,9 @@ public:
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 	void afterCacheRestore();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(ItemDatabase);
+	}
 #endif // Pandas_YamlBlastCache_ItemDatabase
 };
 
@@ -1383,7 +1389,9 @@ public:
 
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
 	const std::string getDependsHash();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(ItemGroupDatabase);
+	}
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 };
 

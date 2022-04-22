@@ -1172,7 +1172,9 @@ public:
 
 #ifdef Pandas_YamlBlastCache_JobDatabase
 	void afterCacheRestore();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(JobDatabase);
+	}
 #endif // Pandas_YamlBlastCache_JobDatabase
 };
 
@@ -1660,7 +1662,9 @@ public:
 
 #ifdef Pandas_YamlBlastCache_SkillTreeDatabase
 	const std::string getDependsHash();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(SkillTreeDatabase);
+	}
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 };
 

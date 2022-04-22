@@ -70,8 +70,10 @@ public:
 	bool reload();
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
-	bool doSerialize(const std::string& type, void* archive);
- 	const std::string getDependsHash();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(QuestDatabase);
+	}
 #endif // Pandas_YamlBlastCache_QuestDatabase
 };
 

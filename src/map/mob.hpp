@@ -288,7 +288,9 @@ public:
 #ifdef Pandas_YamlBlastCache_MobDatabase
 	void afterCacheRestore();
 	const std::string getDependsHash();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(MobDatabase);
+	}
 #endif // Pandas_YamlBlastCache_MobDatabase
 };
 

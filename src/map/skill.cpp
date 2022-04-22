@@ -24504,31 +24504,6 @@ uint16 SkillDatabase::get_index( uint16 skill_id, bool silent, const char *func,
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 SkillDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:36
-//************************************ 
-bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, SkillDatabase);
-		*ar & *this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, SkillDatabase);
-		*ar & *this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
 // Method:      afterCacheRestore
 // Description: 缓存恢复完成之后对 skill_db 中的对象进行加工处理
 // Access:      public 
@@ -24540,7 +24515,7 @@ void SkillDatabase::afterCacheRestore() {
 		auto skill = it.second;
 
 		// ==================================================================
-		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
 		// ==================================================================
 		SERIALIZE_SET_MEMORY_ZERO(skill->nocast);
 		SERIALIZE_SET_MEMORY_ZERO(skill->damage);

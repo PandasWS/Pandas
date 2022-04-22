@@ -353,7 +353,9 @@ public:
 #ifdef Pandas_YamlBlastCache_SkillDatabase
 	void afterCacheRestore();
 	const std::string getDependsHash();
-	bool doSerialize(const std::string& type, void* archive);
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(SkillDatabase);
+	}
 #endif // Pandas_YamlBlastCache_SkillDatabase
 };
 
