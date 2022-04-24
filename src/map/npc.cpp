@@ -6259,6 +6259,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_DROPITEM
 		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_PRODUCE
+		NPCF_PRODUCE,	// 当玩家准备制作物品时触发过滤器 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PRODUCE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6469,6 +6473,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_DROPITEM:
 		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_PRODUCE
+	case NPCF_PRODUCE:
+		return script_config.produce_filter_name;		// 当玩家准备制作物品时触发过滤器 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PRODUCE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

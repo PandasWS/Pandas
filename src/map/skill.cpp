@@ -21901,6 +21901,17 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 
 	if (make_per < 1) make_per = 1;
 
+#ifdef Pandas_NpcFilter_PRODUCE
+	pc_setreg(sd, add_str("@produce_skill_id"), skill_id);
+	pc_setreg(sd, add_str("@produce_name_id"), nameid);
+	pc_setreg(sd, add_str("@produce_qty"), qty);
+	pc_setreg(sd, add_str("@produce_make_per"), make_per);
+	if (npc_script_filter(sd, NPCF_PRODUCE)) {
+		qty = (int)cap_value(pc_readreg(sd, add_str("@produce_qty")), 0, 10000);
+		make_per = (int)cap_value(pc_readreg(sd, add_str("@produce_make_per")), 0, 10000);
+	}
+#endif // Pandas_NpcFilter_PRODUCE
+
 	if (qty > 1 || rnd()%10000 < make_per){ //Success, or crafting multiple items.
 		struct item tmp_item;
 		memset(&tmp_item,0,sizeof(tmp_item));
