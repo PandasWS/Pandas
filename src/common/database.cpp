@@ -576,13 +576,14 @@ const std::string BlastCache::getCacheHash(const std::string& path) {
 	std::string depends = this->getDependsHash();
 
 	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%") %
+		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%|%8%") %
 		getPandasVersion() %
 		BLASTCACHE_VERSION %
 		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
 		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
 		this->version %
-		filehash % depends
+		filehash % depends %
+		this->datatypeSize
 	);
 
 	return crypto_GetStringMD5(content);

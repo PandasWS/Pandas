@@ -34,6 +34,7 @@ protected:
 	uint16 version;
 	bool bEnabledCache = false;
 	std::set<std::string> includeFiles;
+	size_t datatypeSize = 0;
 
 	template <typename Archive>
 	inline void serialize(Archive& ar, const unsigned int version) {
@@ -186,16 +187,6 @@ private:
 		ar& boost::serialization::base_object<YamlDatabase>(*this);
 		ar& data;
 	}
-
-	template<class Archive>
-	friend void save_construct_data(
-		Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
-
-	template<class Archive>
-	friend void load_construct_data(
-		Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
 #endif // Pandas_YamlBlastCache_Serialize
 
 protected:
@@ -203,9 +194,15 @@ protected:
 
 public:
 	TypesafeYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : YamlDatabase( type_, version_, minimumVersion_ ){
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	TypesafeYamlDatabase( const std::string& type_, uint16 version_ ) : YamlDatabase( type_, version_, version_ ){
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	void clear() override{
@@ -269,27 +266,21 @@ private:
 		ar& boost::serialization::base_object<TypesafeYamlDatabase<keytype, datatype>>(*this);
 		ar& cache;
 	}
-
-	template<class Archive>
-	friend void save_construct_data(
-		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
-
-	template<class Archive>
-	friend void load_construct_data(
-		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
 #endif // Pandas_YamlBlastCache_Serialize
 
 	std::vector<std::shared_ptr<datatype>> cache;
 
 public:
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, minimumVersion_ ){
-
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, version_ ){
-
+#ifdef Pandas_YamlBlastCache_Serialize
+		this->datatypeSize = sizeof(datatype);
+#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	void clear() override{
