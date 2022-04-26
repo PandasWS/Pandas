@@ -1016,6 +1016,10 @@ struct s_item_combo {
 	script_code *script;
 	uint16 id;
 
+#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+	std::string script_plaintext;
+#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
+
 	~s_item_combo() {
 		if (this->script) {
 			script_free_code(this->script);
@@ -1026,13 +1030,31 @@ struct s_item_combo {
 	}
 };
 
-class ComboDatabase : public TypesafeYamlDatabase<uint16, s_item_combo> {
+#ifdef Pandas_YamlBlastCache_ComboDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_combo
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_combo& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
+			ar& t.id;
+			ar& t.script_plaintext;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ComboDatabase
+
+class ComboDatabase : public TypesafeYamlDatabase<uint16, s_item_combo>, public BlastCacheEnabled {
 private:
 	uint16 combo_num;
 	uint16 find_combo_id( const std::vector<t_itemid>& items );
 
 public:
-	ComboDatabase() : TypesafeYamlDatabase("COMBO_DB", 1) {
+	ComboDatabase() : TypesafeYamlDatabase("COMBO_DB", 1), BlastCacheEnabled(this) {
 
 	}
 
@@ -1043,6 +1065,14 @@ public:
 	const std::string getDefaultLocation() override;
 	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
+
+#ifdef Pandas_YamlBlastCache_ComboDatabase
+	void afterCacheRestore();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(ComboDatabase);
+	}
+#endif // Pandas_YamlBlastCache_ComboDatabase
 };
 
 extern ComboDatabase itemdb_combo;
@@ -1089,8 +1119,6 @@ struct s_random_opt_group_entry {
 	int8 param;
 	uint16 chance;
 };
-
-
 
 #if defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
 namespace boost {

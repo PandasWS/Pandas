@@ -2734,6 +2734,10 @@ uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 				combo->script = nullptr;
 			}
 			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+			combo->script_plaintext = strTrim(script);
+#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 		} else {
 			if (!exists) {
 				combo->script = nullptr;
@@ -2758,6 +2762,44 @@ void ComboDatabase::loadingFinished() {
 		}
 	}
 }
+
+#ifdef Pandas_YamlBlastCache_ComboDatabase
+//************************************
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 itemdb_combo 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2022/04/26 22:41
+//************************************ 
+void ComboDatabase::afterCacheRestore() {
+	for (const auto& pair : *this) {
+		// ==================================================================
+		// 根据脚本明文重新生成脚本指令序列
+		// ==================================================================
+		pair.second->script = parse_script(
+			pair.second->script_plaintext.c_str(),
+			"itemdb_combo_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+	}
+}
+
+//************************************
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
+// Access:      public 
+// Returns:     const std::string
+// Author:      Sola丶小克(CairoLee)  2022/04/26 22:44
+//************************************ 
+const std::string ComboDatabase::getDependsHash() {
+	// 在 ComboDatabase 中使用到了 ITEM_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string depends = boost::str(
+		boost::format("%1%") %
+		this->getCacheHashByName("ITEM_DB")
+	);
+	return depends;
+}
+#endif // Pandas_YamlBlastCache_ComboDatabase
 
 #ifdef Pandas_Crashfix_RouletteData_UnInit
 //************************************
