@@ -916,46 +916,21 @@ bool QuestDatabase::reload() {
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 QuestDatabase 进行序列化和反序列化操作
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:35
-//************************************ 
-bool QuestDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, QuestDatabase);
-		*ar & *this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, QuestDatabase);
-		*ar & *this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
+// Returns:     const std::string
 // Author:      Sola丶小克(CairoLee)  2022/03/12 21:07
 //************************************ 
-std::string QuestDatabase::getAdditionalCacheHash() {
+const std::string QuestDatabase::getDependsHash() {
 	// 在 QuestDatabase 中使用到了 ITEM_DB 和 MOB_DB 的信息
 	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
+	std::string depends = boost::str(
 		boost::format("%1%|%2%") %
-		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB") %
-		this->getSpecifyDatabaseBlashCacheHash("MOB_DB")
+		this->getCacheHashByName("ITEM_DB") %
+		this->getCacheHashByName("MOB_DB")
 	);
-	return additional;
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_QuestDatabase
 

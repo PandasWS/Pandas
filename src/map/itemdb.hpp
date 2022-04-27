@@ -1016,6 +1016,10 @@ struct s_item_combo {
 	script_code *script;
 	uint16 id;
 
+#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+	std::string script_plaintext;
+#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
+
 	~s_item_combo() {
 		if (this->script) {
 			script_free_code(this->script);
@@ -1026,13 +1030,31 @@ struct s_item_combo {
 	}
 };
 
-class ComboDatabase : public TypesafeYamlDatabase<uint16, s_item_combo> {
+#ifdef Pandas_YamlBlastCache_ComboDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_combo
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_combo& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
+			ar& t.id;
+			ar& t.script_plaintext;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ComboDatabase
+
+class ComboDatabase : public TypesafeYamlDatabase<uint16, s_item_combo>, public BlastCacheEnabled {
 private:
 	uint16 combo_num;
 	uint16 find_combo_id( const std::vector<t_itemid>& items );
 
 public:
-	ComboDatabase() : TypesafeYamlDatabase("COMBO_DB", 1) {
+	ComboDatabase() : TypesafeYamlDatabase("COMBO_DB", 1), BlastCacheEnabled(this) {
 
 	}
 
@@ -1043,6 +1065,14 @@ public:
 	const std::string getDefaultLocation() override;
 	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
+
+#ifdef Pandas_YamlBlastCache_ComboDatabase
+	void afterCacheRestore();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(ComboDatabase);
+	}
+#endif // Pandas_YamlBlastCache_ComboDatabase
 };
 
 extern ComboDatabase itemdb_combo;
@@ -1064,6 +1094,24 @@ struct s_random_opt_data
 	}
 };
 
+#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_data
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_data& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.name;
+			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
+			ar& t.script_plaintext;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_RandomOptionDatabase
+
 /// Struct for random option group entry
 struct s_random_opt_group_entry {
 	uint16 id;
@@ -1071,6 +1119,25 @@ struct s_random_opt_group_entry {
 	int8 param;
 	uint16 chance;
 };
+
+#if defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_group_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_group_entry& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.min_value;
+			ar& t.max_value;
+			ar& t.param;
+			ar& t.chance;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
 
 /// Struct for Random Option Group
 struct s_random_opt_group {
@@ -1084,14 +1151,29 @@ public:
 	void apply( struct item& item );
 };
 
-class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
+#if defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_random_opt_group
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_random_opt_group& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.name;
+			ar& t.slots;
+			ar& t.max_random;
+			ar& t.random_options;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // defined(Pandas_YamlBlastCache_RandomOptionGroupDatabase) || defined(Pandas_YamlBlastCache_ItemGroupDatabase)
+
+class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data>, public BlastCacheEnabled {
 public:
-	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(56);	// Win32
-		this->validDatatypeSize.push_back(80);	// x64
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
+	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1103,22 +1185,19 @@ public:
 	bool option_get_id(std::string name, uint16 &id);
 
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
+	void afterCacheRestore();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(RandomOptionDatabase);
+	}
 #endif // Pandas_YamlBlastCache_RandomOptionDatabase
 };
 
 extern RandomOptionDatabase random_option_db;
 
-class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
+class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group>, public BlastCacheEnabled {
 public:
-	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(52);	// Win32
-		this->validDatatypeSize.push_back(88);	// x64
-		this->validDatatypeSize.push_back(120);	// Linux
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
+	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1130,9 +1209,10 @@ public:
 	bool option_get_id(std::string name, uint16 &id);
 
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(RandomOptionGroupDatabase);
+	}
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
@@ -1155,6 +1235,32 @@ struct s_item_group_entry
 	uint16 refineMaximum;
 };
 
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_group_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_entry& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.rate;
+			ar& t.duration;
+			ar& t.amount;
+			ar& t.isAnnounced;
+			ar& t.GUID;
+			ar& t.isStacked;
+			ar& t.isNamed;
+			ar& t.bound;
+			ar& t.randomOptionGroup;
+			ar& t.refineMinimum;
+			ar& t.refineMaximum;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+
 /// Struct of random group
 struct s_item_group_random
 {
@@ -1164,12 +1270,44 @@ struct s_item_group_random
 	std::shared_ptr<s_item_group_entry> get_random_itemsubgroup();
 };
 
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_group_random
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_random& t, const unsigned int version)
+		{
+			ar& t.total_rate;
+			ar& t.data;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
+
 /// Struct of item group that will be used for db
 struct s_item_group_db
 {
 	uint16 id; /// Item Group ID
 	std::unordered_map<uint16, std::shared_ptr<s_item_group_random>> random;	/// group ID, s_item_group_random
 };
+
+#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_item_group_db
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_item_group_db& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.random;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 
 /// Struct of Roulette db
 struct s_roulette_db {
@@ -1326,7 +1464,110 @@ struct item_data
 	int inventorySlotNeeded(int quantity);
 };
 
-class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data> {
+#ifdef Pandas_YamlBlastCache_ItemDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct item_data
+		// ======================================================================
+
+		template <typename Archive>
+		void serialize(Archive& ar, struct item_data& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.name;
+			ar& t.ename;
+
+			ar& t.value_buy;
+			ar& t.value_sell;
+			ar& t.type;
+			ar& t.subtype;
+			//ar& t.maxchance;				// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.sex;
+			ar& t.equip;
+			ar& t.weight;
+			ar& t.atk;
+			ar& t.def;
+			ar& t.range;
+			ar& t.slots;
+			ar& t.look;
+			ar& t.elv;
+			ar& t.weapon_level;
+			ar& t.armor_level;
+			ar& t.view_id;
+			ar& t.elvmax;
+#ifdef RENEWAL
+			ar& t.matk;
+#endif
+
+			ar& t.class_base;
+			ar& t.class_upper;
+			//ar& t.mob;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
+
+			ar& t.flag.available;
+			//ar& t.flag.no_equip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.flag.no_refine;
+			ar& t.flag.delay_consume;
+
+			ar& t.flag.trade_restriction.drop;
+			ar& t.flag.trade_restriction.trade;
+			ar& t.flag.trade_restriction.trade_partner;
+			ar& t.flag.trade_restriction.sell;
+			ar& t.flag.trade_restriction.cart;
+			ar& t.flag.trade_restriction.storage;
+			ar& t.flag.trade_restriction.guild_storage;
+			ar& t.flag.trade_restriction.mail;
+			ar& t.flag.trade_restriction.auction;
+
+			//ar& t.flag.autoequip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.flag.buyingstore;
+			ar& t.flag.dead_branch;
+
+			ar& t.flag.group;
+			ar& t.flag.guid;
+			ar& t.flag.broadcast;
+			ar& t.flag.bindOnEquip;
+			ar& t.flag.dropEffect;
+
+			ar& t.stack.amount;
+			ar& t.stack.inventory;
+			ar& t.stack.cart;
+			ar& t.stack.storage;
+			ar& t.stack.guild_storage;
+
+			ar& t.item_usage.override;
+			ar& t.item_usage.sitting;
+
+			ar& t.gm_lv_trade_override;
+			//ar& t.combos;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.delay.duration;
+			ar& t.delay.sc;
+
+#ifdef Pandas_Struct_Item_Data_Pandas
+
+			//ar& t.script;					// 改用 t.pandas.script_plaintext.script 来序列化数据
+			//ar& t.equip_script;			// 改用 t.pandas.script_plaintext.equip_script 来序列化数据
+			//ar& t.unequip_script;			// 改用 t.pandas.script_plaintext.unequip_script 来序列化数据
+
+			ar& t.pandas.script_plaintext.script;
+			ar& t.pandas.script_plaintext.equip_script;
+			ar& t.pandas.script_plaintext.unequip_script;
+
+#ifdef Pandas_Struct_Item_Data_Taming_Mobid
+			ar& t.pandas.taming_mobid;
+#endif // Pandas_Struct_Item_Data_Taming_Mobid
+
+#ifdef Pandas_Struct_Item_Data_Has_CallFunc
+			ar& t.pandas.has_callfunc;
+#endif // Pandas_Struct_Item_Data_Has_CallFunc
+
+#endif // Pandas_Struct_Item_Data_Pandas
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_ItemDatabase
+
+class ItemDatabase : public TypesafeCachedYamlDatabase<t_itemid, item_data>, public BlastCacheEnabled {
 private:
 	std::unordered_map<std::string, std::shared_ptr<item_data>> nameToItemDataMap;
 	std::unordered_map<std::string, std::shared_ptr<item_data>> aegisNameToItemDataMap;
@@ -1348,13 +1589,8 @@ private:
 	e_sex defaultGender( const ryml::NodeRef& node, std::shared_ptr<item_data> id );
 
 public:
-	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(368);	// Win32 + BOTH
-		this->validDatatypeSize.push_back(448);	// x64 + PRE
-		this->validDatatypeSize.push_back(456);	// x64 + RENEWAL
-#endif // Pandas_YamlBlastCache_ItemDatabase
+	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1372,23 +1608,19 @@ public:
 	std::shared_ptr<item_data> search_aegisname( const char *name );
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
+	void afterCacheRestore();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(ItemDatabase);
+	}
 #endif // Pandas_YamlBlastCache_ItemDatabase
 };
 
 extern ItemDatabase item_db;
 
-class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
+class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db>, public BlastCacheEnabled {
 public:
-	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(36);	// Win32
-		this->validDatatypeSize.push_back(72);	// x64
+	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 2, 1), BlastCacheEnabled(this) {
 
-		this->validDatatypeSize.push_back(64);	// Linux
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1403,9 +1635,10 @@ public:
 	uint8 pc_get_itemgroup(uint16 group_id, bool identify, map_session_data *sd);
 
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(ItemGroupDatabase);
+	}
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 };
 
@@ -1525,207 +1758,5 @@ void itemdb_reload(void);
 
 void do_final_itemdb(void);
 void do_init_itemdb(void);
-
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct item_data
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct item_data& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.name;
-			ar& t.ename;
-
-			ar& t.value_buy;
-			ar& t.value_sell;
-			ar& t.type;
-			ar& t.subtype;
-			//ar& t.maxchance;				// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.sex;
-			ar& t.equip;
-			ar& t.weight;
-			ar& t.atk;
-			ar& t.def;
-			ar& t.range;
-			ar& t.slots;
-			ar& t.look;
-			ar& t.elv;
-			ar& t.weapon_level;
-			ar& t.armor_level;
-			ar& t.view_id;
-			ar& t.elvmax;
-#ifdef RENEWAL
-			ar& t.matk;
-#endif
-
-			ar& t.class_base;
-			ar& t.class_upper;
-			//ar& t.mob;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
-
-			ar& t.flag.available;
-			//ar& t.flag.no_equip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.flag.no_refine;
-			ar& t.flag.delay_consume;
-
-			ar& t.flag.trade_restriction.drop;
-			ar& t.flag.trade_restriction.trade;
-			ar& t.flag.trade_restriction.trade_partner;
-			ar& t.flag.trade_restriction.sell;
-			ar& t.flag.trade_restriction.cart;
-			ar& t.flag.trade_restriction.storage;
-			ar& t.flag.trade_restriction.guild_storage;
-			ar& t.flag.trade_restriction.mail;
-			ar& t.flag.trade_restriction.auction;
-
-			//ar& t.flag.autoequip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.flag.buyingstore;
-			ar& t.flag.dead_branch;
-
-			ar& t.flag.group;
-			ar& t.flag.guid;
-			ar& t.flag.broadcast;
-			ar& t.flag.bindOnEquip;
-			ar& t.flag.dropEffect;
-
-			ar& t.stack.amount;
-			ar& t.stack.inventory;
-			ar& t.stack.cart;
-			ar& t.stack.storage;
-			ar& t.stack.guild_storage;
-
-			ar& t.item_usage.override;
-			ar& t.item_usage.sitting;
-
-			ar& t.gm_lv_trade_override;
-			//ar& t.combos;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.delay.duration;
-			ar& t.delay.sc;
-
-#ifdef Pandas_Struct_Item_Data_Pandas
-
-			//ar& t.script;					// 改用 t.pandas.script_plaintext.script 来序列化数据
-			//ar& t.equip_script;			// 改用 t.pandas.script_plaintext.equip_script 来序列化数据
-			//ar& t.unequip_script;			// 改用 t.pandas.script_plaintext.unequip_script 来序列化数据
-
-			ar& t.pandas.script_plaintext.script;
-			ar& t.pandas.script_plaintext.equip_script;
-			ar& t.pandas.script_plaintext.unequip_script;
-
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-			ar& t.pandas.taming_mobid;
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
-#ifdef Pandas_Struct_Item_Data_Has_CallFunc
-			ar& t.pandas.has_callfunc;
-#endif // Pandas_Struct_Item_Data_Has_CallFunc
-
-#endif // Pandas_Struct_Item_Data_Pandas
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_ItemDatabase
-
-
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_item_group_entry
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_item_group_entry& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.rate;
-			ar& t.duration;
-			ar& t.amount;
-			ar& t.isAnnounced;
-			ar& t.GUID;
-			ar& t.isStacked;
-			ar& t.isNamed;
-			ar& t.bound;
-			ar& t.randomOptionGroup;
-			ar& t.refineMinimum;
-			ar& t.refineMaximum;
-		}
-
-		// ======================================================================
-		// struct s_item_group_random
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_item_group_random& t, const unsigned int version)
-		{
-			ar& t.total_rate;
-			ar& t.data;
-		}
-
-		// ======================================================================
-		// struct s_item_group_db
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_item_group_db& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.random;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
-
-
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_random_opt_data
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_random_opt_data& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.name;
-			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
-			ar& t.script_plaintext;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
-
-
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_random_opt_group_entry
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_random_opt_group_entry& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.min_value;
-			ar& t.max_value;
-			ar& t.param;
-			ar& t.chance;
-		}
-
-		// ======================================================================
-		// struct s_random_opt_group
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_random_opt_group& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.name;
-			ar& t.slots;
-			ar& t.max_random;
-			ar& t.random_options;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 
 #endif /* ITEMDB_HPP */

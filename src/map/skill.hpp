@@ -251,11 +251,59 @@ struct s_skill_require {
 	bool itemid_level_dependent;			/// If the ItemCost is skill level dependent or not.
 };
 
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_skill_require
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_require& t, const unsigned int version)
+		{
+			ar& t.hp;
+			ar& t.mhp;
+			ar& t.sp;
+			ar& t.ap;
+			ar& t.hp_rate;
+			ar& t.sp_rate;
+			ar& t.ap_rate;
+			ar& t.zeny;
+			ar& t.weapon;
+			ar& t.ammo;
+			ar& t.ammo_qty;
+			ar& t.state;
+			ar& t.spiritball;
+			ar& t.itemid;
+			ar& t.amount;
+			ar& t.eqItem;
+			ar& t.status;
+			ar& t.itemid_level_dependent;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_SkillDatabase
+
 /// Skill Copyable structure.
 struct s_skill_copyable { // [Cydh]
 	uint8 option;
 	uint16 req_opt;
 };
+
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_skill_copyable
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_copyable& t, const unsigned int version)
+		{
+			ar& t.option;
+			ar& t.req_opt;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_SkillDatabase
 
 /// Database skills
 struct s_skill_db {
@@ -316,7 +364,74 @@ struct s_skill_db {
 	sc_type sc;									///< Default SC for skill
 };
 
-class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db> {
+#ifdef Pandas_YamlBlastCache_SkillDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_skill_db
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_db& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.name;
+			ar& t.desc;
+			ar& t.range;
+			ar& t.hit;
+			ar& t.inf;
+			ar& t.element;
+			ar& t.nk;
+			ar& t.splash;
+			ar& t.max;
+			ar& t.num;
+			ar& t.castcancel;
+			ar& t.cast_def_rate;
+			ar& t.skill_type;
+			ar& t.blewcount;
+			ar& t.inf2;
+			ar& t.maxcount;
+
+			ar& t.castnodex;
+			ar& t.delaynodex;
+
+			//ar& t.nocast;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.giveap;
+
+			ar& t.unit_id;
+			ar& t.unit_id2;
+			ar& t.unit_layout_type;
+			ar& t.unit_range;
+			ar& t.unit_interval;
+			ar& t.unit_target;
+			ar& t.unit_flag;
+
+			ar& t.cast;
+			ar& t.delay;
+			ar& t.walkdelay;
+			ar& t.upkeep_time;
+			ar& t.upkeep_time2;
+			ar& t.cooldown;
+#ifdef RENEWAL_CAST
+			ar& t.fixed_cast;
+#endif // RENEWAL_CAST
+
+			ar& t.require;
+
+			ar& t.unit_nonearnpc_range;
+			ar& t.unit_nonearnpc_type;
+
+			//ar& t.damage;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.copyable;
+
+			//ar& t.abra_probability;		// SkillDatabase 默认不会为其赋值, 暂时无需处理
+			//ar& t.improvisedsong_rate;	// SkillDatabase 默认不会为其赋值, 暂时无需处理
+			ar& t.sc;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_SkillDatabase
+
+class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db>, public BlastCacheEnabled {
 private:
 	/// Skill ID to Index lookup: skill_index = skill_get_index(skill_id) - [FWI] 20160423 the whole index thing should be removed.
 	uint16 skilldb_id2idx[(UINT16_MAX + 1)];
@@ -338,18 +453,8 @@ private:
 #endif // Pandas_YamlBlastCache_SkillDatabase
 
 public:
-	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 3, 1) {
+	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 3, 1), BlastCacheEnabled(this) {
 		this->clear();
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(1600);	// Win32 + PRE
-		this->validDatatypeSize.push_back(1648);	// Win32 + RENEWAL
-		this->validDatatypeSize.push_back(1632);	// x64 + PRE
-		this->validDatatypeSize.push_back(1688);	// x64 + RENEWAL
-
-		this->validDatatypeSize.push_back(1640);	// Linux + PRE
-		this->validDatatypeSize.push_back(1696);	// Linux + RENEWAL
-#endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
 	const std::string getDefaultLocation() override;
@@ -361,9 +466,11 @@ public:
 	uint16 get_index( uint16 skill_id, bool silent, const char* func, const char* file, int line );
 
 #ifdef Pandas_YamlBlastCache_SkillDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
+	void afterCacheRestore();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(SkillDatabase);
+	}
 #endif // Pandas_YamlBlastCache_SkillDatabase
 };
 
@@ -2802,111 +2909,5 @@ int skill_get_time3(struct map_data *mapdata, uint16 skill_id, uint16 skill_lv);
 #define SKILL_CHK_ELEM(skill_id)  ( (skill_id) >= EL_SKILLBASE && (skill_id) < EL_SKILLBASE+MAX_ELEMENTALSKILL )
 #define SKILL_CHK_ABR(skill_id)   ( (skill_id) >= ABR_SKILLBASE && (skill_id) < ABR_SKILLBASE+MAX_ABRSKILL )
 #define SKILL_CHK_GUILD(skill_id) ( (skill_id) >= GD_SKILLBASE && (skill_id) < GD_SKILLBASE+MAX_GUILDSKILL )
-
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_skill_db
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_db& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.name;
-			ar& t.desc;
-			ar& t.range;
-			ar& t.hit;
-			ar& t.inf;
-			ar& t.element;
-			ar& t.nk;
-			ar& t.splash;
-			ar& t.max;
-			ar& t.num;
-			ar& t.castcancel;
-			ar& t.cast_def_rate;
-			ar& t.skill_type;
-			ar& t.blewcount;
-			ar& t.inf2;
-			ar& t.maxcount;
-
-			ar& t.castnodex;
-			ar& t.delaynodex;
-
-			//ar& t.nocast;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.giveap;
-
-			ar& t.unit_id;
-			ar& t.unit_id2;
-			ar& t.unit_layout_type;
-			ar& t.unit_range;
-			ar& t.unit_interval;
-			ar& t.unit_target;
-			ar& t.unit_flag;
-
-			ar& t.cast;
-			ar& t.delay;
-			ar& t.walkdelay;
-			ar& t.upkeep_time;
-			ar& t.upkeep_time2;
-			ar& t.cooldown;
-#ifdef RENEWAL_CAST
-			ar& t.fixed_cast;
-#endif // RENEWAL_CAST
-
-			ar& t.require;
-
-			ar& t.unit_nonearnpc_range;
-			ar& t.unit_nonearnpc_type;
-
-			//ar& t.damage;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.copyable;
-
-			//ar& t.abra_probability;		// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			//ar& t.improvisedsong_rate;	// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.sc;
-		}
-
-		// ======================================================================
-		// struct s_skill_copyable
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_copyable& t, const unsigned int version)
-		{
-			ar& t.option;
-			ar& t.req_opt;
-		}
-
-		// ======================================================================
-		// struct s_skill_require
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_require& t, const unsigned int version)
-		{
-			ar& t.hp;
-			ar& t.mhp;
-			ar& t.sp;
-			ar& t.ap;
-			ar& t.hp_rate;
-			ar& t.sp_rate;
-			ar& t.ap_rate;
-			ar& t.zeny;
-			ar& t.weapon;
-			ar& t.ammo;
-			ar& t.ammo_qty;
-			ar& t.state;
-			ar& t.spiritball;
-			ar& t.itemid;
-			ar& t.amount;
-			ar& t.eqItem;
-			ar& t.status;
-			ar& t.itemid_level_dependent;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_SkillDatabase
 
 #endif /* SKILL_HPP */

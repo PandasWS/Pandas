@@ -1297,38 +1297,13 @@ void ItemDatabase::loadingFinished(){
 
 #ifdef Pandas_YamlBlastCache_ItemDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 ItemDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:32
-//************************************ 
-bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
-		*ar & *this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
-		*ar & *this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 item_db 中的对象进行加工处理
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 item_db 中的对象进行加工处理
 // Access:      public 
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/04/18 22:33
 //************************************ 
-void ItemDatabase::afterSerialize() {
+void ItemDatabase::afterCacheRestore() {
 	for (const auto& it : *this) {
 		auto item = it.second;
 
@@ -1341,7 +1316,7 @@ void ItemDatabase::afterSerialize() {
 		item->ename.reserve(ITEM_NAME_LENGTH);
 
 		// ==================================================================
-		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
+		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
 		// ==================================================================
 		SERIALIZE_SET_MEMORY_ZERO(item->maxchance);
 		SERIALIZE_SET_MEMORY_ZERO(item->flag.no_equip);
@@ -2068,57 +2043,21 @@ uint8 ItemGroupDatabase::pc_get_itemgroup(uint16 group_id, bool identify, map_se
 
 #ifdef Pandas_YamlBlastCache_ItemGroupDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 ItemDatabase 进行序列化和反序列化操作
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
-//************************************ 
-bool ItemGroupDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 itemdb_group 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
-//************************************ 
-void ItemGroupDatabase::afterSerialize() {
-	// no thing need to do after serialize
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
+// Returns:     const std::string
 // Author:      Sola丶小克(CairoLee)  2022/03/12 20:50
 //************************************ 
-std::string ItemGroupDatabase::getAdditionalCacheHash() {
+const std::string ItemGroupDatabase::getDependsHash() {
 	// 在 ItemGroupDatabase 中使用到了 ITEM_DB 和 RANDOM_OPTION_GROUP 的信息
 	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
+	std::string depends = boost::str(
 		boost::format("%1%|%2%") %
-		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB") %
-		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_GROUP")
+		this->getCacheHashByName("ITEM_DB") %
+		this->getCacheHashByName("RANDOM_OPTION_GROUP")
 	);
-	return additional;
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_ItemGroupDatabase
 
@@ -2795,6 +2734,10 @@ uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 				combo->script = nullptr;
 			}
 			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+			combo->script_plaintext = strTrim(script);
+#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 		} else {
 			if (!exists) {
 				combo->script = nullptr;
@@ -2819,6 +2762,44 @@ void ComboDatabase::loadingFinished() {
 		}
 	}
 }
+
+#ifdef Pandas_YamlBlastCache_ComboDatabase
+//************************************
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 itemdb_combo 中的对象进行加工处理
+// Access:      public 
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2022/04/26 22:41
+//************************************ 
+void ComboDatabase::afterCacheRestore() {
+	for (const auto& pair : *this) {
+		// ==================================================================
+		// 根据脚本明文重新生成脚本指令序列
+		// ==================================================================
+		pair.second->script = parse_script(
+			pair.second->script_plaintext.c_str(),
+			"itemdb_combo_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
+		);
+	}
+}
+
+//************************************
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
+// Access:      public 
+// Returns:     const std::string
+// Author:      Sola丶小克(CairoLee)  2022/04/26 22:44
+//************************************ 
+const std::string ComboDatabase::getDependsHash() {
+	// 在 ComboDatabase 中使用到了 ITEM_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string depends = boost::str(
+		boost::format("%1%") %
+		this->getCacheHashByName("ITEM_DB")
+	);
+	return depends;
+}
+#endif // Pandas_YamlBlastCache_ComboDatabase
 
 #ifdef Pandas_Crashfix_RouletteData_UnInit
 //************************************
@@ -3484,38 +3465,13 @@ bool RandomOptionDatabase::option_get_id(std::string name, uint16 &id) {
 
 #ifdef Pandas_YamlBlastCache_RandomOptionDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 RandomOptionDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
-//************************************ 
-bool RandomOptionDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionDatabase);
-		*ar&* this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionDatabase);
-		*ar&* this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 random_option_db 中的对象进行加工处理
+// Method:      afterCacheRestore
+// Description: 缓存恢复完成之后对 random_option_db 中的对象进行加工处理
 // Access:      public 
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
 //************************************ 
-void RandomOptionDatabase::afterSerialize() {
+void RandomOptionDatabase::afterCacheRestore() {
 	for (const auto& pair : *this) {
 		// ==================================================================
 		// 根据脚本明文重新生成脚本指令序列
@@ -3796,56 +3752,20 @@ bool RandomOptionGroupDatabase::option_get_id(std::string name, uint16 &id) {
 
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 RandomOptionGroupDatabase 进行序列化和反序列化操作
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
-//************************************ 
-bool RandomOptionGroupDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 random_option_group 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
-//************************************ 
-void RandomOptionGroupDatabase::afterSerialize() {
-	// no thing need to do after serialize
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
+// Returns:     const std::string
 // Author:      Sola丶小克(CairoLee)  2022/03/12 20:59
 //************************************ 
-std::string RandomOptionGroupDatabase::getAdditionalCacheHash() {
+const std::string RandomOptionGroupDatabase::getDependsHash() {
 	// 在 RandomOptionGroupDatabase 中使用到了 RANDOM_OPTION_DB 的信息
 	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
+	std::string depends = boost::str(
 		boost::format("%1%") %
-		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_DB")
+		this->getCacheHashByName("RANDOM_OPTION_DB")
 	);
-	return additional;
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 

@@ -1153,16 +1153,44 @@ struct s_job_info {
 	} noenter_map;
 };
 
-class JobDatabase : public TypesafeCachedYamlDatabase<uint16, s_job_info> {
-public:
-	JobDatabase() : TypesafeCachedYamlDatabase("JOB_STATS", 1) {
 #ifdef Pandas_YamlBlastCache_JobDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(4144);	// Win32 + PEC
-		this->validDatatypeSize.push_back(4120);	// Win32 + NOPEC
-		this->validDatatypeSize.push_back(4200);	// x64 + PEC
-		this->validDatatypeSize.push_back(4176);	// x64 + NOPEC
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_job_info
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_job_info& t, const unsigned int version)
+		{
+			ar& t.base_hp;
+			ar& t.base_sp;
+			ar& t.base_ap;
+
+			ar& t.hp_factor;
+			ar& t.hp_multiplicator;
+			ar& t.sp_factor;
+			ar& t.max_weight_base;
+
+			ar& t.job_bonus;
+			ar& t.aspd_base;
+
+			ar& t.base_exp;
+			ar& t.job_exp;
+
+			ar& t.max_base_level;
+			ar& t.max_job_level;
+
+			ar& t.max_param;
+			//ar& t.noenter_map;						// JobDatabase 默认不会为其赋值, 暂时无需处理
+		}
+	} // namespace serialization
+} // namespace boost
 #endif // Pandas_YamlBlastCache_JobDatabase
+
+class JobDatabase : public TypesafeCachedYamlDatabase<uint16, s_job_info>, public BlastCacheEnabled {
+public:
+	JobDatabase() : TypesafeCachedYamlDatabase("JOB_STATS", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1177,8 +1205,10 @@ public:
 	int32 get_maxWeight(uint16 job_id);
 
 #ifdef Pandas_YamlBlastCache_JobDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
+	void afterCacheRestore();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(JobDatabase);
+	}
 #endif // Pandas_YamlBlastCache_JobDatabase
 };
 
@@ -1646,21 +1676,51 @@ struct s_skill_tree_entry {
 	bool exclude_inherit;	// exclude the skill from inherit when loading the table
 };
 
+#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_skill_tree_entry
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_tree_entry& t, const unsigned int version)
+		{
+			ar& t.skill_id;
+			ar& t.max_lv;
+			ar& t.baselv;
+			ar& t.joblv;
+			ar& t.need;
+			ar& t.exclude_inherit;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_SkillTreeDatabase
+
 struct s_skill_tree {
 	std::vector<uint16> inherit_job;
 	std::unordered_map<uint16, std::shared_ptr<s_skill_tree_entry>> skills;	/// skill_id, entry
 };
 
-class SkillTreeDatabase : public TypesafeYamlDatabase<uint16, s_skill_tree> {
-public:
-	SkillTreeDatabase() : TypesafeYamlDatabase("SKILL_TREE_DB", 1) {
 #ifdef Pandas_YamlBlastCache_SkillTreeDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(44);	// Win32
-		this->validDatatypeSize.push_back(88);	// x64
-
-		this->validDatatypeSize.push_back(80);	// Linux
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_skill_tree
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_skill_tree& t, const unsigned int version)
+		{
+			ar& t.inherit_job;
+			ar& t.skills;
+		}
+	} // namespace serialization
+} // namespace boost
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
+
+class SkillTreeDatabase : public TypesafeYamlDatabase<uint16, s_skill_tree>, public BlastCacheEnabled {
+public:
+	SkillTreeDatabase() : TypesafeYamlDatabase("SKILL_TREE_DB", 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
@@ -1671,9 +1731,10 @@ public:
 	std::shared_ptr<s_skill_tree_entry> get_skill_data(int class_, uint16 skill_id);
 
 #ifdef Pandas_YamlBlastCache_SkillTreeDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(SkillTreeDatabase);
+	}
 #endif // Pandas_YamlBlastCache_SkillTreeDatabase
 };
 
@@ -1800,71 +1861,5 @@ uint16 pc_level_penalty_mod( struct map_session_data* sd, e_penalty_type type, s
 bool pc_attendance_enabled();
 int32 pc_attendance_counter( struct map_session_data* sd );
 void pc_attendance_claim_reward( struct map_session_data* sd );
-
-
-#ifdef Pandas_YamlBlastCache_JobDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_job_info
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_job_info& t, const unsigned int version)
-		{
-			ar& t.base_hp;
-			ar& t.base_sp;
-			ar& t.base_ap;
-
-			ar& t.hp_factor;
-			ar& t.hp_multiplicator;
-			ar& t.sp_factor;
-			ar& t.max_weight_base;
-
-			ar& t.job_bonus;
-			ar& t.aspd_base;
-
-			ar& t.base_exp;
-			ar& t.job_exp;
-
-			ar& t.max_base_level;
-			ar& t.max_job_level;
-
-			ar& t.max_param;
-			//ar& t.noenter_map;						// JobDatabase 默认不会为其赋值, 暂时无需处理
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_JobDatabase
-
-
-#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_skill_tree_entry
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_tree_entry& t, const unsigned int version)
-		{
-			ar& t.skill_id;
-			ar& t.max_lv;
-			ar& t.baselv;
-			ar& t.joblv;
-			ar& t.need;
-			ar& t.exclude_inherit;
-		}
-
-		// ======================================================================
-		// struct s_skill_tree
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_tree& t, const unsigned int version)
-		{
-			ar& t.inherit_job;
-			ar& t.skills;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_SkillTreeDatabase
 
 #endif /* PC_HPP */

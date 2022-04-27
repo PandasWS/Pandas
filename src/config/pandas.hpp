@@ -215,6 +215,9 @@
 	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
 	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 
+	// 使 s_item_combo 能保存脚本的明文 [Sola丶小克]
+	#define Pandas_Struct_S_Item_Combo_With_Plaintext
+
 	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
 	#define Pandas_Struct_Status_Change_Cloak_Reverting
 #endif // Pandas_StructIncrease
@@ -1226,7 +1229,7 @@
 		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
 		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
 		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-				#define Pandas_YamlBlastCache_ItemDatabase
+			#define Pandas_YamlBlastCache_ItemDatabase
 		#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
@@ -1255,6 +1258,12 @@
 
 		// 是否启用对 SkillTreeDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_SkillTreeDatabase
+
+		// 是否启用对 ComboDatabase 的序列化支持 [Sola丶小克]
+		// 此选项需要依赖 Pandas_Struct_S_Item_Combo_With_Plaintext 的拓展
+		#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+			#define Pandas_YamlBlastCache_ComboDatabase
+		#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 

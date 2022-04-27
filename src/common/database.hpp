@@ -18,18 +18,26 @@
 
 #ifdef Pandas_YamlBlastCache_Serialize
 #include <set>
-#include "serialize.hpp"
-#endif // Pandas_YamlBlastCache_Serialize
+#include <string>
 
-class YamlDatabase{
-// Internal stuff
+#include "cbasetypes.hpp"
+#include "serialize.hpp"
+
+class BlastCache {
 private:
-#ifdef Pandas_YamlBlastCache_Serialize
+	void* p = nullptr;
+protected:
+	friend class BlastCacheEnabled;
 	friend class boost::serialization::access;
+
+	std::string type;
+	uint16 version;
+	bool bEnabledCache = false;
+	std::set<std::string> includeFiles;
+	size_t datatypeSize = 0;
 
 	template <typename Archive>
 	inline void serialize(Archive& ar, const unsigned int version) {
-		ar& quietLevel;
 		ar& includeFiles;
 	}
 
@@ -38,25 +46,70 @@ private:
 		return this->doSerialize(typeid(ar).name(), static_cast<void*>(&ar));
 	}
 
-	bool isEnableSerialize(bool bNoWarning = false);
-	bool saveToSerialize();
-	bool loadFromSerialize();
+	bool saveToCache();
+	bool loadFromCache();
 	bool isCacheEffective();
-	bool removeSerialize();
+	bool removeCache();
 
-	std::string getBlashCacheHash(const std::string& path);
-	std::string getBlastCachePath();
+	const std::string getCacheHash(const std::string& path);
+	const std::string getCachePath();
+public:
+	BlastCache(void* p_, const std::string& type_, uint16 version_) {
+		this->p = p_;
+		this->type = type_;
+		this->version = version_;
+	}
 
-	std::set<std::string> includeFiles;
+	const std::string getCacheHashByName(const std::string& db_name);
+
+	virtual void afterCacheRestore() {
+
+	};
+
+	virtual const std::string getDependsHash() {
+		return "";
+	};
+
+	virtual bool doSerialize(const std::string& type, void* archive) {
+		return false;
+	};
+};
+
+class BlastCacheEnabled {
+private:
+	void* p = nullptr;
+public:
+	BlastCacheEnabled(void* p_) {
+		this->p = p_;
+		((BlastCache*)p)->bEnabledCache = true;
+	}
+
+	virtual bool doSerialize(const std::string& type, void* archive) = 0;
+};
+#else
+class BlastCache {
+public:
+	BlastCache(void* p_, const std::string& type_, uint16 version_) {
+	}
+};
+
+class BlastCacheEnabled {
+public:
+	BlastCacheEnabled(void* p_) {
+	}
+};
 #endif // Pandas_YamlBlastCache_Serialize
 
+class YamlDatabase : public BlastCache {
+// Internal stuff
+private:
+#ifdef Pandas_YamlBlastCache_Serialize
+	friend class BlastCache;
+#endif // Pandas_YamlBlastCache_Serialize
 	std::string type;
 	uint16 version;
 	uint16 minimumVersion;
 	std::string currentFile;
-#ifdef Pandas_Database_Yaml_BeQuiet
-	uint16 quietLevel;	// 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误
-#endif // Pandas_Database_Yaml_BeQuiet
 
 	bool verifyCompatibility( const ryml::Tree& rootNode );
 	bool load( const std::string& path );
@@ -70,6 +123,11 @@ private:
 
 // These should be visible/usable by the implementation provider
 protected:
+#ifdef Pandas_Database_Yaml_BeQuiet
+	// 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误
+	uint16 quietLevel = 0;
+	void* p = nullptr;
+#endif // Pandas_Database_Yaml_BeQuiet
 	ryml::Parser parser;
 
 	// Helper functions
@@ -95,29 +153,14 @@ protected:
 	bool asUInt32Rate(const ryml::NodeRef& node, const std::string& name, uint32& out, uint32 maximum=10000);
 
 	virtual void loadingFinished();
-
-#ifdef Pandas_YamlBlastCache_Serialize
-	// 用于设置此类的实例是否支持疾风缓存
-	// 如若设为 true 则将尝试对数据进行缓存读写操作,
-	// 想要为 YamlDatabase 的子类开启缓存功能之前, 必须先定义需要对哪些结构体进行序列化
-	bool supportSerialize = false;
-
-	// 用于记录被缓存的数据类型的大小
-	// 以便在通过宏定义修改数据体积后能够在 struct 长度变更时让缓存过期
-	uint32 datatypeSize = 0;
-
-	// 用来记录有效的 datatype 大小
-	// 启用疾风缓存的情况下若 datatypeSize 不在此列表范围中, 则自动关闭疾风缓存
-	std::vector <uint32> validDatatypeSize;
-#endif // Pandas_YamlBlastCache_Serialize
-
 public:
-	YamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ){
+	YamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : BlastCache(this, type_, version_) {
 		this->type = type_;
 		this->version = version_;
 		this->minimumVersion = minimumVersion_;
 #ifdef Pandas_Database_Yaml_BeQuiet
 		this->quietLevel = 0;
+		this->p = this;
 #endif // Pandas_Database_Yaml_BeQuiet
 	}
 
@@ -132,35 +175,6 @@ public:
 	virtual void clear() = 0;
 	virtual const std::string getDefaultLocation() = 0;
 	virtual uint64 parseBodyNode( const ryml::NodeRef& node ) = 0;
-
-#ifdef Pandas_YamlBlastCache_Serialize
-	std::string getSpecifyDatabaseBlashCacheHash(const std::string& db_name);
-
-	virtual bool doSerialize(const std::string& type, void* archive) {
-		return false;
-	}
-
-	virtual void afterSerialize() {
-
-	}
-
-	virtual std::string getAdditionalCacheHash() {
-		return "";
-	}
-#endif // Pandas_YamlBlastCache_Serialize
-
-#ifdef Pandas_Database_Yaml_BeQuiet
-	//************************************
-	// Method:      setQuietLevel
-	// Description: 设置提示信息的静默等级
-	// Parameter:   uint16 quietLevel_ ( 0 - 正常; &1 = 状态; &2 = 警告; &4 = 错误 )
-	// Returns:     void
-	// Author:      Sola丶小克(CairoLee)  2020/01/24 11:43
-	//************************************
-	void setQuietLevel(uint16 quietLevel_) {
-		this->quietLevel = quietLevel_;
-	}
-#endif // Pandas_Database_Yaml_BeQuiet
 };
 
 template <typename keytype, typename datatype> class TypesafeYamlDatabase : public YamlDatabase{
@@ -173,16 +187,6 @@ private:
 		ar& boost::serialization::base_object<YamlDatabase>(*this);
 		ar& data;
 	}
-
-	template<class Archive>
-	friend void save_construct_data(
-		Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
-
-	template<class Archive>
-	friend void load_construct_data(
-		Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
 #endif // Pandas_YamlBlastCache_Serialize
 
 protected:
@@ -262,16 +266,6 @@ private:
 		ar& boost::serialization::base_object<TypesafeYamlDatabase<keytype, datatype>>(*this);
 		ar& cache;
 	}
-
-	template<class Archive>
-	friend void save_construct_data(
-		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
-
-	template<class Archive>
-	friend void load_construct_data(
-		Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
-	);
 #endif // Pandas_YamlBlastCache_Serialize
 
 	std::vector<std::shared_ptr<datatype>> cache;
