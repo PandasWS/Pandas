@@ -18,6 +18,6 @@ bool amulet_is_lastone(struct map_session_data *sd, int n, int amount);
 void amulet_apply_additem(struct map_session_data *sd, int n, bool is_firstone);
 void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone);
 
-void amulet_status_calc(struct map_session_data *sd, enum e_status_calc_opt opt);
+void amulet_status_calc(struct map_session_data *sd, uint8 opt);
 
 #endif // Pandas_Item_Amulet_System

@@ -67,7 +67,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.11.1"
+	#define Pandas_Version "1.1.12.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -192,6 +192,10 @@
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.damagetaken
 		#define Pandas_Struct_Mob_Data_DamageTaken
 
+		// 使 mob_data 结构体可记录此魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
+		// 结构体修改定位 mob.hpp -> mob_data.pandas.special_setunitdata
+		#define Pandas_Struct_Mob_Data_Special_SetUnitData
+
 		// 使 mob_data 结构体可记录此魔物特殊的基础经验或职业经验 [Sola丶小克]
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.base_exp 和 job_exp
 		#define Pandas_Struct_Mob_Data_SpecialExperience
@@ -214,6 +218,9 @@
 
 	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
 	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
+	// 使 s_item_combo 能保存脚本的明文 [Sola丶小克]
+	#define Pandas_Struct_S_Item_Combo_With_Plaintext
 
 	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
 	#define Pandas_Struct_Status_Change_Cloak_Reverting
@@ -360,6 +367,14 @@
 	// 是否启用 itemdb_warning_policy 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制是否关闭加载物品数据库时的一些警告信息
 	#define Pandas_BattleConfig_ItemDB_Warning_Policy
+
+	// 是否启用 mob_default_damagemotion 配置选项及其功能 [Renee]
+	// 此选项用于控制当魔物被攻击时受伤动画的默认播放时长, 值越小看起来越快 (单位为: 毫秒)
+	#define Pandas_BattleConfig_MobDB_DamageMotion_Min
+
+	// 是否启用 mob_setunitdata_persistence 配置选项及其功能 [Sola丶小克]
+	// 此选项用于控制是否高优先级持久化保存 setunitdata 对魔物的设置
+	#define Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
@@ -590,7 +605,7 @@
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码则会给与提示
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑会根据操作
 	//   系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文则直接
-    //   使用当前数据库的 `character_set_database` 编码.
+	//   使用当前数据库的 `character_set_database` 编码.
 	//
 	// --------------------------------------
 	// 改动三：用 mysql_set_character_set 来设置 MySQL 的编码字符集
@@ -747,6 +762,12 @@
 	// 如果对仓库容量有扩充需求, 应该优先考虑开设多个仓库, 而不是提高单个仓库的容量,
 	// 因为过大的容量在每次打开仓库或者背包的时候会带来客户端有些卡顿的感觉 (服务端送来超多内容然后客户端填充他们)
 	#define Pandas_Unlock_Storage_Capacity_Limit
+
+	// 使 setunitdata 针对魔物单位的基础状态设置不会被能力过程直接洗刷掉 [Sola丶小克]
+	// 此选项依赖 Pandas_Struct_Mob_Data_Special_SetUnitData 的拓展
+	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+		#define Pandas_Persistent_SetUnitData_For_Monster_StatusData
+	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -768,7 +789,7 @@
 	// 复制对应的技能编号保存在变量: SKILL_VAR_REPRODUCE 等级是 SKILL_VAR_REPRODUCE_LV
 	#define Pandas_Fix_ShadowChaser_Lose_Skill
 
-	// 缓解魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
+	// 解决魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
 	//
 	// 造成问题存在几个可能的原因, 且这些原因在逻辑上都是合理存在的, 因此每种情况都要进行规避:
 	//
@@ -792,6 +813,15 @@
 	//     最后导致看起来和没收到 clif_clearunit_area 的 CLR_DEAD 封包一样, 客户端就无法移除它
 	//
 	//     缓解措施是: 在发送 clif_clearunit_area 的 CLR_DEAD 封包时, 给与一个更大的 AREA_SIZE
+	//
+	// 第三钟情况:
+	//     这是剩下的实际上能在特定机器上重现, 并最终验证解决了的情况.
+	//
+	//     魔物死亡时候的 CLR_DEAD 封包发送是使用 clif_clearunit_delayed 延迟发送的
+	//     如果在 clif_clearunit_delayed 发送之后服务端又给客户端发送了移动封包,
+	//     那么客户端将再次生成一个空血魔物, 有时甚至能看到魔物空血了还在移动
+	// 
+	//     确定且经过验证的解决方案: 魔物只要死亡就立刻停止移动 (感谢 "Mr.Siu" 提供环境配合验证)
 	//
 	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
 	#define Pandas_Ease_Mob_Stuck_After_Dead
@@ -931,6 +961,16 @@
 	// - 观察每次角色进入地图服务器时, 角色服务器提示加载到的仓库物品数量
 	// - 如果角色服务器在保存仓库数据时比较慢, 那么你会看到反复小退仓库的数量是: 1、0、1、0...
 	#define Pandas_Fix_Storage_DirtyFlag_Override
+
+	// 修正写入公会仓库日志时没有对角色名进行转义处理的问题 [Sola丶小克]
+	//
+	// 可能的重现步骤:
+	// - 创建角色名带单引号的角色
+	// - 加入公会, 开启公会仓库, 存入物品
+	// - 此时地图服务器在写入 guild_storage_log 的时候将抛出错误
+	//
+	// 感谢 "小林" 反馈此问题
+	#define Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1184,14 +1224,16 @@
 
 #ifdef Pandas_YamlBlastCache
 	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
-	#define Pandas_YamlBlastCache_Serialize
+	#ifndef MINICORE
+		#define Pandas_YamlBlastCache_Serialize
+	#endif // MINICORE
 
 	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
 	#ifdef Pandas_YamlBlastCache_Serialize
 		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
 		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
 		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-				#define Pandas_YamlBlastCache_ItemDatabase
+			#define Pandas_YamlBlastCache_ItemDatabase
 		#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
@@ -1220,6 +1262,12 @@
 
 		// 是否启用对 SkillTreeDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_SkillTreeDatabase
+
+		// 是否启用对 ComboDatabase 的序列化支持 [Sola丶小克]
+		// 此选项需要依赖 Pandas_Struct_S_Item_Combo_With_Plaintext 的拓展
+		#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+			#define Pandas_YamlBlastCache_ComboDatabase
+		#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
@@ -1612,61 +1660,68 @@
 // ============================================================================
 
 #ifdef Pandas_Bonuses
-	// 是否启用 bNoFieldGemStone 效果调整器 [Sola丶小克]
+	// 是否启用 bonus bNoFieldGemStone 效果调整器 [Sola丶小克]
 	// 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	// 常量名称: SP_PANDAS_NOFIELDGEMSTONE / 调整器名称: bNoFieldGemStone
 	// 变量位置: map_session_data.special_state / 变量名称: nofieldgemstone
 	// 使用原型: bonus bNoFieldGemStone;
 	#define Pandas_Bonus_bNoFieldGemStone
 
-	// 是否启用 bRebirthWithHeal 效果调整器 [聽風]
+	// 是否启用 bonus3 bRebirthWithHeal 效果调整器 [聽風]
 	// 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
 	// 常量名称: SP_PANDAS_REBIRTHWITHHEAL / 调整器名称: bRebirthWithHeal
 	// 变量位置: map_session_data.bonus / 变量名称: rebirth_rate, rebirth_heal_percent_hp, rebirth_heal_percent_sp
 	// 使用原型: bonus3 bRebirthWithHeal,r,h,s;
-	#define Pandas_Bonus_bRebirthWithHeal
+	#define Pandas_Bonus3_bRebirthWithHeal
 
-	// 是否启用 bAddSkillRange 效果调整器 [聽風]
+	// 是否启用 bonus2 bAddSkillRange 效果调整器 [聽風]
 	// 增加 sk 技能 n 格攻击距离
 	// 常量名称: SP_PANDAS_ADDSKILLRANGE / 调整器名称: bAddSkillRange
 	// 变量位置: map_session_data / 变量名称: addskillrange
 	// 使用原型: bonus2 bAddSkillRange,sk,n;
-	#define Pandas_Bonus_bAddSkillRange
+	#define Pandas_Bonus2_bAddSkillRange
 
-	// 是否启用 Pandas_Bonus_bSkillNoRequire 效果调整器 [聽風]
+	// 是否启用 bonus2 bSkillNoRequire 效果调整器 [聽風]
 	// 解除 sk 技能中由 n 指定的前置施法条件限制
 	// 常量名称: SP_PANDAS_SKILLNOREQUIRE / 调整器名称: bSkillNoRequire
 	// 变量位置: map_session_data / 变量名称: skillnorequire
 	// 使用原型: bonus2 bSkillNoRequire,sk,n;
-	#define Pandas_Bonus_bSkillNoRequire
+	#define Pandas_Bonus2_bSkillNoRequire
 
-	// 是否启用 bStatusAddDamage 效果调整器 [聽風]
+	// 是否启用 bonus4 bStatusAddDamage 效果调整器 [聽風]
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
 	// 常量名称: SP_PANDAS_STATUSADDDAMAGE / 调整器名称: bStatusAddDamage
 	// 变量位置: map_session_data / 变量名称: status_damage_adjust
 	// 使用原型: bonus4 bStatusAddDamage,sc,n,r,bf;
-	#define Pandas_Bonus_bStatusAddDamage
+	#define Pandas_Bonus4_bStatusAddDamage
 
-	// 是否启用 bStatusAddDamageRate 效果调整器 [聽風]
+	// 是否启用 bonus4 bStatusAddDamageRate 效果调整器 [聽風]
 	// 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
 	// 常量名称: SP_PANDAS_STATUSADDDAMAGERATE / 调整器名称: bStatusAddDamageRate
 	// 变量位置: map_session_data / 变量名称: status_damagerate_adjust
 	// 使用原型: bonus4 bStatusAddDamageRate,sc,n,r,bf;
-	#define Pandas_Bonus_bStatusAddDamageRate
+	#define Pandas_Bonus4_bStatusAddDamageRate
 
-	// 是否启用 bFinalAddRace 效果调整器 [聽風]
+	// 是否启用 bonus3 bFinalAddRace 效果调整器 [聽風]
 	// 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	// 常量名称: SP_PANDAS_FINALADDRACE / 调整器名称: bFinalAddRace
 	// 变量位置: map_session_data / 变量名称: finaladd_race
 	// 使用原型: bonus3 bFinalAddRace,r,x,bf;
-	#define Pandas_Bonus_bFinalAddRace
+	#define Pandas_Bonus3_bFinalAddRace
 
-	// 是否启用 bFinalAddClass 效果调整器 [聽風]
+	// 是否启用 bonus3 bFinalAddClass 效果调整器 [聽風]
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	// 常量名称: SP_PANDAS_FINALADDCLASS / 调整器名称: bFinalAddClass
 	// 变量位置: map_session_data / 变量名称: finaladd_class
 	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
-	#define Pandas_Bonus_bFinalAddClass
+	#define Pandas_Bonus3_bFinalAddClass
+
+	// 是否启用 bonus2 bAbsorbDmgMaxHP 效果调整器 [Sola丶小克]
+	// 受到超过自己总血量 n% 的伤害时只会受到总血量 x% 的伤害
+	// 常量名称: SP_ABSORB_DMG_MAXHP / 调整器名称: bAbsorbDmgMaxHP
+	// 变量位置: map_session_data.bonus / 变量名称: absorb_dmg_trigger_hpratio, absorb_dmg_cap_ratio
+	// 使用原型: bonus2 bAbsorbDmgMaxHP,n,x;
+	#define Pandas_Bonus2_bAbsorbDmgMaxHP
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 
@@ -1696,7 +1751,9 @@
 	#define Pandas_ScriptCommand_SetBodyDir
 
 	// 是否启用 openbank 脚本指令 [Sola丶小克]
-	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
+	// 2022-4-20 修订备注:
+	// 由于 rAthena 官方已经实现了 openbank 指令且重名,
+	// 因此这里的开关只控制 openbank 指令是否如以前版本一样给予返回值
 	#define Pandas_ScriptCommand_OpenBank
 
 	// 是否启用 instance_users 脚本指令 [Sola丶小克]
@@ -2032,6 +2089,10 @@
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
+
+	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
+	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
+	#define Pandas_ScriptCommand_GetRateIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
@@ -2088,6 +2149,7 @@
 	// 是否解决终端看到客户端发来的中文乱码问题 [Sola丶小克]
 	//
 	// 客户端发送给 WEB 接口的内容使用的是 UTF8 编码, 但我们的终端程序通常不是工作在 UTF8 编码环境下,
+	// 
 	// 因此如果将客户端发送来的中文直接打印到终端就会变成乱码.
 	// 启用该选项后将会对客户端发送来的 UTF8 信息在输出时转换成当前终端使用的编码再打印到终端
 	#define Pandas_WebServer_Console_EncodingAdaptive

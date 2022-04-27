@@ -694,7 +694,7 @@ void party_join_approval(struct map_session_data* leader_sd, uint8 approval)
 			return;
 		}
 	}
- #endif // Pandas_NpcFilter_PARTYJOIN
+#endif // Pandas_NpcFilter_PARTYJOIN
 
 	// 通知角色服务器来执行加入队伍的过程
 	sd->party_invite = p->party.party_id;

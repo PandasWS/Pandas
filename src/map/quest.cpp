@@ -37,7 +37,7 @@ const std::string QuestDatabase::getDefaultLocation() {
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 QuestDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 QuestDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	uint32 quest_id;
 
 	if (!this->asUInt32(node, "Id", quest_id))
@@ -97,9 +97,9 @@ uint64 QuestDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Targets")) {
-		const YAML::Node &targets = node["Targets"];
+		const auto& targets = node["Targets"];
 
-		for (const YAML::Node &targetNode : targets) {
+		for (const auto& targetNode : targets) {
 			if (quest->objectives.size() >= MAX_QUEST_OBJECTIVES) {
 				this->invalidWarning(targetNode, "Targets list exceeds the maximum of %d, skipping.\n", MAX_QUEST_OBJECTIVES);
 				return 0;
@@ -315,9 +315,9 @@ uint64 QuestDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Drops")) {
-		const YAML::Node &drops = node["Drops"];
+		const auto& drops = node["Drops"];
 
-		for (const YAML::Node &dropNode : drops) {
+		for (const auto& dropNode : drops) {
 			uint32 mob_id = 0; // Can be 0 which means all monsters
 
 			if (this->nodeExists(dropNode, "Mob")) {
@@ -916,28 +916,21 @@ bool QuestDatabase::reload() {
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
 //************************************
-// Method:      doSerialize
-// Description: 对 QuestDatabase 进行序列化和反序列化操作
+// Method:      getDependsHash
+// Description: 此数据库额外依赖的缓存特征
 // Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:35
+// Returns:     const std::string
+// Author:      Sola丶小克(CairoLee)  2022/03/12 21:07
 //************************************ 
-bool QuestDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, QuestDatabase);
-		*ar & *this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, QuestDatabase);
-		*ar & *this;
-		return true;
-	}
-	return false;
+const std::string QuestDatabase::getDependsHash() {
+	// 在 QuestDatabase 中使用到了 ITEM_DB 和 MOB_DB 的信息
+	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
+	std::string depends = boost::str(
+		boost::format("%1%|%2%") %
+		this->getCacheHashByName("ITEM_DB") %
+		this->getCacheHashByName("MOB_DB")
+	);
+	return depends;
 }
 #endif // Pandas_YamlBlastCache_QuestDatabase
 

@@ -20,6 +20,8 @@
 #endif
 
 #include <yaml-cpp/yaml.h>
+#include <ryml_std.hpp>
+#include <ryml.hpp>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/core.hpp"
@@ -523,21 +525,11 @@ static bool parse_item_constants_txt(const char *path) {
 	return true;
 }
 
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
-	return TypesafeCachedYamlDatabase<t_itemid, item_data>::doSerialize(type, archive);
-}
-
-void ItemDatabase::afterSerialize() {
-	TypesafeCachedYamlDatabase<t_itemid, item_data>::afterSerialize();
-}
-#endif // Pandas_YamlBlastCache_ItemDatabase
-
 const std::string ItemDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/item_db.yml";
 }
 
-uint64 ItemDatabase::parseBodyNode(const YAML::Node& node) {
+uint64 ItemDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	t_itemid nameid;
 
 	if (!this->asUInt32(node, "Id", nameid))
@@ -560,7 +552,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node& node) {
 
 		if (look > 0) {
 			if (this->nodeExists(node, "Locations")) {
-				const YAML::Node& locationNode = node["Locations"];
+				const ryml::NodeRef& locationNode = node["Locations"];
 
 				static std::vector<std::string> locations = {
 					"Head_Low",
@@ -612,21 +604,11 @@ static bool parse_skill_constants_txt(char *split[], int columns, int current) {
 	return true;
 }
 
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-bool SkillDatabase::doSerialize(const std::string& type, void* archive) {
-	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::doSerialize(type, archive);
-}
-
-void SkillDatabase::afterSerialize() {
-	return TypesafeCachedYamlDatabase<uint16, s_skill_db>::afterSerialize();
-}
-#endif // Pandas_YamlBlastCache_SkillDatabase
-
 const std::string SkillDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/skill_db.yml";
 }
 
-uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 SkillDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	t_itemid nameid;
 
 	if (!this->asUInt32(node, "Id", nameid))
@@ -653,22 +635,11 @@ void SkillDatabase::loadingFinished(){
 
 SkillDatabase skill_db;
 
-
-#ifdef Pandas_YamlBlastCache_MobDatabase
-bool MobDatabase::doSerialize(const std::string& type, void* archive) {
-	return TypesafeCachedYamlDatabase<uint32, s_mob_db>::doSerialize(type, archive);
-}
-
-void MobDatabase::afterSerialize() {
-	return TypesafeCachedYamlDatabase<uint32, s_mob_db>::afterSerialize();
-}
-#endif // Pandas_YamlBlastCache_MobDatabase
-
 const std::string MobDatabase::getDefaultLocation(){
 	return std::string( db_path ) + "/mob_db.yml";
 }
 
-uint64 MobDatabase::parseBodyNode(const YAML::Node& node) {
+uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	uint16 mob_id;
 
 	if (!this->asUInt16(node, "Id", mob_id))
