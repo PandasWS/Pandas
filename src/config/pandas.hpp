@@ -34,6 +34,7 @@
 	#define Pandas_AtCommands
 	#define Pandas_Bonuses
 	#define Pandas_ScriptCommands
+	#define Pandas_ScriptConstants
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
 	#define Pandas_WebServer
@@ -2091,6 +2092,18 @@
 	#define Pandas_ScriptCommand_GetRateIdx
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
+
+// ============================================================================
+// 脚本常量拓展组 - Pandas_ScriptConstants
+// ============================================================================
+
+#ifdef Pandas_ScriptConstants
+	// 是否扩展 CartWeight 脚本常量 [人鱼姬的思念]
+	#define Pandas_ScriptConstants_CartWeight
+
+	// 是否扩展 MaxCartWeight 脚本常量 [人鱼姬的思念]
+	#define Pandas_ScriptConstants_MaxCartWeight
+#endif // Pandas_ScriptConstants
 
 // ============================================================================
 // 脚本返回值拓展组 - Pandas_ScriptResults

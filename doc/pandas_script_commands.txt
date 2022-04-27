@@ -173,8 +173,15 @@ bAllInt - 返回角色的总 INT (用总 INT 减去 bInt 可得到面板中 INT 
 bAllDex - 返回角色的总 DEX (用总 DEX 减去 bDex 可得到面板中 DEX 在加号右侧的值)
 bAllLuk - 返回角色的总 LUK (用总 LUK 减去 bLuk 可得到面板中 LUK 在加号右侧的值)
 
+CartWeight - 手推车中的物品总重量 (脱下手推车时数值为 0)
+MaxCartWeight - 手推车的最大负重量 (脱下手推车时数值为 0)
+
 使用方法:
 	dispbottom "总STR为 : " + readparam(bAllStr) + " (" + readparam(bStr) + " + " + (readparam(bAllStr) - readparam(bStr)) + ")";
+	dispbottom "手推车当前负重情况: " + CartWeight + "/" + MaxCartWeight;
+
+提示信息:
+	被 readparam 调用的有效 <参数代码> 可以直接当做常量使用
 
 --------------------------------------------------------------
 
