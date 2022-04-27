@@ -19577,10 +19577,12 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
 			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
-#ifdef Pandas_ScriptParams_UnitData_EXP
-			getunitdata_sub(UMOB_MOBBASEEXP, md->db->base_exp);
-			getunitdata_sub(UMOB_MOBJOBEXP, md->db->job_exp);
-#endif // Pandas_ScriptParams_UnitData_EXP
+#ifdef Pandas_ScriptParams_UnitData_Experience
+			getunitdata_sub(UMOB_MOBBASEEXP, md->pandas.base_exp);
+			getunitdata_sub(UMOB_MOBBASEEXP_DB, md->db->base_exp);
+			getunitdata_sub(UMOB_MOBJOBEXP, md->pandas.job_exp);
+			getunitdata_sub(UMOB_MOBJOBEXP_DB, md->db->job_exp);
+#endif // Pandas_ScriptParams_UnitData_Experience
 			break;
 
 		case BL_HOM:
@@ -20009,10 +20011,10 @@ BUILDIN_FUNC(setunitdata)
 #ifdef Pandas_ScriptParams_UnitData_DamageTaken
 			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
-#ifdef Pandas_ScriptParams_UnitData_EXP
-			case UMOB_MOBBASEEXP: md->db->base_exp = cap_value(value, -1, UINT64_MAX); break;
-			case UMOB_MOBJOBEXP: md->db->job_exp = cap_value(value, -1, UINT64_MAX); break;
-#endif // Pandas_ScriptParams_UnitData_EXP
+#ifdef Pandas_ScriptParams_UnitData_Experience
+			case UMOB_MOBBASEEXP: md->pandas.base_exp = cap_value(value, -1, MAX_EXP); break;
+			case UMOB_MOBJOBEXP: md->pandas.job_exp = cap_value(value, -1, MAX_EXP); break;
+#endif // Pandas_ScriptParams_UnitData_Experience
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;

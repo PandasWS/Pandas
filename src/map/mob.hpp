@@ -377,8 +377,12 @@ struct mob_data {
 #ifdef Pandas_Struct_Mob_Data_Pandas
 	struct {
 #ifdef Pandas_Struct_Mob_Data_DamageTaken
-		int damagetaken = -1;	// 魔物实例的承伤倍率, 若为 -1 则表示使用 db 中设置的承伤倍率 [Sola丶小克] 
+		int damagetaken = -1;	// 魔物实例的承伤倍率, 若为 -1 则表示使用 db 中设置的承伤倍率
 #endif // Pandas_Struct_Mob_Data_DamageTaken
+#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+		int64 base_exp = -1;	// 魔物实例被特殊设置的基础经验值, 若为 -1 则表示使用 db 中设置的基础经验
+		int64 job_exp = -1;		// 魔物实例被特殊设置的职业经验值, 若为 -1 则表示使用 db 中设置的职业经验
+#endif // Pandas_Struct_Mob_Data_SpecialExperience
 	} pandas;
 #endif // Pandas_Struct_Mob_Data_Pandas
 

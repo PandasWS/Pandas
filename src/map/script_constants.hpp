@@ -5274,10 +5274,12 @@
 	export_constant(UMOB_DAMAGETAKEN_DB);
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
 
-#ifdef Pandas_ScriptParams_UnitData_EXP
+#ifdef Pandas_ScriptParams_UnitData_Experience
 	export_constant(UMOB_MOBBASEEXP);
+	export_constant(UMOB_MOBBASEEXP_DB);
 	export_constant(UMOB_MOBJOBEXP);
-#endif // Pandas_ScriptParams_UnitData_EXP
+	export_constant(UMOB_MOBJOBEXP_DB);
+#endif // Pandas_ScriptParams_UnitData_Experience
 
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);

@@ -495,6 +495,10 @@ struct mob_data* mob_spawn_dataset(struct spawn_data *data)
 #ifdef Pandas_Struct_Mob_Data_DamageTaken
 	md->pandas.damagetaken = -1;
 #endif // Pandas_Struct_Mob_Data_DamageTaken
+#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+	md->pandas.base_exp = -1;
+	md->pandas.job_exp = -1;
+#endif // Pandas_Struct_Mob_Data_SpecialExperience
 
 	map_addiddb(&md->bl);
 	return md;
@@ -2761,16 +2765,33 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 					zeny*=rnd()%250;
 			}
 
+#ifndef Pandas_ScriptParams_UnitData_Experience
 			if (map_getmapflag(m, MF_NOBASEEXP) || !md->db->base_exp)
+#else
+			// 数据库中没有给此类魔物设置基础经验,
+			// 并且该魔物也没有被 setunitdata 指派过特殊基础经验时, 才将 base_exp 设置为 0
+			if (map_getmapflag(m, MF_NOBASEEXP) || (!md->db->base_exp && md->pandas.base_exp < 0))
+#endif // Pandas_ScriptParams_UnitData_Experience
 				base_exp = 0;
 			else {
 				double exp = apply_rate2(md->db->base_exp, per, 1);
+#ifdef Pandas_ScriptParams_UnitData_Experience
+				if (md->pandas.base_exp >= 0) {
+					exp = apply_rate2(md->pandas.base_exp, per, 1);
+				}
+#endif // Pandas_ScriptParams_UnitData_Experience
 				exp = apply_rate(exp, bonus);
 				exp = apply_rate(exp, map_getmapflag(m, MF_BEXP));
 				base_exp = (t_exp)cap_value(exp, 1, MAX_EXP);
 			}
 
+#ifndef Pandas_ScriptParams_UnitData_Experience
 			if (map_getmapflag(m, MF_NOJOBEXP) || !md->db->job_exp
+#else
+			// 数据库中没有给此类魔物设置职业经验,
+			// 并且该魔物也没有被 setunitdata 指派过特殊职业经验时, 才将 job_exp 设置为 0
+			if (map_getmapflag(m, MF_NOJOBEXP) || (!md->db->job_exp && md->pandas.job_exp < 0)
+#endif // Pandas_ScriptParams_UnitData_Experience
 #ifndef RENEWAL
 				|| md->dmglog[i].flag == MDLF_HOMUN // Homun earned job-exp is always lost.
 #endif
@@ -2778,6 +2799,11 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 				job_exp = 0;
 			else {
 				double exp = apply_rate2(md->db->job_exp, per, 1);
+#ifdef Pandas_ScriptParams_UnitData_Experience
+				if (md->pandas.job_exp >= 0) {
+					exp = apply_rate2(md->pandas.job_exp, per, 1);
+				}
+#endif // Pandas_ScriptParams_UnitData_Experience
 				exp = apply_rate(exp, bonus);
 				exp = apply_rate(exp, map_getmapflag(m, MF_JEXP));
 				job_exp = (t_exp)cap_value(exp, 1, MAX_EXP);
