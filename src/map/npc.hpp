@@ -204,6 +204,9 @@ struct npc_data {
 			time_t kill_time;
 			char killer_name[NAME_LENGTH];
 			int spawn_timer;
+#ifdef Pandas_FuncParams_Mob_MvpTomb_Create
+			int killer_gid = 0;
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
 		} tomb;
 		struct {
 			bool extended;
@@ -1568,6 +1571,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_DROPITEM
 	NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	NPCF_CLICKTOMB,	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/

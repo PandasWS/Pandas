@@ -107,6 +107,10 @@
 #ifdef Pandas_NpcFilter_DROPITEM
 	export_constant(NPCF_DROPITEM);	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	export_constant(NPCF_CLICKTOMB);	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
