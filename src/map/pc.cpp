@@ -8353,10 +8353,18 @@ void pc_gainexp_disp(struct map_session_data *sd, t_exp base_exp, t_exp next_bas
 
 	nullpo_retv(sd);
 
+#ifndef Pandas_Fix_GainExp_Display_Overflow
 	sprintf(output, msg_txt(sd,743), // Experience %s Base:%ld (%0.2f%%) Job:%ld (%0.2f%%)
 		(lost) ? msg_txt(sd,742) : msg_txt(sd,741),
 		(long)base_exp * (lost ? -1 : 1), (base_exp / (float)next_base_exp * 100 * (lost ? -1 : 1)),
 		(long)job_exp * (lost ? -1 : 1), (job_exp / (float)next_job_exp * 100 * (lost ? -1 : 1)));
+#else
+	sprintf(output, msg_txt_cn(sd, 19), // Experience %s Base:%llu (%0.2f%%) Job:%llu (%0.2f%%)
+		(lost) ? msg_txt(sd, 742) : msg_txt(sd, 741),
+		base_exp * (lost ? -1 : 1), (base_exp / (float)next_base_exp * 100 * (lost ? -1 : 1)),
+		job_exp * (lost ? -1 : 1), (job_exp / (float)next_job_exp * 100 * (lost ? -1 : 1)));
+#endif // Pandas_Fix_GainExp_Display_Overflow
+
 	clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 }
 
