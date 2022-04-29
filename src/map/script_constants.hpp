@@ -903,6 +903,13 @@
 	export_parameter(COOKMASTERY_VAR, SP_COOKMASTERY);
 	export_parameter(ACHIEVEMENTLEVEL, SP_ACHIEVEMENT_LEVEL);
 
+#ifdef Pandas_ScriptConstants_CartWeight
+	export_parameter("CartWeight", SP_CARTWEIGHT);
+#endif // Pandas_ScriptConstants_CartWeight
+#ifdef Pandas_ScriptConstants_MaxCartWeight
+	export_parameter("MaxCartWeight", SP_MAXCARTWEIGHT);
+#endif // Pandas_ScriptConstants_MaxCartWeight
+
 	export_constant2("bMaxHP",SP_MAXHP);
 	export_constant2("bMaxSP",SP_MAXSP);
 	export_constant2("bMaxAP",SP_MAXAP);

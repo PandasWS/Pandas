@@ -10348,6 +10348,13 @@ int64 pc_readparam(struct map_session_data* sd,int64 type)
 		case SP_CRIT_DEF_RATE: val = sd->bonus.crit_def_rate; break;
 		case SP_ADD_ITEM_SPHEAL_RATE: val = sd->bonus.itemsphealrate2; break;
 
+#ifdef Pandas_ScriptConstants_CartWeight
+		case SP_CARTWEIGHT: val = sd->cart_weight; break;
+#endif // Pandas_ScriptConstants_CartWeight
+#ifdef Pandas_ScriptConstants_MaxCartWeight
+		case SP_MAXCARTWEIGHT: val = sd->cart_weight_max; break;
+#endif // Pandas_ScriptConstants_MaxCartWeight
+
 #ifdef Pandas_ScriptParams_ReadParam
 		case SP_STR_ALL:	val = sd->battle_status.str; break;
 		case SP_AGI_ALL:	val = sd->battle_status.agi; break;
@@ -11258,6 +11265,12 @@ bool pc_setcart(struct map_session_data *sd,int type) {
 				return 0;
 			status_change_end(&sd->bl,SC_PUSH_CART,INVALID_TIMER);
 			clif_clearcart(sd->fd);
+#ifdef Pandas_ScriptConstants_CartWeight
+			sd->cart_weight = 0;
+#endif // Pandas_ScriptConstants_CartWeight
+#ifdef Pandas_ScriptConstants_MaxCartWeight
+			sd->cart_weight_max = 0;
+#endif // Pandas_ScriptConstants_MaxCartWeight
 			break;
 		default:/* everything else is an allowed ID so we can move on */
 			if( !sd->sc.data[SC_PUSH_CART] ) { /* first time, so fill cart data */

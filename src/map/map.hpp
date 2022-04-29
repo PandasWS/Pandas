@@ -602,6 +602,17 @@ enum _sp {
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
+
+#ifdef Pandas_ScriptConstants
+	SP_PANDAS_EXTEND_CONSTANTS_START = 3600,
+#ifdef Pandas_ScriptConstants_CartWeight
+		SP_CARTWEIGHT,
+#endif // Pandas_ScriptConstants_CartWeight
+#ifdef Pandas_ScriptConstants_MaxCartWeight
+		SP_MAXCARTWEIGHT,
+#endif // Pandas_ScriptConstants_MaxCartWeight
+	SP_PANDAS_EXTEND_CONSTANTS_END,
+#endif // Pandas_ScriptConstants
 };
 
 enum _look {
