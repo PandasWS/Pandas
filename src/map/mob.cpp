@@ -2769,7 +2769,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 #else
 			// 数据库中没有给此类魔物设置基础经验,
 			// 并且该魔物也没有被 setunitdata 指派过特殊基础经验时, 才将 base_exp 设置为 0
-			if (map_getmapflag(m, MF_NOBASEEXP) || (!md->db->base_exp && md->pandas.base_exp < 0))
+			if (map_getmapflag(m, MF_NOBASEEXP) || (!md->db->base_exp && md->pandas.base_exp <= 0) || (md->db->base_exp && !md->pandas.base_exp))
 #endif // Pandas_ScriptParams_UnitData_Experience
 				base_exp = 0;
 			else {
@@ -2789,7 +2789,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 #else
 			// 数据库中没有给此类魔物设置职业经验,
 			// 并且该魔物也没有被 setunitdata 指派过特殊职业经验时, 才将 job_exp 设置为 0
-			if (map_getmapflag(m, MF_NOJOBEXP) || (!md->db->job_exp && md->pandas.job_exp < 0)
+			if (map_getmapflag(m, MF_NOJOBEXP) || (!md->db->job_exp && md->pandas.job_exp <= 0) || (md->db->job_exp && !md->pandas.job_exp)
 #endif // Pandas_ScriptParams_UnitData_Experience
 #ifndef RENEWAL
 				|| md->dmglog[i].flag == MDLF_HOMUN // Homun earned job-exp is always lost.
