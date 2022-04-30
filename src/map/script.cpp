@@ -448,7 +448,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcExpress_MER_LEAVE
 
 #ifdef Pandas_NpcExpress_PC_TALK
-		"OnPCTalkExpress",	// NPCX_PC_TALK		// pc_talk_express_name	// 当玩家聊天触发实时事件 [人鱼姬的思念]
+		"OnPCTalkExpress",	// NPCX_PC_TALK		// pc_talk_express_name	// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 17>
 

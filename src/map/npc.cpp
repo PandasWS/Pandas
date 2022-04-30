@@ -6164,7 +6164,7 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #endif // Pandas_NpcExpress_MER_LEAVE
 
 #ifdef Pandas_NpcExpress_PC_TALK
-		NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家聊天触发实时事件 [人鱼姬的思念]
+		NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
@@ -6571,7 +6571,7 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcExpress_PC_TALK
 	case NPCX_PC_TALK:
-		return script_config.pc_talk_express_name;	// OnPCTalkExpress		// 当玩家聊天触发实时事件 [人鱼姬的思念]
+		return script_config.pc_talk_express_name;	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
