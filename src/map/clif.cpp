@@ -11340,6 +11340,20 @@ static bool clif_process_message(struct map_session_data* sd, bool whisperFormat
 
 	//achievement_update_objective(sd, AG_CHATTING, 1, 1); // !TODO: Confirm how this achievement is triggered
 
+#ifdef Pandas_NpcExpress_PC_TALK
+	if (sd) {
+		pc_setreg(sd, add_str("@talk_x"), sd->bl.x);
+		pc_setreg(sd, add_str("@talk_y"), sd->bl.y);
+		pc_setreg(sd, add_str("@talk_mapid"), (sd ? sd->bl.m : -1));
+		pc_setregstr(sd, add_str("@talk_mapname$"), (sd ? map[sd->bl.m].name : ""));
+
+		pc_setreg(sd, add_str("@talk_gid"), sd->bl.id);
+		pc_setregstr(sd, add_str("@talk_name$"), out_name);
+		pc_setregstr(sd, add_str("@talk_mes$"), out_message);
+		npc_script_event(sd, NPCX_PC_TALK);
+	}
+#endif // Pandas_NpcExpress_PC_TALK	
+
 	return true;
 }
 
