@@ -194,7 +194,11 @@ TIMER_FUNC(mvptomb_delayspawn){
  * @param time: time of mob's death
  * @author [GreenBox]
  */
+#ifndef Pandas_FuncParams_Mob_MvpTomb_Create
 void mvptomb_create(struct mob_data *md, char *killer, time_t time)
+#else
+void mvptomb_create(struct mob_data* md, char* killer, time_t time, int killer_gid)
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
 {
 	struct npc_data *nd;
 
@@ -220,6 +224,9 @@ void mvptomb_create(struct mob_data *md, char *killer, time_t time)
 	nd->u.tomb.md = md;
 	nd->u.tomb.kill_time = time;
 	nd->u.tomb.spawn_timer = INVALID_TIMER;
+#ifdef Pandas_FuncParams_Mob_MvpTomb_Create
+	nd->u.tomb.killer_gid = killer_gid;
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
 
 	if (killer)
 		safestrncpy(nd->u.tomb.killer_name, killer, NAME_LENGTH);
@@ -3309,7 +3316,11 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 
 	// MvP tomb [GreenBox]
 	if (battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->bl.m, MF_NOTOMB) != 1)
+#ifndef Pandas_FuncParams_Mob_MvpTomb_Create
 		mvptomb_create(md, mvp_sd ? mvp_sd->status.name : NULL, time(NULL));
+#else
+		mvptomb_create(md, mvp_sd ? mvp_sd->status.name : NULL, time(NULL), mvp_sd ? mvp_sd->bl.id : 0);
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
 
 	if( !rebirth )
 		mob_setdelayspawn(md); //Set respawning.

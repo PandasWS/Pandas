@@ -459,6 +459,10 @@
 	// 在 map.cpp 中的 map_getmob_boss 增加 alive_first 参数 [Sola丶小克]
 	// 新增的 alive_first 参数可以指定优先返回存活着的 BOSS 魔物
 	#define Pandas_FuncDefine_Mob_Getmob_Boss
+
+	// 在 mob.cpp 中的 mvptomb_create 增加 killer_gid 参数 [Sola丶小克]
+	// 新增的 killer_gid 参数用于传递杀死 MVP 玩家的游戏单位编号
+	#define Pandas_FuncParams_Mob_MvpTomb_Create
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -1399,6 +1403,11 @@
 		// 事件类型: Filter / 事件名称: OnPCDropItemFilter
 		// 常量名称: NPCF_DROPITEM / 变量名称: dropitem_filter_name
 		#define Pandas_NpcFilter_DROPITEM
+
+		// 当玩家点击魔物墓碑时触发过滤器 [人鱼姬的思念]
+		// 事件类型: Filter / 事件名称: OnPCClickTombFilter
+		// 常量名称: NPCF_CLICKTOMB / 变量名称: clicktomb_filter_name
+		#define Pandas_NpcFilter_CLICKTOMB
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

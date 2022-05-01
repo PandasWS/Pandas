@@ -368,6 +368,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_DROPITEM
 	"OnPCDropItemFilter",	// NPCF_DROPITEM		// dropitem_filter_name	// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	"OnPCClickTombFilter",	// NPCF_CLICKTOMB		// clicktomb_filter_name	// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
