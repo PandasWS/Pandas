@@ -56,7 +56,6 @@ using namespace rathena;
 #define IDLE_SKILL_INTERVAL 10	//Active idle skills should be triggered every 1 second (1000/MIN_MOBTHINKTIME)
 
 const t_tick MOB_MAX_DELAY = 24 * 3600 * 1000;
-#define MAX_MINCHASE 30	//Max minimum chase value to use for mobs.
 #define RUDE_ATTACKED_COUNT 1	//After how many rude-attacks should the skill be used?
 
 // On official servers, monsters will only seek targets that are closer to walk to than their
@@ -1009,6 +1008,22 @@ int mob_spawn_bg(const char* mapname, int16 x, int16 y, const char* mobname, int
 }
 
 /*==========================================
+ * Returns true if a mob is currently chasing something
+ * based on its skillstate.
+ * Chase states: MSS_LOOT, MSS_RUSH, MSS_FOLLOW
+ *------------------------------------------*/
+bool mob_is_chasing(int state)
+{
+	switch (state) {
+		case MSS_LOOT:
+		case MSS_RUSH:
+		case MSS_FOLLOW:
+			return true;
+	}
+	return false;
+}
+
+/*==========================================
  * Reachability to a Specification ID existence place
  * state indicates type of 'seek' mob should do:
  * - MSS_LOOT: Looking for item, path must be easy.
@@ -1050,7 +1065,7 @@ int mob_linksearch(struct block_list *bl,va_list ap)
 	target = va_arg(ap, struct block_list *);
 	tick=va_arg(ap, t_tick);
 
-	if (md->mob_id == mob_id && status_has_mode(&md->status,MD_ASSIST) && DIFF_TICK(md->last_linktime, tick) < MIN_MOBLINKTIME
+	if (md->mob_id == mob_id && status_has_mode(&md->status,MD_ASSIST) && DIFF_TICK(tick, md->last_linktime) >= MIN_MOBLINKTIME
 		&& !md->target_id)
 	{
 		md->last_linktime = tick;
@@ -1299,9 +1314,7 @@ int mob_target(struct mob_data *md,struct block_list *bl,int dist)
 	// When an angry monster is provoked, it will switch to retaliate AI
 	if (md->state.provoke_flag && md->state.aggressive)
 		md->state.aggressive = 0;
-	md->min_chase=dist+md->db->range3;
-	if(md->min_chase>MAX_MINCHASE)
-		md->min_chase=MAX_MINCHASE;
+	md->min_chase = cap_value(dist + md->db->range3 - md->status.rhw.range, md->db->range3, MAX_MINCHASE);
 	return 0;
 }
 
@@ -1357,9 +1370,7 @@ static int mob_ai_sub_hard_activesearch(struct block_list *bl,va_list ap)
 #endif
 			(*target) = bl;
 			md->target_id=bl->id;
-			md->min_chase= dist + md->db->range3;
-			if(md->min_chase>MAX_MINCHASE)
-				md->min_chase=MAX_MINCHASE;
+			md->min_chase = cap_value(dist + md->db->range3 - md->status.rhw.range, md->db->range3, MAX_MINCHASE);
 			return 1;
 		}
 		break;
@@ -1523,7 +1534,7 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,t_tick tick)
 	}
 
 	//Avoid attempting to lock the master's target too often to avoid unnecessary overload. [Skotlex]
-	if (DIFF_TICK(md->last_linktime, tick) < MIN_MOBLINKTIME && !md->target_id)
+	if (DIFF_TICK(tick, md->last_linktime) >= MIN_MOBLINKTIME && !md->target_id)
   	{
 		struct unit_data *ud = unit_bl2ud(bl);
 		md->last_linktime = tick;
@@ -1542,9 +1553,7 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,t_tick tick)
 			}
 			if (tbl && status_check_skilluse(&md->bl, tbl, 0, 0)) {
 				md->target_id=tbl->id;
-				md->min_chase=md->db->range3+distance_bl(&md->bl, tbl);
-				if(md->min_chase>MAX_MINCHASE)
-					md->min_chase=MAX_MINCHASE;
+				md->min_chase = cap_value(distance_bl(&md->bl, tbl) + md->db->range3 - md->status.rhw.range, md->db->range3, MAX_MINCHASE);
 				return 1;
 			}
 		}
@@ -1561,6 +1570,9 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,t_tick tick)
 int mob_unlocktarget(struct mob_data *md, t_tick tick)
 {
 	nullpo_ret(md);
+
+	// Remember if the monster was in a "chasing" state
+	bool chasestate = mob_is_chasing(md->state.skillstate);
 
 	switch (md->state.skillstate) {
 	case MSS_WALK:
@@ -1602,7 +1614,7 @@ int mob_unlocktarget(struct mob_data *md, t_tick tick)
 	}
 	
 	if (!md->ud.state.ignore_cell_stack_limit && battle_config.official_cell_stack_limit > 0
-		&& (md->min_chase == md->db->range3 || battle_config.mob_ai & 0x8)
+		&& (chasestate || battle_config.mob_ai & 0x8)
 		&& map_count_oncell(md->bl.m, md->bl.x, md->bl.y, BL_CHAR | BL_NPC, 1) > battle_config.official_cell_stack_limit) {
 		unit_walktoxy(&md->bl, md->bl.x, md->bl.y, 8);
 	}
@@ -1846,9 +1858,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 				md->target_id = md->attacked_id; // set target
 				if (md->state.attacked_count)
 					md->state.attacked_count--; //Should we reset rude attack count?
-				md->min_chase = dist+md->db->range3;
-				if(md->min_chase>MAX_MINCHASE)
-					md->min_chase=MAX_MINCHASE;
+				md->min_chase = cap_value(dist + md->db->range3 - md->status.rhw.range, md->db->range3, MAX_MINCHASE);
 				tbl = abl; //Set the new target
 			}
 		}
@@ -1997,7 +2007,8 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 		return true;
 
 	//Only update target cell / drop target after having moved at least "mob_chase_refresh" cells
-	if(md->ud.walktimer != INVALID_TIMER && (!can_move || md->ud.walkpath.path_pos <= battle_config.mob_chase_refresh))
+	if(md->ud.walktimer != INVALID_TIMER && (!can_move || md->ud.walkpath.path_pos <= battle_config.mob_chase_refresh)
+		&& mob_is_chasing(md->state.skillstate))
 		return true;
 
 	//Out of range...
@@ -5248,9 +5259,6 @@ void MobDatabase::loadingFinished() {
 
 		if (battle_config.chase_range_rate != 100)
 			mob->range3 = max(mob->range2, mob->range3 * battle_config.chase_range_rate / 100);
-
-		// Tests showed that chase range is effectively 2 cells larger than expected [Playtester]
-		mob->range3 += 2;
 
 		// If the attack animation is longer than the delay, the client crops the attack animation!
 		// On aegis there is no real visible effect of having a recharge-time less than amotion anyway.
