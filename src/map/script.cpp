@@ -19609,6 +19609,12 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
 			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
+#ifdef Pandas_ScriptParams_UnitData_Experience
+			getunitdata_sub(UMOB_MOBBASEEXP, md->pandas.base_exp);
+			getunitdata_sub(UMOB_MOBBASEEXP_DB, md->db->base_exp);
+			getunitdata_sub(UMOB_MOBJOBEXP, md->pandas.job_exp);
+			getunitdata_sub(UMOB_MOBJOBEXP_DB, md->db->job_exp);
+#endif // Pandas_ScriptParams_UnitData_Experience
 			break;
 
 		case BL_HOM:
@@ -19915,11 +19921,20 @@ BUILDIN_FUNC(setunitdata)
 	int type = script_getnum(st, 3), value = 0;
 	const char *mapname = NULL;
 	bool calc_status = false;
+#ifdef Pandas_ScriptParams_UnitData_Experience
+	int64 value64 = 0;
+#endif // Pandas_ScriptParams_UnitData_Experience
 
 	if ((type == UMOB_MAPID || type == UHOM_MAPID || type == UPET_MAPID || type == UMER_MAPID || type == UELE_MAPID || type == UNPC_MAPID) && script_isstring(st, 4))
 		mapname = script_getstr(st, 4);
 	else
 		value = script_getnum(st, 4);
+
+#ifdef Pandas_ScriptParams_UnitData_Experience
+	if (bl->type == BL_MOB && (type == UMOB_MOBBASEEXP || type == UMOB_MOBJOBEXP)) {
+		value64 = script_getnum64(st, 4);
+	}
+#endif // Pandas_ScriptParams_UnitData_Experience
 
 	switch (bl->type) {
 	case BL_MOB:
@@ -20042,6 +20057,10 @@ BUILDIN_FUNC(setunitdata)
 #ifdef Pandas_ScriptParams_UnitData_DamageTaken
 			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
+#ifdef Pandas_ScriptParams_UnitData_Experience
+			case UMOB_MOBBASEEXP: md->pandas.base_exp = cap_value(value64, -1, (int64)MAX_EXP); break;
+			case UMOB_MOBJOBEXP: md->pandas.job_exp = cap_value(value64, -1, (int64)MAX_EXP); break;
+#endif // Pandas_ScriptParams_UnitData_Experience
 			default:
 				ShowError("buildin_setunitdata: Unknown data identifier %d for BL_MOB.\n", type);
 				return SCRIPT_CMD_FAILURE;

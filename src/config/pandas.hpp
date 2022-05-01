@@ -196,6 +196,10 @@
 		// 使 mob_data 结构体可记录此魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.special_setunitdata
 		#define Pandas_Struct_Mob_Data_Special_SetUnitData
+
+		// 使 mob_data 结构体可记录此魔物特殊的基础经验或职业经验 [Sola丶小克]
+		// 结构体修改定位 mob.hpp -> mob_data.pandas.base_exp 和 job_exp
+		#define Pandas_Struct_Mob_Data_SpecialExperience
 	#endif // Pandas_Struct_Mob_Data_Pandas
 
 	// 对离线挂店 autotrade 的定义进行拓展处理 [Sola丶小克]
@@ -972,6 +976,10 @@
 	//
 	// 感谢 "小林" 反馈此问题
 	#define Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
+
+	// 修正使用 @showexp 指令后呈现的经验值数值会错误的问题 [Sola丶小克]
+	// 备注: 单次获得的经验超过 long 的有效阈值范围后就会溢出成负数, 但最新的有效经验值区间是 int64
+	#define Pandas_Fix_GainExp_Display_Overflow
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -2148,6 +2156,13 @@
 	#ifdef Pandas_Struct_Mob_Data_DamageTaken
 		#define Pandas_ScriptParams_UnitData_DamageTaken
 	#endif // Pandas_Struct_Mob_Data_DamageTaken
+
+	// 是否拓展 setunitdata / getunitdata 指令的参数
+	// 使之能设置或者读取指定魔物实例的经验值 (BASEEXP / JOBEXP) [人鱼姬的思念]
+	// 此选项依赖 Pandas_Struct_Mob_Data_SpecialExperience 的拓展
+	#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+		#define Pandas_ScriptParams_UnitData_Experience
+	#endif // Pandas_Struct_Mob_Data_SpecialExperience
 #endif // Pandas_ScriptParams
 
 // ============================================================================

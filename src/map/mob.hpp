@@ -424,6 +424,10 @@ struct mob_data {
 #ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 		std::map<uint16, int64>* special_setunitdata;	// 记录魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
 #endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+		int64 base_exp = -1;	// 魔物实例被特殊设置的基础经验值, 若为 -1 则表示使用 db 中设置的基础经验
+		int64 job_exp = -1;		// 魔物实例被特殊设置的职业经验值, 若为 -1 则表示使用 db 中设置的职业经验
+#endif // Pandas_Struct_Mob_Data_SpecialExperience
 	} pandas;
 #endif // Pandas_Struct_Mob_Data_Pandas
 

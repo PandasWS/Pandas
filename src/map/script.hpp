@@ -738,6 +738,12 @@ enum unitdata_mobtypes {
 	UMOB_DAMAGETAKEN,
 	UMOB_DAMAGETAKEN_DB,
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
+#ifdef Pandas_ScriptParams_UnitData_Experience
+	UMOB_MOBBASEEXP,
+	UMOB_MOBBASEEXP_DB,
+	UMOB_MOBJOBEXP,
+	UMOB_MOBJOBEXP_DB,
+#endif // Pandas_ScriptParams_UnitData_Experience
 };
 
 enum unitdata_homuntypes {
