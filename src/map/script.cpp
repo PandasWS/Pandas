@@ -9,6 +9,7 @@
 
 #include "script.hpp"
 
+#include <atomic>
 #include <errno.h>
 #include <math.h>
 #include <setjmp.h>
@@ -91,6 +92,7 @@ unsigned int active_scripts;
 unsigned int next_id;
 struct eri *st_ers;
 struct eri *stack_ers;
+std::atomic<int> script_batch{ 0 }; // For async SQL futures
 
 static bool script_rid2sd_( struct script_state *st, struct map_session_data** sd, const char *func );
 
@@ -5568,6 +5570,7 @@ void script_reload(void) {
 	DBIterator *iter;
 	struct script_state *st;
 
+	script_batch++; // Increment script batch number to prevent any pending async SQL future jobs from executing callback function after this point
 	userfunc_db->clear(userfunc_db, db_script_free_code_sub);
 	db_clear(scriptlabel_db);
 
@@ -18491,6 +18494,8 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 		// 获取对应的查询语句
 		const char* query = script_getstr(st, 2);
 
+		int batch_number = script_batch;
+
 		// 如果有传递用来接收返回值的变量, 那么执行异步查询并要求返回结果
 		if (script_hasdata(st, 3)) {
 
@@ -18501,10 +18506,14 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 			st->asyncSleep = true;
 
 			// 设置查询任务, 并要求在查询结束之后执行匿名回调函数
-			addDBJob(
+			asyncquery_addDBJob(
 				type,
 				query,
-				[st](FutureData result_data) {
+				[st, batch_number](FutureData result_data) {
+					if (batch_number != script_batch) {
+						return; // st is probably a danging pointer by now, do nothing.
+					}
+
 					// 将查询的结果保存到 query_sql_db 字典中
 					query_sql_db[st->id] = (DBResultData*)result_data;
 
@@ -18515,7 +18524,7 @@ static int buildin_query_sql_aysnc_sub(struct script_state* st, dbType type)
 		}
 		else
 			// 如果没有要求需要保存返回值, 那么不设置匿名回调函数
-			addDBJob(type, query);
+			asyncquery_addDBJob(type, query);
 	}
 	else {
 		// 若当前 st 处于异步休眠状态
