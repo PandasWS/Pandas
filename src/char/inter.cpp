@@ -8,7 +8,6 @@
 #include <string>
 #include <sys/stat.h> // for stat/lstat/fstat - [Dekamaster/Ultimate GM Tool]
 #include <vector>
-#include <yaml-cpp/yaml.h>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
@@ -919,7 +918,7 @@ const std::string InterServerDatabase::getDefaultLocation(){
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 InterServerDatabase::parseBodyNode( const YAML::Node& node ){
+uint64 InterServerDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	uint32 id;
 
 	if( !this->asUInt32( node, "ID", id ) ){
@@ -1064,11 +1063,22 @@ void inter_final(void)
  **/
 void inter_Storage_sendInfo(int fd) {
 	int size = sizeof(struct s_storage_table), len = 4 + interServerDb.size() * size, offset;
+#ifdef Pandas_Unlock_Storage_Capacity_Limit
+	// 由于 len 发送 2 字节已经无法满足需求, 因此下面的 WFIFOW 需提升为 WFIFOL
+	// 但如果需要提升则整个封包长度需要额外增加 2 个字节, 因此 len 需要增加 2
+	len += 2;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
+
 	// Send storage table information
 	WFIFOHEAD(fd, len);
 	WFIFOW(fd, 0) = 0x388c;
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 	WFIFOW(fd, 2) = len;
 	offset = 4;
+#else
+	WFIFOL(fd, 2) = len;
+	offset = 4 + 2;
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	for( auto storage : interServerDb ){
 		memcpy(WFIFOP(fd, offset), storage.second.get(), size);
 		offset += size;
@@ -1461,7 +1471,14 @@ int inter_check_length(int fd, int length)
 	{// variable-length packet
 		if( RFIFOREST(fd) < 4 )
 			return 0;
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 		length = RFIFOW(fd,2);
+#else
+		if (RFIFOW(fd,0) == 0x308b || RFIFOW(fd,0) == 0x3019)
+			length = RFIFOL(fd,2);
+		else
+			length = RFIFOW(fd,2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 	}
 
 	if( (int)RFIFOREST(fd) < length )

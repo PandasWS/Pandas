@@ -28,7 +28,8 @@ bool deleteDirectory(std::string szDirPath);
 bool copyDirectory(const boost::filesystem::path& from, const boost::filesystem::path& to);
 
 bool isFileExists(const std::string& path);
-bool copyFile(std::string fromPath, std::string toPath);
+bool copyFile(const std::string& fromPath, const std::string& toPath);
+bool deleteFile(const std::string& path);
 
 bool strEndWith(std::string fullstring, std::string ending);
 bool strEndWith(std::wstring fullstring, std::wstring ending);

@@ -361,6 +361,7 @@ enum e_race2 : uint8{
 	RC2_WERNER_LAB,
 	RC2_TEMPLE_DEMON,
 	RC2_ILLUSION_VAMPIRE,
+	RC2_MALANGDO,
 	RC2_MAX
 };
 
@@ -565,7 +566,7 @@ enum _sp {
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY, //2088-2092
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
 	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN, SP_ADD_ITEM_SPHEAL_RATE, SP_ADD_ITEMGROUP_SPHEAL_RATE, // 2098-2101
-	SP_WEAPON_SUBSIZE // 2102
+	SP_WEAPON_SUBSIZE, SP_ABSORB_DMG_MAXHP2 // 2102-2103
 #ifdef Pandas_ScriptParams_ReadParam
 	,
 	SP_EXTEND_UNUSED = 3100,
@@ -577,30 +578,41 @@ enum _sp {
 	#ifdef Pandas_Bonus_bNoFieldGemStone
 		SP_PANDAS_NOFIELDGEMSTONE,	// 调整器名称: bNoFieldGemStone / 说明: 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 	#endif // Pandas_Bonus_bNoFieldGemStone
-	#ifdef Pandas_Bonus_bRebirthWithHeal
+	#ifdef Pandas_Bonus3_bRebirthWithHeal
 		SP_PANDAS_REBIRTHWITHHEAL,	// 调整器名称: bRebirthWithHeal / 说明: 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP
-	#endif // Pandas_Bonus_bRebirthWithHeal
-	#ifdef Pandas_Bonus_bAddSkillRange
+	#endif // Pandas_Bonus3_bRebirthWithHeal
+	#ifdef Pandas_Bonus2_bAddSkillRange
 		SP_PANDAS_ADDSKILLRANGE,	// 调整器名称: bAddSkillRange / 说明: 增加 sk 技能 n 格攻击距离
-	#endif // Pandas_Bonus_bAddSkillRange
-	#ifdef Pandas_Bonus_bSkillNoRequire
+	#endif // Pandas_Bonus2_bAddSkillRange
+	#ifdef Pandas_Bonus2_bSkillNoRequire
 		SP_PANDAS_SKILLNOREQUIRE,	// 调整器名称: bSkillNoRequire / 说明: 解除 sk 技能中由 n 指定的前置施法条件限制
-	#endif // Pandas_Bonus_bSkillNoRequire
-	#ifdef Pandas_Bonus_bStatusAddDamage
+	#endif // Pandas_Bonus2_bSkillNoRequire
+	#ifdef Pandas_Bonus4_bStatusAddDamage
 		SP_PANDAS_STATUSADDDAMAGE,	// 调整器名称: bStatusAddDamage / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n
-	#endif // Pandas_Bonus_bStatusAddDamage
-	#ifdef Pandas_Bonus_bStatusAddDamageRate
+	#endif // Pandas_Bonus4_bStatusAddDamage
+	#ifdef Pandas_Bonus4_bStatusAddDamageRate
 		SP_PANDAS_STATUSADDDAMAGERATE,	// 调整器名称: bStatusAddDamageRate / 说明: 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n%
-	#endif // Pandas_Bonus_bStatusAddDamageRate
-	#ifdef Pandas_Bonus_bFinalAddRace
+	#endif // Pandas_Bonus4_bStatusAddDamageRate
+	#ifdef Pandas_Bonus3_bFinalAddRace
 		SP_PANDAS_FINALADDRACE,	// 调整器名称: bFinalAddRace / 说明: 使用 bf 攻击 r 种族的目标时增加 x% 的伤害 (在最终伤害上全段修正)
-	#endif // Pandas_Bonus_bFinalAddRace
-	#ifdef Pandas_Bonus_bFinalAddClass
+	#endif // Pandas_Bonus3_bFinalAddRace
+	#ifdef Pandas_Bonus3_bFinalAddClass
 		SP_PANDAS_FINALADDCLASS,	// 调整器名称: bFinalAddClass / 说明: 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
-	#endif // Pandas_Bonus_bFinalAddClass
+	#endif // Pandas_Bonus3_bFinalAddClass
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
+
+#ifdef Pandas_ScriptConstants
+	SP_PANDAS_EXTEND_CONSTANTS_START = 3600,
+#ifdef Pandas_ScriptConstants_CartWeight
+		SP_CARTWEIGHT,
+#endif // Pandas_ScriptConstants_CartWeight
+#ifdef Pandas_ScriptConstants_MaxCartWeight
+		SP_MAXCARTWEIGHT,
+#endif // Pandas_ScriptConstants_MaxCartWeight
+	SP_PANDAS_EXTEND_CONSTANTS_END,
+#endif // Pandas_ScriptConstants
 };
 
 enum _look {
@@ -698,6 +710,8 @@ enum e_mapflag : int16 {
 	MF_NORODEX,
 	MF_NORENEWALEXPPENALTY,
 	MF_NORENEWALDROPPENALTY,
+	MF_NOPETCAPTURE,
+	MF_NOBUYINGSTORE,
 #ifdef Pandas_MapFlag_Mobinfo
 	MF_MOBINFO,
 #endif // Pandas_MapFlag_Mobinfo
@@ -833,7 +847,7 @@ enum cell_t{
 	CELL_NOCHAT,
 	CELL_MAELSTROM,
 	CELL_ICEWALL,
-
+	CELL_NOBUYINGSTORE,
 };
 
 // used by map_getcell()
@@ -857,6 +871,7 @@ enum cell_chk : uint8 {
 	CELL_CHKNOCHAT,			// Whether the cell denies Player Chat Window
 	CELL_CHKMAELSTROM,		// Whether the cell has Maelstrom
 	CELL_CHKICEWALL,		// Whether the cell has Ice Wall
+	CELL_CHKNOBUYINGSTORE,	// Whether the cell denies ALL_BUYING_STORE skill
 
 };
 
@@ -876,7 +891,8 @@ struct mapcell
 		novending : 1,
 		nochat : 1,
 		maelstrom : 1,
-		icewall : 1;
+		icewall : 1,
+		nobuyingstore : 1;
 
 #ifdef CELL_NOSTACK
 	unsigned char cell_bl; //Holds amount of bls in this cell.
@@ -919,7 +935,7 @@ struct map_data {
 	int users_pvp;
 	int iwall_num; // Total of invisible walls in this map
 
-	std::unordered_map<int16, int> flag;
+	std::vector<int> flag;
 	struct point save;
 	std::vector<s_drop_list> drop_list;
 	uint32 zone; // zone number (for item/skill restrictions)
@@ -1229,7 +1245,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 #endif // Pandas_Fix_Item_Trade_FloorDropable
 
 // instances
-int map_addinstancemap(int src_m, int instance_id);
+int map_addinstancemap(int src_m, int instance_id, bool no_mapflag);
 int map_delinstancemap(int m);
 void map_data_copyall(void);
 void map_data_copy(struct map_data *dst_map, struct map_data *src_map);

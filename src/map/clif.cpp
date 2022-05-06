@@ -71,6 +71,10 @@
 #include <math.h>
 #endif // defined(Pandas_Fix_Progressbar_Refresh_Stuck) && (!defined(__WIN32))
 
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+s_next_dropitem_special next_dropitem_special;
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
 using namespace rathena;
 
 static inline uint32 client_tick( t_tick tick ){
@@ -959,6 +963,15 @@ void clif_dropflooritem( struct flooritem_data* fitem, bool canShowEffect ){
 		p.showdropeffect = 0;
 		p.dropeffectmode = DROPEFFECT_NONE;
 	}
+
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+	if (next_dropitem_special.drop_effect != -1) {
+		p.showdropeffect = 1;
+		p.dropeffectmode = next_dropitem_special.drop_effect - 1;
+		next_dropitem_special.drop_effect = -1;
+	}
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
+
 #endif
 	clif_send( &p, sizeof(p), &fitem->bl, AREA );
 }
@@ -1047,7 +1060,7 @@ void clif_clearunit_area(struct block_list* bl, clr_type type)
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA : AREA_WOS);
 #else
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA_DEAD : AREA_WOS);
-#endif //Pandas_Ease_Mob_Stuck_After_Dead
+#endif // Pandas_Ease_Mob_Stuck_After_Dead
 
 	if(disguised(bl)) {
 		WBUFL(buf,2) = disguised_bl_id( bl->id );
@@ -1389,11 +1402,15 @@ static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target
 	}
 
 #ifdef Pandas_Aura_Mechanism
-	// 若封包发送的目标是一个玩家单位,
-	// 那么这里绘制 bl 的光环效果给到 tbl 对应的玩家客户端
 	if (tbl->type == BL_PC) {
+		// 若封包发送的目标是一个玩家单位,
+		// 那么这里绘制 bl 的光环效果给到 tbl 对应的玩家客户端
 		struct map_session_data* tsd = BL_CAST(BL_PC, tbl);
 		clif_send_auras_single(bl, tsd);
+	}
+	else {
+		// 否则广播给 target 指定范围玩家
+		clif_send_auras(bl, target, false, AURA_SPECIAL_NOTHING);
 	}
 #endif // Pandas_Aura_Mechanism
 }
@@ -1916,6 +1933,8 @@ int clif_spawn( struct block_list *bl, bool walking ){
 				clif_specialeffect(&md->bl,EF_GIANTBODY2,AREA);
 			else if(md->special_state.size==SZ_MEDIUM)
 				clif_specialeffect(&md->bl,EF_BABYBODY2,AREA);
+			if ( md->special_state.ai == AI_ABR || md->special_state.ai == AI_BIONIC )
+				clif_summon_init(*md);
 		}
 		break;
 	case BL_NPC:
@@ -3281,7 +3300,11 @@ void clif_inventorylist( struct map_session_data *sd ){
 			clif_item_equip( client_index( i ), &itemlist_equip.list[equip++], &sd->inventory.u.items_inventory[i], sd->inventory_data[i], pc_equippoint( sd, i ), 1 );
 #endif // Pandas_FuncParams_Clif_Item_Equip
 
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
 			if( equip == MAX_INVENTORY_ITEM_PACKET_NORMAL ){
+#else
+			if( equip == MAX_INVENTORY_ITEM_PACKET_EQUIP ){
+#endif // Pandas_Unlock_Storage_Capacity_Limit
 				itemlist_equip.PacketType  = inventorylistequipType;
 				itemlist_equip.PacketLength = ( sizeof( itemlist_equip ) - sizeof( itemlist_equip.list ) ) + ( sizeof( struct EQUIPITEM_INFO ) * equip );
 #if PACKETVER_RE_NUM >= 20180912 || PACKETVER_ZERO_NUM >= 20180919 || PACKETVER_MAIN_NUM >= 20181002
@@ -4586,7 +4609,7 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 		if( sc->data[SC_PROVOKE] ){
 			const struct TimerData *td = get_timer( sc->data[SC_PROVOKE]->timer );
 
-			clif_status_change( bl, StatusIconChangeTable[SC_PROVOKE], 1, ( !td ? INFINITE_TICK : DIFF_TICK( td->tick, gettick() ) ), 0, 0, 0 );
+			clif_status_change( bl, status_db.getIcon(SC_PROVOKE), 1, ( !td ? INFINITE_TICK : DIFF_TICK( td->tick, gettick() ) ), 0, 0, 0 );
 		}
 	}else{
 		if( disguised( bl ) ){
@@ -4608,24 +4631,15 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 			// 指定了明确的 target 发送目标, 那么相关封包只发送给指定目标
 			struct map_session_data* tsd = BL_CAST(BL_PC, target);
 
-			if (aura_need_hiding(bl, target)) {
-				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
-			}
-			else {
-				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			
+			if (!aura_need_hiding(bl, target)) {
 				clif_getareachar_unit(tsd, bl);
 			}
 		}
-		else {
-			// 否则再用范围发送方式对 bl 附近的单位进行广播
-			if (aura_need_hiding(bl)) {
-				clif_clearunit_area(bl, CLR_TRICKDEAD);
-			}
-			else {
-				clif_clearunit_area(bl, CLR_TRICKDEAD);
-				map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
-				//clif_send_auras(bl, AREA_WOS, TRUE, AURA_SPECIAL_NOTHING);
-			}
+		else if (bl->type == BL_NPC) {
+			clif_clearunit_area(bl, CLR_TRICKDEAD);
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
 		}
 
 		// 若是玩家单位, 那么将身上的特殊效果发送给自己 (猥琐的解决客户端缺陷)
@@ -5939,11 +5953,21 @@ int clif_insight(struct block_list *bl,va_list ap)
 			skill_getareachar_skillunit_visibilty_single((TBL_SKILL*)bl, &tsd->bl);
 			break;
 		default:
+#ifdef Pandas_Aura_Mechanism
+			if (bl && tsd) {
+				clif_clearunit_single(bl->id, CLR_TRICKDEAD, tsd->fd);
+			}
+#endif // Pandas_Aura_Mechanism
 			clif_getareachar_unit(tsd,bl);
 			break;
 		}
 	}
 	if (clif_session_isValid(sd)) { //Tell sd that tbl walked into his view
+#ifdef Pandas_Aura_Mechanism
+		if (tbl && sd) {
+			clif_clearunit_single(tbl->id, CLR_TRICKDEAD, sd->fd);
+		}
+#endif // Pandas_Aura_Mechanism
 		clif_getareachar_unit(sd,tbl);
 	}
 	return 0;
@@ -6650,7 +6674,7 @@ void clif_skill_produce_mix_list( struct map_session_data *sd, int skill_id, int
 	int count = 0;
 	for( int i = 0; i < MAX_SKILL_PRODUCE_DB; i++ ){
 		if (skill_can_produce_mix(sd,skill_produce_db[i].nameid, trigger, 1) &&
-			(skill_id <= 0 || (skill_id > 0 && skill_produce_db[i].req_skill == skill_id))
+			(skill_id <= 0 || skill_produce_db[i].req_skill == skill_id)
 			)
 		{
 			p->items[count].itemId = client_nameid( skill_produce_db[i].nameid );
@@ -6738,7 +6762,7 @@ void clif_cooking_list( struct map_session_data *sd, int trigger, uint16 skill_i
 /// 0983 <index>.W <id>.L <state>.B <total msec>.L <remain msec>.L { <val>.L }*3 (ZC_MSG_STATE_CHANGE3) (PACKETVER >= 20120618)
 /// @param bl Sends packet to clients around this object
 /// @param id ID of object that has this effect
-/// @param type Status icon see enum efst_types
+/// @param type Status icon see enum efst_type
 /// @param flag 1:Active, 0:Deactive
 /// @param tick Duration in ms
 /// @param val1
@@ -6800,7 +6824,7 @@ void clif_status_change_sub(struct block_list *bl, int id, int type, int flag, t
 
 /* Sends status effect to clients around the bl
  * @param bl Object that has the effect
- * @param type Status icon see enum efst_types
+ * @param type Status icon see enum efst_type
  * @param flag 1:Active, 0:Deactive
  * @param tick Duration in ms
  * @param val1
@@ -6819,11 +6843,17 @@ void clif_status_change(struct block_list *bl, int type, int flag, t_tick tick, 
 	if (type == EFST_ILLUSION && !battle_config.display_hallucination) // Disable Hallucination.
 		return;
 
+#if !( PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106 )
+	// Older clients display normal riding icon.
+	if (type == EFST_MADOGEAR)
+		type = EFST_RIDING;
+#endif
+
 	nullpo_retv(bl);
 
 	sd = BL_CAST(BL_PC, bl);
 
-	if (!(status_type2relevant_bl_types(type)&bl->type)) // only send status changes that actually matter to the client
+	if (!(status_efst_get_bl_type((efst_type)type)&bl->type)) // only send status changes that actually matter to the client
 		return;
 
 	clif_status_change_sub(bl, bl->id, type, flag, tick, val1, val2, val3, ((sd ? (pc_isinvisible(sd) ? SELF : AREA) : AREA_WOS)));
@@ -6892,9 +6922,9 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 		}
 
 #if PACKETVER > 20120418
-		clif_efst_status_change(tbl, bl->id, target, StatusIconChangeTable[type], tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
+		clif_efst_status_change(tbl, bl->id, target, status_db.getIcon(type), tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
 #else
-		clif_status_change_sub(tbl, bl->id, StatusIconChangeTable[type], 1, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3, target);
+		clif_status_change_sub(tbl, bl->id, status_db.getIcon(type), 1, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3, target);
 #endif
 	}
 }
@@ -9120,7 +9150,7 @@ void clif_mvp_exp(struct map_session_data *sd, t_exp exp) {
 	fd = sd->fd;
 	WFIFOHEAD(fd, packet_len(0x10b));
 	WFIFOW(fd,0) = 0x10b;
-	WFIFOL(fd,2) = (uint32)min( exp, MAX_EXP );
+	WFIFOL(fd,2) = (uint32)u64min( exp, MAX_EXP );
 	WFIFOSET(fd, packet_len(0x10b));
 #endif
 }
@@ -11310,6 +11340,20 @@ static bool clif_process_message(struct map_session_data* sd, bool whisperFormat
 
 	//achievement_update_objective(sd, AG_CHATTING, 1, 1); // !TODO: Confirm how this achievement is triggered
 
+#ifdef Pandas_NpcExpress_PC_TALK
+	if (sd) {
+		pc_setreg(sd, add_str("@talk_x"), sd->bl.x);
+		pc_setreg(sd, add_str("@talk_y"), sd->bl.y);
+		pc_setreg(sd, add_str("@talk_mapid"), (sd ? sd->bl.m : -1));
+		pc_setregstr(sd, add_str("@talk_mapname$"), (sd ? map[sd->bl.m].name : ""));
+
+		pc_setreg(sd, add_str("@talk_gid"), sd->bl.id);
+		pc_setregstr(sd, add_str("@talk_name$"), out_name);
+		pc_setregstr(sd, add_str("@talk_mes$"), out_message);
+		npc_script_event(sd, NPCX_PC_TALK);
+	}
+#endif // Pandas_NpcExpress_PC_TALK	
+
 	return true;
 }
 
@@ -11643,7 +11687,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_hominfo(sd,sd->hd,0); //for some reason, at least older clients want this sent twice
 		clif_homskillinfoblock(sd);
 		if( battle_config.hom_setting&HOMSET_COPY_SPEED )
-			status_calc_bl(&sd->hd->bl, SCB_SPEED); //Homunc mimic their master's speed on each map change
+			status_calc_bl(&sd->hd->bl, { SCB_SPEED }); //Homunc mimic their master's speed on each map change
 		if( !(battle_config.hom_setting&HOMSET_NO_INSTANT_LAND_SKILL) )
 			skill_unit_move(&sd->hd->bl,gettick(),1); // apply land skills immediately
 	}
@@ -11661,7 +11705,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_spawn(&sd->md->bl);
 		clif_mercenary_info(sd);
 		clif_mercenary_skillblock(sd);
-		status_calc_bl(&sd->md->bl, SCB_SPEED); // Mercenary mimic their master's speed on each map change
+		status_calc_bl(&sd->md->bl, { SCB_SPEED }); // Mercenary mimic their master's speed on each map change
 	}
 
 	if( sd->ed ) {
@@ -11672,7 +11716,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_elemental_updatestatus(sd,SP_HP);
 		clif_hpmeter_single(sd->fd,sd->ed->bl.id,sd->ed->battle_status.hp,sd->ed->battle_status.max_hp);
 		clif_elemental_updatestatus(sd,SP_SP);
-		status_calc_bl(&sd->ed->bl, SCB_SPEED); //Elemental mimic their master's speed on each map change
+		status_calc_bl(&sd->ed->bl, { SCB_SPEED }); //Elemental mimic their master's speed on each map change
 	}
 
 	if(sd->state.connect_new) {
@@ -11806,7 +11850,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			struct map_data *pmap = map_getmapdata(sd->state.pmap);
 
 			if ((pmap != nullptr && (mapdata_flag_gvg(pmap) || pmap->flag[MF_BATTLEGROUND])) || (mapdata != nullptr && (mapdata_flag_gvg(mapdata) || mapdata->flag[MF_BATTLEGROUND])))
-				status_calc_bl(&sd->bl, SCB_FLEE); //Refresh flee penalty
+				status_calc_bl(&sd->bl, { SCB_FLEE }); //Refresh flee penalty
 		}
 
 		if( night_flag && mapdata->flag[MF_NIGHTENABLED] )
@@ -12463,19 +12507,12 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 		return;
 	}
 
-	// Statuses that don't let the player sit / attack / talk with NPCs(targeted)
-	// (not all are included in pc_can_attack)
-	if (sd->sc.count &&
-		(sd->sc.data[SC_TRICKDEAD] ||
-		(sd->sc.data[SC_AUTOCOUNTER] && action_type != 0x07) ||
-		 sd->sc.data[SC_BLADESTOP] ||
-		 sd->sc.data[SC__MANHOLE] ||
-		 sd->sc.data[SC_SUHIDE] ||
-		 sd->sc.data[SC_GRAVITYCONTROL]))
-		return;
-
-	if(action_type != 0x00 && action_type != 0x07)
+	// Statuses that don't let the player sit / stand / talk with NPCs (targeted)
+	if (action_type != 0x00 && action_type != 0x07) {
+		if (sd->sc.cant.interact)
+			return;
 		pc_stop_walking(sd, 1);
+	}
 	pc_stop_attack(sd);
 
 	if(target_id<0 && -target_id == sd->bl.id) // for disguises [Valaris]
@@ -12486,10 +12523,7 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 	case 0x00: // once attack
 	case 0x07: // continuous attack
 
-		if( pc_cant_act(sd) || sd->sc.option&OPTION_HIDE )
-			return;
-
-		if( sd->sc.option&OPTION_COSTUME )
+		if( pc_cant_act(sd) )
 			return;
 
 		if (!battle_config.sdelay_attack_enable && pc_checkskill(sd, SA_FREECAST) <= 0) {
@@ -12837,11 +12871,7 @@ void clif_parse_DropItem(int fd, struct map_session_data *sd){
 		if (pc_cant_act2(sd) || sd->npc_id)
 			break;
 
-		if (sd->sc.count && (
-			sd->sc.data[SC_AUTOCOUNTER] ||
-			sd->sc.data[SC_BLADESTOP] ||
-			(sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOITEM)
-		))
+		if (sd->sc.cant.drop)
 			break;
 
 		if (!pc_dropitem(sd, item_index, item_amount))
@@ -12913,6 +12943,7 @@ void clif_parse_EquipItem(int fd,struct map_session_data *sd)
 		return; //Out of bounds check.
 
 	if(sd->npc_id && !sd->npc_item_flag) {
+		clif_msg_color( sd, C_ITEM_NOEQUIP, color_table[COLOR_RED] );
 		return;
 	} else if (sd->state.storage_flag || sd->sc.opt1)
 		; //You can equip/unequip stuff while storage is open/under status changes
@@ -12967,6 +12998,7 @@ void clif_parse_UnequipItem(int fd,struct map_session_data *sd)
 	}
 
 	if (sd->npc_id && !sd->npc_item_flag) {
+		clif_msg_color( sd, C_ITEM_NOEQUIP, color_table[COLOR_RED] );
 		return;
 	} else if (sd->state.storage_flag || sd->sc.opt1)
 		; //You can equip/unequip stuff while storage is open/under status changes
@@ -16075,7 +16107,7 @@ void clif_parse_NoviceExplosionSpirits(int fd, struct map_session_data *sd)
 			int percent = (int)( ( (double)sd->status.base_exp/(double)next )*1000. );
 
 			if( percent && ( percent%100 ) == 0 ) {// 10.0%, 20.0%, ..., 90.0%
-				sc_start(&sd->bl,&sd->bl, status_skill2sc(MO_EXPLOSIONSPIRITS), 100, 17, skill_get_time(MO_EXPLOSIONSPIRITS, 5)); //Lv17-> +50 critical (noted by Poki) [Skotlex]
+				sc_start(&sd->bl,&sd->bl, SC_EXPLOSIONSPIRITS, 100, 17, skill_get_time(MO_EXPLOSIONSPIRITS, 5)); //Lv17-> +50 critical (noted by Poki) [Skotlex]
 				clif_skill_nodamage(&sd->bl, &sd->bl, MO_EXPLOSIONSPIRITS, 5, 1);  // prayer always shows successful Lv5 cast and disregards noskill restrictions
 			}
 		}
@@ -18924,9 +18956,9 @@ void clif_quest_add(struct map_session_data *sd, struct quest *qd)
 
 	for (int i = 0, offset = 4; i < qi->objectives.size(); i++, offset += 12) {
 		WFIFOL(fd, offset) = qd->quest_id * 1000 + i;
-		WFIFOL(fd, offset+4) = qi->objectives[i]->mob_id;
-		WFIFOW(fd, offset + 10) = qi->objectives[i]->count;
-		WFIFOW(fd, offset + 12) = qd->count[i];
+		WFIFOL(fd, offset + 4) = qi->objectives[i]->mob_id;
+		WFIFOW(fd, offset + 8) = qi->objectives[i]->count;
+		WFIFOW(fd, offset + 10) = qd->count[i];
 	}
 
 	WFIFOSET(fd, len);
@@ -19987,6 +20019,15 @@ static void clif_parse_ReqOpenBuyingStore( int fd, struct map_session_data* sd )
 		return;
 	}
 
+	if (map_getmapflag(sd->bl.m, MF_NOBUYINGSTORE)) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
+		return;
+	}
+	if (map_getcell(sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOBUYINGSTORE)) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 204)); // "You can't open a shop on this cell."
+		return;
+	}
+
 	char storename[MESSAGE_SIZE];
 
 	safestrncpy( storename, p->storeName, sizeof( storename ) );
@@ -20296,6 +20337,7 @@ static void clif_parse_SearchStoreInfo( int fd, struct map_session_data *sd ){
 ///     0 = no "next" label
 ///     1 = "next" label to retrieve more results
 void clif_search_store_info_ack( struct map_session_data* sd ){
+#if PACKETVER_MAIN_NUM >= 20100817 || PACKETVER_RE_NUM >= 20100706 || defined(PACKETVER_ZERO)
 	nullpo_retv( sd );
 
 	int fd = sd->fd;
@@ -20349,6 +20391,7 @@ void clif_search_store_info_ack( struct map_session_data* sd ){
 	}
 
 	WFIFOSET( fd, len );
+#endif
 }
 
 
@@ -20978,8 +21021,8 @@ void clif_parse_ranklist(int fd,struct map_session_data *sd) {
 /// 021c <points>.L <total points>.L (ZC_ALCHEMIST_POINT)
 /// 0224 <points>.L <total points>.L (ZC_TAEKWON_POINT)
 /// 097e <RankingType>.W <point>.L <TotalPoint>.L (ZC_UPDATE_RANKING_POINT)
-void clif_update_rankingpoint(struct map_session_data *sd, int rankingtype, int point) {
-	int fd=sd->fd;
+void clif_update_rankingpoint(map_session_data &sd, int rankingtype, int point) {
+	int fd = sd.fd;
 #if PACKETVER < 20130710
 	short cmd;
 	switch(rankingtype){
@@ -20994,14 +21037,14 @@ void clif_update_rankingpoint(struct map_session_data *sd, int rankingtype, int 
 	WFIFOHEAD(fd,packet_len(cmd));
 	WFIFOW(fd,0) = cmd;
 	WFIFOL(fd,2) = point;
-	WFIFOL(fd,6) = sd->status.fame;
+	WFIFOL(fd,6) = sd.status.fame;
 	WFIFOSET(fd, packet_len(cmd));
 #else
 	WFIFOHEAD(fd,packet_len(0x97e));
 	WFIFOW(fd,0) = 0x97e;
 	WFIFOW(fd,2) = rankingtype;
 	WFIFOL(fd,4) = point;
-	WFIFOL(fd,8) = sd->status.fame;
+	WFIFOL(fd,8) = sd.status.fame;
 	WFIFOSET(fd,packet_len(0x97e));
 #endif
 }
@@ -21920,9 +21963,9 @@ void clif_parse_merge_item_req(int fd, struct map_session_data* sd) {
 	}
 
 	for (i = 0, j = 0; i < n; i++) {
-		unsigned short idx = RFIFOW(fd, info->pos[1] + i*2) - 2;
+		uint16 idx = server_index( RFIFOW( fd, info->pos[1] + i * 2 ) );
 
-		if( idx < 0 || idx >= MAX_INVENTORY){
+		if( idx >= MAX_INVENTORY ){
 			return;
 		}
 
@@ -23804,7 +23847,7 @@ void clif_parse_inventory_expansion_reject( int fd, struct map_session_data* sd 
 }
 
 void clif_barter_open( struct map_session_data& sd, struct npc_data& nd ){
-#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114
+#if PACKETVER_MAIN_NUM >= 20190116 || PACKETVER_RE_NUM >= 20190116 || PACKETVER_ZERO_NUM >= 20181226
 	if( nd.subtype != NPCTYPE_BARTER || nd.u.barter.extended || sd.state.barter_open ){
 		return;
 	}
@@ -23861,7 +23904,7 @@ void clif_barter_open( struct map_session_data& sd, struct npc_data& nd ){
 }
 
 void clif_parse_barter_close( int fd, struct map_session_data* sd ){
-#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114
+#if PACKETVER_MAIN_NUM >= 20190116 || PACKETVER_RE_NUM >= 20190116 || PACKETVER_ZERO_NUM >= 20181226
 	if( sd->state.barter_open ){
 		sd->npc_shopid = 0;
 		sd->state.barter_open = false;
@@ -23870,7 +23913,7 @@ void clif_parse_barter_close( int fd, struct map_session_data* sd ){
 }
 
 void clif_parse_barter_buy( int fd, struct map_session_data* sd ){
-#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114
+#if PACKETVER_MAIN_NUM >= 20190116 || PACKETVER_RE_NUM >= 20190116 || PACKETVER_ZERO_NUM >= 20181226
 	// No shop open
 	if( sd->npc_shopid == 0 || !sd->state.barter_open ){
 		return;
@@ -24109,6 +24152,399 @@ void clif_parse_barter_extended_buy( int fd, struct map_session_data* sd ){
 	}
 
 	clif_npc_buy_result( sd, npc_barter_purchase( *sd, barter, purchases )  );
+#endif
+}
+
+void clif_summon_init(struct mob_data& md) {
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+	struct block_list* master_bl = battle_get_master(&md.bl);
+
+	if( master_bl == nullptr ){
+		return;
+	}
+
+	struct PACKET_ZC_SUMMON_HP_INIT p = {};
+
+	p.PacketType = HEADER_ZC_SUMMON_HP_INIT;
+	p.summonAID = md.bl.id;
+	p.CurrentHP = md.status.hp;
+	p.MaxHP = md.status.max_hp;
+
+	clif_send( &p, sizeof( p ), master_bl, SELF );
+#endif
+}
+
+void clif_summon_hp_bar(struct mob_data& md) {
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+	struct block_list* master_bl = battle_get_master(&md.bl);
+
+	if( master_bl == nullptr ){
+		return;
+	}
+
+	struct PACKET_ZC_SUMMON_HP_UPDATE p = {};
+
+	p.PacketType = HEADER_ZC_SUMMON_HP_UPDATE;
+	p.summonAID = md.bl.id;
+	p.VarId = SP_HP; // HP parameter
+	p.Value = md.status.hp;
+
+	clif_send( &p, sizeof( p ), master_bl, SELF );
+#endif
+}
+
+void clif_laphine_synthesis_open( struct map_session_data *sd, std::shared_ptr<s_laphine_synthesis> synthesis ){
+#if PACKETVER_MAIN_NUM >= 20160601 || PACKETVER_RE_NUM >= 20160525 || defined(PACKETVER_ZERO)
+	nullpo_retv( sd );
+
+	sd->state.laphine_synthesis = synthesis->item_id;
+
+	struct PACKET_ZC_LAPINEDDUKDDAK_OPEN p = {};
+
+	p.packetType = HEADER_ZC_LAPINEDDUKDDAK_OPEN;
+	p.itemId = client_nameid( synthesis->item_id );
+
+	clif_send( &p, sizeof( p ), &sd->bl, SELF );
+#endif
+}
+
+void clif_parse_laphine_synthesis_close( int fd, struct map_session_data* sd ){
+#if PACKETVER_MAIN_NUM >= 20160601 || PACKETVER_RE_NUM >= 20160525 || defined(PACKETVER_ZERO)
+	sd->state.laphine_synthesis = 0;
+#endif
+}
+
+enum e_laphine_synthesis_result : int16{
+	LAPHINE_SYNTHESIS_SUCCESS = 0,
+	LAPHINE_SYNTHESIS_AMOUNT = 5,
+	LAPHINE_SYNTHESIS_ITEM = 7
+};
+
+void clif_laphine_synthesis_result( struct map_session_data* sd, enum e_laphine_synthesis_result result ){
+#if PACKETVER_MAIN_NUM >= 20160601 || PACKETVER_RE_NUM >= 20160525 || defined(PACKETVER_ZERO)
+	nullpo_retv( sd );
+
+	struct PACKET_ZC_LAPINEDDUKDDAK_RESULT p = {};
+
+	p.packetType = HEADER_ZC_LAPINEDDUKDDAK_RESULT;
+	p.result = result;
+
+	clif_send( &p, sizeof( p ), &sd->bl, SELF );
+#endif
+}
+
+void clif_parse_laphine_synthesis( int fd, struct map_session_data* sd ){
+#if PACKETVER_MAIN_NUM >= 20160601 || PACKETVER_RE_NUM >= 20160525 || defined(PACKETVER_ZERO)
+	if( sd->state.laphine_synthesis == 0 ){
+		return;
+	}
+
+	struct PACKET_CZ_LAPINEDDUKDDAK_ACK* p = (struct PACKET_CZ_LAPINEDDUKDDAK_ACK*)RFIFOP( fd, 0 );
+
+	if( sd->state.laphine_synthesis != p->itemId ){
+		return;
+	}
+
+	std::shared_ptr<s_laphine_synthesis> synthesis = laphine_synthesis_db.find( sd->state.laphine_synthesis );
+
+	if( synthesis == nullptr ){
+		return;
+	}
+
+	size_t count = ( p->packetLength - sizeof( struct PACKET_CZ_LAPINEDDUKDDAK_ACK ) ) / sizeof( struct PACKET_CZ_LAPINEDDUKDDAK_ACK_sub );
+
+	// Player sent more or less than actually required
+	if( count != synthesis->requiredRequirements ){
+		return;
+	}
+
+	// Check for duplicates
+	for( size_t i = 0; i < count; i++ ){
+		for( size_t j = i + 1; j < count; j++ ){
+			if( p->items[i].index == p->items[j].index ){
+				return;
+			}
+		}
+	}
+
+	for( size_t i = 0; i < count; i++ ){
+		int16 index = server_index( p->items[i].index );
+
+		if( index >= MAX_INVENTORY ){
+			return;
+		}
+
+		if( sd->inventory_data[i] == nullptr ){
+			return;
+		}
+
+		struct item* item = &sd->inventory.u.items_inventory[index];
+
+		std::shared_ptr<s_laphine_synthesis_requirement> requirement = util::umap_find( synthesis->requirements, item->nameid );
+
+		if( requirement == nullptr ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
+
+		if( p->items[i].count != requirement->amount ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_AMOUNT );
+			return;
+		}
+
+		if( item->amount < requirement->amount ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_AMOUNT );
+			return;
+		}
+
+		if( item->refine < synthesis->minimumRefine ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
+
+		if( item->refine > synthesis->maximumRefine ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
+
+		if( item->equip != 0 ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
+
+		if( item->equipSwitch != 0 ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+			return;
+		}
+	}
+
+	int16 index = pc_search_inventory( sd, sd->state.laphine_synthesis );
+
+	if( index < 0 ){
+		clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
+		return;
+	}
+
+	if( ( sd->inventory_data[index]->flag.delay_consume & DELAYCONSUME_NOCONSUME ) == 0 ){
+		if( pc_delitem( sd, index, 1, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
+			return;
+		}
+	}
+
+	for( size_t i = 0; i < count; i++ ){
+		index = server_index( p->items[i].index );
+
+		if( pc_delitem( sd, index, p->items[i].count, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
+			return;
+		}
+	}
+
+	itemdb_group.pc_get_itemgroup( synthesis->rewardGroupId, true, sd );
+
+	clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_SUCCESS );
+#endif
+}
+
+void clif_laphine_upgrade_open( struct map_session_data* sd, std::shared_ptr<s_laphine_upgrade> upgrade ){
+#if PACKETVER_MAIN_NUM >= 20170726 || PACKETVER_RE_NUM >= 20170621 || defined(PACKETVER_ZERO)
+	nullpo_retv( sd );
+
+	sd->state.laphine_upgrade = upgrade->item_id;
+
+	struct PACKET_ZC_LAPINEUPGRADE_OPEN p = {};
+
+	p.packetType = HEADER_ZC_LAPINEUPGRADE_OPEN;
+	p.itemId = client_nameid( upgrade->item_id );
+
+	clif_send( &p, sizeof( p ), &sd->bl, SELF );
+#endif
+}
+
+void clif_parse_laphine_upgrade_close( int fd, struct map_session_data* sd ){
+#if PACKETVER_MAIN_NUM >= 20170726 || PACKETVER_RE_NUM >= 20170621 || defined(PACKETVER_ZERO)
+	sd->state.laphine_upgrade = 0;
+#endif
+}
+
+void clif_laphine_upgrade_result( struct map_session_data *sd, bool failed ){
+#if PACKETVER_MAIN_NUM >= 20170726 || PACKETVER_RE_NUM >= 20170621 || defined(PACKETVER_ZERO)
+	struct PACKET_ZC_LAPINEUPGRADE_RESULT p = {};
+
+	p.packetType = HEADER_ZC_LAPINEUPGRADE_RESULT;
+	p.result = failed;
+
+	clif_send( &p, sizeof( p ), &sd->bl, SELF );
+#endif
+}
+
+static void clif_item_preview( struct map_session_data *sd, int16 index ){
+#if PACKETVER_MAIN_NUM >= 20170726 || PACKETVER_RE_NUM >= 20170621 || defined(PACKETVER_ZERO)
+	nullpo_retv( sd );
+
+	struct item* item = &sd->inventory.u.items_inventory[index];
+
+	struct PACKET_ZC_ITEM_PREVIEW p = {};
+
+	p.packetType = HEADER_ZC_ITEM_PREVIEW;
+	p.index = client_index( index );
+#if PACKETVER_MAIN_NUM >= 20181017 || PACKETVER_RE_NUM >= 20181017 || PACKETVER_ZERO_NUM >= 20181024
+	p.isDamaged = item->attribute != 0;
+#endif
+	p.refiningLevel = item->refine;
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200723
+	p.enchantgrade = item->enchantgrade;
+#endif
+	clif_addcards( &p.slot, item );
+	clif_add_random_options( p.option_data, item );
+
+	clif_send( &p, sizeof( p ), &sd->bl, SELF );
+#endif
+}
+
+void clif_parse_laphine_upgrade( int fd, struct map_session_data* sd ){
+#if PACKETVER_MAIN_NUM >= 20170726 || PACKETVER_RE_NUM >= 20170621 || defined(PACKETVER_ZERO)
+	if( sd->state.laphine_upgrade == 0 ){
+		return;
+	}
+
+	struct PACKET_CZ_LAPINEUPGRADE_MAKE_ITEM* p = (struct PACKET_CZ_LAPINEUPGRADE_MAKE_ITEM*)RFIFOP( fd, 0 );
+
+	if( sd->state.laphine_upgrade != p->itemId ){
+		return;
+	}
+
+	std::shared_ptr<s_laphine_upgrade> upgrade = laphine_upgrade_db.find( sd->state.laphine_upgrade );
+
+	if( upgrade == nullptr ){
+		return;
+	}
+
+	uint16 index = server_index( p->index );
+
+	if( index >= MAX_INVENTORY ){
+		return;
+	}
+
+	if( sd->inventory_data[index] == nullptr ){
+		return;
+	}
+
+	struct item* item = &sd->inventory.u.items_inventory[index];
+
+	// Not a valid target item
+	if( !util::vector_exists( upgrade->target_item_ids, item->nameid ) ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	// If target item is not identified
+	if( item->identify == 0 ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	// If target item is equipped
+	if( item->equip != 0 ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	// If target item is in equipswitch
+	if( item->equipSwitch != 0 ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	// Check minimum refine requirement
+	if( item->refine < upgrade->minimumRefine ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	// Check maximum refine requirement
+	if( item->refine > upgrade->maximumRefine ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	// If no cards are allowed
+	if( !upgrade->cardsAllowed ){
+		for( int i = 0; i < MAX_SLOTS; i++ ){
+			if( item->card[i] != 0 ){
+				clif_laphine_upgrade_result( sd, true );
+				return;
+			}
+		}
+	}
+
+	// If random options are required
+	if( upgrade->requiredRandomOptions > 0 ){
+		int i;
+
+		for( i = MAX_ITEM_RDM_OPT - 1; i >= 0; i-- ){
+			if( item->option[i].id != 0 ){
+				break;
+			}
+		}
+
+		if( ( i + 1 ) < upgrade->requiredRandomOptions ){
+			clif_laphine_upgrade_result( sd, true );
+			return;
+		}
+	}
+
+	int16 index2 = pc_search_inventory( sd, sd->state.laphine_upgrade );
+
+	if( index2 < 0 ){
+		clif_laphine_upgrade_result( sd, true );
+		return;
+	}
+
+	if( ( sd->inventory_data[index2]->flag.delay_consume & DELAYCONSUME_NOCONSUME ) == 0 ){
+		if( pc_delitem( sd, index2, 1, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
+			return;
+		}
+	}
+
+	// Log removal of item
+	log_pick_pc( sd, LOG_TYPE_LAPHINE, -1, item );
+
+	// Visually remove it from the client
+	clif_delitem( sd, index, 1, 0 );
+
+	// Apply the random options
+	if( upgrade->randomOptionGroup != nullptr ){
+		upgrade->randomOptionGroup->apply( *item );
+	}
+
+	// Change the refine rate if needed
+	if( upgrade->resultRefine > 0 ){
+		// Absolute refine level change
+		item->refine = max( item->refine, upgrade->resultRefine );
+	}else if( upgrade->resultRefineMaximum > 0 ){
+		// If a minimum is specified it can also downgrade
+		if( upgrade->resultRefineMinimum ){
+			item->refine = rnd_value( upgrade->resultRefineMinimum, upgrade->resultRefineMaximum );
+		}else{
+			// Otherwise it can only be upgraded until the maximum, but not downgraded
+			item->refine = rnd_value( item->refine, upgrade->resultRefineMaximum );
+		}
+	}else if( upgrade->resultRefineMinimum > 0 ){
+		// No maximum has been specified, so it can be anything between minimum and MAX_REFINE
+		item->refine = rnd_value( upgrade->resultRefineMinimum, MAX_REFINE );
+	}
+
+	// Log retrieving the item again -> with the new options
+	log_pick_pc( sd, LOG_TYPE_LAPHINE, 1, item );
+
+	// Make it visible for the client again
+	clif_additem( sd, index, 1, 0 );
+
+	// Open a preview of the item
+	clif_item_preview( sd, index );
+
+	// Tell the client we are done
+	clif_laphine_upgrade_result( sd, false );
 #endif
 }
 

@@ -49,6 +49,8 @@ struct guild_log_entry;
 enum e_guild_storage_log : uint16;
 enum e_bg_queue_apply_ack : uint16;
 enum e_instance_notify : uint8;
+struct s_laphine_synthesis;
+struct s_laphine_upgrade;
 
 enum e_PacketDBVersion { // packet DB
 	MIN_PACKET_DB  = 0x064,
@@ -578,6 +580,7 @@ enum clif_messages : uint16_t {
 
 	// Unofficial names
 	C_ITEM_EQUIP_SWITCH = 0xbc7, 
+	C_ITEM_NOEQUIP = 0x174,	/// <"You can't put this item on."
 };
 
 enum e_personalinfo : uint8_t {
@@ -625,6 +628,15 @@ enum e_config_type : uint32 {
 enum e_memorial_dungeon_command : uint16 {
 	COMMAND_MEMORIALDUNGEON_DESTROY_FORCE = 0x3,
 };
+
+#ifdef Pandas_ScriptCommand_Next_Dropitem_Special
+struct s_next_dropitem_special {
+	uint32 rent_duration = 0;		// 租赁时长, 单位: 秒 (租赁时间大于 0 的道具将会在时间到之后过期)
+	int8 bound = -1;				// 道具绑定类型 (设为 -1 表示不进行特殊控制)
+	int8 drop_effect = -1;			// 道具掉落到地面的光柱 (设为 -1 表示尊重 DB 中的配置)
+};
+extern s_next_dropitem_special next_dropitem_special;
+#endif // Pandas_ScriptCommand_Next_Dropitem_Special
 
 int clif_setip(const char* ip);
 void clif_setbindip(const char* ip);
@@ -1156,7 +1168,7 @@ void clif_channel_msg(struct Channel *channel, const char *msg, unsigned long co
 #define clif_menuskill_clear(sd) (sd)->menuskill_id = (sd)->menuskill_val = (sd)->menuskill_val2 = 0;
 
 void clif_ranklist(struct map_session_data *sd, int16 rankingType);
-void clif_update_rankingpoint(struct map_session_data *sd, int rankingtype, int point);
+void clif_update_rankingpoint(map_session_data &sd, int rankingtype, int point);
 
 void clif_crimson_marker(struct map_session_data *sd, struct block_list *bl, bool remove);
 
@@ -1185,7 +1197,9 @@ enum in_ui_type : int8 {
 };
 
 enum out_ui_type : int8 {
-	OUT_UI_STYLIST = 1,
+	OUT_UI_BANK = 0,
+	OUT_UI_STYLIST,
+	OUT_UI_QUEST = 6,
 	OUT_UI_ATTENDANCE = 7
 };
 
@@ -1214,6 +1228,13 @@ void clif_inventory_expansion_info( struct map_session_data* sd );
 // Barter System
 void clif_barter_open( struct map_session_data& sd, struct npc_data& nd );
 void clif_barter_extended_open( struct map_session_data& sd, struct npc_data& nd );
+
+void clif_summon_init(struct mob_data& md);
+void clif_summon_hp_bar(struct mob_data& md);
+
+// Laphine System
+void clif_laphine_synthesis_open( struct map_session_data *sd, std::shared_ptr<s_laphine_synthesis> synthesis );
+void clif_laphine_upgrade_open( struct map_session_data* sd, std::shared_ptr<s_laphine_upgrade> upgrade );
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用

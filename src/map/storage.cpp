@@ -274,6 +274,9 @@ int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct 
 
 				stor->u.items_storage[i].amount += amount;
 				stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+				stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 #ifdef Pandas_FuncDefine_STORAGE_ADDITEM
 				// 若是直接创建道具则无需发送后续通知给客户端, 此处直接返回
 				if (direct_creater) return 0;
@@ -306,6 +309,9 @@ int storage_additem(struct map_session_data* sd, struct s_storage* stor, struct 
 	stor->amount++;
 	stor->u.items_storage[i].amount = amount;
 	stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 #ifdef Pandas_FuncDefine_STORAGE_ADDITEM
 	// 若是直接创建道具则无需发送后续通知给客户端, 此处直接返回
 	if (direct_creater) return 0;
@@ -330,6 +336,9 @@ int storage_delitem(struct map_session_data* sd, struct s_storage *stor, int ind
 
 	stor->u.items_storage[index].amount -= amount;
 	stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 
 	if( stor->u.items_storage[index].amount == 0 ) {
 		memset(&stor->u.items_storage[index],0,sizeof(stor->u.items_storage[0]));
@@ -632,6 +641,11 @@ void storage_guild_log( struct map_session_data* sd, struct item* item, int16 am
 	StringBuf buf;
 	StringBuf_Init(&buf);
 
+#ifdef Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
+	char esc_name[NAME_LENGTH * 2 + 1] = { 0 };
+	Sql_EscapeStringLen(mmysql_handle, esc_name, sd->status.name, strnlen(sd->status.name, NAME_LENGTH));
+#endif // Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
+
 	StringBuf_Printf(&buf, "INSERT INTO `%s` (`time`, `guild_id`, `char_id`, `name`, `nameid`, `amount`, `identify`, `refine`, `attribute`, `unique_id`, `bound`, `enchantgrade`", guild_storage_log_table);
 	for (i = 0; i < MAX_SLOTS; ++i)
 		StringBuf_Printf(&buf, ", `card%d`", i);
@@ -640,8 +654,13 @@ void storage_guild_log( struct map_session_data* sd, struct item* item, int16 am
 		StringBuf_Printf(&buf, ", `option_val%d`", i);
 		StringBuf_Printf(&buf, ", `option_parm%d`", i);
 	}
+#ifndef Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
 	StringBuf_Printf(&buf, ") VALUES(NOW(),'%u','%u', '%s', '%u', '%d','%d','%d','%d','%" PRIu64 "','%d','%d'",
 		sd->status.guild_id, sd->status.char_id, sd->status.name, item->nameid, amount, item->identify, item->refine,item->attribute, item->unique_id, item->bound, item->enchantgrade);
+#else
+	StringBuf_Printf(&buf, ") VALUES(NOW(),'%u','%u', '%s', '%u', '%d','%d','%d','%d','%" PRIu64 "','%d','%d'",
+		sd->status.guild_id, sd->status.char_id, esc_name, item->nameid, amount, item->identify, item->refine, item->attribute, item->unique_id, item->bound, item->enchantgrade);
+#endif // Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
 
 	for (i = 0; i < MAX_SLOTS; i++)
 		StringBuf_Printf(&buf, ",'%u'", item->card[i]);
@@ -781,6 +800,9 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
 				stor->u.items_guild[i].amount += amount;
 				clif_storageitemadded(sd,&stor->u.items_guild[i],i,amount);
 				stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+				stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 
 				storage_guild_log( sd, &stor->u.items_guild[i], amount );
 
@@ -800,6 +822,9 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
 	clif_storageitemadded(sd,&stor->u.items_guild[i],i,amount);
 	clif_updatestorageamount(sd, stor->amount, stor->max_amount);
 	stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 
 	storage_guild_log( sd, &stor->u.items_guild[i], amount );
 
@@ -835,6 +860,9 @@ bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amoun
 					ShowWarning("storage_guild_additem2: Stack limit reached! Altered amount of item \"" CL_WHITE "%s" CL_RESET "\" (%u). '" CL_WHITE "%d" CL_RESET "' -> '" CL_WHITE"%d" CL_RESET "'.\n", id->name.c_str(), id->nameid, item->amount, amount);
 				stor->u.items_guild[i].amount += amount;
 				stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+				stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 				return true;
 			}
 		}
@@ -849,6 +877,9 @@ bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amoun
 	stor->u.items_guild[i].amount = amount;
 	stor->amount++;
 	stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 	return true;
 }
 
@@ -881,6 +912,9 @@ bool storage_guild_delitem(struct map_session_data* sd, struct s_storage* stor, 
 
 	clif_storageitemremoved(sd,n,amount);
 	stor->dirty = true;
+#ifdef Pandas_Fix_Storage_DirtyFlag_Override
+	stor->dirty_when_saving = true;
+#endif // Pandas_Fix_Storage_DirtyFlag_Override
 	return true;
 }
 

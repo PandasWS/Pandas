@@ -829,7 +829,8 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 //************************************
 FILE* fopen(const char* _FileName, const char* _Mode) {
 	// 若当前打开文件的模式已经是二进制, 那么直接调用 fopen 并返回
-	if (strchr(_Mode, 'b')) {
+	// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也直接调用 fopen 并返回
+	if (strchr(_Mode, 'b') || strchr(_Mode, 'w') || strchr(_Mode, 'a')) {
 		return ::fopen(_FileName, _Mode);
 	}
 

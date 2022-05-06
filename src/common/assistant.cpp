@@ -379,9 +379,9 @@ bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem:
 bool isFileExists(const std::string& path) {
 	try
 	{
-		boost::filesystem::path dirpath(path);
-		dirpath = dirpath.generic_path();
-		return boost::filesystem::is_regular_file(dirpath);
+		boost::filesystem::path filepath(path);
+		filepath = filepath.generic_path();
+		return boost::filesystem::is_regular_file(filepath);
 	}
 	catch (const boost::filesystem::filesystem_error& e)
 	{
@@ -393,12 +393,12 @@ bool isFileExists(const std::string& path) {
 //************************************
 // Method:      copyFile
 // Description: 复制文件到另外一个位置, 若存在则覆盖 (跨平台支持)
-// Parameter:   std::string from
-// Parameter:   std::string to
+// Parameter:   const std::string & from
+// Parameter:   const std::string & to
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/11/07 12:28
 //************************************
-bool copyFile(std::string from, std::string to) {
+bool copyFile(const std::string& from, const std::string& to) {
 	try
 	{
 		boost::filesystem::path frompath(from);
@@ -412,6 +412,27 @@ bool copyFile(std::string from, std::string to) {
 			boost::filesystem::copy_option::overwrite_if_exists
 		);
 		return true;
+	}
+	catch (const boost::filesystem::filesystem_error&)
+	{
+		return false;
+	}
+}
+
+//************************************
+// Method:      deleteFile
+// Description: 删除指定的文件
+// Access:      public 
+// Parameter:   const std::string & path
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/03/12 19:02
+//************************************ 
+bool deleteFile(const std::string& path) {
+	try
+	{
+		boost::filesystem::path filepath(path);
+		filepath = filepath.generic_path();
+		return boost::filesystem::remove(filepath);
 	}
 	catch (const boost::filesystem::filesystem_error&)
 	{

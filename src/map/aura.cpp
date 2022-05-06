@@ -31,11 +31,11 @@ const std::string AuraDatabase::getDefaultLocation() {
 // Method:      parseBodyNode
 // Description: 解析 Body 节点的主要处理函数
 // Access:      public 
-// Parameter:   const YAML::Node & node
+// Parameter:   const ryml::NodeRef & node
 // Returns:     uint64
 // Author:      Sola丶小克(CairoLee)  2020/09/26 15:30
 //************************************
-uint64 AuraDatabase::parseBodyNode(const YAML::Node& node) {
+uint64 AuraDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	uint32 aura_id = 0;
 
 	if (!this->asUInt32(node, "AuraID", aura_id)) {
@@ -61,7 +61,7 @@ uint64 AuraDatabase::parseBodyNode(const YAML::Node& node) {
 		return 0;
 	}
 
-	for (const YAML::Node& subNode : node["EffectList"]) {
+	for (const ryml::NodeRef& subNode : node["EffectList"]) {
 		uint16 effect_id = 0;
 		if (!this->asUInt16(subNode, "EffectID", effect_id)) {
 			return 0;

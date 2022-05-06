@@ -404,6 +404,28 @@ int map_addblock(struct block_list* bl)
 		return 1;
 	}
 
+#ifdef Pandas_Crashfix_MapBlock_Operation
+	if (mapdata == nullptr) {
+		ShowError("map_addblock: trying to add a block into non-existent map (map id: %d,%d,%d).\n", m, x, y);
+		return 1;
+	}
+
+	if (mapdata->block == nullptr || (bl->type == BL_MOB && mapdata->block_mob == nullptr)) {
+		ShowError("map_addblock: mapdata block is invalid (map name: \"%s\").\n", mapdata->name);
+		return 1;
+	}
+
+	if (mapdata->instance_src_map && mapdata->name[0] == '\0') {
+		if (map_getmapdata(mapdata->instance_src_map)) {
+			ShowError("map_addblock: trying to add a block into freed instance map (src map: \"%s\").\n", map_getmapdata(mapdata->instance_src_map)->name);
+		}
+		else {
+			ShowError("map_addblock: trying to add a block into freed instance map.\n");
+		}
+		return 1;
+	}
+#endif // Pandas_Crashfix_MapBlock_Operation
+
 	pos = x/BLOCK_SIZE+(y/BLOCK_SIZE)*mapdata->bxs;
 
 	if (bl->type == BL_MOB) {
@@ -447,6 +469,28 @@ int map_delblock(struct block_list* bl)
 #endif
 
 	struct map_data *mapdata = map_getmapdata(bl->m);
+
+#ifdef Pandas_Crashfix_MapBlock_Operation
+	if (mapdata == nullptr) {
+		ShowError("map_delblock: trying to remove a block from non-existent map (map id: %d).\n", bl->m);
+		return 0;
+	}
+
+	if (mapdata->block == nullptr || (bl->type == BL_MOB && mapdata->block_mob == nullptr)) {
+		ShowError("map_delblock: mapdata block is invalid (map name: \"%s\").\n", mapdata->name);
+		return 0;
+	}
+
+	if (mapdata->instance_src_map && mapdata->name[0] == '\0') {
+		if (map_getmapdata(mapdata->instance_src_map)) {
+			ShowError("map_delblock: trying to remove a block from freed instance map (src map: \"%s\").\n", map_getmapdata(mapdata->instance_src_map)->name);
+		}
+		else {
+			ShowError("map_delblock: trying to remove a block from freed instance map.\n");
+		}
+		return 0;
+	}
+#endif // Pandas_Crashfix_MapBlock_Operation
 
 	pos = bl->x/BLOCK_SIZE+(bl->y/BLOCK_SIZE)*mapdata->bxs;
 
@@ -2234,85 +2278,27 @@ int map_quit(struct map_session_data *sd) {
 	//map_quit handles extra specific data which is related to quitting normally
 	//(changing map-servers invokes unit_free but bypasses map_quit)
 	if( sd->sc.count ) {
-		//Status that are not saved...
-		status_change_end(&sd->bl, SC_BOSSMAPINFO, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_AUTOTRADE, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_SPURT, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_BERSERK, INVALID_TIMER);
-		status_change_end(&sd->bl, SC__BLOODYLUST, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_TRICKDEAD, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_LEADERSHIP, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_GLORYWOUNDS, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_SOULCOLD, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_HAWKEYES, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_EMERGENCY_MOVE, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_CHASEWALK2, INVALID_TIMER);
-		if(sd->sc.data[SC_PROVOKE] && sd->sc.data[SC_PROVOKE]->timer == INVALID_TIMER)
-			status_change_end(&sd->bl, SC_PROVOKE, INVALID_TIMER); //Infinite provoke ends on logout
-		status_change_end(&sd->bl, SC_WEIGHT50, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_WEIGHT90, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_SATURDAYNIGHTFEVER, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_KYOUGAKU, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_C_MARKER, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_READYSTORM, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_READYDOWN, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_READYTURN, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_READYCOUNTER, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_DODGE, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_CBC, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_EQC, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_SPRITEMABLE, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_SV_ROOTTWIST, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_GUARD_STANCE, INVALID_TIMER);
-		status_change_end(&sd->bl, SC_ATTACK_STANCE, INVALID_TIMER);
-		// Remove visuals effect from headgear
-		status_change_end(&sd->bl, SC_MOONSTAR, INVALID_TIMER); 
-		status_change_end(&sd->bl, SC_SUPER_STAR, INVALID_TIMER); 
-		status_change_end(&sd->bl, SC_STRANGELIGHTS, INVALID_TIMER); 
-		status_change_end(&sd->bl, SC_DECORATION_OF_MUSIC, INVALID_TIMER); 
-		if (battle_config.debuff_on_logout&1) { //Remove negative buffs
-			status_change_end(&sd->bl, SC_ORCISH, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_STRIPWEAPON, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_STRIPARMOR, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_STRIPSHIELD, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_STRIPHELM, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_EXTREMITYFIST, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_EXPLOSIONSPIRITS, INVALID_TIMER);
-			if(sd->sc.data[SC_REGENERATION] && sd->sc.data[SC_REGENERATION]->val4)
-				status_change_end(&sd->bl, SC_REGENERATION, INVALID_TIMER);
-			//TO-DO Probably there are way more NPC_type negative status that are removed
-			status_change_end(&sd->bl, SC_CHANGEUNDEAD, INVALID_TIMER);
-			// Both these statuses are removed on logout. [L0ne_W0lf]
-			status_change_end(&sd->bl, SC_SLOWCAST, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_CRITICALWOUND, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_H_MINE, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_ANTI_M_BLAST, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_B_TRAP, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SHADOW_STRIP, INVALID_TIMER);
-		}
-		if (battle_config.debuff_on_logout&2) { //Remove positive buffs
-			status_change_end(&sd->bl, SC_MAXIMIZEPOWER, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_MAXOVERTHRUST, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_STEELBODY, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_PRESERVE, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_KAAHI, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SPIRIT, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_HEAT_BARREL, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_P_ALTER, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_E_CHAIN, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SIGHTBLASTER, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_BENEDICTIO, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_ATK, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_DEF, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_HEAL, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_HIDDEN, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_STATE, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_ITEMDEF, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_GLASTHEIM_HPSP, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SOULGOLEM, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SOULSHADOW, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SOULFALCON, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_SOULFAIRY, INVALID_TIMER);
+		for (const auto &it : status_db) {
+			std::bitset<SCF_MAX> &flag = it.second->flag;
+
+			//No need to save infinite status
+			if (flag[SCF_NOSAVEINFINITE] && sd->sc.data[it.first] && sd->sc.data[it.first]->val4 > 0) {
+				status_change_end(&sd->bl, static_cast<sc_type>(it.first), INVALID_TIMER);
+				continue;
+			}
+
+			//Status that are not saved
+			if (flag[SCF_NOSAVE]) {
+				status_change_end(&sd->bl, static_cast<sc_type>(it.first), INVALID_TIMER);
+				continue;
+			}
+			//Removes status by config
+			if (battle_config.debuff_on_logout&1 && flag[SCF_DEBUFF] || //Removes debuffs
+				(battle_config.debuff_on_logout&2 && !(flag[SCF_DEBUFF]))) //Removes buffs
+			{
+				status_change_end(&sd->bl, static_cast<sc_type>(it.first), INVALID_TIMER);
+				continue;
+			}
 		}
 	}
 
@@ -2879,7 +2865,7 @@ bool map_addnpc(int16 m,struct npc_data *nd)
 /*==========================================
  * Add an instance map
  *------------------------------------------*/
-int map_addinstancemap(int src_m, int instance_id)
+int map_addinstancemap(int src_m, int instance_id, bool no_mapflag)
 {
 	if(src_m < 0)
 		return -1;
@@ -2953,7 +2939,8 @@ int map_addinstancemap(int src_m, int instance_id)
 	dst_map->channel = nullptr;
 	dst_map->mob_delete_timer = INVALID_TIMER;
 
-	map_data_copy(dst_map, src_map);
+	if(!no_mapflag)
+		map_data_copy(dst_map, src_map);
 
 	ShowInfo("[Instance] Created map '%s' (%d) from '%s' (%d).\n", dst_map->name, dst_map->m, name, src_map->m);
 
@@ -3428,6 +3415,8 @@ int map_getcellp(struct map_data* m,int16 x,int16 y,cell_chk cellchk)
 			return (cell.landprotector);
 		case CELL_CHKNOVENDING:
 			return (cell.novending);
+		case CELL_CHKNOBUYINGSTORE:
+			return (cell.nobuyingstore);
 		case CELL_CHKNOCHAT:
 			return (cell.nochat);
 		case CELL_CHKMAELSTROM:
@@ -3489,6 +3478,7 @@ void map_setcell(int16 m, int16 x, int16 y, cell_t cell, bool flag)
 		case CELL_NOCHAT:        mapdata->cell[j].nochat = flag;        break;
 		case CELL_MAELSTROM:	 mapdata->cell[j].maelstrom = flag;	  break;
 		case CELL_ICEWALL:		 mapdata->cell[j].icewall = flag;		  break;
+		case CELL_NOBUYINGSTORE: mapdata->cell[j].nobuyingstore = flag; break;
 		default:
 			ShowWarning("map_setcell: invalid cell type '%d'\n", (int)cell);
 			break;
@@ -3843,7 +3833,7 @@ void map_flags_init(void){
 		union u_mapflag_args args = {};
 
 		mapdata->flag.clear();
-		mapdata->flag.reserve(MF_MAX); // Reserve the bucket size
+		mapdata->flag.resize(MF_MAX, 0); // Resize and define default values
 		mapdata->drop_list.clear();
 		args.flag_val = 100;
 
@@ -3888,7 +3878,7 @@ void map_data_copy(struct map_data *dst_map, struct map_data *src_map) {
 	memcpy(&dst_map->save, &src_map->save, sizeof(struct point));
 	memcpy(&dst_map->damage_adjust, &src_map->damage_adjust, sizeof(struct s_skill_damage));
 
-	dst_map->flag.insert(src_map->flag.begin(), src_map->flag.end());
+	dst_map->flag = src_map->flag;
 #ifdef Pandas_Mapflags
 	dst_map->flag_params.insert(src_map->flag_params.begin(), src_map->flag_params.end());
 #endif // Pandas_Mapflags
@@ -3907,7 +3897,8 @@ void map_data_copyall (void) {
 		return;
 	for (int i = instance_start; i < map_num; i++) {
 		struct map_data *mapdata = &map[i];
-		if (!mapdata || mapdata->name[0] == '\0' || !mapdata->instance_src_map)
+		std::shared_ptr<s_instance_data> idata = util::umap_find(instances, mapdata->instance_id);
+		if (!mapdata || mapdata->name[0] == '\0' || !mapdata->instance_src_map || (idata && idata->nomapflag))
 			continue;
 		map_data_copy(mapdata, &map[mapdata->instance_src_map]);
 	}
@@ -4920,7 +4911,7 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *
 	struct s_mapflag_params *params = util::umap_find(mapdata->flag_params, static_cast<int16>(mapflag));
 
 	if (!args) {
-		return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), default_val);
+		return mapdata->flag[mapflag];
 	}
 
 	switch (args->flag_val)
@@ -4930,7 +4921,7 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *
 	case MP_PARAM_SECOND:
 		return (params ? params->param_second : default_val);
 	default:
-		return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), default_val);
+		return mapdata->flag[mapflag];
 	}
 }
 
@@ -5047,11 +5038,11 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		case MF_RESTRICTED:
 			return mapdata->zone;
 		case MF_NOLOOT:
-			return util::umap_get(mapdata->flag, static_cast<int16>(MF_NOMOBLOOT), 0) && util::umap_get(mapdata->flag, static_cast<int16>(MF_NOMVPLOOT), 0);
+			return mapdata->flag[MF_NOMOBLOOT] && mapdata->flag[MF_NOMVPLOOT];
 		case MF_NOPENALTY:
-			return util::umap_get(mapdata->flag, static_cast<int16>(MF_NOEXPPENALTY), 0) && util::umap_get(mapdata->flag, static_cast<int16>(MF_NOZENYPENALTY), 0);
+			return mapdata->flag[MF_NOEXPPENALTY] && mapdata->flag[MF_NOZENYPENALTY];
 		case MF_NOEXP:
-			return util::umap_get(mapdata->flag, static_cast<int16>(MF_NOBASEEXP), 0) && util::umap_get(mapdata->flag, static_cast<int16>(MF_NOJOBEXP), 0);
+			return mapdata->flag[MF_NOBASEEXP] && mapdata->flag[MF_NOJOBEXP];
 		case MF_SKILL_DAMAGE:
 			nullpo_retr(-1, args);
 
@@ -5064,7 +5055,7 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 				case SKILLDMG_CASTER:
 					return mapdata->damage_adjust.caster;
 				default:
-					return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+					return mapdata->flag[mapflag];
 			}
 #ifdef Pandas_MapFlag_Mobinfo
 		case MF_MOBINFO:
@@ -5113,7 +5104,7 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
-			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+			return mapdata->flag[mapflag];
 	}
 }
 
@@ -5633,7 +5624,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 		for (bl = (struct block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct block_list*)mapit_next(iter)) {
 			if (!bl || bl->m != m)
 				continue;
-			status_calc_bl_(bl, SCB_ALL, SCO_FORCE);
+			status_calc_bl_(bl, status_db.getSCB_ALL(), SCO_FORCE);
 		}
 		mapit_free(iter);
 		break;
