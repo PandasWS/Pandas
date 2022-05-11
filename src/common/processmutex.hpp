@@ -5,6 +5,10 @@
 
 #include <string>
 
+#ifndef _WIN32
+	#include <semaphore.h>
+#endif // _WIN32
+
 class ProcessMutex {
 private:
 #ifdef _WIN32

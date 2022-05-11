@@ -7,7 +7,6 @@
 	#include <Windows.h>
 #else
 	#include <unistd.h>
-	#include <semaphore.h>
 	#include <stdio.h>
 	#include <fcntl.h>
 	#include <signal.h>
