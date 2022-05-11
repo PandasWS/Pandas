@@ -102,7 +102,7 @@ int ProcessMutex::wait(long millisecond)
 	ts.tv_sec += (timeadd + secs);
 	ts.tv_nsec = millisecond % (1000 * 1000 * 1000);
 
-	int nRet = sem_timedwait(m_pSem， & ts);
+	int nRet = sem_timedwait(m_pSem, & ts);
 	switch (nRet) {
 	case 0: return 0;				// 成功
 	case -1: {
