@@ -9,7 +9,6 @@
 #include "../config/pandas.hpp"
 #include "../common/cbasetypes.hpp" // uint32
 
-bool isRegexMatched(std::string patterns, std::string& content);
-bool hasCatchPet(std::string script, std::vector<uint32>& pet_mobid);
-bool hasCallfunc(std::string script);
+bool hasCatchPet(const std::string& script, std::vector<uint32>& pet_mobid);
+bool hasCallfunc(const std::string& script);
 

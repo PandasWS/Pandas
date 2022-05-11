@@ -4156,13 +4156,14 @@ ACMD_FUNC(partyrecall)
 #ifdef Pandas_FuncLogic_ATCOMMAND_RELOAD
 //************************************
 // Method:      atcommand_status_recalc_pc
-// Description: 重新计算全服玩家的能力值属性 (用于 @reload 系列指令后的全服玩家能力值刷新使用)
+// Description: 重新计算全服玩家的能力值属性
+//              用于 @reload 系列指令后的全服玩家能力值刷新使用
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/28 12:08
 //************************************
 static void atcommand_status_recalc_pc() {
-	struct s_mapiterator* iter;
-	struct map_session_data* sd;
+	struct s_mapiterator* iter = nullptr;
+	struct map_session_data* sd = nullptr;
 
 	iter = mapit_geteachpc();
 	for (sd = (struct map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (struct map_session_data*)mapit_next(iter)) {
