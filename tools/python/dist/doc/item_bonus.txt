@@ -399,7 +399,7 @@ bonus2 bMagicAddRace2,mr,x;          魔法攻击 mr 种族的单位时, 增加 
 bonus2 bSubSkill,sk,n;               被 sk 技能攻击时, 能够减少 n% 受到的伤害
 
 bonus bAbsorbDmgMaxHP,n;             当受到的伤害超过最大HP的 n% 时, 伤害将被调整为: [受到的伤害] - [最大HP的n%] (同项目只取最高进行计算)
-bonus bAbsorbDmgMaxHP2,n;            当受到的伤害超过最大HP的 n% 时, 伤害将被调整为: [受到的伤害] - [最大HP的n%] (同项目只取最高进行计算)
+bonus bAbsorbDmgMaxHP2,n;            当受到的伤害超过最大HP的 n% 时, 伤害将被调整为: [最大HP的n%] (同项目只取最高进行计算)
 
 攻击/防御 - Atk/Def
 -------
