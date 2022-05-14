@@ -4934,7 +4934,11 @@ void pc_bonus3(struct map_session_data *sd,int type,int type2,int type3,int val)
 		break;
 
 	case SP_ADDEFF_ONSKILL: // bonus3 bAddEffOnSkill,sk,eff,n;
+#ifndef Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF_ONSKILL);
+#else
+		PC_BONUS_CHK_SC(type3, SP_ADDEFF_ONSKILL);
+#endif // Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
 		if( sd->state.lr_flag != 2 )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, val, type2, ATF_TARGET, 0);
 		break;

@@ -998,6 +998,9 @@
 	//     - 能力重算事件被多次重复递归调用
 	//     - 有概率的导致地图服务器堆栈溢出崩溃
 	#define Pandas_Fix_Status_Change_Start_Infinite_Recalculate_Status
+
+	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
+	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
 #endif // Pandas_Bugfix
 
 // ============================================================================
