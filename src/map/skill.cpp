@@ -18852,7 +18852,11 @@ int skill_castfix_sc(struct block_list *bl, double time, uint8 flag)
 		}
 	}
 
+#ifndef Pandas_LGTM_Optimization
 	time = max(time, 0);
+#else
+	time = max((int)time, 0);
+#endif // Pandas_LGTM_Optimization
 	//ShowInfo("Castime castfix_sc = %f\n",time);
 
 	return (int)time;
