@@ -956,11 +956,11 @@
 		
 		例子:
 		----------------
-		if (@attack_damage_flag & BF_MAGIC == BF_MAGIC) {
+		if ((@attack_damage_flag & BF_MAGIC) == BF_MAGIC) {
 			dispbottom "这是一次魔法攻击";
 		}
 		
-		if (@attack_damage_flag & (BF_MAGIC|BF_LONG) == (BF_MAGIC|BF_LONG)) {
+		if ((@attack_damage_flag & (BF_MAGIC|BF_LONG)) == (BF_MAGIC|BF_LONG)) {
 			dispbottom "这是一次远距离魔法攻击";
 		}
 		
