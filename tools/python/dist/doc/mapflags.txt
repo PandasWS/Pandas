@@ -274,10 +274,9 @@ Disables Star Gladiator's "Solar, Lunar, and Stellar Miracle" from occurring on 
 
 ---------------------------------------
 
-*nomineeffect	禁用 Boss雷达#12214 所持有的 SC_BOSSMAPINFO 效果
+*forcemineffect	强制使用最小化的技能动画效果, 类似客户端的 /mineffect 指令
 
-Disables mine effects on a map.
-[More information needed.]
+Forces simpler skill effects, just like the command /mineffect.
 
 ---------------------------------------
 
