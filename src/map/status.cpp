@@ -12701,6 +12701,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	if (sd) {
 		if (sd->pd)
 			pet_sc_check(sd, type); // Skotlex: Pet Status Effect Healing
+#ifndef Pandas_Fix_Status_Change_Start_Infinite_Recalculate_Status
 		switch (type) {
 			case SC_BERSERK:
 			case SC_MERC_HPUP:
@@ -12712,6 +12713,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 					status_calc_pc(sd, SCO_NONE);
 				break;
 		}
+#endif // Pandas_Fix_Status_Change_Start_Infinite_Recalculate_Status
 	}
 
 	// 1st thing to execute when loading status
