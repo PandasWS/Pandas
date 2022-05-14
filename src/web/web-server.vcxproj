@@ -239,6 +239,11 @@
     <Delete Files="$(SolutionDir)web-server.exp" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)web-server.pdb" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)web-server.map" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)web-server-pre.lib" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)web-server-pre.exp" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)web-server-pre.exe" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)web-server-pre.pdb" ContinueOnError="true" />
+    <Delete Files="$(SolutionDir)web-server-pre.map" ContinueOnError="true" />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.dll" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)libmysql.dll')" />
