@@ -254,6 +254,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_CLICKTOMB
 	const char* clicktomb_filter_name;	// NPCF_CLICKTOMB	// OnPCClickTombFilter	// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_PCALIVE
+	const char* pcalive_filter_name;	// NPCF_PCALIVE	// OnPCAliveFilter	// 当玩家复活时触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PCALIVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/

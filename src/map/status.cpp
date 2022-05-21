@@ -1431,7 +1431,23 @@ int status_revive(struct block_list *bl, unsigned char per_hp, unsigned char per
 {
 	struct status_data *status;
 	unsigned int hp, sp, ap;
+
 	if (!status_isdead(bl)) return 0;
+
+#ifdef Pandas_NpcFilter_PCALIVE
+	if (bl->type == BL_PC) {
+		struct map_session_data* sd;
+		sd = BL_CAST(BL_PC, bl);
+
+		pc_setreg(sd, add_str("@pc_alive_gid"), sd->bl.id);
+		pc_setregstr(sd, add_str("@pc_alive_map$"), map[sd->bl.m].name);
+		pc_setreg(sd, add_str("@pc_alive_map_x"), sd->bl.x);
+		pc_setreg(sd, add_str("@pc_alive_map_y"), sd->bl.y);
+		if (npc_script_filter(sd, NPCF_PCALIVE)) {
+			return 0;
+		}
+	}
+#endif Pandas_NpcFilter_PCALIVE
 
 	status = status_get_status_data(bl);
 	if (status == &dummy_status)

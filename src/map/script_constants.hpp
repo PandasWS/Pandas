@@ -111,6 +111,10 @@
 #ifdef Pandas_NpcFilter_CLICKTOMB
 	export_constant(NPCF_CLICKTOMB);	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_PCALIVE
+	export_constant(NPCF_PCALIVE);	// pcalive_filter_name	// OnPCAliveFilter		// 当玩家复活时触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PCALIVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
