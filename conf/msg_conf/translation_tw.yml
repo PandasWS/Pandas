@@ -1092,6 +1092,8 @@ Body:
   Translation: ""
 - Original: "GRF file name %s is too long\n"
   Translation: ""
+- Original: "GRF possibly over 2GB in size.\n"
+  Translation: ""
 - Original: "GRF version %04x not supported\n"
   Translation: ""
 - Original: "GetByte: invalid index (idx=%d)\n"
