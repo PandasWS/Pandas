@@ -19,6 +19,10 @@
   <a href="https://github.com/PandasWS/Pandas/blob/master/LICENSE">
     <img alt="GitHub license" src="https://img.shields.io/github/license/PandasWS/Pandas?style=flat-square">
   </a>
+  <!-- Discord Online -->
+  <a href="https://discord.gg/9bEfrPPruj">
+    <img alt="Discord Online" src="https://img.shields.io/discord/917355341816168468?color=6A7EC2&label=Discord&logo=discord&logoColor=ffffff&style=flat-square">
+  </a>
 </div>
 
 <div align="center">
@@ -87,13 +91,17 @@
 
 ## 熊猫专业版
 
-熊猫专业版已经正式上线了！截止 2022年2月22日 专业版包含以下功能：
+熊猫专业版已经正式上线了！截止 `2022 年 05 月 27 日` 专业版包含以下功能：
 
 - FEATURE-1000: 实装人工生命体 S 的 250 级支持及其 16 个新技能
 - FEATURE-1001: 实装 6 个次上位拓展职业共计 97 个技能
 - FEATURE-1002: 实装韩服 2021 年第三、第四季度的技能改进
 - FEATURE-1003: 四转职业技能和状态表现错误修正补丁
-- FEATURE-1004: 实装 EnchantGrade UI 附魔评级交互界面
+- FEATURE-1004: 实装 EnchantGrade UI 附魔评级交互界面 (已免费)
+- FEATURE-1005: 实装 Reputation UI 声望交互界面
+- FEATURE-1006: 实装 Item Reform UI 物品改良交互界面
+- FEATURE-1007: 实装 Enchantment UI 附魔交互界面
+- FEATURE-1008: 实装韩服 2022 年第二季度的技能改进
 
 各功能包售价以及详细介绍, 请移步查阅: https://www.craft.do/s/miY7MUKvn8gQSj
 
@@ -159,14 +167,10 @@
 
 ### 支持的客户端封包版本是哪个？
 
-截止 `2021 年 4 月 11 日 ` 熊猫模拟器 v1.1.0 版本，默认的客户端封包版本是 `20180620`，
-且支持到 rAthena 官方等同的 `20200409` 客户端封包版本。之所以默认的客户端封包版本不使用
-`2020` 年是因为 `20180620` 是近几年较为稳定，服务端对客户端的支持相对成熟的版本。
+截止 `2021 年 05 月 27 日 ` 熊猫模拟器 v1.1.2 版本，默认的客户端封包版本是 `20211117`。
 
-在 `2020` 年之后的客户端中虽然有非常多的新特效和功能，但是其中有些功能并没有被模拟器很好
-的支持，因此可能会在使用的过程中发现一些功能缺失；不过别担心，这些功能也不影响玩家的主要
-操作，若您希望客户端封包使用 `20200409`，那么只需下载源代码后通过修改 `src/config/packet.hpp`
-文件中 `PACKETVER` 的定义，随后重新编译即可。
+若您希望客户端封包使用其他封包版本，例如：`20200409`，那么只需下载源代码后通过修改 
+`src/config/packet.hpp` 文件中 `PACKETVER` 的定义，随后重新编译即可。
 
 ### 哪里能获取配套客户端？
 
@@ -186,7 +190,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 
 ### 有全汉化的官方 NPC 脚本文件吗？
 
-没有！整个模拟器截止 `2021 年 4 月 11 日 ` 有大约 38 万条文本，这是社区十几年无数人的积累。
+没有！整个模拟器截止 `2021 年 04 月 11 日 ` 有大约 38 万条文本，这是社区十几年无数人的积累。
 对这么大量的文本进行汉化和校对不是简单的「懂英文」就搞得定的，特别费时费力！
 
 想找到精校版免费的官方 NPC 脚本，几乎不太可能。如果是在有需求的话，还是建议直接找熟人或者
@@ -203,7 +207,7 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
     alt="PandasWS" title="PandasWS">
 </a>
 
-我们建立了 [Discord] 服务器,  有条件加入的同学欢迎您 [加入 PandasWS 服务器](https://discord.gg/9bEfrPPruj)。
+此外我们建立了 [Discord] 服务器,  有条件加入的同学欢迎您 [加入 PandasWS 服务器](https://discord.gg/9bEfrPPruj)。
 
 ## 模拟器相关项目推荐
 
