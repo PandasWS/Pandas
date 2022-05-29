@@ -245,22 +245,27 @@ def arrange_common(packagedir):
     os.makedirs(packagedir + 'sql-files/main/creation/optional')
     shutil.move(packagedir + 'sql-files/premium_storage.sql', packagedir + 'sql-files/main/creation/optional/premium_storage.sql')
     
-    if os.path.exists(packagedir + 'sql-files/composer/main'):
-        shutil.move(packagedir + 'sql-files/composer/main', packagedir + 'sql-files/main/upgrades')
+    # 判断当前是否为专业版
+    slndir_path = os.path.abspath(project_slndir)
+    is_commercial = Common.is_commercial_ver(slndir_path)
+    subdir = 'professional' if is_commercial else 'community'
+    
+    if os.path.exists(packagedir + f'sql-files/composer/{subdir}/main'):
+        shutil.move(packagedir + f'sql-files/composer/{subdir}/main', packagedir + 'sql-files/main/upgrades')
     
     # 日志数据库
     os.makedirs(packagedir + 'sql-files/logs/creation')
     shutil.move(packagedir + 'sql-files/logs.sql', packagedir + 'sql-files/logs/creation/01.logs.sql')
     
-    if os.path.exists(packagedir + 'sql-files/composer/logs'):
-        shutil.move(packagedir + 'sql-files/composer/logs', packagedir + 'sql-files/logs/upgrades')
+    if os.path.exists(packagedir + f'sql-files/composer/{subdir}/logs'):
+        shutil.move(packagedir + f'sql-files/composer/{subdir}/logs', packagedir + 'sql-files/logs/upgrades')
         
     # WEB 接口数据库
     os.makedirs(packagedir + 'sql-files/web/creation')
     shutil.move(packagedir + 'sql-files/web.sql', packagedir + 'sql-files/web/creation/01.web.sql')
     
-    if os.path.exists(packagedir + 'sql-files/composer/web'):
-        shutil.move(packagedir + 'sql-files/composer/web', packagedir + 'sql-files/web/upgrades')
+    if os.path.exists(packagedir + f'sql-files/composer/{subdir}/web'):
+        shutil.move(packagedir + f'sql-files/composer/{subdir}/web', packagedir + 'sql-files/web/upgrades')
     
     # 清理工作
     rmdir(packagedir + 'sql-files/composer')
@@ -312,17 +317,28 @@ def process_sub(export_file, renewal, langinfo):
     # 确认当前的版本号
     version = Common.get_pandas_ver(os.path.abspath(project_slndir), 'v')
 
+    # 判断当前是否为专业版
+    slndir_path = os.path.abspath(project_slndir)
+    is_commercial = Common.is_commercial_ver(slndir_path)
+
     Message.ShowStatus('正在准备生成 {model} - {lang} 的打包目录...'.format(
         model = '复兴后(RE)' if renewal else '复兴前(PRE)',
         lang = langinfo['name']
     ))
 
     # 构建解压的打包目录
-    packagedir = '../Release/{project_name}/{version}/{project_name}_{version}_{timestamp}_{model}_{lang}'.format(
-        project_name = os.getenv('DEFINE_PROJECT_NAME'),
-        version = version, model = 'RE' if renewal else 'PRE',
-        timestamp = Common.timefmt(True), lang = langinfo['dirname']
-    )
+    if is_commercial:
+        packagedir = '../Release/{project_name}/{version}/{project_name}_{version}_{timestamp}_{model}_{lang}'.format(
+            project_name = os.getenv('DEFINE_PROJECT_NAME'),
+            version = version.replace(' Rev.', '_Rev.'), model = 'RE' if renewal else 'PRE',
+            timestamp = Common.timefmt(True), lang = langinfo['dirname']
+        )
+    else:
+        packagedir = '../Release/{project_name}/{version}/{project_name}_{version}_{timestamp}_{model}_{lang}'.format(
+            project_name = os.getenv('DEFINE_PROJECT_NAME'),
+            version = version, model = 'RE' if renewal else 'PRE',
+            timestamp = Common.timefmt(True), lang = langinfo['dirname']
+        )
 
     # 获取压缩文件的保存路径
     zipfilename = os.path.abspath(project_slndir + packagedir) + '.zip'
@@ -355,6 +371,13 @@ def process_sub(export_file, renewal, langinfo):
         arrange_renewal(packagedir)
     else:
         arrange_pre_renewal(packagedir)
+
+    # 专业版的特殊处理逻辑
+    if is_commercial:
+        remove_file(packagedir, 'VMProtectSDK32.dll')
+        remove_file(packagedir, 'VMProtectSDK64.dll')
+        rmdir(packagedir + 'secret')
+
     Message.ShowStatus('后期处理完毕, 即将把打包源压缩成 ZIP 文件...')
     
     # 执行打包操作

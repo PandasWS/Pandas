@@ -16,6 +16,16 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
+// 指定的 std 标准容器 x 是否包含指定的 v 值 (存在则返回 true)
+#define STD_EXISTS(x, v) (std::find(x.begin(), x.end(), v) != x.end())
+
+// 指定的 std 标准容器 x 是否不包含指定的 v 值 (不存在则返回 true)
+#define STD_NOT_EXISTS(x, v) (std::find(x.begin(), x.end(), v) == x.end())
+
+void systemPause();
+bool isRegexMatched(const std::string& content, const std::string& patterns);
+std::string regexExtract(const std::string& content, const std::string& patterns, size_t extract_group, bool icase = true);
+
 void deployImportDirectories();
 
 bool getExecuteFilepath(std::string& outFilepath);
@@ -38,12 +48,13 @@ void strReplace(std::string& str, const std::string& from, const std::string& to
 void strReplace(std::wstring& str, const std::wstring& from, const std::wstring& to);
 void strReplace(char* str, const char* from, const char* to);
 
-bool strContain(std::vector<std::string> needle, std::string& str);
-bool strContain(std::string needle, std::string& str);
+bool strContain(std::vector<std::string> needle, const std::string& str);
+bool strContain(std::string needle, const std::string& str);
 
 std::string strTrim(const std::string& s);
 
 std::vector<std::string> strExplode(std::string const& s, char delim);
+bool strIsNumber(const std::string& str);
 
 void standardizePathSep(std::string& path);
 void standardizePathSep(std::wstring& path);
@@ -60,5 +71,7 @@ std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 
 bool isDoubleByteCharacter(unsigned char high, unsigned char low);
 bool isEscapeSequence(const char* start_p);
+
+int convertRFC2822toTimeStamp(std::string strRFC822Date);
 
 void isaAvailableHotfix();

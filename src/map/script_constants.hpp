@@ -107,6 +107,10 @@
 #ifdef Pandas_NpcFilter_DROPITEM
 	export_constant(NPCF_DROPITEM);	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	export_constant(NPCF_CLICKTOMB);	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
@@ -185,6 +189,10 @@
 #ifdef Pandas_NpcExpress_MER_LEAVE
 	export_constant(NPCX_MER_LEAVE);	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+	export_constant(NPCX_PC_TALK);	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
@@ -710,7 +718,8 @@
 	export_constant(MF_NOITEMCONSUMPTION);
 	export_constant(MF_NOSUNMOONSTARMIRACLE);
 	export_deprecated_constant3("mf_sumstarmiracle", MF_NOSUNMOONSTARMIRACLE, "MF_NOSUNMOONSTARMIRACLE");
-	export_constant(MF_NOMINEEFFECT);
+	export_constant(MF_FORCEMINEFFECT);
+	export_deprecated_constant3("mf_nomineeffect", MF_FORCEMINEFFECT, "MF_FORCEMINEFFECT");
 	export_constant(MF_NOLOCKON);
 	export_constant(MF_NOTOMB);
 	export_constant(MF_SKILL_DAMAGE);
@@ -728,6 +737,7 @@
 	export_constant(MF_NORENEWALDROPPENALTY);
 	export_constant(MF_NORENEWALEXPPENALTY);
 	export_constant(MF_NOPETCAPTURE);
+	export_constant(MF_NOBUYINGSTORE);
 
 #ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);
@@ -838,6 +848,7 @@
 	export_constant(CELL_NOCHAT);
 	export_constant(CELL_MAELSTROM);
 	export_constant(CELL_ICEWALL);
+	export_constant(CELL_NOBUYINGSTORE);
 
 	/* getcell types */
 	export_constant(CELL_CHKWALL);
@@ -856,6 +867,7 @@
 	export_constant(CELL_CHKNOCHAT);
 	export_constant(CELL_CHKMAELSTROM);
 	export_constant(CELL_CHKICEWALL);
+	export_constant(CELL_CHKNOBUYINGSTORE);
 
 	/* parameters */
 	export_parameter("StatusPoint",SP_STATUSPOINT);
@@ -899,6 +911,13 @@
 	export_parameter(PCDIECOUNTER_VAR, SP_PCDIECOUNTER);
 	export_parameter(COOKMASTERY_VAR, SP_COOKMASTERY);
 	export_parameter(ACHIEVEMENTLEVEL, SP_ACHIEVEMENT_LEVEL);
+
+#ifdef Pandas_ScriptConstants_CartWeight
+	export_parameter("CartWeight", SP_CARTWEIGHT);
+#endif // Pandas_ScriptConstants_CartWeight
+#ifdef Pandas_ScriptConstants_MaxCartWeight
+	export_parameter("MaxCartWeight", SP_MAXCARTWEIGHT);
+#endif // Pandas_ScriptConstants_MaxCartWeight
 
 	export_constant2("bMaxHP",SP_MAXHP);
 	export_constant2("bMaxSP",SP_MAXSP);
@@ -1135,6 +1154,7 @@
 	export_constant2("bCritDefRate",SP_CRIT_DEF_RATE);
 	export_constant2("bMagicSubDefEle", SP_MAGIC_SUBDEF_ELE);
 	export_constant2("bReduceDamageReturn",SP_REDUCE_DAMAGE_RETURN);
+	export_constant2("bAbsorbDmgMaxHP2", SP_ABSORB_DMG_MAXHP2);
 	export_constant2("bAddItemSPHealRate", SP_ADD_ITEM_SPHEAL_RATE);
 	export_constant2("bAddItemGroupSPHealRate", SP_ADD_ITEMGROUP_SPHEAL_RATE);
 	export_constant2("bWeaponSubSize", SP_WEAPON_SUBSIZE);
@@ -1173,10 +1193,6 @@
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
 #endif // Pandas_Bonus3_bFinalAddClass
-#ifdef Pandas_Bonus_bAbsorbDmgMaxHP2
-	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
-	export_constant2("bAbsorbDmgMaxHP2", SP_PANDAS_ABSORBDMGMAXHP2);
-#endif // Pandas_Bonus_bAbsorbDmgMaxHP2
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
@@ -1279,7 +1295,7 @@
 	export_constant2("VAR_SHOES",LOOK_SHOES);
 
 	/* status changes */
-	export_constant2("Eff_Stone",SC_STONE);
+	export_constant2("Eff_Stone",SC_STONEWAIT);
 	export_constant2("Eff_Freeze",SC_FREEZE);
 	export_constant2("Eff_Stun",SC_STUN);
 	export_constant2("Eff_Sleep",SC_SLEEP);
@@ -1295,6 +1311,7 @@
 	export_constant2("Eff_Crystalize",SC_CRYSTALIZE);
 	export_constant2("Eff_Freezing",SC_FREEZING);
 	export_constant2("Eff_Heat",SC_BURNT);
+	export_constant2("Eff_Deepsleep",SC_DEEPSLEEP);
 
 	export_constant2("SC_ALL",SC_NONE);
 
@@ -1310,6 +1327,7 @@
 	export_constant(SC_BLIND);
 	export_constant(SC_BLEEDING);
 	export_constant(SC_DPOISON);
+	export_constant(SC_STONEWAIT);
 	export_constant(SC_PROVOKE);
 	export_constant(SC_ENDURE);
 	export_constant(SC_TWOHANDQUICKEN);
@@ -1397,7 +1415,8 @@
 	export_constant(SC_ARMOR);
 	export_constant(SC_ARMOR_ELEMENT_WATER);
 	export_constant(SC_NOCHAT);
-	export_constant(SC_BABY);
+	export_constant(SC_PROTECTEXP);
+	export_deprecated_constant3("SC_BABY", SC_PROTECTEXP, "SC_PROTECTEXP");
 	export_constant(SC_AURABLADE);
 	export_constant(SC_PARRYING);
 	export_constant(SC_CONCENTRATION);
@@ -1954,6 +1973,7 @@
 	export_constant(SC_GOLDENMACECLAN);
 	export_constant(SC_CROSSBOWCLAN);
 	export_constant(SC_JUMPINGCLAN);
+	export_constant(SC_TAROTCARD);
 	export_constant(SC_GEFFEN_MAGIC1);
 	export_constant(SC_GEFFEN_MAGIC2);
 	export_constant(SC_GEFFEN_MAGIC3);
@@ -1990,6 +2010,7 @@
 	export_constant(SC_ANCILLA);
 	export_constant(SC_EARTHSHAKER);
 	export_constant(SC_WEAPONBLOCK_ON);
+	export_constant(SC_SPORE_EXPLOSION);
 	export_constant(SC_ENTRY_QUEUE_APPLY_DELAY);
 	export_constant(SC_ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT);
 	export_constant(SC_ADAPTATION);
@@ -2034,6 +2055,8 @@
 	export_constant(SC_LUXANIMA);
 	export_constant(SC_REUSE_LIMIT_LUXANIMA);
 	export_constant(SC_ENSEMBLEFATIGUE);
+	export_constant(SC_MISTY_FROST);
+	export_constant(SC_MAGIC_POISON);
 	export_constant(SC_EP16_2_BUFF_SS);
 	export_constant(SC_EP16_2_BUFF_SC);
 	export_constant(SC_EP16_2_BUFF_AC);
@@ -5280,6 +5303,13 @@
 	export_constant(UMOB_DAMAGETAKEN_DB);
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
 
+#ifdef Pandas_ScriptParams_UnitData_Experience
+	export_constant(UMOB_MOBBASEEXP);
+	export_constant(UMOB_MOBBASEEXP_DB);
+	export_constant(UMOB_MOBJOBEXP);
+	export_constant(UMOB_MOBJOBEXP_DB);
+#endif // Pandas_ScriptParams_UnitData_Experience
+
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);
 	export_constant(NAV_SCROLL_ONLY);
@@ -5948,12 +5978,12 @@
 	export_constant(IG_THIRD_JOB_STONE_BOTTOM_BOX);
 	export_constant(IG_THIRD_JOB_STONE_BOTTOM_BOX2);
 	export_constant(IG_SHADOW_EXCHANGE_BOX);
-	export_constant(IG_DROOPING_GUNSLINGER_SCROLL);
+	export_constant(IG_GUNSLINGER_ENCHANT);
 	export_constant(IG_ENCHANTSTONE_RECIPE);
 	export_constant(IG_PET_EGG_BOX);
 	export_constant(IG_COSTUME_EXCHANGE_BOX);
-	export_constant(IG_FAN_MODIFICATION_KIT);
-	export_constant(IG_UNIFORM_REPAIR_KIT);
+	export_constant(IG_FAN_UPGRADE_KIT);
+	export_constant(IG_SUIT_UPGRADE_KIT);
 	export_constant(IG_SCROLL_OF_FALLEN_ANGEL_WINGS);
 	export_constant(IG_CLASS_SHADOW_BOX_WEAPON);
 	export_constant(IG_CLASS_SHADOW_BOX_ARMOR);
@@ -5966,11 +5996,11 @@
 	export_constant(IG_BEARERSSHADOW_MIX);
 	export_constant(IG_COMPOSESHADOW_MIX);
 	export_constant(IG_RACESHADOW_MIX);
-	export_constant(IG_CANDY_POUCH_BLESSING_SCROLL_MELEE);
-	export_constant(IG_CANDY_POUCH_BLESSING_SCROLL_RANGE);
-	export_constant(IG_CANDY_POUCH_BLESSING_SCROLL_MAGIC);
-	export_constant(IG_MAGICAL_BOOSTER_AMPLIFIER);
-	export_constant(IG_MAGIC_CAT_HAND_SCROLL);
+	export_constant(IG_CANDY_BAG_SCROLL_MELEE);
+	export_constant(IG_CANDY_BAG_SCROLL_RANGE);
+	export_constant(IG_CANDY_BAG_SCROLL_MAGIC);
+	export_constant(IG_BOOSTER_AMPLIFIER);
+	export_constant(IG_MAGICAL_CAT_HAND);
 	export_constant(IG_INFINITYSHADOW_MIX);
 	export_constant(IG_SILVER_STATUE);
 	export_constant(IG_PHYSICALMAGICAL_MIX);
@@ -6059,6 +6089,72 @@
 	export_constant(IG_PIERCING_MIX);
 	export_constant(IG_HASTY_MIX);
 	export_constant(IG_ENCHANTSTONE_RECIPE_4M);
+	export_constant(IG_SHADOW_CUBE);
+	export_constant(IG_SHADOW_CUBE_PENDANT);
+	export_constant(IG_SHADOW_CUBE_EARING);
+	export_constant(IG_ANGELPORING_BOX);
+	export_constant(IG_HELM_OF_FAITH_BOX);
+	export_constant(IG_2022_LUNARNEWYEARS_BOX);
+	export_constant(IG_2020_REWARD_BOX);
+	export_constant(IG_COSTUME_MILE_PACK_26_1);
+	export_constant(IG_COSTUME_MILE_PACK_26_2);
+	export_constant(IG_COSTUME_MILE_PACK_26_3);
+	export_constant(IG_EP17_1_SPC01);
+	export_constant(IG_EP17_1_SPC02);
+	export_constant(IG_EP17_1_SPC03);
+	export_constant(IG_EP17_1_SPC04);
+	export_constant(IG_STABILITYSHADOW_MIX);
+	export_constant(IG_BS_SHA_M_S_2);
+	export_constant(IG_BS_SHA_M_S_22);
+	export_constant(IG_SLD_CARD_RECIPE);
+	export_constant(IG_R_BEARERSSHADOW_MIX);
+	export_constant(IG_M_BLITZSHADOW_MIX);
+	export_constant(IG_RELOADSHADOW_MIX);
+	export_constant(IG_SPELLCASTERSHADOW_MIX);
+	export_constant(IG_MAGICALSHADOW_MIX);
+	export_constant(IG_PHYSICALSHADOW_MIX);
+	export_constant(IG_MAJORAUTOSPELL_MIX);
+	export_constant(IG_ABSORBSHADOW_MIX);
+	export_constant(IG_TRUE_GEMSHADOW_MIX);
+	export_constant(IG_MAMMOTH_MIX);
+	export_constant(IG_FULLTEMPSHADOW_MIX);
+	export_constant(IG_FULLPENESHADOW_MIX);
+	export_constant(IG_REMODEL_HERO_BOOTS);
+	export_constant(IG_ORIENTAL_SWORD_CUBE);
+	export_constant(IG_DRAGONIC_SLAYER_CUBE);
+	export_constant(IG_SHIVER_KATAR_K_CUBE);
+	export_constant(IG_BLADE_KATAR_CUBE);
+	export_constant(IG_SWORD_OF_BLUEFIRE_CUBE);
+	export_constant(IG_SLATE_SWORD_CUBE);
+	export_constant(IG_NARCIS_BOW_CUBE);
+	export_constant(IG_TRUMPET_SHELL_K_CUBE);
+	export_constant(IG_BARB_WIRE_K_CUBE);
+	export_constant(IG_AVENGER_CUBE);
+	export_constant(IG_METEOR_STRIKER_CUBE);
+	export_constant(IG_MAGIC_SWORD_CUBE);
+	export_constant(IG_FATALIST_CUBE);
+	export_constant(IG_ROYAL_BOW_K_CUBE);
+	export_constant(IG_SCALET_DRAGON_L_CUBE);
+	export_constant(IG_SHADOW_STAFF_K_CUBE);
+	export_constant(IG_FREEZING_ROD_CUBE);
+	export_constant(IG_IRON_NAIL_K_CUBE);
+	export_constant(IG_RAY_KNUCKLE_CUBE);
+	export_constant(IG_UNDINE_SPEAR_K_CUBE);
+	export_constant(IG_LIGHT_BLADE_CUBE);
+	export_constant(IG_IRON_STAFF_CUBE);
+	export_constant(IG_BLUE_CRYSTAL_STAFF_CUBE);
+	export_constant(IG_DEMON_HUNT_BIBLE_CUBE);
+	export_constant(IG_SAINT_HALL_CUBE);
+	export_constant(IG_MEAWFOXTAIL_CUBE);
+	export_constant(IG_FOG_DEW_SWORD_CUBE);
+	export_constant(IG_HUMMA_CLEAR_CUBE);
+	export_constant(IG_THOUSAND_SUN_CUBE);
+	export_constant(IG_SPIRIT_PENDULUM_CUBE);
+	export_constant(IG_CRIMSON_ROSE_CUBE);
+	export_constant(IG_MASTER_SOUL_RIFLE_CUBE);
+	export_constant(IG_GOLDEN_LORD_LAUNCHER_CUBE);
+	export_constant(IG_THE_BLACK_CUBE);
+	export_constant(IG_DEMON_SLAYER_SHOT_CUBE);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -8426,6 +8522,35 @@
 	export_constant(EF_TIME_ACCESSORY);
 	export_constant(EF_SPRITEMABLE);
 	export_constant(EF_TUNAPARTY);
+	export_constant(EF_FRESHSHRIMP);
+	export_constant(EF_SU_GROOMING);
+	export_constant(EF_SU_CHATTERING);
+	export_constant(EF_FIREDANCE);
+	export_constant(EF_RICHS_COIN_A);
+	export_constant(EF_E_CHAIN);
+	export_constant(EF_HEAT_BARREL);
+	export_constant(EF_H_MINE);
+	export_constant(EF_FALLEN_ANGEL);
+	export_constant(EF_IMMUNE_PROPERTY);
+	export_constant(EF_MOVE_COORDINATE);
+	export_constant(EF_LIGHTSPHERE_SUN);
+	export_constant(EF_LIGHTSPHERE_MOON);
+	export_constant(EF_LIGHTSPHERE_STAR);
+	export_constant(EF_NOVAEXPLOSING);
+	export_constant(EF_STAR_EMPEROR);
+	export_constant(EF_SMA_BLACK);
+	export_constant(EF_ENERGYDRAIN_BLACK);
+	export_constant(EF_BLINK_BODY);
+	export_constant(EF_SOLARBURST);
+	export_constant(EF_SJ_DOCUMENT);
+	export_constant(EF_FALLING_STAR);
+	export_constant(EF_STORMKICK8);
+	export_constant(EF_NEWMOON_KICK);
+	export_constant(EF_FULLMOON_KICK);
+	export_constant(EF_BOOK_OF_DIMENSION);
+	export_constant(EF_CURSE_EXPLOSION);
+	export_constant(EF_SOUL_REAPER);
+	export_constant(EF_SOUL_EXPLOSION);
 
 	/* hat effects */
 	export_constant(HAT_EF_BLOSSOM_FLUTTERING);
@@ -8798,6 +8923,7 @@
 	export_constant(INF2_IGNORECICADA);
 	export_constant(INF2_SHOWSCALE);
 	export_constant(INF2_IGNOREGTB);
+	export_constant(INF2_TOGGLEABLE);
 
 	/* skill no near npc flags */
 	export_constant(SKILL_NONEAR_WARPPORTAL);
@@ -9023,7 +9149,6 @@
 	export_constant(UNT_DUMMY_0);
 	export_constant(UNT_RAIN_OF_CRYSTAL);
 	export_constant(UNT_MYSTERY_ILLUSION);
-	export_constant(UNT_UNKNOWN_1);
 	export_constant(UNT_STRANTUM_TREMOR);
 	export_constant(UNT_VIOLENT_QUAKE);
 	export_constant(UNT_ALL_BLOOM);
@@ -9147,6 +9272,172 @@
 	export_constant(EL_SKILLMODE_PASSIVE);
 	export_constant(EL_SKILLMODE_ASSIST);
 	export_constant(EL_SKILLMODE_AGGRESSIVE);
+
+	/* status calc bl */
+	export_constant(SCB_NONE);
+	export_constant(SCB_BASE);
+	export_constant(SCB_MAXHP);
+	export_constant(SCB_MAXSP);
+	export_constant(SCB_STR);
+	export_constant(SCB_AGI);
+	export_constant(SCB_VIT);
+	export_constant(SCB_INT);
+	export_constant(SCB_DEX);
+	export_constant(SCB_LUK);
+	export_constant(SCB_BATK);
+	export_constant(SCB_WATK);
+	export_constant(SCB_MATK);
+	export_constant(SCB_HIT);
+	export_constant(SCB_FLEE);
+	export_constant(SCB_DEF);
+	export_constant(SCB_DEF2);
+	export_constant(SCB_MDEF);
+	export_constant(SCB_MDEF2);
+	export_constant(SCB_SPEED);
+	export_constant(SCB_ASPD);
+	export_constant(SCB_DSPD);
+	export_constant(SCB_CRI);
+	export_constant(SCB_FLEE2);
+	export_constant(SCB_ATK_ELE);
+	export_constant(SCB_DEF_ELE);
+	export_constant(SCB_MODE);
+	export_constant(SCB_SIZE);
+	export_constant(SCB_RACE);
+	export_constant(SCB_RANGE);
+	export_constant(SCB_REGEN);
+	export_constant(SCB_DYE);
+	export_constant(SCB_MAXAP);
+	export_constant(SCB_POW);
+	export_constant(SCB_STA);
+	export_constant(SCB_WIS);
+	export_constant(SCB_SPL);
+	export_constant(SCB_CON);
+	export_constant(SCB_CRT);
+	export_constant(SCB_PATK);
+	export_constant(SCB_SMATK);
+	export_constant(SCB_RES);
+	export_constant(SCB_MRES);
+	export_constant(SCB_HPLUS);
+	export_constant(SCB_CRATE);
+
+	/* status change states */
+	export_constant(SCS_NONE);
+	export_constant(SCS_NOMOVECOND);
+	export_constant(SCS_NOMOVE);
+	export_constant(SCS_NOPICKITEMCOND);
+	export_constant(SCS_NOPICKITEM);
+	export_constant(SCS_NODROPITEMCOND);
+	export_constant(SCS_NODROPITEM);
+	export_constant(SCS_NOCASTCOND);
+	export_constant(SCS_NOCAST);
+	export_constant(SCS_NOCHAT);
+	export_constant(SCS_NOCHATCOND);
+	export_constant(SCS_NOEQUIPITEM);
+	export_constant(SCS_NOEQUIPITEMCOND);
+	export_constant(SCS_NOUNEQUIPITEM);
+	export_constant(SCS_NOUNEQUIPITEMCOND);
+	export_constant(SCS_NOCONSUMEITEM);
+	export_constant(SCS_NOCONSUMEITEMCOND);
+	export_constant(SCS_NOATTACK);
+	export_constant(SCS_NOATTACKCOND);
+	export_constant(SCS_NOWARP);
+	export_constant(SCS_NOWARPCOND);
+	export_constant(SCS_NODEATHPENALTY);
+	export_constant(SCS_NODEATHPENALTYCOND);
+	export_constant(SCS_NOINTERACT);
+	export_constant(SCS_NOINTERACTCOND);
+
+	/* body states */
+	export_constant(OPT1_STONE);
+	export_constant(OPT1_FREEZE);
+	export_constant(OPT1_STUN);
+	export_constant(OPT1_SLEEP);
+	export_constant(OPT1_STONEWAIT);
+	export_constant(OPT1_BURNING);
+	export_constant(OPT1_IMPRISON);
+
+	/* health states */
+	export_constant(OPT2_POISON);
+	export_constant(OPT2_CURSE);
+	export_constant(OPT2_SILENCE);
+	export_constant(OPT2_SIGNUMCRUCIS);
+	export_constant(OPT2_BLIND);
+	export_constant(OPT2_ANGELUS);
+	export_constant(OPT2_BLEEDING);
+	export_constant(OPT2_DPOISON);
+	export_constant(OPT2_FEAR);
+
+	/* show effect states */
+	export_constant(OPT3_NORMAL);
+	export_constant(OPT3_QUICKEN);
+	export_constant(OPT3_OVERTHRUST);
+	export_constant(OPT3_ENERGYCOAT);
+	export_constant(OPT3_EXPLOSIONSPIRITS);
+	export_constant(OPT3_STEELBODY);
+	export_constant(OPT3_BLADESTOP);
+	export_constant(OPT3_AURABLADE);
+	export_constant(OPT3_BERSERK);
+	export_constant(OPT3_LIGHTBLADE);
+	export_constant(OPT3_MOONLIT);
+	export_constant(OPT3_MARIONETTE);
+	export_constant(OPT3_ASSUMPTIO);
+	export_constant(OPT3_WARM);
+	export_constant(OPT3_KAITE);
+	export_constant(OPT3_BUNSIN);
+	export_constant(OPT3_SOULLINK);
+	export_constant(OPT3_UNDEAD);
+	export_constant(OPT3_CONTRACT);
+
+	/* status change flags */
+	export_constant(SCF_BLEFFECT);
+	export_constant(SCF_DISPLAYPC);
+	export_constant(SCF_NOCLEARBUFF);
+	export_constant(SCF_NOREMOVEONDEAD);
+	export_constant(SCF_NODISPELL);
+	export_constant(SCF_NOCLEARANCE);
+	export_constant(SCF_NOBANISHINGBUSTER);
+	export_constant(SCF_NOSAVE);
+	export_constant(SCF_NOSAVEINFINITE);
+	export_constant(SCF_REMOVEONDAMAGED);
+	export_constant(SCF_REMOVEONREFRESH);
+	export_constant(SCF_REMOVEONLUXANIMA);
+	export_constant(SCF_STOPATTACKING);
+	export_constant(SCF_STOPCASTING);
+	export_constant(SCF_STOPWALKING);
+	export_constant(SCF_BOSSRESIST);
+	export_constant(SCF_MVPRESIST);
+	export_constant(SCF_SETSTAND);
+	export_constant(SCF_FAILEDMADO);
+	export_constant(SCF_DEBUFF);
+	export_constant(SCF_REMOVEONCHANGEMAP);
+	export_constant(SCF_REMOVEONMAPWARP);
+	export_constant(SCF_REMOVECHEMICALPROTECT);
+	export_constant(SCF_OVERLAPFAIL);
+	export_constant(SCF_OVERLAPIGNORELEVEL);
+	export_constant(SCF_SENDOPTION);
+	export_constant(SCF_ONTOUCH);
+	export_constant(SCF_UNITMOVE);
+	export_constant(SCF_NONPLAYER);
+	export_constant(SCF_SENDLOOK);
+	export_constant(SCF_DISPLAYNPC);
+	export_constant(SCF_REQUIREWEAPON);
+	export_constant(SCF_REQUIRESHIELD);
+	export_constant(SCF_MOBLOSETARGET);
+	export_constant(SCF_REMOVEELEMENTALOPTION);
+	export_constant(SCF_SUPERNOVICEANGEL);
+	export_constant(SCF_TAEKWONANGEL);
+	export_constant(SCF_MADOCANCEL);
+	export_constant(SCF_MADOENDCANCEL);
+	export_constant(SCF_RESTARTONMAPWARP);
+	export_constant(SCF_SPREADEFFECT);
+	export_constant(SCF_SENDVAL1);
+	export_constant(SCF_SENDVAL2);
+	export_constant(SCF_SENDVAL3);
+	export_constant(SCF_NOFORCEDEND);
+	export_constant(SCF_NOWARNING);
+	export_constant(SCF_REMOVEONUNEQUIP);
+	export_constant(SCF_REMOVEONUNEQUIPWEAPON);
+	export_constant(SCF_REMOVEONUNEQUIPARMOR);
 
 #ifdef Pandas_BattleRecord
 	export_constant(BRT_DMG_RECEIVE);

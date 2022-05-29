@@ -65,7 +65,7 @@ struct s_stylist_list{
 
 class StylistDatabase : public TypesafeYamlDatabase<uint32, s_stylist_list>{
 private:
-	bool parseCostNode( std::shared_ptr<s_stylist_entry> entry, bool doram, const YAML::Node& node );
+	bool parseCostNode( std::shared_ptr<s_stylist_entry> entry, bool doram, const ryml::NodeRef& node );
 
 public:
 	StylistDatabase() : TypesafeYamlDatabase( "STYLIST_DB", 1 ){
@@ -73,7 +73,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode( const YAML::Node& node ) override;
+	uint64 parseBodyNode( const ryml::NodeRef& node ) override;
 };
 
 extern StylistDatabase stylist_db;
@@ -111,7 +111,7 @@ public:
 	}
 
 	const std::string getDefaultLocation();
-	uint64 parseBodyNode( const YAML::Node& node );
+	uint64 parseBodyNode( const ryml::NodeRef& node );
 	void loadingFinished();
 };
 
@@ -204,6 +204,9 @@ struct npc_data {
 			time_t kill_time;
 			char killer_name[NAME_LENGTH];
 			int spawn_timer;
+#ifdef Pandas_FuncParams_Mob_MvpTomb_Create
+			int killer_gid = 0;
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
 		} tomb;
 		struct {
 			bool extended;
@@ -1568,6 +1571,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_DROPITEM
 	NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	NPCF_CLICKTOMB,	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -1646,8 +1653,11 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcExpress_MER_LEAVE
 	NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
-	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 
+#ifdef Pandas_NpcExpress_PC_TALK
+		NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
+	// PYHELP - NPCEVENT - INSERT POINT - <Section 14>
 	NPCE_MAX
 };
 

@@ -347,6 +347,7 @@ void merc_contract_init(s_mercenary_data *md) {
 bool mercenary_recv_data(s_mercenary *merc, bool flag)
 {
 	map_session_data *sd;
+	t_tick tick = gettick();
 
 	if( (sd = map_charid2sd(merc->char_id)) == NULL )
 		return false;
@@ -380,6 +381,10 @@ bool mercenary_recv_data(s_mercenary *merc, bool flag)
 		unit_calc_pos(&md->bl, sd->bl.x, sd->bl.y, sd->ud.dir);
 		md->bl.x = md->ud.to_x;
 		md->bl.y = md->ud.to_y;
+
+		// Ticks need to be initialized before adding bl to map_addiddb
+		md->regen.tick.hp = tick;
+		md->regen.tick.sp = tick;
 
 #ifdef Pandas_BattleRecord
 		batrec_new(&md->bl);
@@ -510,7 +515,7 @@ const std::string MercenaryDatabase::getDefaultLocation() {
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 MercenaryDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 MercenaryDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	uint32 id;
 
 	if (!this->asUInt32(node, "Id", id))
@@ -910,9 +915,9 @@ uint64 MercenaryDatabase::parseBodyNode(const YAML::Node &node) {
 	mercenary->status.aspd_rate = 1000;
 
 	if (this->nodeExists(node, "Skills")) {
-		const YAML::Node &skillsNode = node["Skills"];
+		const ryml::NodeRef& skillsNode = node["Skills"];
 
-		for (const YAML::Node &skill : skillsNode) {
+		for (const ryml::NodeRef& skill : skillsNode) {
 			std::string skill_name;
 
 			if (!this->asString(skill, "Name", skill_name))

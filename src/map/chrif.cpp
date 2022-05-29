@@ -1713,7 +1713,8 @@ int chrif_bsdata_save(struct map_session_data *sd, bool quit) {
 
 	// Removing...
 	if (quit && sd->bonus_script.head) {
-		uint16 flag = BSF_REM_ON_LOGOUT; //Remove bonus when logout
+		uint32 flag = BSF_REM_ON_LOGOUT; //Remove bonus when logout
+
 		if (battle_config.debuff_on_logout&1) //Remove negative buffs
 			flag |= BSF_REM_DEBUFF;
 		if (battle_config.debuff_on_logout&2) //Remove positive buffs
@@ -1795,11 +1796,11 @@ int chrif_bsdata_received(int fd) {
 				continue;
 
 #ifndef Pandas_BonusScript_Unique_ID
-			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_types)bs->icon, bs->flag, bs->type)))
+			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_type)bs->icon, bs->flag, bs->type)))
 				continue;
 #else
 			// 多传入一个数据库中保存的 bonus_id 以此来避免 pc_bonus_script_add 内部重复创建
-			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_types)bs->icon, bs->flag, bs->type, bs->bonus_id)))
+			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_type)bs->icon, bs->flag, bs->type, bs->bonus_id)))
 				continue;
 #endif // Pandas_BonusScript_Unique_ID
 
