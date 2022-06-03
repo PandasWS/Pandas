@@ -203,11 +203,10 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 			if( battle_config.mail_attachment_weight ){
 				// Sum up all items to get the current total weight
 				for( j = 0; j < MAIL_MAX_ITEM; j++ ){
-#ifdef Pandas_Fix_Mail_ItemAttachment_Check
-					if (sd->mail.item[j].nameid == 0) {
+					if (sd->mail.item[j].nameid == 0)
 						continue;
-					}
 
+#ifdef Pandas_Fix_Mail_ItemAttachment_Check
 					if (!sd->inventory_data[sd->mail.item[j].index]) {
 						return MAIL_ATTACH_ERROR;
 					}
