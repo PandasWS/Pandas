@@ -31432,6 +31432,30 @@ BUILDIN_FUNC(getrateidx) {
 }
 #endif // Pandas_ScriptCommand_GetRateIdx
 
+#ifdef Pandas_ScriptCommand_UnitIsDead
+/* ===========================================================
+*指令: unitisdead
+*描述: 该指令检查一个单位存活状态
+*用法: unitisdead <uid>;
+*返回: 1表示死亡,0表示生存,-1表示不在线或不存在
+*作者: 人鱼姬的思念
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitisdead) {
+	struct block_list* bl;
+	bl = map_id2bl(script_getnum(st, 2));
+	if (!bl)
+	{
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+	if (bl && status_isdead(bl))
+		script_pushint(st, 1);
+	else
+		script_pushint(st, 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_UnitIsDead
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32369,6 +32393,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetRateIdx
 	BUILDIN_DEF(getrateidx,"*"),						// 随机获取一个数值型数组的索引序号 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetRateIdx
+#ifdef Pandas_ScriptCommand_UnitIsDead
+	BUILDIN_DEF(unitisdead,"i"),						// 该指令检查一个单位存活状态 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_UnitIsDead
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

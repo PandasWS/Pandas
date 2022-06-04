@@ -2130,6 +2130,10 @@
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
 	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
 	#define Pandas_ScriptCommand_GetRateIdx
+
+	// 是否启用 unitisdead 脚本指令 [人鱼姬的思念]
+	// 该指令检查单位是否死亡, 返回 1 表示死亡,0表示生存,-1表示不在线或不存在
+	#define Pandas_ScriptCommand_UnitIsDead
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
