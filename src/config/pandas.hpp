@@ -1437,6 +1437,11 @@
 		// 事件类型: Filter / 事件名称: OnPCClickTombFilter
 		// 常量名称: NPCF_CLICKTOMB / 变量名称: clicktomb_filter_name
 		#define Pandas_NpcFilter_CLICKTOMB
+
+		// 当玩家复活时触发事件 [人鱼姬的思念]
+		// 事件类型: Filter / 事件名称: OnPCAliveFilter
+		// 常量名称: NPCF_PCALIVE / 变量名称: pcalive_filter_name
+		#define Pandas_NpcFilter_PCALIVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

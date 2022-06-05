@@ -6306,6 +6306,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_CLICKTOMB
 		NPCF_CLICKTOMB,	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_PCALIVE
+		NPCF_PCALIVE,	// pcalive_filter_name	// OnPCAliveFilter		// 当玩家复活时触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PCALIVE
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6521,6 +6525,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_CLICKTOMB:
 		return script_config.clicktomb_filter_name;	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_PCALIVE
+	case NPCF_PCALIVE:
+		return script_config.pcalive_filter_name;	// OnPCAliveFilter		// 当玩家复活时触发事件 [人鱼姬的思念]
+#endif // Pandas_NpcFilter_PCALIVE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
