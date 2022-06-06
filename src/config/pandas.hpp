@@ -2130,6 +2130,10 @@
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
 	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
 	#define Pandas_ScriptCommand_GetRateIdx
+
+	// 是否启用 getdir 脚本指令 [人鱼姬的思念]
+	// 获取角色的脑袋/身体朝向
+	#define Pandas_ScriptCommand_GetDir
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
