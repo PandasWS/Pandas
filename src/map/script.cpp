@@ -31478,6 +31478,31 @@ BUILDIN_FUNC(getrateidx) {
 }
 #endif // Pandas_ScriptCommand_GetRateIdx
 
+#ifdef Pandas_ScriptCommand_GetDir
+/* ===========================================================
+ * 指令: getheaddir
+ * 描述: 请在此补充该脚本指令的说明
+ * 用法: getheaddir <请补充完整参数说明>;
+ * 返回: 请说明返回值
+ * 作者: 维护者昵称
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getheaddir) {
+	struct map_session_data* sd = nullptr;
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+		script_pushint(st, sd->head_dir);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(getbodydir) {
+	struct map_session_data* sd = nullptr;
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+	script_pushint(st, sd->ud.dir);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetDir
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32416,6 +32441,10 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetRateIdx
 	BUILDIN_DEF(getrateidx,"*"),						// 随机获取一个数值型数组的索引序号 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetRateIdx
+#ifdef Pandas_ScriptCommand_GetDir
+	BUILDIN_DEF(getheaddir,"?"),						// 获取角色的脑袋朝向 [人鱼姬的思念]
+	BUILDIN_DEF(getbodydir, "?"),						// 获取角色身体的朝向 [人鱼姬的思念]
+#endif // Pandas_ScriptCommand_GetDir
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
