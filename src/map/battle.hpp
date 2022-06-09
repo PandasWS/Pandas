@@ -710,6 +710,7 @@ struct Battle_Config
 
 	int feature_barter;
 	int feature_barter_extended;
+	int break_mob_equip;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
