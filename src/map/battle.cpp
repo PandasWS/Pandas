@@ -10379,6 +10379,7 @@ static const struct _battle_data {
 
 	{ "feature.barter",                     &battle_config.feature_barter,                  1,      0,      1,              },
 	{ "feature.barter_extended",            &battle_config.feature_barter_extended,         1,      0,      1,              },
+	{ "break_mob_equip",                    &battle_config.break_mob_equip,                 0,      0,      1,              },
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
