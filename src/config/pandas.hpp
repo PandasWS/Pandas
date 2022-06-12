@@ -2133,6 +2133,10 @@
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
 	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
 	#define Pandas_ScriptCommand_GetRateIdx
+
+	// 是否启用 whodropitem 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定道具会从哪些魔物身上掉落以及掉落的机率信息
+	#define Pandas_ScriptCommand_WhoDropItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
