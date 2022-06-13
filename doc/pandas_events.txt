@@ -892,6 +892,7 @@
 	不关联到任何玩家
 
 携带参数:
+	$@mobdrop_gid			即将掉落道具的魔物的游戏单位编号
 	$@mobdrop_mobid			即将掉落道具的魔物编号
 	$@mobdrop_itemid		即将掉落道具的编号
 	$@mobdrop_rate			即将掉落道具在应用诸多修正后的最终掉率
