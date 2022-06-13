@@ -11090,6 +11090,7 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 		pc_setregstr(sd, add_str("@view_equip_target_name$"), tsd->status.name);
 		pc_setreg(sd, add_str("@view_equip_target_cid"), tsd->status.char_id);
 		pc_setreg(sd, add_str("@view_equip_target_aid"), tsd->status.account_id);
+		pc_setreg(sd, add_str("@view_equip_target_allowed"), tsd->status.show_equip);
 
 		if (npc_script_filter(sd, NPCF_VIEW_EQUIP))
 			return;

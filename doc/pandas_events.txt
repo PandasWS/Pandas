@@ -395,6 +395,7 @@
 	@view_equip_target_name$	被查看角色的角色名
 	@view_equip_target_cid		被查看角色的角色编号
 	@view_equip_target_aid		被查看角色的账号编号
+	@view_equip_target_allowed	被查看角色是否允许其他人看他的装备
 
 注意事项:
 	- 使用 viewequip 脚本指令也会触发此过滤器
