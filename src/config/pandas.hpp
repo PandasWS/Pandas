@@ -1692,6 +1692,10 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadlaphinedb 管理员指令 [维护者昵称]
+	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
+	#define Pandas_AtCommand_ReloadLaphineDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
