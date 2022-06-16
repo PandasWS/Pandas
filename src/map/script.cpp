@@ -31478,6 +31478,101 @@ BUILDIN_FUNC(getrateidx) {
 }
 #endif // Pandas_ScriptCommand_GetRateIdx
 
+#ifdef Pandas_ScriptCommand_GetBossInfo
+/* ===========================================================
+ * 指令: getbossinfo
+ * 描述: 查询可被 BOSS 雷达探测的魔物重生时间等相关信息
+ * 用法: getbossinfo {<"地图名称">{,<魔物编号>{,<角色编号>}}};
+ * 返回: 请说明返回值
+ * 作者: Sola丶小克
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getbossinfo) {
+	const char* mapname = nullptr;
+	struct map_session_data* sd = nullptr;
+	int mobid = 0, char_id = 0, mapid = -1;
+
+	if (script_hasdata(st, 2)) {
+		mapname = script_getstr(st, 2);
+
+		if (strcmpi(mapname, "all") == 0) {
+			// 查询全部地图
+			mapid = -1;
+		}
+		else if (strcmpi(mapname, "this") == 0) {
+			// 查询脚本所关联玩家的当前地图
+			if (!script_charid2sd(4, sd)) {
+				// todo: warning
+				script_pushint(st, 0);
+				return SCRIPT_CMD_FAILURE;
+			}
+			mapid = sd->bl.m;
+		}
+		else {
+			// 按指定的地图名称进行查询
+			mapid = map_mapname2mapid(mapname);
+
+			if (mapid < 0) {
+				ShowError("buildin_getbossinfo: Unknown map name %s.\n", mapname);
+				script_pushint(st, 0);
+				return SCRIPT_CMD_FAILURE;
+			}
+		}
+	}
+
+	if (script_hasdata(st, 3)) {
+		mobid = script_getnum(st, 3);
+	}
+
+	if (script_hasdata(st, 4)) {
+		char_id = script_getnum(st, 4);
+	}
+
+	// 以上获取基础信息
+	// 以下开始寻找目标魔物并填充数据
+	
+	DBIterator* iter = nullptr;
+	struct mob_data* md = nullptr;
+	int count = 0;
+
+	iter = db_iterator(get_bossid_db());
+	for (md = (struct mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct mob_data*)dbi_next(iter)) {
+		if (mapid != -1 && mapid != md->bl.m)
+			continue;
+		if (mobid != 0 && mobid != md->mob_id)
+			continue;
+
+		script_both_setreg(st, "boss_gid", md->bl.id, true, count, char_id);
+		script_both_setreg(st, "boss_spawn", (md->spawn_timer != INVALID_TIMER ? DIFF_TICK(get_timer(md->spawn_timer)->tick, gettick()) : 0), true, count, char_id);
+
+		count++;
+	}
+	dbi_destroy(iter);
+	
+	// script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
+	// script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
+	// script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
+	// script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
+	// script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
+	// script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
+	// script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
+	// script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+	// script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
+	// script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
+	// script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
+	// 
+	// script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
+	// script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
+	// script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
+	// script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
+	// script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
+	// script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
+
+	script_both_setreg(st, "boss_count", count, false, -1, char_id);
+	script_pushint(st, count);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetBossInfo
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32416,6 +32511,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetRateIdx
 	BUILDIN_DEF(getrateidx,"*"),						// 随机获取一个数值型数组的索引序号 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetRateIdx
+#ifdef Pandas_ScriptCommand_GetBossInfo
+	BUILDIN_DEF(getbossinfo,"???"),						// 查询可被 BOSS 雷达探测的魔物重生时间等相关信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_GetBossInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

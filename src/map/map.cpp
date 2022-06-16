@@ -2542,6 +2542,18 @@ struct mob_data * map_id2boss(int id)
 	return (struct mob_data*)idb_get(bossid_db,id);
 }
 
+#ifdef Pandas_ScriptCommand_GetBossInfo
+//************************************
+// Method:      get_bossid_db
+// Description: 将 bossid_db 返回给调用者
+// Returns:     DBMap*
+// Author:      Sola丶小克(CairoLee)  2022/06/16 22:08
+//************************************ 
+DBMap* get_bossid_db() {
+	return bossid_db;
+}
+#endif // Pandas_ScriptCommand_GetBossInfo
+
 /// Applies func to all the players in the db.
 /// Stops iterating if func returns -1.
 void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...)
