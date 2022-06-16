@@ -976,6 +976,9 @@ Body:
   - Command: reloadstatusdb
     Help: |
       重新加载状态配置文档
+  - Command: reloadbartersdb
+    Help: |
+      重新加载 Barters 以物易物数据库
   - Command: reload
     Help: |
       参数: <要重载的数据类型>

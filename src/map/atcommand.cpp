@@ -4339,7 +4339,7 @@ ACMD_FUNC(reload) {
 #ifdef Pandas_AtCommand_ReloadBartersDB
 	else if (strstr(command, "bartersdb") || strncmp(message, "bartersdb", 4) == 0) {
 		barter_db.reload();
-		clif_displaymessage(fd, "Barters database has been reloaded."); // Barters database has been reloaded.
+		clif_displaymessage(fd, msg_txt_cn(sd, 143)); // Barters database has been reloaded.
 	}
 #endif // Pandas_AtCommand_ReloadBartersDB
 
