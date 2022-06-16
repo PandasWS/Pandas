@@ -4340,7 +4340,7 @@ ACMD_FUNC(reload) {
 	else if (strstr(command, "laphinedb") || strncmp(message, "laphinedb", 4) == 0) {
 		laphine_synthesis_db.reload();
 		laphine_upgrade_db.reload();
-		clif_displaymessage(fd, msg_txt_cn(sd, 20)); // Laphine database has been reloaded.
+		clif_displaymessage(fd, msg_txt_cn(sd, 142)); // Laphine database has been reloaded.
 	}
 #endif // Pandas_AtCommand_ReloadLaphineDB
 
