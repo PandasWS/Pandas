@@ -1049,6 +1049,32 @@ void BarterDatabase::loadingFinished(){
 	}
 }
 
+#ifdef Pandas_AtCommand_ReloadBartersDB
+//************************************
+// Method:      npc_reload_barters_sub
+// Description: 用于遍历卸载以物易物商店的子函数
+// Parameter:   struct npc_data * nd
+// Parameter:   va_list args
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2022/06/16 07:58
+//************************************ 
+static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
+	nullpo_retr(0, nd);
+	
+	if (nd->subtype != NPCTYPE_BARTER)
+		return 0;
+
+	npc_unload_duplicates(nd);
+	npc_unload(nd, true);
+
+	return 0;
+}
+
+void BarterDatabase::clear() {
+	map_foreachnpc(npc_reload_barters_sub);
+}
+#endif // Pandas_AtCommand_ReloadBartersDB
+
 BarterDatabase barter_db;
 
 /**

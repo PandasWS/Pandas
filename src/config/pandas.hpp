@@ -178,7 +178,7 @@
 
 	// 以下选项开关需要依赖 Pandas_Struct_Npc_Data_Pandas 的拓展
 	#ifdef Pandas_Struct_Npc_Data_Pandas
-		// 使 npc_data 结构体可记录此 npc 的自毁策略 [Sola丶小克]
+		// 使 npc_data 结构体可记录此 NPC 的自毁策略 [Sola丶小克]
 		// 结构体修改定位 npc.hpp -> npc_data.pandas.destruction_strategy
 		#define Pandas_Struct_Npc_Data_DestructionStrategy
 	#endif // Pandas_Struct_Npc_Data_Pandas
@@ -1692,6 +1692,10 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadbartersdb 管理员指令 [Sola丶小克]
+	// 重新加载 Barters 以物易物数据库 (barters.yml)
+	#define Pandas_AtCommand_ReloadBartersDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 

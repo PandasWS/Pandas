@@ -113,6 +113,10 @@ public:
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode( const ryml::NodeRef& node );
 	void loadingFinished();
+
+#ifdef Pandas_AtCommand_ReloadBartersDB
+	void clear() override;
+#endif // Pandas_AtCommand_ReloadBartersDB
 };
 
 extern BarterDatabase barter_db;
