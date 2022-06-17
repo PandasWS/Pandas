@@ -31526,6 +31526,8 @@ BUILDIN_FUNC(getbossinfo) {
 	if (script_hasdata(st, 4)) {
 		char_id = script_getnum(st, 4);
 	}
+
+	script_both_setreg(st, "boss_count", 0, false, -1, char_id);
 	
 	DBIterator* iter = nullptr;
 	struct mob_data* md = nullptr;
