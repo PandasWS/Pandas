@@ -1693,9 +1693,9 @@
 		#define Pandas_AtCommand_Aura
 	#endif // Pandas_Aura_Mechanism
 
-	// 是否启用 reloadbartersdb 管理员指令 [Sola丶小克]
+	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
 	// 重新加载 Barters 以物易物数据库 (barters.yml)
-	#define Pandas_AtCommand_ReloadBartersDB
+	#define Pandas_AtCommand_ReloadBarterDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 

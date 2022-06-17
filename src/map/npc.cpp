@@ -1049,7 +1049,7 @@ void BarterDatabase::loadingFinished(){
 	}
 }
 
-#ifdef Pandas_AtCommand_ReloadBartersDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
 //************************************
 // Method:      npc_reload_barters_sub
 // Description: 用于遍历卸载以物易物商店的子函数
@@ -1073,7 +1073,7 @@ static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
 void BarterDatabase::clear() {
 	map_foreachnpc(npc_reload_barters_sub);
 }
-#endif // Pandas_AtCommand_ReloadBartersDB
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 BarterDatabase barter_db;
 

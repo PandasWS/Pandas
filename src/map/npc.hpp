@@ -114,9 +114,9 @@ public:
 	uint64 parseBodyNode( const ryml::NodeRef& node );
 	void loadingFinished();
 
-#ifdef Pandas_AtCommand_ReloadBartersDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
 	void clear() override;
-#endif // Pandas_AtCommand_ReloadBartersDB
+#endif // Pandas_AtCommand_ReloadBarterDB
 };
 
 extern BarterDatabase barter_db;
