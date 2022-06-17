@@ -2135,7 +2135,7 @@
 	#define Pandas_ScriptCommand_GetRateIdx
 
 	// 是否启用 getbossinfo 脚本指令 [Sola丶小克]
-	// 该指令用于查询可被 BOSS 雷达探测的魔物重生时间等相关信息
+	// 该指令用于查询 BOSS 魔物重生时间及其坟墓等信息
 	#define Pandas_ScriptCommand_GetBossInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands

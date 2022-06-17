@@ -31481,9 +31481,9 @@ BUILDIN_FUNC(getrateidx) {
 #ifdef Pandas_ScriptCommand_GetBossInfo
 /* ===========================================================
  * 指令: getbossinfo
- * 描述: 查询可被 BOSS 雷达探测的魔物重生时间等相关信息
+ * 描述: 查询 BOSS 魔物重生时间及其坟墓等信息
  * 用法: getbossinfo {<"地图名称">{,<魔物编号>{,<角色编号>}}};
- * 返回: 请说明返回值
+ * 返回: 返回查询到的记录数
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(getbossinfo) {
@@ -31526,9 +31526,6 @@ BUILDIN_FUNC(getbossinfo) {
 	if (script_hasdata(st, 4)) {
 		char_id = script_getnum(st, 4);
 	}
-
-	// 以上获取基础信息
-	// 以下开始寻找目标魔物并填充数据
 	
 	DBIterator* iter = nullptr;
 	struct mob_data* md = nullptr;
@@ -31540,32 +31537,50 @@ BUILDIN_FUNC(getbossinfo) {
 			continue;
 		if (mobid != 0 && mobid != md->mob_id)
 			continue;
+		
+		struct npc_data* tomb_nd = nullptr;
+		if (md->tomb_nid) {
+			tomb_nd = map_id2nd(md->tomb_nid);
+		}
 
+		script_both_setreg(st, "boss_mapid", md->bl.m, true, count, char_id);
+		script_both_setregstr(st, "boss_mapname$", (md->bl.m >= 0 ? map[md->bl.m].name : ""), true, count, char_id);
+		script_both_setreg(st, "boss_x", md->bl.x, true, count, char_id);
+		script_both_setreg(st, "boss_y", md->bl.y, true, count, char_id);
+		
 		script_both_setreg(st, "boss_gid", md->bl.id, true, count, char_id);
 		script_both_setreg(st, "boss_spawn", (md->spawn_timer != INVALID_TIMER ? DIFF_TICK(get_timer(md->spawn_timer)->tick, gettick()) : 0), true, count, char_id);
+		script_both_setreg(st, "boss_classid", md->mob_id, true, count, char_id);
 
+		script_both_setreg(st, "boss_tomb_mapid", (tomb_nd ? tomb_nd->bl.m : -1), true, count, char_id);
+		script_both_setregstr(st, "boss_tomb_mapname$", (tomb_nd && tomb_nd->bl.m >= 0 ? map[tomb_nd->bl.m].name : ""), true, count, char_id);
+		script_both_setreg(st, "boss_tomb_x", (tomb_nd ? tomb_nd->bl.x : 0), true, count, char_id);
+		script_both_setreg(st, "boss_tomb_y", (tomb_nd ? tomb_nd->bl.y : 0), true, count, char_id);
+
+		script_both_setreg(st, "boss_tomb_gid", (tomb_nd ? tomb_nd->bl.id : 0), true, count, char_id);
+		script_both_setreg(st, "boss_tomb_createtime", (tomb_nd ? tomb_nd->u.tomb.kill_time : 0), true, count, char_id);
+
+		script_both_setreg(st, "boss_tomb_respawnsecs", -1, true, count, char_id);
+		t_tick respawntime = -1;
+		if (tomb_nd && tomb_nd->u.tomb.md->spawn) {
+			respawntime = gett_tickimer(tomb_nd->u.tomb.md->spawn_timer);
+			if (respawntime != -1) {
+				respawntime = DIFF_TICK(respawntime, gettick());
+				respawntime = respawntime / 1000;
+				script_both_setreg(st, "boss_tomb_respawnsecs", respawntime, true, count, char_id);
+				respawntime = respawntime + (int)time(NULL);
+			}
+		}
+		script_both_setreg(st, "boss_tomb_respawntime", respawntime, true, count, char_id);
+
+		script_both_setregstr(st, "boss_tomb_killer_name$", (tomb_nd ? tomb_nd->u.tomb.killer_name : ""), true, count, char_id);
+#ifdef Pandas_FuncParams_Mob_MvpTomb_Create
+		script_both_setreg(st, "boss_tomb_killer_gid", (tomb_nd ? tomb_nd->u.tomb.killer_gid : 0), true, count, char_id);
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
+		
 		count++;
 	}
 	dbi_destroy(iter);
-	
-	// script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
-	// script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
-	// script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
-	// script_both_setreg(st, "spawn_active", data->active, true, j, char_id);
-	// script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
-	// script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
-	// script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
-	// script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
-	// script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
-	// script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
-	// script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
-	// 
-	// script_both_setreg(st, "spawn_mapid", data->m, true, j, char_id);
-	// script_both_setregstr(st, "spawn_mapname$", mapdata->name, true, j, char_id);
-	// script_both_setreg(st, "spawn_x", data->x, true, j, char_id);
-	// script_both_setreg(st, "spawn_y", data->y, true, j, char_id);
-	// script_both_setreg(st, "spawn_xs", data->xs, true, j, char_id);
-	// script_both_setreg(st, "spawn_ys", data->ys, true, j, char_id);
 
 	script_both_setreg(st, "boss_count", count, false, -1, char_id);
 	script_pushint(st, count);
@@ -32512,7 +32527,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getrateidx,"*"),						// 随机获取一个数值型数组的索引序号 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetRateIdx
 #ifdef Pandas_ScriptCommand_GetBossInfo
-	BUILDIN_DEF(getbossinfo,"???"),						// 查询可被 BOSS 雷达探测的魔物重生时间等相关信息 [Sola丶小克]
+	BUILDIN_DEF(getbossinfo,"???"),						// 查询 BOSS 魔物重生时间及其坟墓等信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetBossInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 

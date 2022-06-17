@@ -185,7 +185,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
 	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
 	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
-	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target && target->m >= 0 ? map[target->m].name : ""));	// 死亡单位所在的地图名称
 	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -193,7 +193,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
-	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src && src->m >= 0 ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
 	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -236,7 +236,7 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
 		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
 		mapreg_setreg(add_str("$@mobdrop_from"), drop_type);
-		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md ? map[md->bl.m].name : ""));
+		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md && md->bl.m >= 0 ? map[md->bl.m].name : ""));
 		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
 		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
 		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
