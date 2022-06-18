@@ -81,6 +81,10 @@
 #include "itemprops.hpp"
 #endif // Pandas_Item_Properties
 
+#ifdef Pandas_Database_MobItem_FixedRatio
+#include "mobdrop.hpp"
+#endif // Pandas_Database_MobItem_FixedRatio
+
 using namespace rathena;
 
 const int64 SCRIPT_INT_MIN = INT64_MIN;
@@ -31590,6 +31594,169 @@ BUILDIN_FUNC(getbossinfo) {
 }
 #endif // Pandas_ScriptCommand_GetBossInfo
 
+#ifdef Pandas_ScriptCommand_WhoDropItem
+/* ===========================================================
+ * 指令: whodropitem
+ * 描述: 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息
+ * 用法: whodropitem <物品编号/"物品名称">{,<返回的最大记录数>{,<角色编号>}};
+ * 返回: 返回查询到的记录数量
+ * 作者: Sola丶小克 (感谢 "人鱼姬的思念")
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(whodropitem) {
+	t_itemid nameid = 0;
+	int max_result = (script_hasdata(st, 3) && script_isint(st, 3)) ? script_getnum(st, 3) : 0;
+	int char_id = (script_hasdata(st, 4) && script_isint(st, 4)) ? script_getnum(st, 4) : 0;
+	std::shared_ptr<item_data> id;
+	struct map_session_data *sd = nullptr;
+
+	// 清空比较关键的返回值
+	script_both_setreg(st, "whodropitem_count", 0, false, 0, char_id);
+
+	if (script_isstring(st, 2)) {// "<item name>"
+		const char* name = script_getstr(st, 2);
+
+		id = item_db.searchname(name);
+
+		if (id == nullptr) {
+			ShowError("buildin_whodropitem: Nonexistant item %s requested.\n", name);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+		nameid = id->nameid;
+	}
+	else {// <item id>
+		nameid = script_getnum(st, 2);
+
+		id = item_db.find(nameid);
+
+		if (id == nullptr) {
+			ShowError("buildin_whodropitem: Nonexistant item %u requested.\n", nameid);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+	
+	// 最大返回的结果数量若未被指定, 则默认值为 MAX_SEARCH
+	max_result = (max_result ? max_result : MAX_SEARCH);
+
+	// 最大返回的结果数量应该在 1-500 之间 (这里的 500 是拍脑袋的, 通常应该够用了)
+	max_result = cap_value(max_result, 1, 500);
+	
+	// 若连一个掉落此物品的魔物都没有, 那么直接返回 0
+	if (id->mob[0].chance == 0) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 允许在未关联玩家的情况下执行该指令, 没关联玩家也不报错
+	// 但是若明确指定了某个角色, 但目标角色不存在的话, 那么需要报错
+	if (char_id && !(sd = map_charid2sd(char_id))) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+	else if (st->rid != 0) {
+		sd = map_id2sd(st->rid);
+	}
+
+	// 用来临时保存结果的缓存区域 <魔物编号, 掉落机率>
+	std::map<uint32, int> result_cache;
+
+	// 构建我们需要的结果, 只查询单个道具其实速度非常快, 不用担心性能过渡开销
+	for (auto const& pair : mob_db) {
+		if (mob_is_clone(pair.first)) {
+			continue;
+		}
+
+		for (int d = 0; d < MAX_MOB_DROP_TOTAL; d++) {
+			if (pair.second->dropitem[d].nameid != nameid)
+				continue;
+
+			if (rathena::util::map_exists(result_cache, pair.first)) {
+				if (result_cache[pair.first] < pair.second->dropitem[d].rate)
+					result_cache[pair.first] = pair.second->dropitem[d].rate;
+			}
+			else {
+				result_cache[pair.first] = pair.second->dropitem[d].rate;
+			}
+		}
+	}
+
+	// 根据一些掉率调整设置来处理道具的掉率, 这样最后排序的时候才能考虑进去
+	for (auto const& it : result_cache) {
+		int dropchance = it.second;
+		
+#ifdef RENEWAL_DROP
+		if (sd && battle_config.atcommand_mobinfo_type) {
+			std::shared_ptr<s_mob_db> mob = mob_db.find(it.first);
+			// 备注: 由于 pc_level_penalty_mod 内部已经判断了 mob 智能指针的有效性, 因此在此处不重复判断
+			dropchance = dropchance * pc_level_penalty_mod(sd, PENALTY_DROP, mob) / 100;
+			if (dropchance <= 0 && !battle_config.drop_rate0item)
+				dropchance = 1;
+		}
+#endif
+		if (sd && pc_isvip(sd)) // Display item rate increase for VIP
+			dropchance += (dropchance * battle_config.vip_drop_increase) / 100;
+
+#ifdef Pandas_Database_MobItem_FixedRatio
+		// 若严格固定掉率, 那么无视上面的等级惩罚、VIP掉率加成等计算
+		if (mobdrop_strict_droprate(nameid, it.first))
+			dropchance = it.second;
+#endif // Pandas_Database_MobItem_FixedRatio
+
+		result_cache[it.first] = dropchance;
+	}
+
+	// 对 result_cache 的内容进行降序排序
+	std::vector<std::pair<uint32, int>> result_sortd;
+	for (auto const& pair : result_cache) {
+		result_sortd.push_back(std::make_pair(pair.first, pair.second));
+	}
+
+	// 先按魔物编号从小到大排序
+	std::sort(result_sortd.begin(), result_sortd.end(),
+		[](const std::pair<uint32, int>& a, const std::pair<uint32, int>& b) {
+			return a.first < b.first;
+		}
+	);
+
+	// 再按掉率从大到小排序
+	std::sort(result_sortd.begin(), result_sortd.end(),
+		[](const std::pair<uint32, int>& a, const std::pair<uint32, int>& b) {
+			return a.second > b.second;
+		}
+	);
+
+	// 若排序后的 result_sortd 没有任何结果, 那么直接返回即可
+	if (result_sortd.empty()) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 准备就绪, 开始填充数组内容并返回结果
+	int current_index = 0;
+
+	for (const auto& it : result_sortd) {
+		int dropchance = it.second;
+
+		std::shared_ptr<s_mob_db> mob = mob_db.find(it.first);
+		if (!mob) continue;
+
+		script_both_setreg(st, "whodropitem_mob_id", mob->id, true, current_index, char_id);
+		script_both_setregstr(st, "whodropitem_mob_jname$", mob->jname.c_str(), true, current_index, char_id);
+		script_both_setreg(st, "whodropitem_chance", dropchance, true, current_index, char_id);
+		
+		current_index++;
+
+		if (current_index >= max_result)
+			break;
+	}
+
+	script_both_setreg(st, "whodropitem_count", current_index, false, 0, char_id);
+	script_pushint(st, current_index);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_WhoDropItem
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -32531,6 +32698,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_GetBossInfo
 	BUILDIN_DEF(getbossinfo,"???"),						// 查询 BOSS 魔物重生时间及其坟墓等信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetBossInfo
+#ifdef Pandas_ScriptCommand_WhoDropItem
+	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
+#endif // Pandas_ScriptCommand_WhoDropItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
