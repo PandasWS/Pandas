@@ -11080,22 +11080,6 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 	nullpo_retv( sd );
 	nullpo_retv( tsd );
 
-#ifdef Pandas_NpcFilter_VIEW_EQUIP
-	if (sd && sd->bl.type == BL_PC && tsd && tsd->bl.type == BL_PC) {
-		pc_setregstr(sd, add_str("@vieweq_name$"), tsd->status.name);	// 为兼容脚本而添加
-		pc_setreg(sd, add_str("@vieweq_cid"), tsd->status.char_id);		// 为兼容脚本而添加
-		pc_setreg(sd, add_str("@vieweq_aid"), tsd->status.account_id);	// 为兼容脚本而添加
-		pc_setreg(sd, add_str("@eqview_cid"), tsd->status.char_id);		// 为兼容脚本而添加
-
-		pc_setregstr(sd, add_str("@view_equip_target_name$"), tsd->status.name);
-		pc_setreg(sd, add_str("@view_equip_target_cid"), tsd->status.char_id);
-		pc_setreg(sd, add_str("@view_equip_target_aid"), tsd->status.account_id);
-
-		if (npc_script_filter(sd, NPCF_VIEW_EQUIP))
-			return;
-	}
-#endif // Pandas_NpcFilter_VIEW_EQUIP
-
 	struct PACKET_ZC_EQUIPWIN_MICROSCOPE* p = (struct PACKET_ZC_EQUIPWIN_MICROSCOPE*)packet_buffer;
 	int equip = 0;
 
@@ -11351,7 +11335,7 @@ static bool clif_process_message(struct map_session_data* sd, bool whisperFormat
 		pc_setreg(sd, add_str("@talk_x"), sd->bl.x);
 		pc_setreg(sd, add_str("@talk_y"), sd->bl.y);
 		pc_setreg(sd, add_str("@talk_mapid"), (sd ? sd->bl.m : -1));
-		pc_setregstr(sd, add_str("@talk_mapname$"), (sd ? map[sd->bl.m].name : ""));
+		pc_setregstr(sd, add_str("@talk_mapname$"), (sd && sd->bl.m >= 0 ? map[sd->bl.m].name : ""));
 
 		pc_setreg(sd, add_str("@talk_gid"), sd->bl.id);
 		pc_setregstr(sd, add_str("@talk_name$"), out_name);
@@ -18593,11 +18577,39 @@ void clif_bossmapinfo_clear(struct map_session_data* sd)
 /// 02d6 <account id>.L
 void clif_parse_ViewPlayerEquip(int fd, struct map_session_data* sd)
 {
+#ifdef Pandas_Crashfix_FunctionParams_Verify
+	nullpo_retv(sd);
+#endif // Pandas_Crashfix_FunctionParams_Verify
+
 	int aid = RFIFOL(fd, packet_db[RFIFOW(fd,0)].pos[0]);
 	struct map_session_data* tsd = map_id2sd(aid);
 
 	if (!tsd)
 		return;
+
+#ifdef Pandas_NpcFilter_VIEW_EQUIP
+	if (sd && sd->bl.type == BL_PC && tsd && tsd->bl.type == BL_PC && sd->bl.m == tsd->bl.m) {
+		pc_setregstr(sd, add_str("@vieweq_name$"), tsd->status.name);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@vieweq_cid"), tsd->status.char_id);		// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@vieweq_aid"), tsd->status.account_id);	// 为兼容脚本而添加
+		pc_setreg(sd, add_str("@eqview_cid"), tsd->status.char_id);		// 为兼容脚本而添加
+
+		pc_setregstr(sd, add_str("@view_equip_target_name$"), tsd->status.name);
+		pc_setreg(sd, add_str("@view_equip_target_cid"), tsd->status.char_id);
+		pc_setreg(sd, add_str("@view_equip_target_aid"), tsd->status.account_id);
+		pc_setreg(sd, add_str("@view_equip_target_allowed"), tsd->status.show_equip);
+		pc_setreg(sd, add_str("@view_equip_bypass_limit"), 0);
+
+		if (npc_script_filter(sd, NPCF_VIEW_EQUIP))
+			return;
+
+		// 若 @view_equip_bypass_limit 被设置为 1 的话, 那么直接看~
+		if (pc_readreg(sd, add_str("@view_equip_bypass_limit")) == 1) {
+			clif_viewequip_ack(sd, tsd);
+			return;
+		}
+	}
+#endif // Pandas_NpcFilter_VIEW_EQUIP
 
 	if (sd->bl.m != tsd->bl.m)
 		return;
