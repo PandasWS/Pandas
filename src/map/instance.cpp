@@ -1077,20 +1077,20 @@ void instance_refresh_status(int instance_id) {
 	case IM_NONE:
 		break;
 	case IM_CHAR:
-		if (map_charid2sd(idata->owner_id) != NULL) // Inform player of the created instance
-			clif_instance_status(instance_id, idata->keep_limit, idata->idle_limit);
+		if (map_charid2sd(idata->owner_id)) // Inform player of the created instance
+			clif_instance_status(instance_id, static_cast<uint32>(idata->keep_limit), static_cast<uint32>(idata->idle_limit));
 		break;
 	case IM_PARTY:
-		if (party_search(idata->owner_id) != NULL) // Inform party members of the created instance
-			clif_instance_status(instance_id, idata->keep_limit, idata->idle_limit);
+		if (party_search(idata->owner_id)) // Inform party members of the created instance
+			clif_instance_status(instance_id, static_cast<uint32>(idata->keep_limit), static_cast<uint32>(idata->idle_limit));
 		break;
 	case IM_GUILD:
-		if (guild_search(idata->owner_id) != NULL) // Inform guild members of the created instance
-			clif_instance_status(instance_id, idata->keep_limit, idata->idle_limit);
+		if (guild_search(idata->owner_id)) // Inform guild members of the created instance
+			clif_instance_status(instance_id, static_cast<uint32>(idata->keep_limit), static_cast<uint32>(idata->idle_limit));
 		break;
 	case IM_CLAN:
-		if (clan_search(idata->owner_id) != NULL) // Inform clan members of the created instance
-			clif_instance_status(instance_id, idata->keep_limit, idata->idle_limit);
+		if (clan_search(idata->owner_id)) // Inform clan members of the created instance
+			clif_instance_status(instance_id, static_cast<uint32>(idata->keep_limit), static_cast<uint32>(idata->idle_limit));
 		break;
 	default:
 		return;
