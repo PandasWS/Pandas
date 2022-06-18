@@ -2127,6 +2127,10 @@
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
 	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
 	#define Pandas_ScriptCommand_GetRateIdx
+
+	// 是否启用 getbossinfo 脚本指令 [Sola丶小克]
+	// 该指令用于查询 BOSS 魔物重生时间及其坟墓等信息
+	#define Pandas_ScriptCommand_GetBossInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
