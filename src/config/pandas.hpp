@@ -773,6 +773,10 @@
 	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 		#define Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
+	// 是否扩展 e_job_types 枚举类型的可选值 [Sola丶小克]
+	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
+	#define Pandas_Update_NPC_Identity_Information
 #endif // Pandas_CreativeWork
 
 // ============================================================================
