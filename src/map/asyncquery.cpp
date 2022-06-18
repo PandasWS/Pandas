@@ -15,16 +15,16 @@
 using namespace std;
 
 extern int map_server_port;
-extern char map_server_ip[64];
-extern char map_server_id[32];
-extern char map_server_pw[32];
-extern char map_server_db[32];
+extern std::string map_server_ip;
+extern std::string map_server_id;
+extern std::string map_server_pw;
+extern std::string map_server_db;
 
 extern int log_db_port;
-extern char log_db_ip[64];
-extern char log_db_id[32];
-extern char log_db_pw[32];
-extern char log_db_db[32];
+extern std::string log_db_ip;
+extern std::string log_db_id;
+extern std::string log_db_pw;
+extern std::string log_db_db;
 
 size_t DBResultData::Index(int Row, int Column) {
 	return Row * ColumnNum + Column;
@@ -86,13 +86,13 @@ Sql* getHandle(dbType type) {
 }
 
 // Main Thread Function
-void addDBJob(dbType dType, string query, futureJobFunc resultFunc) {
+void asyncquery_addDBJob(dbType dType, string query, futureJobFunc resultFunc) {
 	// 将查询任务排入 dbJobs 队列
 	dbJobs.push_back({ dType, query, resultFunc });
 }
 
 // Main Thread Function
-void addDBJob(dbType dType, string query) {
+void asyncquery_addDBJob(dbType dType, string query) {
 	// 将查询任务排入 dbJobs 队列
 	dbJobs.push_back({ dType, query, NULL });
 }
@@ -120,7 +120,7 @@ void doQuery(dbJob& job) {
 				r->SetData(Row, ColumnNum, handle);
 
 		// 将回调函数排入 future 队列等待执行
-		add_future(job.resultFunc, (FutureData)r);
+		future_add(job.resultFunc, (FutureData)r);
 	}
 
 	Sql_FreeResult(handle);
@@ -145,10 +145,10 @@ void asyncquery_init(void) {
 	MainDBHandle = Sql_Malloc();
 
 	ShowInfo("Connecting to the Map DB Server(async thread)....\n");
-	if (SQL_ERROR == Sql_Connect(MainDBHandle, map_server_id, map_server_pw, map_server_ip, map_server_port, map_server_db))
+	if (SQL_ERROR == Sql_Connect(MainDBHandle, map_server_id.c_str(), map_server_pw.c_str(), map_server_ip.c_str(), map_server_port, map_server_db.c_str()))
 	{
 		ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-			map_server_id, map_server_pw, map_server_ip, map_server_port, map_server_db);
+			map_server_id.c_str(), map_server_pw.c_str(), map_server_ip.c_str(), map_server_port, map_server_db.c_str());
 		Sql_ShowDebug(MainDBHandle);
 		Sql_Free(MainDBHandle);
 		exit(EXIT_FAILURE);
@@ -159,10 +159,10 @@ void asyncquery_init(void) {
 		LogDBHandle = Sql_Malloc();
 
 		ShowInfo("Connecting to the Log DB Server(async thread)....\n");
-		if (SQL_ERROR == Sql_Connect(LogDBHandle, log_db_id, log_db_pw, log_db_ip, log_db_port, log_db_db))
+		if (SQL_ERROR == Sql_Connect(LogDBHandle, log_db_id.c_str(), log_db_pw.c_str(), log_db_ip.c_str(), log_db_port, log_db_db.c_str()))
 		{
 			ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-				log_db_id, log_db_pw, log_db_ip, log_db_port, log_db_db);
+				log_db_id.c_str(), log_db_pw.c_str(), log_db_ip.c_str(), log_db_port, log_db_db.c_str());
 			Sql_ShowDebug(LogDBHandle);
 			Sql_Free(LogDBHandle);
 			exit(EXIT_FAILURE);

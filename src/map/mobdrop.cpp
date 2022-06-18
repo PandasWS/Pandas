@@ -13,7 +13,7 @@ const std::string MobItemFixedRatioDB::getDefaultLocation() {
 	return std::string(db_path) + "/mob_item_ratio_fixed.yml";
 }
 
-uint64 MobItemFixedRatioDB::parseBodyNode(const YAML::Node &node) {
+uint64 MobItemFixedRatioDB::parseBodyNode(const ryml::NodeRef& node) {
 	uint32 nameid = 0;
 
 	if (!this->asUInt32(node, "ItemID", nameid)) {
@@ -60,7 +60,7 @@ uint64 MobItemFixedRatioDB::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "ForMonster")) {
-		for (const YAML::Node& subNode : node["ForMonster"]) {
+		for (const ryml::NodeRef& subNode : node["ForMonster"]) {
 			uint32 for_monster_id = 0;
 
 			if (!this->asUInt32(subNode, "MobID", for_monster_id)) {

@@ -37,7 +37,7 @@ private:
 public:
 	TranslateDB() : TypesafeYamlDatabase("CONSOLE_TRANSLATE_DB", 1) {
 #ifdef Pandas_Database_Yaml_BeQuiet
-		this->setQuietLevel(1);
+		this->quietLevel = 1;
 #endif // Pandas_Database_Yaml_BeQuiet
 
 		export_message_tag(CL_RESET);
@@ -104,7 +104,7 @@ public:
 	}
 
 	const std::string getDefaultLocation();
-	uint64 parseBodyNode(const YAML::Node& node);
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void showStatus();
 };
 

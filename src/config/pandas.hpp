@@ -34,6 +34,7 @@
 	#define Pandas_AtCommands
 	#define Pandas_Bonuses
 	#define Pandas_ScriptCommands
+	#define Pandas_ScriptConstants
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
 	#define Pandas_WebServer
@@ -67,7 +68,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.12.1"
+	#define Pandas_Version "1.1.13.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -177,7 +178,7 @@
 
 	// 以下选项开关需要依赖 Pandas_Struct_Npc_Data_Pandas 的拓展
 	#ifdef Pandas_Struct_Npc_Data_Pandas
-		// 使 npc_data 结构体可记录此 npc 的自毁策略 [Sola丶小克]
+		// 使 npc_data 结构体可记录此 NPC 的自毁策略 [Sola丶小克]
 		// 结构体修改定位 npc.hpp -> npc_data.pandas.destruction_strategy
 		#define Pandas_Struct_Npc_Data_DestructionStrategy
 	#endif // Pandas_Struct_Npc_Data_Pandas
@@ -195,6 +196,10 @@
 		// 使 mob_data 结构体可记录此魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.special_setunitdata
 		#define Pandas_Struct_Mob_Data_Special_SetUnitData
+
+		// 使 mob_data 结构体可记录此魔物特殊的基础经验或职业经验 [Sola丶小克]
+		// 结构体修改定位 mob.hpp -> mob_data.pandas.base_exp 和 job_exp
+		#define Pandas_Struct_Mob_Data_SpecialExperience
 	#endif // Pandas_Struct_Mob_Data_Pandas
 
 	// 对离线挂店 autotrade 的定义进行拓展处理 [Sola丶小克]
@@ -214,6 +219,9 @@
 
 	// 使 s_random_opt_data 能保存脚本的明文 [Sola丶小克]
 	#define Pandas_Struct_S_Random_Opt_Data_With_Plaintext
+
+	// 使 s_item_combo 能保存脚本的明文 [Sola丶小克]
+	#define Pandas_Struct_S_Item_Combo_With_Plaintext
 
 	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
 	#define Pandas_Struct_Status_Change_Cloak_Reverting
@@ -455,6 +463,10 @@
 	// 在 map.cpp 中的 map_getmob_boss 增加 alive_first 参数 [Sola丶小克]
 	// 新增的 alive_first 参数可以指定优先返回存活着的 BOSS 魔物
 	#define Pandas_FuncDefine_Mob_Getmob_Boss
+
+	// 在 mob.cpp 中的 mvptomb_create 增加 killer_gid 参数 [Sola丶小克]
+	// 新增的 killer_gid 参数用于传递杀死 MVP 玩家的游戏单位编号
+	#define Pandas_FuncParams_Mob_MvpTomb_Create
 #endif // Pandas_FuncIncrease
 
 // ============================================================================
@@ -598,7 +610,7 @@
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码则会给与提示
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑会根据操作
 	//   系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文则直接
-    //   使用当前数据库的 `character_set_database` 编码.
+	//   使用当前数据库的 `character_set_database` 编码.
 	//
 	// --------------------------------------
 	// 改动三：用 mysql_set_character_set 来设置 MySQL 的编码字符集
@@ -761,6 +773,10 @@
 	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 		#define Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
+	// 是否扩展 e_job_types 枚举类型的可选值 [Sola丶小克]
+	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
+	#define Pandas_Update_NPC_Identity_Information
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -782,7 +798,7 @@
 	// 复制对应的技能编号保存在变量: SKILL_VAR_REPRODUCE 等级是 SKILL_VAR_REPRODUCE_LV
 	#define Pandas_Fix_ShadowChaser_Lose_Skill
 
-	// 缓解魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
+	// 解决魔物死亡但客户端没移除魔物单位的问题 [Sola丶小克]
 	//
 	// 造成问题存在几个可能的原因, 且这些原因在逻辑上都是合理存在的, 因此每种情况都要进行规避:
 	//
@@ -806,6 +822,15 @@
 	//     最后导致看起来和没收到 clif_clearunit_area 的 CLR_DEAD 封包一样, 客户端就无法移除它
 	//
 	//     缓解措施是: 在发送 clif_clearunit_area 的 CLR_DEAD 封包时, 给与一个更大的 AREA_SIZE
+	//
+	// 第三钟情况:
+	//     这是剩下的实际上能在特定机器上重现, 并最终验证解决了的情况.
+	//
+	//     魔物死亡时候的 CLR_DEAD 封包发送是使用 clif_clearunit_delayed 延迟发送的
+	//     如果在 clif_clearunit_delayed 发送之后服务端又给客户端发送了移动封包,
+	//     那么客户端将再次生成一个空血魔物, 有时甚至能看到魔物空血了还在移动
+	// 
+	//     确定且经过验证的解决方案: 魔物只要死亡就立刻停止移动 (感谢 "Mr.Siu" 提供环境配合验证)
 	//
 	// 可能还会有其他情况导致类似的事情发生, 碰见再具体分析
 	#define Pandas_Ease_Mob_Stuck_After_Dead
@@ -945,6 +970,23 @@
 	// - 观察每次角色进入地图服务器时, 角色服务器提示加载到的仓库物品数量
 	// - 如果角色服务器在保存仓库数据时比较慢, 那么你会看到反复小退仓库的数量是: 1、0、1、0...
 	#define Pandas_Fix_Storage_DirtyFlag_Override
+
+	// 修正写入公会仓库日志时没有对角色名进行转义处理的问题 [Sola丶小克]
+	//
+	// 可能的重现步骤:
+	// - 创建角色名带单引号的角色
+	// - 加入公会, 开启公会仓库, 存入物品
+	// - 此时地图服务器在写入 guild_storage_log 的时候将抛出错误
+	//
+	// 感谢 "小林" 反馈此问题
+	#define Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
+
+	// 修正使用 @showexp 指令后呈现的经验值数值会错误的问题 [Sola丶小克]
+	// 备注: 单次获得的经验超过 long 的有效阈值范围后就会溢出成负数, 但最新的有效经验值区间是 int64
+	#define Pandas_Fix_GainExp_Display_Overflow
+
+	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
+	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1207,7 +1249,7 @@
 		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
 		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
 		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-				#define Pandas_YamlBlastCache_ItemDatabase
+			#define Pandas_YamlBlastCache_ItemDatabase
 		#endif // Pandas_Struct_Item_Data_Script_Plaintext
 
 		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
@@ -1236,6 +1278,12 @@
 
 		// 是否启用对 SkillTreeDatabase 的序列化支持 [Sola丶小克]
 		#define Pandas_YamlBlastCache_SkillTreeDatabase
+
+		// 是否启用对 ComboDatabase 的序列化支持 [Sola丶小克]
+		// 此选项需要依赖 Pandas_Struct_S_Item_Combo_With_Plaintext 的拓展
+		#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+			#define Pandas_YamlBlastCache_ComboDatabase
+		#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 	#endif // Pandas_YamlBlastCache_Serialize
 #endif // Pandas_YamlBlastCache
 
@@ -1371,6 +1419,11 @@
 		// 常量名称: NPCF_DROPITEM / 变量名称: dropitem_filter_name
 		#define Pandas_NpcFilter_DROPITEM
 
+		// 当玩家点击魔物墓碑时触发过滤器 [人鱼姬的思念]
+		// 事件类型: Filter / 事件名称: OnPCClickTombFilter
+		// 常量名称: NPCF_CLICKTOMB / 变量名称: clicktomb_filter_name
+		#define Pandas_NpcFilter_CLICKTOMB
+
 		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
 		// 事件类型: Filter / 事件名称: OnPCStorageAddFilter
 		// 常量名称: NPCF_STORAGE_ADD / 变量名称: storage_add_filter_name
@@ -1475,6 +1528,11 @@
 		// 事件类型: Express / 事件名称: OnPCMerLeaveExpress
 		// 常量名称: NPCX_MER_LEAVE / 变量名称: mer_leave_express_name
 		#define Pandas_NpcExpress_MER_LEAVE
+
+		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+		// 事件类型: Express / 事件名称: OnPCTalkExpress
+		// 常量名称: NPCX_PC_TALK / 变量名称: pc_talk_express_name
+		#define Pandas_NpcExpress_PC_TALK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -1625,6 +1683,14 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]
+	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
+	#define Pandas_AtCommand_ReloadLaphineDB
+
+	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
+	// 重新加载 Barters 以物易物数据库 (barters.yml)
+	#define Pandas_AtCommand_ReloadBarterDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -1689,13 +1755,6 @@
 	// 使用原型: bonus3 bFinalAddClass,c,x,bf;
 	#define Pandas_Bonus3_bFinalAddClass
 
-	// 是否启用 bonus bAbsorbDmgMaxHP2 效果调整器 [secretdataz]
-	// 受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
-	// 常量名称: SP_PANDAS_ABSORBDMGMAXHP2 / 调整器名称: bAbsorbDmgMaxHP2
-	// 变量位置: map_session_data.bonus / 变量名称: absorb_dmg_maxhp2
-	// 使用原型: bonus bAbsorbDmgMaxHP2,n;
-	#define Pandas_Bonus_bAbsorbDmgMaxHP2
-
 	// 是否启用 bonus2 bAbsorbDmgMaxHP 效果调整器 [Sola丶小克]
 	// 受到超过自己总血量 n% 的伤害时只会受到总血量 x% 的伤害
 	// 常量名称: SP_ABSORB_DMG_MAXHP / 调整器名称: bAbsorbDmgMaxHP
@@ -1731,7 +1790,9 @@
 	#define Pandas_ScriptCommand_SetBodyDir
 
 	// 是否启用 openbank 脚本指令 [Sola丶小克]
-	// 让指定的角色立刻打开银行界面 (只对拥有随身银行的客户端版本有效)
+	// 2022-4-20 修订备注:
+	// 由于 rAthena 官方已经实现了 openbank 指令且重名,
+	// 因此这里的开关只控制 openbank 指令是否如以前版本一样给予返回值
 	#define Pandas_ScriptCommand_OpenBank
 
 	// 是否启用 instance_users 脚本指令 [Sola丶小克]
@@ -2067,8 +2128,28 @@
 	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
 	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
 	#define Pandas_ScriptCommand_GetGradeItem
+
+	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
+	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
+	#define Pandas_ScriptCommand_GetRateIdx
+
+	// 是否启用 getbossinfo 脚本指令 [Sola丶小克]
+	// 该指令用于查询 BOSS 魔物重生时间及其坟墓等信息
+	#define Pandas_ScriptCommand_GetBossInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
+
+// ============================================================================
+// 脚本常量拓展组 - Pandas_ScriptConstants
+// ============================================================================
+
+#ifdef Pandas_ScriptConstants
+	// 是否扩展 CartWeight 脚本常量 [人鱼姬的思念]
+	#define Pandas_ScriptConstants_CartWeight
+
+	// 是否扩展 MaxCartWeight 脚本常量 [人鱼姬的思念]
+	#define Pandas_ScriptConstants_MaxCartWeight
+#endif // Pandas_ScriptConstants
 
 // ============================================================================
 // 脚本返回值拓展组 - Pandas_ScriptResults
@@ -2099,6 +2180,13 @@
 	#ifdef Pandas_Struct_Mob_Data_DamageTaken
 		#define Pandas_ScriptParams_UnitData_DamageTaken
 	#endif // Pandas_Struct_Mob_Data_DamageTaken
+
+	// 是否拓展 setunitdata / getunitdata 指令的参数
+	// 使之能设置或者读取指定魔物实例的经验值 (BASEEXP / JOBEXP) [人鱼姬的思念]
+	// 此选项依赖 Pandas_Struct_Mob_Data_SpecialExperience 的拓展
+	#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+		#define Pandas_ScriptParams_UnitData_Experience
+	#endif // Pandas_Struct_Mob_Data_SpecialExperience
 #endif // Pandas_ScriptParams
 
 // ============================================================================

@@ -167,9 +167,7 @@ def get_compile_result():
         return False, -1, -1, -1
     
     pattern_list = [
-        r'生成: 成功 (\d*) 个，失败 (\d*) 个，跳过 (\d*) 个',
-        r'重建: (\d*) 成功、(\d*) 失敗、 (\d*) 略過',
-        r'All: (\d*) succeeded, (\d*) failed, (\d*) skipped'
+        r'^[=+].*?[重新生成|全部重建|Rebuild All][\S|\W]:\s.*?(\d+).*?(\d+).*?(\d+).*?[\=+]$'
     ]
 
     for pattern in pattern_list:
@@ -237,7 +235,7 @@ def compile_sub(define_val, name, scheme = 'Release|Win32'):
     Common.cmd_execute([
         '"%s" x86' % vcvarsall,
         'set CL=%s' % define_val,
-        'Devenv rAthena.sln /clean',
+        'Devenv rAthena.sln /clean "%s"' % scheme,
         'Devenv rAthena.sln /Rebuild "%s"' % scheme
     ], project_slndir, modetag, slndir(compile_logfile))
 
