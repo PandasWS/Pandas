@@ -982,6 +982,9 @@ Body:
   - Command: reloadlaphinedb
     Help: |
       重新加载 Laphine 数据库
+  - Command: reloadbarterdb
+    Help: |
+      重新加载 Barters 以物易物数据库
   - Command: reload
     Help: |
       参数: <要重载的数据类型>

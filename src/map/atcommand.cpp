@@ -4343,6 +4343,12 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 142)); // Laphine database has been reloaded.
 	}
 #endif // Pandas_AtCommand_ReloadLaphineDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
+	else if (strstr(command, "barterdb") || strncmp(message, "barterdb", 4) == 0) {
+		barter_db.reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 143)); // Barters database has been reloaded.
+	}
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 	return 0;
 }
@@ -11299,6 +11305,9 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_ReloadLaphineDB
 		ACMD_DEF2("reloadlaphinedb", reload),			// 重新加载 Laphine 数据库 [Sola丶小克]
 #endif // Pandas_AtCommand_ReloadLaphineDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
+		ACMD_DEF2("reloadbarterdb", reload),			// 重新加载 Barters 以物易物数据库 [Sola丶小克]
+#endif // Pandas_AtCommand_ReloadBarterDB
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"
