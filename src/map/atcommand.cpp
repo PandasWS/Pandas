@@ -4336,6 +4336,13 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 106)); // Aura database has been reloaded.
 	}
 #endif // Pandas_Aura_Mechanism
+#ifdef Pandas_AtCommand_ReloadLaphineDB
+	else if (strstr(command, "laphinedb") || strncmp(message, "laphinedb", 4) == 0) {
+		laphine_synthesis_db.reload();
+		laphine_upgrade_db.reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 142)); // Laphine database has been reloaded.
+	}
+#endif // Pandas_AtCommand_ReloadLaphineDB
 #ifdef Pandas_AtCommand_ReloadBarterDB
 	else if (strstr(command, "barterdb") || strncmp(message, "barterdb", 4) == 0) {
 		barter_db.reload();
@@ -11295,6 +11302,9 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_Aura
 		ACMD_DEF(aura),					// 激活指定的光环组合 [Sola丶小克]
 #endif // Pandas_AtCommand_Aura
+#ifdef Pandas_AtCommand_ReloadLaphineDB
+		ACMD_DEF2("reloadlaphinedb", reload),			// 重新加载 Laphine 数据库 [Sola丶小克]
+#endif // Pandas_AtCommand_ReloadLaphineDB
 #ifdef Pandas_AtCommand_ReloadBarterDB
 		ACMD_DEF2("reloadbarterdb", reload),			// 重新加载 Barters 以物易物数据库 [Sola丶小克]
 #endif // Pandas_AtCommand_ReloadBarterDB

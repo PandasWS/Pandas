@@ -773,6 +773,10 @@
 	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 		#define Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
+	// 是否扩展 e_job_types 枚举类型的可选值 [Sola丶小克]
+	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
+	#define Pandas_Update_NPC_Identity_Information
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -1692,6 +1696,10 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]
+	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
+	#define Pandas_AtCommand_ReloadLaphineDB
 
 	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
 	// 重新加载 Barters 以物易物数据库 (barters.yml)

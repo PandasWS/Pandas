@@ -232,6 +232,7 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	struct item_data* id = itemdb_search(nameid);
 
 	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS)) {
+		mapreg_setreg(add_str("$@mobdrop_gid"), (md ? md->bl.id : 0));
 		mapreg_setreg(add_str("$@mobdrop_mobid"), (md ? md->mob_id : 0));
 		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
 		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
