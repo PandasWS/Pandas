@@ -31590,6 +31590,8 @@ BUILDIN_FUNC(whodropitem) {
 		if (mobdrop_strict_droprate(nameid, it.first))
 			dropchance = it.second;
 #endif // Pandas_Database_MobItem_FixedRatio
+
+		result_cache[it.first] = dropchance;
 	}
 
 	// 对 result_cache 的内容进行降序排序
