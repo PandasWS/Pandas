@@ -371,19 +371,13 @@ void storage_storageadd(struct map_session_data* sd, struct s_storage *stor, int
 	if (result == STORAGE_ADD_INVALID)
 		return;
 	else if (result == STORAGE_ADD_OK) {
-
 #ifdef Pandas_NpcFilter_STORAGE_ADD
-		pc_setreg(sd, add_str("@recv_nameid"), sd->inventory.u.items_inventory[index].nameid); // 存入的道具编号
-		pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
-		pc_setreg(sd, add_str("@recv_source"), TABLE_INVENTORY); // 存入的道具来源
-		pc_setreg(sd, add_str("@recv_idx"), index); // 存入的道具来源位置序号
-		pc_setreg(sd, add_str("@recv_storid"), stor->stor_id); // 存入的仓库编号
-		if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
-			clif_dropitem(sd, index, 0);
+		if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_INVENTORY)) {
+			// clif_dropitem(sd, index, 0);
 			return;
 		}
 #endif // Pandas_NpcFilter_STORAGE_ADD
-
+		
 		switch( storage_additem(sd, stor, &sd->inventory.u.items_inventory[index], amount) ){
 			case 0:
 				pc_delitem(sd,index,amount,0,4,LOG_TYPE_STORAGE);
@@ -447,19 +441,13 @@ void storage_storageaddfromcart(struct map_session_data *sd, struct s_storage *s
 	if (result == STORAGE_ADD_INVALID)
 		return;
 	else if (result == STORAGE_ADD_OK) {
-
 #ifdef Pandas_NpcFilter_STORAGE_ADD
-		pc_setreg(sd, add_str("@recv_nameid"), sd->cart.u.items_cart[index].nameid); // 存入的道具编号
-		pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
-		pc_setreg(sd, add_str("@recv_source"), TABLE_CART); // 存入的道具来源
-		pc_setreg(sd, add_str("@recv_idx"), index); // 存入的道具来源位置序号
-		pc_setreg(sd, add_str("@recv_storid"), stor->stor_id); // 存入的仓库编号
-		if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
-			clif_cart_delitem(sd, index, 0);
+		if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_CART)) {
+			// clif_cart_delitem(sd, index, 0);
 			return;
 		}
 #endif // Pandas_NpcFilter_STORAGE_ADD
-
+		
 		switch( storage_additem(sd, stor, &sd->cart.u.items_cart[index], amount) ){
 			case 0:
 				pc_cart_delitem(sd,index,amount,0,LOG_TYPE_STORAGE);
@@ -977,13 +965,8 @@ void storage_guild_storageadd(struct map_session_data* sd, int index, int amount
 	}
 
 #ifdef Pandas_NpcFilter_STORAGE_ADD
-	pc_setreg(sd, add_str("@recv_nameid"), sd->inventory.u.items_inventory[index].nameid); // 存入的道具编号
-	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
-	pc_setreg(sd, add_str("@recv_source"), TABLE_INVENTORY); // 存入的道具来源
-	pc_setreg(sd, add_str("@recv_idx"), index); // 存入的道具来源位置序号
-	pc_setreg(sd, add_str("@recv_storid"), -1); // 存入的仓库编号
-	if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
-		clif_dropitem(sd, index, 0);
+	if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_INVENTORY)) {
+		// clif_dropitem(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_ADD
@@ -1062,13 +1045,8 @@ void storage_guild_storageaddfromcart(struct map_session_data* sd, int index, in
 		return;
 
 #ifdef Pandas_NpcFilter_STORAGE_ADD
-	pc_setreg(sd, add_str("@recv_nameid"), sd->cart.u.items_cart[index].nameid); // 存入的道具编号
-	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
-	pc_setreg(sd, add_str("@recv_source"), TABLE_CART); // 存入的道具来源
-	pc_setreg(sd, add_str("@recv_idx"), index); // 存入的道具来源位置序号
-	pc_setreg(sd, add_str("@recv_storid"), -1); // 存入的仓库编号
-	if (npc_script_filter(sd, NPCF_STORAGE_ADD)) {
-		clif_cart_delitem(sd, index, 0);
+	if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_CART)) {
+		// clif_cart_delitem(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_ADD

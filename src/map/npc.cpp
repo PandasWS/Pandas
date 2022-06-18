@@ -148,7 +148,8 @@ std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 // Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
 //************************************ 
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
-	if (!sd || !md) return;
+	nullpo_retv(sd);
+	nullpo_retv(md);
 
 	struct status_data* status;
 	status = &md->status;
@@ -287,6 +288,54 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	return npc_express_aide_mobdropitem(md, src, 0, nameid, drop_rate, drop_type);
 }
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+//************************************
+// Method:      npc_event_aide_storage_add
+// Description: 用来触发 OnPCStorageAddFilter 过滤器事件的辅助函数
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * store
+// Parameter:   int idx
+// Parameter:   int amount
+// Parameter:   int item_from
+// Returns:     bool
+//				返回 true 表示被中断, 返回 false 表示没有被中断
+// Author:      Sola丶小克(CairoLee)  2022/06/18 21:45
+//************************************
+bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_from) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, store);
+
+	struct item* idata = nullptr;
+
+	switch (item_from) {
+	case TABLE_INVENTORY:
+		if (idx >= 0 && idx < MAX_INVENTORY) {
+			idata = &sd->inventory.u.items_inventory[idx];
+		}
+		break;
+	case TABLE_CART:
+		if (idx >= 0 && idx < MAX_CART) {
+			idata = &sd->inventory.u.items_cart[idx];
+		}
+		break;
+	}
+
+	if (idata == nullptr) {
+		return false;
+	}
+
+	pc_setreg(sd, add_str("@storeitem_src_from"), item_from);				// 即将被存入的道具来源 (1: 背包; 2: 手推车)
+	pc_setreg(sd, add_str("@storeitem_src_idx"), idx);						// 即将被存入的道具序号 (若在从背包来则是背包序号, 若从手推车来则是手推车中的物品序号)
+	pc_setreg(sd, add_str("@storeitem_src_nameid"), idata->nameid);			// 即将被存入的道具编号
+	pc_setreg(sd, add_str("@storeitem_src_amount"), amount);				// 即将被存入的道具数量
+
+	pc_setreg(sd, add_str("@storeitem_dst_type"), (int)(store->type - 2));	// 存放到的目标仓库类型 (1: 个人仓库; 2: 公会仓库)
+	pc_setreg(sd, add_str("@storeitem_dst_id"), store->stor_id);			// 存放到的目标仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+
+	return npc_script_filter(sd, NPCF_STORAGE_ADD);
+}
+#endif // Pandas_NpcFilter_STORAGE_ADD
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
