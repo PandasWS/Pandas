@@ -29,6 +29,24 @@ struct s_quest_dropitem {
 	//bool isGUID;
 };
 
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_quest_dropitem
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_quest_dropitem& t, const unsigned int version)
+		{
+			ar& t.nameid;
+			ar& t.count;
+			ar& t.rate;
+			ar& t.mob_id;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_QuestDatabase
+
 struct s_quest_objective {
 	uint16 index;
 	uint16 mob_id;
@@ -41,6 +59,30 @@ struct s_quest_objective {
 	std::string map_name;
 };
 
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_quest_objective
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_quest_objective& t, const unsigned int version)
+		{
+			ar& t.index;
+			ar& t.mob_id;
+			ar& t.count;
+			ar& t.min_level;
+			ar& t.max_level;
+			ar& t.race;
+			ar& t.size;
+			ar& t.element;
+			ar& t.mapid;
+			ar& t.map_name;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_QuestDatabase
+
 struct s_quest_db {
 	int32 id;
 	time_t time;
@@ -50,6 +92,26 @@ struct s_quest_db {
 	std::string name;
 };
 
+#ifdef Pandas_YamlBlastCache_QuestDatabase
+namespace boost {
+	namespace serialization {
+		// ======================================================================
+		// struct s_quest_db
+		// ======================================================================
+		template <typename Archive>
+		void serialize(Archive& ar, struct s_quest_db& t, const unsigned int version)
+		{
+			ar& t.id;
+			ar& t.time;
+			ar& t.time_at;
+			ar& t.objectives;
+			ar& t.dropitem;
+			ar& t.name;
+		}
+	} // namespace serialization
+} // namespace boost
+#endif // Pandas_YamlBlastCache_QuestDatabase
+
 // Questlog check types
 enum e_quest_check_type : uint8 {
 	HAVEQUEST, ///< Query the state of the given quest
@@ -57,25 +119,23 @@ enum e_quest_check_type : uint8 {
 	HUNTING,   ///< Check if the given hunting quest's requirements have been met
 };
 
-class QuestDatabase : public TypesafeYamlDatabase<uint32, s_quest_db> {
+class QuestDatabase : public TypesafeYamlDatabase<uint32, s_quest_db>, public BlastCacheEnabled {
 public:
-	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_QuestDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(72);	// Win32
-		this->validDatatypeSize.push_back(104);	// x64
-#endif // Pandas_YamlBlastCache_QuestDatabase
+	QuestDatabase() : TypesafeYamlDatabase("QUEST_DB", 2, 1), BlastCacheEnabled(this) {
+
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 
 	// Additional
 	bool reload();
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	std::string getAdditionalCacheHash();
+	const std::string getDependsHash();
+	bool doSerialize(const std::string& type, void* archive) {
+		DOSERIALIZE_HANDLE(QuestDatabase);
+	}
 #endif // Pandas_YamlBlastCache_QuestDatabase
 };
 
@@ -95,58 +155,5 @@ std::shared_ptr<s_quest_db> quest_search(int quest_id);
 
 void do_init_quest(void);
 void do_final_quest(void);
-
-#ifdef Pandas_YamlBlastCache_QuestDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_quest_db
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_quest_db& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.time;
-			ar& t.time_at;
-			ar& t.objectives;
-			ar& t.dropitem;
-			ar& t.name;
-		}
-
-		// ======================================================================
-		// struct s_quest_objective
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_quest_objective& t, const unsigned int version)
-		{
-			ar& t.index;
-			ar& t.mob_id;
-			ar& t.count;
-			ar& t.min_level;
-			ar& t.max_level;
-			ar& t.race;
-			ar& t.size;
-			ar& t.element;
-			ar& t.mapid;
-			ar& t.map_name;
-		}
-
-		// ======================================================================
-		// struct s_quest_dropitem
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_quest_dropitem& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.count;
-			ar& t.rate;
-			ar& t.mob_id;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_QuestDatabase
 
 #endif /* QUEST_HPP */

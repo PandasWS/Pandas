@@ -976,6 +976,15 @@ Body:
   - Command: reloadstatusdb
     Help: |
       重新加载状态配置文档
+  - Command: reloadauradb
+    Help: |
+      重新加载光环组合数据库
+  - Command: reloadlaphinedb
+    Help: |
+      重新加载 Laphine 数据库
+  - Command: reloadbarterdb
+    Help: |
+      重新加载 Barters 以物易物数据库
   - Command: reload
     Help: |
       参数: <要重载的数据类型>
@@ -1054,6 +1063,9 @@ Body:
     Aliases:
       - famepoint
       - famepoints
+  - Command: enchantgradeui
+    Help: |
+      Opens the enchantgrade UI.
 
 Footer:
   Imports:

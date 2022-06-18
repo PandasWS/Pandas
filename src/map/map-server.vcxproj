@@ -98,6 +98,21 @@
     <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
@@ -106,18 +121,19 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4018;4200</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\common.lib;$(SolutionDir).vs\build\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -128,16 +144,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\common.lib;$(SolutionDir).vs\build\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,17 +167,18 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\common.lib;$(SolutionDir).vs\build\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
@@ -174,17 +192,18 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\common.lib;$(SolutionDir).vs\build\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
@@ -352,6 +371,7 @@
     <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\atcommands.yml" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\atcommands.yml')" />
     <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\battle_conf.txt" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\battle_conf.txt')" />
     <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\char_conf.txt" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\char_conf.txt')" />
+    <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\groups.yml" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\groups.yml')" />
     <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\inter_conf.txt" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\inter_conf.txt')" />
     <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\inter_server.yml" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\inter_server.yml')" />
     <Copy SourceFiles="$(SolutionDir)conf\import-tmpl\log_conf.txt" DestinationFolder="$(SolutionDir)conf\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)conf\import\log_conf.txt')" />
@@ -372,6 +392,7 @@
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\const.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\const.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\create_arrow_db.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\create_arrow_db.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\elemental_db.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\elemental_db.yml')" />
+    <Copy SourceFiles="$(SolutionDir)db\import-tmpl\enchantgrade.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\enchantgrade.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\exp_homun.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\exp_homun.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\exp_guild.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\exp_guild.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\guild_skill_tree.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\guild_skill_tree.yml')" />
@@ -415,6 +436,7 @@
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\status_disabled.txt" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\status_disabled.txt')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\item_properties.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\item_properties.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\mob_item_ratio_fixed.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\mob_item_ratio_fixed.yml')" />
+    <Copy SourceFiles="$(SolutionDir)db\import-tmpl\status.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\status.yml')" />
     <Copy SourceFiles="$(SolutionDir)db\import-tmpl\stylist.yml" DestinationFolder="$(SolutionDir)db\import\" ContinueOnError="true" Condition="!Exists('$(SolutionDir)db\import\stylist.yml')" />
   </Target>
 </Project>

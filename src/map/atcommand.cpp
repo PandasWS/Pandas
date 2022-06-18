@@ -12,7 +12,6 @@
 #include "../common/cbasetypes.hpp"
 #include "../common/database.hpp"
 #include "../common/cli.hpp"
-#include "../common/conf.hpp"
 #include "../common/malloc.hpp"
 #include "../common/mmo.hpp"
 #include "../common/nullpo.hpp"
@@ -26,6 +25,7 @@
 
 #include "achievement.hpp"
 #include "battle.hpp"
+#include "buyingstore.hpp"
 #include "channel.hpp"
 #include "chat.hpp"
 #include "chrif.hpp"
@@ -53,6 +53,7 @@
 #include "script.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
+#include "vending.hpp"
 
 #ifdef Pandas_Database_MobItem_FixedRatio
 #include "mobdrop.hpp"
@@ -117,7 +118,7 @@ public:
 
 	void clear() override;
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode( const YAML::Node& node ) override;
+	uint64 parseBodyNode( const ryml::NodeRef& node ) override;
 
 	// Additional
 	const char* checkAlias( const char* alias );
@@ -132,7 +133,7 @@ const std::string AtcommandAliasDatabase::getDefaultLocation(){
 	return std::string(conf_path) + "/atcommands.yml";
 }
 
-uint64 AtcommandAliasDatabase::parseBodyNode( const YAML::Node& node ){
+uint64 AtcommandAliasDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	std::string command;
 
 	if( !this->asString( node, "Command", command ) ){
@@ -165,15 +166,16 @@ uint64 AtcommandAliasDatabase::parseBodyNode( const YAML::Node& node ){
 	}
 
 	if( this->nodeExists( node, "Aliases" ) ){
-		const YAML::Node& aliasesNode = node["Aliases"];
+		const auto& aliasesNode = node["Aliases"];
 
-		if( !aliasesNode.IsSequence() ){
+		if( !aliasesNode.is_seq() ){
 			this->invalidWarning( aliasesNode, "Aliases should be a sequence.\n" );
 			return 0;
 		}
 
 		for( const auto& subNode : aliasesNode ){
-			std::string alias = subNode.as<std::string>();
+			std::string alias;
+			subNode >> alias;
 
 			info->aliases.insert( alias );
 			this->aliases[alias] = command;
@@ -643,7 +645,7 @@ ACMD_FUNC(mapmove)
 		if (!map_search_freecell(NULL, m, &x, &y, 10, 10, 1))
 			x = y = 0; //Invalid cell, use random spot.
 	}
-	if ((map_getmapflag(m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) || !pc_job_can_entermap((enum e_job)sd->status.class_, m, sd->group_level)) {
+	if ((map_getmapflag(m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) || !pc_job_can_entermap((enum e_job)sd->status.class_, m, pc_get_group_level(sd))) {
 		clif_displaymessage(fd, msg_txt(sd,247)); // You are not authorized to warp to this map.
 		return -1;
 	}
@@ -821,7 +823,7 @@ ACMD_FUNC(who) {
 				case 2: {
 					StringBuf_Printf(&buf, msg_txt(sd,343), pl_sd->status.name); // "Name: %s "
 					if (pc_get_group_id(pl_sd) > 0) // Player title, if exists
-						StringBuf_Printf(&buf, msg_txt(sd,344), pc_group_id2name(pc_get_group_id(pl_sd))); // "(%s) "
+						StringBuf_Printf(&buf, msg_txt(sd,344),pl_sd->group->name.c_str()); // "(%s) "
 					StringBuf_Printf(&buf, msg_txt(sd,347), pl_sd->status.base_level, pl_sd->status.job_level,
 						job_name(pl_sd->status.class_)); // "| Lv:%d/%d | Job: %s"
 					break;
@@ -831,7 +833,7 @@ ACMD_FUNC(who) {
 						StringBuf_Printf(&buf, msg_txt(sd,912), pl_sd->status.char_id, pl_sd->status.account_id);	// "(CID:%d/AID:%d) "
 					StringBuf_Printf(&buf, msg_txt(sd,343), pl_sd->status.name); // "Name: %s "
 					if (pc_get_group_id(pl_sd) > 0) // Player title, if exists
-						StringBuf_Printf(&buf, msg_txt(sd,344), pc_group_id2name(pc_get_group_id(pl_sd))); // "(%s) "
+						StringBuf_Printf(&buf, msg_txt(sd,344), pl_sd->group->name.c_str()); // "(%s) "
 					StringBuf_Printf(&buf, msg_txt(sd,348), mapindex_id2name(pl_sd->mapindex), pl_sd->bl.x, pl_sd->bl.y); // "| Location: %s %d %d"
 					break;
 				}
@@ -841,7 +843,7 @@ ACMD_FUNC(who) {
 
 					StringBuf_Printf(&buf, msg_txt(sd,343), pl_sd->status.name); // "Name: %s "
 					if (pc_get_group_id(pl_sd) > 0) // Player title, if exists
-						StringBuf_Printf(&buf, msg_txt(sd,344), pc_group_id2name(pc_get_group_id(pl_sd))); // "(%s) "
+						StringBuf_Printf(&buf, msg_txt(sd,344), pl_sd->group->name.c_str()); // "(%s) "
 					if (p != NULL)
 						StringBuf_Printf(&buf, msg_txt(sd,345), p->party.name); // " | Party: '%s'"
 					if (g != NULL)
@@ -1042,7 +1044,7 @@ ACMD_FUNC(speed)
 	} else
 		clif_displaymessage(fd, msg_txt(sd,389)); // Speed returned to normal.
 
-	status_calc_bl(&sd->bl, SCB_SPEED);
+	status_calc_bl(&sd->bl, { SCB_SPEED });
 
 	return 0;
 }
@@ -4153,13 +4155,14 @@ ACMD_FUNC(partyrecall)
 #ifdef Pandas_FuncLogic_ATCOMMAND_RELOAD
 //************************************
 // Method:      atcommand_status_recalc_pc
-// Description: 重新计算全服玩家的能力值属性 (用于 @reload 系列指令后的全服玩家能力值刷新使用)
+// Description: 重新计算全服玩家的能力值属性
+//              用于 @reload 系列指令后的全服玩家能力值刷新使用
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/02/28 12:08
 //************************************
 static void atcommand_status_recalc_pc() {
-	struct s_mapiterator* iter;
-	struct map_session_data* sd;
+	struct s_mapiterator* iter = nullptr;
+	struct map_session_data* sd = nullptr;
 
 	iter = mapit_geteachpc();
 	for (sd = (struct map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (struct map_session_data*)mapit_next(iter)) {
@@ -4197,15 +4200,6 @@ ACMD_FUNC(reload) {
 		hom_reload_skill();
 		clif_displaymessage(fd, msg_txt(sd,99)); // Skill database has been reloaded.
 	} else if (strstr(command, "atcommand") || strncmp(message, "atcommand", 4) == 0) {
-		config_t run_test;
-
-		if (conf_read_file(&run_test, "conf/groups.conf")) {
-			clif_displaymessage(fd, msg_txt(sd,1036)); // Error reading groups.conf, reload failed.
-			return -1;
-		}
-
-		config_destroy(&run_test);
-
 		atcommand_doload();
 		pc_groups_reload();
 		clif_displaymessage(fd, msg_txt(sd,254)); // GM command configuration has been reloaded.
@@ -4342,6 +4336,19 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 106)); // Aura database has been reloaded.
 	}
 #endif // Pandas_Aura_Mechanism
+#ifdef Pandas_AtCommand_ReloadLaphineDB
+	else if (strstr(command, "laphinedb") || strncmp(message, "laphinedb", 4) == 0) {
+		laphine_synthesis_db.reload();
+		laphine_upgrade_db.reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 142)); // Laphine database has been reloaded.
+	}
+#endif // Pandas_AtCommand_ReloadLaphineDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
+	else if (strstr(command, "barterdb") || strncmp(message, "barterdb", 4) == 0) {
+		barter_db.reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 143)); // Barters database has been reloaded.
+	}
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 	return 0;
 }
@@ -4701,6 +4708,8 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " NoTrade |");
 	if (map_getmapflag(m_id, MF_NOVENDING))
 		strcat(atcmd_output, " NoVending |");
+	if (map_getmapflag(m_id, MF_NOBUYINGSTORE))
+		strcat(atcmd_output, " NoBuyingstore |");
 	if (map_getmapflag(m_id, MF_NODROP))
 		strcat(atcmd_output, " NoDrop |");
 	if (map_getmapflag(m_id, MF_NOSKILL))
@@ -4740,8 +4749,8 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " NoItemConsumption |");
 	if (map_getmapflag(m_id, MF_NOSUNMOONSTARMIRACLE))
 		strcat(atcmd_output, " NoSunMoonStarMiracle |");
-	if (map_getmapflag(m_id, MF_NOMINEEFFECT))
-		strcat(atcmd_output, " NoMineEffect |");
+	if (map_getmapflag(m_id, MF_FORCEMINEFFECT))
+		strcat(atcmd_output, " ForceMinEffect |");
 	if (map_getmapflag(m_id, MF_NOLOCKON))
 		strcat(atcmd_output, " NoLockOn |");
 	if (map_getmapflag(m_id, MF_NOTOMB))
@@ -6626,13 +6635,9 @@ ACMD_FUNC(autotrade) {
 		sd->state.block_action |= PCBLOCK_IMMUNE;
 
 	if( sd->state.vending ){
-		if( Sql_Query( mmysql_handle, "UPDATE `%s` SET `autotrade` = 1 WHERE `id` = %d;", vendings_table, sd->vender_id ) != SQL_SUCCESS ){
-			Sql_ShowDebug( mmysql_handle );
-		}
+		vending_update(*sd);
 	}else if( sd->state.buyingstore ){
-		if( Sql_Query( mmysql_handle, "UPDATE `%s` SET `autotrade` = 1 WHERE `id` = %d;", buyingstores_table, sd->buyer_id ) != SQL_SUCCESS ){
-			Sql_ShowDebug( mmysql_handle );
-		}
+		buyingstore_update(*sd);
 	}
 
 	if( battle_config.at_timeout ) {
@@ -7525,7 +7530,7 @@ ACMD_FUNC(adjgroup)
 		return -1;
 	}
 
-	if (!pc_group_exists(new_group)) {
+	if (!player_group_db.exists(new_group)) {
 		clif_displaymessage(fd, msg_txt(sd,1227)); // Specified group does not exist.
 		return -1;
 	}
@@ -7573,7 +7578,7 @@ ACMD_FUNC(setbattleflag)
 	int reload = 0;
 	nullpo_retr(-1, sd);
 
-	if (!message || !*message || sscanf(message, "%127s %127s %11d", flag, value, &reload) != 2) {
+	if (!message || !*message || sscanf(message, "%127s %127s %11d", flag, value, &reload) < 2) {
         	clif_displaymessage(fd, msg_txt(sd,1231)); // Usage: @setbattleflag <flag> <value> {<reload>}
         	return -1;
     	}
@@ -9844,11 +9849,11 @@ static void atcommand_commands_sub(struct map_session_data* sd, const int fd, At
 
 		switch( type ) {
 			case COMMAND_CHARCOMMAND:
-				if( cmd->char_groups[sd->group_pos] == 0 )
+				if( cmd->char_groups[sd->group->index] == 0 )
 					continue;
 				break;
 			case COMMAND_ATCOMMAND:
-				if( cmd->at_groups[sd->group_pos] == 0 )
+				if( cmd->at_groups[sd->group->index] == 0 )
 					continue;
 				break;
 			default:
@@ -10107,17 +10112,17 @@ ACMD_FUNC(addperm) {
 		return -1;
 	}
 
-	if( add && (sd->permissions&pc_g_permission_name[i].permission) ) {
+	if( add && pc_has_permission( sd, pc_g_permission_name[i].permission) ){
 		sprintf(atcmd_output,  msg_txt(sd,1381),sd->status.name,pc_g_permission_name[i].name); // User '%s' already possesses the '%s' permission.
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
-	} else if ( !add && !(sd->permissions&pc_g_permission_name[i].permission) ) {
+	}else if( !add && !pc_has_permission( sd, pc_g_permission_name[i].permission ) ){
 		sprintf(atcmd_output,  msg_txt(sd,1382),sd->status.name,pc_g_permission_name[i].name); // User '%s' doesn't possess the '%s' permission.
 		clif_displaymessage(fd, atcmd_output);
 		sprintf(atcmd_output,msg_txt(sd,1383),sd->status.name); // -- User '%s' Permissions
 		clif_displaymessage(fd, atcmd_output);
 		for( i = 0; i < perm_size; i++ ) {
-			if( sd->permissions&pc_g_permission_name[i].permission ) {
+			if( pc_has_permission( sd, pc_g_permission_name[i].permission ) ){
 				sprintf(atcmd_output,"- %s",pc_g_permission_name[i].name);
 				clif_displaymessage(fd, atcmd_output);
 			}
@@ -10126,10 +10131,11 @@ ACMD_FUNC(addperm) {
 		return -1;
 	}
 
-	if( add )
-		sd->permissions |= pc_g_permission_name[i].permission;
-	else
-		sd->permissions &=~ pc_g_permission_name[i].permission;
+	if( add ){
+		sd->permissions.set( pc_g_permission_name[i].permission );
+	}else{
+		sd->permissions.reset( pc_g_permission_name[i].permission );
+	}
 
 
 	sprintf(atcmd_output, msg_txt(sd,1384),sd->status.name); // User '%s' permissions updated successfully. The changes are temporary.
@@ -10969,7 +10975,7 @@ ACMD_FUNC( stylist ){
 		return -1;
 	}
 
-	clif_ui_open( sd, OUT_UI_STYLIST, 0 );
+	clif_ui_open( *sd, OUT_UI_STYLIST, 0 );
 	return 0;
 #endif
 }
@@ -11002,6 +11008,23 @@ ACMD_FUNC(addfame)
 	clif_displaymessage(fd, atcmd_output);
 
 	return 0;
+}
+
+/**
+ * Opens the enchantgrade UI
+ * Usage: @enchantgradeui
+ */
+ACMD_FUNC( enchantgradeui ){
+	nullpo_retr( -1, sd );
+
+#if !( PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724 )
+	sprintf( atcmd_output, msg_txt( sd, 798 ), "2020-07-24" ); // This command requires packet version %s or newer.
+	clif_displaymessage( fd, atcmd_output );
+	return -1;
+#else
+	clif_ui_open( *sd, OUT_UI_ENCHANTGRADE, 0 );
+	return 0;
+#endif
 }
 
 #include "../custom/atcommand.inc"
@@ -11279,6 +11302,12 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_Aura
 		ACMD_DEF(aura),					// 激活指定的光环组合 [Sola丶小克]
 #endif // Pandas_AtCommand_Aura
+#ifdef Pandas_AtCommand_ReloadLaphineDB
+		ACMD_DEF2("reloadlaphinedb", reload),			// 重新加载 Laphine 数据库 [Sola丶小克]
+#endif // Pandas_AtCommand_ReloadLaphineDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
+		ACMD_DEF2("reloadbarterdb", reload),			// 重新加载 Barters 以物易物数据库 [Sola丶小克]
+#endif // Pandas_AtCommand_ReloadBarterDB
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"
@@ -11592,6 +11621,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(refineui),
 		ACMD_DEFR(stylist, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEF(addfame),
+		ACMD_DEFR(enchantgradeui, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 	};
 	AtCommandInfo* atcommand;
 	int i;
@@ -11722,7 +11752,8 @@ static bool atcommand_noperm_halt(const int fd, struct map_session_data* sd, con
 
 	info = get_atcommandinfo_byname(atcommand_alias_db.checkAlias(command + 1));
 	if (fromtype == 1 && info != NULL) {
-		if ((is_atcommand && info->at_groups[sd->group_pos] == 0) || (!is_atcommand && info->char_groups[sd->group_pos] == 0)) {
+		if ((is_atcommand && info->at_groups[sd->group->index] == 0) ||
+			(!is_atcommand && info->char_groups[sd->group->index] == 0)) {
 			if (battle_config.atcmd_no_permission == 1) {
 				clif_displaymessage(fd, msg_txt_cn(sd, 0));
 				return true;
@@ -11814,7 +11845,7 @@ bool is_atcommand(const int fd, struct map_session_data* sd, const char* message
 #endif // Pandas_BattleConfig_AtCmd_No_Permission
 
 				info = get_atcommandinfo_byname(atcommand_alias_db.checkAlias(command + 1));
-				if (!info || info->char_groups[sd->group_pos] == 0)  // If we can't use or doesn't exist: don't even display the command failed message
+				if (!info || info->char_groups[sd->group->index] == 0)  // If we can't use or doesn't exist: don't even display the command failed message
 					return false;
 			}
 
@@ -11906,8 +11937,8 @@ bool is_atcommand(const int fd, struct map_session_data* sd, const char* message
 
 	// type == 1 : player invoked
 	if (type == 1) {
-		if ((is_atcommand && info->at_groups[sd->group_pos] == 0) ||
-			(!is_atcommand && info->char_groups[sd->group_pos] == 0) )
+		if ((is_atcommand && info->at_groups[sd->group->index] == 0) ||
+			(!is_atcommand && info->char_groups[sd->group->index] == 0) )
 			return false;
 
 		if( pc_isdead(sd) && pc_has_permission(sd,PC_PERM_DISABLE_CMD_DEAD) ) {
@@ -11930,29 +11961,22 @@ bool is_atcommand(const int fd, struct map_session_data* sd, const char* message
 	return true;
 }
 
-void atcommand_db_load_groups(int* group_ids) {
+void atcommand_db_load_groups(){
 	DBIterator *iter = db_iterator(atcommand_db);
 	AtCommandInfo* cmd;
-	int i;
+	int pc_group_max = player_group_db.size();
 
 	for (cmd = (AtCommandInfo*)dbi_first(iter); dbi_exists(iter); cmd = (AtCommandInfo*)dbi_next(iter)) {
 		cmd->at_groups = (char*)aMalloc( pc_group_max * sizeof(char) );
 		cmd->char_groups = (char*)aMalloc( pc_group_max * sizeof(char) );
-		for(i = 0; i < pc_group_max; i++) {
-			if( pc_group_can_use_command(group_ids[i], cmd->command, COMMAND_ATCOMMAND ) )
-			   cmd->at_groups[i] = 1;
-			else
-			   cmd->at_groups[i] = 0;
-		   if( pc_group_can_use_command(group_ids[i], cmd->command, COMMAND_CHARCOMMAND ) )
-			  cmd->char_groups[i] = 1;
-			else
-			  cmd->char_groups[i] = 0;
+
+		for( auto& it : player_group_db ){
+			cmd->at_groups[it.second->index] = it.second->can_use_command( cmd->command, COMMAND_ATCOMMAND );
+			cmd->char_groups[it.second->index] = it.second->can_use_command( cmd->command, COMMAND_CHARCOMMAND );
 		}
 	}
 
 	dbi_destroy(iter);
-
-	return;
 }
 void atcommand_db_clear(void) {
 

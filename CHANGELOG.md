@@ -12,6 +12,66 @@
 
 -------------------------------------------------------------------------------
 
+## [v1.1.12] - `2022-05-15`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- Mr.Siu、SSBoyz、人鱼姬的思念、secretdataz、Sky、小林、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 风险提示
+
+此版本距离上个版本间隔了两个月时间,
+这期间主要的原因是我们的上游项目 rAthena 进行了一项较大改动.
+
+它将代码中全部状态 (可以理解为游戏里的 BUFF) 从代码中抽离成一个 status.yml 配置文件,
+这会极大赋予用户随意调整状态工作细节的能力, 但是也将 rAthena 带入了缺陷频出的一段不稳定时期.
+
+经过这段时间的沉淀, 相信应该已经到了一个比较平衡的情况,
+但可能也依然存在社区和我们没有发现的问题, 如果有发现请随时上报给开发者.
+
+### 升级提示
+
+- 升级到 `1.1.12` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.12_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+特别注意: 本次更新中 `skill_db.yml` 和新增的 `status.yml` 要注意同步, 特别是老用户.
+
+### 新增功能
+
+- 实现 `getrateidx` 脚本指令, 用于根据权重随机获取一个数值型数组的索引序号 (#555)
+- 实现用于获取手推车负重信息的 `CartWeight` 和 `MaxCartWeight` 脚本常量 (感谢 "人鱼姬的思念" 实现) (#503)
+- 实现 `OnPCClickTombFilter` 触发器事件, 当玩家点击魔物墓碑时触发 (感谢 "人鱼姬的思念" 实现) (#510)
+- 实现 `OnPCTalkExpress` 实时事件, 当玩家往聊天框发送信息时触发 (感谢 "人鱼姬的思念" 实现) (#511)
+- 使得 `getunitdata` / `setunitdata` 可以读取或设置特定魔物单位的经验值 (感谢 "人鱼姬的思念" 实现) (#526)
+
+### 功能调整
+- 完善对于 `script4each` 字符串转义的说明 (感谢 "小林" 指出) (#553)
+- 更新繁体中文的技能名称翻译对照表 (感谢 "SSBoyz" 提交) (#563)
+- 对疾风缓存机制进行重构, 并调整各类声明和定义的位置 (#565)
+- 修正交叉切换 Debug / Release 方案进行编译时报错的问题 (#564)
+- 默认禁止在角色、公会、队伍名称中使用单引号 (感谢 "SSBoyz" 建议) (#568)
+
+### 缺陷修正
+
+- 修正魔物死亡但客户端没移除魔物单位的一种新情况 (感谢 "Mr.Siu" 提供环境配合验证) (#562)
+- 修复使用 RODEX 系统发送已插卡的装备会导致邮件发送失败的问题 (感谢 "SSBoyz" 反馈) (#541)
+- 修正写入公会仓库日志时没有对角色名进行转义处理的问题 (感谢 "小林" 反馈) (#552)
+- 修正异步查询数据库指令执行过程中 `reloadscript` 可能会导致崩溃的问题 (#567)
+
+-------------------------------------------------------------------------------
+
 ## [v1.1.11] - `2022-03-13`
 
 ### 特别感谢
@@ -22,12 +82,12 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
 - 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.11_main_use_sql_db.sql`
-- 升级到 `1.1.11` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.11_logs`
+- 升级到 `1.1.11` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.11_logs.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -76,7 +136,7 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
@@ -127,7 +187,7 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
@@ -149,7 +209,7 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
@@ -736,6 +796,8 @@
 
 -------------------------------------------------------------------------------
 
+[v1.1.12]: https://github.com/PandasWS/Pandas/compare/v1.1.11...v1.1.12
+[v1.1.11]: https://github.com/PandasWS/Pandas/compare/v1.1.10...v1.1.11
 [v1.1.10]: https://github.com/PandasWS/Pandas/compare/v1.1.9...v1.1.10
 [v1.1.9]: https://github.com/PandasWS/Pandas/compare/v1.1.8...v1.1.9
 [v1.1.8]: https://github.com/PandasWS/Pandas/compare/v1.1.7...v1.1.8

@@ -185,7 +185,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
 	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
 	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
-	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target && target->m >= 0 ? map[target->m].name : ""));	// 死亡单位所在的地图名称
 	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -193,7 +193,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
-	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src && src->m >= 0 ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
 	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -232,11 +232,12 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	struct item_data* id = itemdb_search(nameid);
 
 	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS)) {
+		mapreg_setreg(add_str("$@mobdrop_gid"), (md ? md->bl.id : 0));
 		mapreg_setreg(add_str("$@mobdrop_mobid"), (md ? md->mob_id : 0));
 		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
 		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
 		mapreg_setreg(add_str("$@mobdrop_from"), drop_type);
-		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md ? map[md->bl.m].name : ""));
+		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md && md->bl.m >= 0 ? map[md->bl.m].name : ""));
 		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
 		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
 		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
@@ -339,7 +340,7 @@ const std::string StylistDatabase::getDefaultLocation(){
 	return std::string(db_path) + "/stylist.yml";
 }
 
-bool StylistDatabase::parseCostNode( std::shared_ptr<s_stylist_entry> entry, bool doram, const YAML::Node& node ){
+bool StylistDatabase::parseCostNode( std::shared_ptr<s_stylist_entry> entry, bool doram, const ryml::NodeRef& node ){
 	std::shared_ptr<s_stylist_costs> costs = doram ? entry->doram : entry->human;
 	bool costs_exists = costs != nullptr;
 
@@ -419,7 +420,7 @@ bool StylistDatabase::parseCostNode( std::shared_ptr<s_stylist_entry> entry, boo
 	return true;
 }
 
-uint64 StylistDatabase::parseBodyNode( const YAML::Node &node ){
+uint64 StylistDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	if( !this->nodesExist( node, { "Look", "Options" } ) ){
 		return 0;
 	}
@@ -460,7 +461,7 @@ uint64 StylistDatabase::parseBodyNode( const YAML::Node &node ){
 		list->look = (uint16)constant;
 	}
 
-	for( const YAML::Node& optionNode : node["Options"] ){
+	for( const ryml::NodeRef& optionNode : node["Options"] ){
 		int16 index;
 
 		if( !this->asInt16( optionNode, "Index", index ) ){
@@ -608,7 +609,7 @@ const std::string BarterDatabase::getDefaultLocation(){
 #endif // Pandas_UserExperience_Move_BartersYml_To_DB
 }
 
-uint64 BarterDatabase::parseBodyNode( const YAML::Node& node ){
+uint64 BarterDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	std::string npcname;
 
 	if( !this->asString( node, "Name", npcname ) ){
@@ -752,7 +753,7 @@ uint64 BarterDatabase::parseBodyNode( const YAML::Node& node ){
 	}
 
 	if( this->nodeExists( node, "Items" ) ){
-		for( const YAML::Node& itemNode : node["Items"] ){
+		for( const ryml::NodeRef& itemNode : node["Items"] ){
 			uint16 index;
 
 			if( !this->asUInt16( itemNode, "Index", index ) ){
@@ -824,7 +825,7 @@ uint64 BarterDatabase::parseBodyNode( const YAML::Node& node ){
 			}
 
 			if( this->nodeExists( itemNode, "RequiredItems" ) ){
-				for( const YAML::Node& requiredItemNode : itemNode["RequiredItems"] ){
+				for( const ryml::NodeRef& requiredItemNode : itemNode["RequiredItems"] ){
 					uint16 requirement_index;
 
 					if( !this->asUInt16( requiredItemNode, "Index", requirement_index ) ){
@@ -1048,6 +1049,32 @@ void BarterDatabase::loadingFinished(){
 		}
 	}
 }
+
+#ifdef Pandas_AtCommand_ReloadBarterDB
+//************************************
+// Method:      npc_reload_barters_sub
+// Description: 用于遍历卸载以物易物商店的子函数
+// Parameter:   struct npc_data * nd
+// Parameter:   va_list args
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2022/06/16 07:58
+//************************************ 
+static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
+	nullpo_retr(0, nd);
+	
+	if (nd->subtype != NPCTYPE_BARTER)
+		return 0;
+
+	npc_unload_duplicates(nd);
+	npc_unload(nd, true);
+
+	return 0;
+}
+
+void BarterDatabase::clear() {
+	map_foreachnpc(npc_reload_barters_sub);
+}
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 BarterDatabase barter_db;
 
@@ -2112,7 +2139,7 @@ int npc_touch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y, st
 	case NPCTYPE_WARP:
 		if ((!nd->trigger_on_hidden && (pc_ishiding(sd) || (sd->sc.count && sd->sc.data[SC_CAMOUFLAGE]))) || pc_isdead(sd))
 			break; // hidden or dead chars cannot use warps
-		if (!pc_job_can_entermap((enum e_job)sd->status.class_, map_mapindex2mapid(nd->u.warp.mapindex), sd->group_level))
+		if (!pc_job_can_entermap((enum e_job)sd->status.class_, map_mapindex2mapid(nd->u.warp.mapindex), pc_get_group_level(sd)))
 			break;
 		if (sd->count_rewarp > 10) {
 			ShowWarning("Prevented infinite warp loop for player (%d:%d). Please fix NPC: '%s', path: '%s'\n", sd->status.account_id, sd->status.char_id, nd->exname, nd->path);
@@ -2359,6 +2386,43 @@ int npc_globalmessage(const char* name, const char* mes)
 // MvP tomb [GreenBox]
 void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 {
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	if (sd && sd->bl.type == BL_PC && nd && nd->u.tomb.md) {
+		pc_setreg(sd, add_str("@tomb_mapid"), nd->bl.m);
+		pc_setreg(sd, add_str("@tomb_x"), nd->bl.x);
+		pc_setreg(sd, add_str("@tomb_y"), nd->bl.y);
+		pc_setregstr(sd, add_str("@tomb_mapname$"), map[nd->bl.m].name);
+
+		pc_setreg(sd, add_str("@tomb_gid"), nd->bl.id);
+		pc_setreg(sd, add_str("@tomb_createtime"), nd->u.tomb.kill_time);
+
+		pc_setreg(sd, add_str("@tomb_mob_gid"), nd->u.tomb.md->bl.id);
+		pc_setreg(sd, add_str("@tomb_mob_classid"), nd->u.tomb.md->mob_id);
+
+		pc_setreg(sd, add_str("@tomb_mob_respawnsecs"), -1);
+		t_tick respawntime = -1;
+		if (nd->u.tomb.md->spawn) {
+			respawntime = gett_tickimer(nd->u.tomb.md->spawn_timer);
+			if (respawntime != -1) {
+				respawntime = DIFF_TICK(respawntime, gettick());
+				respawntime = respawntime / 1000;
+				pc_setreg(sd, add_str("@tomb_mob_respawnsecs"), respawntime);
+				respawntime = respawntime + (int)time(NULL);
+			}
+		}
+		pc_setreg(sd, add_str("@tomb_mob_respawntime"), respawntime);
+
+		pc_setregstr(sd, add_str("@tomb_killer_name$"), nd->u.tomb.killer_name);
+#ifdef Pandas_FuncParams_Mob_MvpTomb_Create
+		pc_setreg(sd, add_str("@tomb_killer_gid"), nd->u.tomb.killer_gid);
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
+
+		if (npc_script_filter(sd, NPCF_CLICKTOMB)) {
+			return;
+		}
+	}
+#endif // Pandas_NpcFilter_CLICKTOMB
+
 	char buffer[200];
 	char time[10];
 
@@ -2935,21 +2999,17 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 		return res;
 
 	if( !pet_create_egg(sd, nameid) ) {
-		struct item item_tmp;
-#ifndef Pandas_LGTM_Optimization
-		unsigned short get_amt = amount, j;
-#else
-		int get_amt = amount, j;
-#endif // Pandas_LGTM_Optimization
+		unsigned short get_amt = amount;
 
-		memset(&item_tmp, 0, sizeof(item_tmp));
+		struct item item_tmp = {};
+
 		item_tmp.nameid = nameid;
 		item_tmp.identify = 1;
 
 		if (item->flag.guid)
 			get_amt = 1;
 
-		for (j = 0; j < amount; j += get_amt)
+		for (int j = 0; j < amount; j += get_amt)
 			pc_additem(sd,&item_tmp, get_amt, LOG_TYPE_NPC);
 	}
 
@@ -3434,7 +3494,7 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 					return e_purchase_result::PURCHASE_FAIL_GOODS;
 				}
 			}else{
-				for( int i = 0; i < requirement->amount; i++ ){
+				for( int i = 0; i < (requirement->amount * amount); i++ ){
 					int j;
 
 					for( j = 0; j < MAX_INVENTORY; j++ ){
@@ -3616,11 +3676,7 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 //This doesn't remove it from map_db
 int npc_remove_map(struct npc_data* nd)
 {
-#ifndef Pandas_LGTM_Optimization
-	int16 i;
-#else
 	int i;
-#endif // Pandas_LGTM_Optimization
 	nullpo_retr(1, nd);
 
 	if(nd->bl.prev == NULL || nd->bl.m < 0)
@@ -5095,7 +5151,8 @@ static int npc_market_checkall_sub(DBKey key, DBData *data, va_list ap) {
 		ARR_FIND(0, nd->u.shop.count, j, nd->u.shop.shop_item[j].nameid == list->nameid);
 		if (j != nd->u.shop.count) {
 			nd->u.shop.shop_item[j].value = list->value;
-			nd->u.shop.shop_item[j].qty = list->qty;
+			if (nd->u.shop.shop_item[j].qty > -1)
+				nd->u.shop.shop_item[j].qty = list->qty;
 			nd->u.shop.shop_item[j].flag = list->flag;
 			npc_market_tosql(nd->exname, &nd->u.shop.shop_item[j]);
 			continue;
@@ -5105,7 +5162,8 @@ static int npc_market_checkall_sub(DBKey key, DBData *data, va_list ap) {
 			RECREATE(nd->u.shop.shop_item, struct npc_item_list, nd->u.shop.count+1);
 			nd->u.shop.shop_item[j].nameid = list->nameid;
 			nd->u.shop.shop_item[j].value = list->value;
-			nd->u.shop.shop_item[j].qty = list->qty;
+			if (nd->u.shop.shop_item[j].qty > -1)
+				nd->u.shop.shop_item[j].qty = list->qty;
 			nd->u.shop.shop_item[j].flag = list->flag;
 			nd->u.shop.count++;
 			npc_market_tosql(nd->exname, &nd->u.shop.shop_item[j]);
@@ -6170,6 +6228,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_MER_LEAVE
 		NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+		NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -6268,8 +6330,12 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
 
+#ifdef Pandas_NpcFilter_CLICKTOMB
+		NPCF_CLICKTOMB,	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
+
 #ifdef Pandas_NpcFilter_STORAGE_DEL
-		NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器 [香草]
+		NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
@@ -6482,9 +6548,14 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
 
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	case NPCF_CLICKTOMB:
+		return script_config.clicktomb_filter_name;	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
+
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	case NPCF_STORAGE_DEL:
-		return script_config.storage_del_filter_name;	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器 [香草]
+		return script_config.storage_del_filter_name;	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
@@ -6581,6 +6652,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_MER_LEAVE:
 		return script_config.mer_leave_express_name;	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+	case NPCX_PC_TALK:
+		return script_config.pc_talk_express_name;	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:
