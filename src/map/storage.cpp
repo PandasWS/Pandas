@@ -412,6 +412,12 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 	if (result != STORAGE_ADD_OK)
 		return;
 
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
 	if ((flag = pc_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE)) == ADDITEM_SUCCESS)
 		storage_delitem(sd,stor,index,amount);
 	else {
@@ -485,6 +491,12 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 	result = storage_canGetItem(stor, index, amount);
 	if (result != STORAGE_ADD_OK)
 		return;
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 	if ((flag = pc_cart_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE)) == 0)
 		storage_delitem(sd,stor,index,amount);
@@ -1010,6 +1022,12 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
 	if((flag = pc_additem(sd,&stor->u.items_guild[index],amount,LOG_TYPE_GSTORAGE)) == 0)
 		storage_guild_delitem(sd,stor,index,amount);
 	else { // inform fail
@@ -1083,6 +1101,12 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 
 	if(amount < 1 || amount > stor->u.items_guild[index].amount)
 		return;
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 	if((flag = pc_cart_additem(sd,&stor->u.items_guild[index],amount,LOG_TYPE_GSTORAGE)) == 0)
 		storage_guild_delitem(sd,stor,index,amount);

@@ -2383,6 +2383,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 	NPCF_STORAGE_ADD,	// storage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -2484,6 +2488,9 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_from);
 #endif // Pandas_NpcFilter_STORAGE_ADD
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to);
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);

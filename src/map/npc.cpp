@@ -337,6 +337,56 @@ bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* s
 }
 #endif // Pandas_NpcFilter_STORAGE_ADD
 
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+//************************************
+// Method:      npc_event_aide_storage_del
+// Description: 用来触发 OnPCStorageDelFilter 过滤器事件的辅助函数
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * store
+// Parameter:   int idx
+// Parameter:   int amount
+// Parameter:   int item_to
+// Returns:     bool
+//				返回 true 表示被中断, 返回 false 表示没有被中断
+// Author:      Sola丶小克(CairoLee)  2022/06/19 08:39
+//************************************ 
+bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, store);
+
+	struct item* idata = nullptr;
+
+	switch (store->type) {
+	case TABLE_STORAGE:
+		if (idx >= 0 && idx < store->max_amount) {
+			idata = &store->u.items_storage[idx];
+		}
+		break;
+	case TABLE_GUILD_STORAGE:
+		if (idx >= 0 && idx < store->max_amount) {
+			idata = &store->u.items_guild[idx];
+		}
+		break;
+	}
+
+	if (idata == nullptr) {
+		return false;
+	}
+
+	pc_setreg(sd, add_str("@removeitem_src_from"), (int)(store->type - 2));	// 即将取出的道具来源仓库类型 (1: 个人仓库; 2: 公会仓库)
+	pc_setreg(sd, add_str("@removeitem_src_storeid"), store->stor_id);		// 即将取出的道具来源仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+	pc_setreg(sd, add_str("@removeitem_src_idx"), idx);						// 即将取出的道具索引序号
+	pc_setreg(sd, add_str("@removeitem_src_nameid"), idata->nameid);		// 即将取出的道具编号
+	pc_setreg(sd, add_str("@removeitem_src_amount"), amount);				// 即将取出的道具数量
+
+	pc_setreg(sd, add_str("@removeitem_dst_type"), item_to);				// 计划将其存放到的目的地 (1: 背包; 2: 手推车)
+
+	return npc_script_filter(sd, NPCF_STORAGE_DEL);
+	
+	return false;
+}
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
 #ifdef Pandas_Helper_Common_Function
 //************************************
 // Method:      npc_event_data
@@ -6386,6 +6436,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 		NPCF_STORAGE_ADD,	// storage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+		NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6606,6 +6660,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_STORAGE_ADD:
 		return script_config.storage_add_filter_name;	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	case NPCF_STORAGE_DEL:
+		return script_config.storage_del_filter_name;	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

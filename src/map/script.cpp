@@ -382,6 +382,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 	"OnPCStorageAddFilter",	// NPCF_STORAGE_ADD		// storage_add_filter_name	// 当玩家准备将道具存入仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	"OnPCStorageDelFilter",	// NPCF_STORAGE_DEL		// storage_del_filter_name	// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
