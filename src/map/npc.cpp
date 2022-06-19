@@ -316,7 +316,7 @@ bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* s
 		break;
 	case TABLE_CART:
 		if (idx >= 0 && idx < MAX_CART) {
-			idata = &sd->inventory.u.items_cart[idx];
+			idata = &sd->cart.u.items_cart[idx];
 		}
 		break;
 	}
