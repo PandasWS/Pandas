@@ -407,7 +407,6 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
-		//clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
@@ -482,7 +481,6 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
-		//clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
@@ -1006,7 +1004,6 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
-		//clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
@@ -1081,7 +1078,6 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
-		//clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
