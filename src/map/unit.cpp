@@ -440,7 +440,7 @@ static TIMER_FUNC(unit_walktoxy_timer)
 
 	//Monsters can only leave icewalls to the west and south
 	//But if movement fails more than icewall_walk_block times, they can ignore this rule
-	if(md && md->walktoxy_fail_count < icewall_walk_block && map_getcell(bl->m,x,y,CELL_CHKICEWALL) && (dx > 0 || dy > 0)) {
+	if(md && !ud->state.force_walk && md->walktoxy_fail_count < icewall_walk_block && map_getcell(bl->m,x,y,CELL_CHKICEWALL) && (dx > 0 || dy > 0)) {
 		//Needs to be done here so that rudeattack skills are invoked
 		md->walktoxy_fail_count++;
 		clif_fixpos(bl);
@@ -476,6 +476,8 @@ static TIMER_FUNC(unit_walktoxy_timer)
 			unit_refresh( bl, false );
 		}
 #endif
+
+		ud->state.force_walk = false;
 
 		if (ud->walk_done_event[0]){
 			char walk_done_event[EVENT_NAME_LENGTH];
@@ -531,11 +533,12 @@ static TIMER_FUNC(unit_walktoxy_timer)
 				md->min_chase--;
 			// Walk skills are triggered regardless of target due to the idle-walk mob state.
 			// But avoid triggering on stop-walk calls.
-			if(tid != INVALID_TIMER &&
+			if(!ud->state.force_walk && tid != INVALID_TIMER &&
 				!(ud->walk_count%WALK_SKILL_INTERVAL) &&
 				map[bl->m].users > 0 &&
 				mobskill_use(md, tick, -1)) {
 				if (!(ud->skill_id == NPC_SELFDESTRUCTION && ud->skilltimer != INVALID_TIMER)
+					&& ud->skill_id != NPC_EMOTION && ud->skill_id != NPC_EMOTION_ON //NPC_EMOTION doesn't make the monster stop
 					&& md->state.skillstate != MSS_WALK) //Walk skills are supposed to be used while walking
 				{ // Skill used, abort walking
 					clif_fixpos(bl); // Fix position as walk has been cancelled.
@@ -815,7 +818,7 @@ static TIMER_FUNC(unit_walktobl_sub){
 	struct block_list *bl = map_id2bl(id);
 	struct unit_data *ud = bl?unit_bl2ud(bl):NULL;
 
-	if (ud && ud->walktimer == INVALID_TIMER && ud->target == data) {
+	if (ud && ud->walktimer == INVALID_TIMER && ud->target && ud->target == data) {
 		if (DIFF_TICK(ud->canmove_tick, tick) > 0) // Keep waiting?
 			add_timer(ud->canmove_tick+1, unit_walktobl_sub, id, data);
 		else if (unit_can_move(bl)) {
@@ -860,6 +863,9 @@ int unit_walktobl(struct block_list *bl, struct block_list *tbl, int range, unsi
 		//Should walk on the same cell as target (for looters)
 		ud->to_x = tbl->x;
 		ud->to_y = tbl->y;
+		//Because of the change of target position the easy walkpath could fail
+		//Note: Easy walking is no longer used by default, but we keep this to prevent endless loops [Playtester]
+		flag &= ~1;
 	}
 
 	ud->state.walk_easy = flag&1;
@@ -3072,6 +3078,9 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file, 
 
 	if (ud->walktimer != INVALID_TIMER)
 		unit_stop_walking(bl,0);
+
+	if (clrtype == CLR_DEAD)
+		ud->state.blockedmove = true;
 
 	if (ud->skilltimer != INVALID_TIMER)
 		unit_skillcastcancel(bl,0);

@@ -4336,6 +4336,19 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt_cn(sd, 106)); // Aura database has been reloaded.
 	}
 #endif // Pandas_Aura_Mechanism
+#ifdef Pandas_AtCommand_ReloadLaphineDB
+	else if (strstr(command, "laphinedb") || strncmp(message, "laphinedb", 4) == 0) {
+		laphine_synthesis_db.reload();
+		laphine_upgrade_db.reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 142)); // Laphine database has been reloaded.
+	}
+#endif // Pandas_AtCommand_ReloadLaphineDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
+	else if (strstr(command, "barterdb") || strncmp(message, "barterdb", 4) == 0) {
+		barter_db.reload();
+		clif_displaymessage(fd, msg_txt_cn(sd, 143)); // Barters database has been reloaded.
+	}
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 	return 0;
 }
@@ -7565,7 +7578,7 @@ ACMD_FUNC(setbattleflag)
 	int reload = 0;
 	nullpo_retr(-1, sd);
 
-	if (!message || !*message || sscanf(message, "%127s %127s %11d", flag, value, &reload) != 2) {
+	if (!message || !*message || sscanf(message, "%127s %127s %11d", flag, value, &reload) < 2) {
         	clif_displaymessage(fd, msg_txt(sd,1231)); // Usage: @setbattleflag <flag> <value> {<reload>}
         	return -1;
     	}
@@ -10962,7 +10975,7 @@ ACMD_FUNC( stylist ){
 		return -1;
 	}
 
-	clif_ui_open( sd, OUT_UI_STYLIST, 0 );
+	clif_ui_open( *sd, OUT_UI_STYLIST, 0 );
 	return 0;
 #endif
 }
@@ -10995,6 +11008,23 @@ ACMD_FUNC(addfame)
 	clif_displaymessage(fd, atcmd_output);
 
 	return 0;
+}
+
+/**
+ * Opens the enchantgrade UI
+ * Usage: @enchantgradeui
+ */
+ACMD_FUNC( enchantgradeui ){
+	nullpo_retr( -1, sd );
+
+#if !( PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724 )
+	sprintf( atcmd_output, msg_txt( sd, 798 ), "2020-07-24" ); // This command requires packet version %s or newer.
+	clif_displaymessage( fd, atcmd_output );
+	return -1;
+#else
+	clif_ui_open( *sd, OUT_UI_ENCHANTGRADE, 0 );
+	return 0;
+#endif
 }
 
 #include "../custom/atcommand.inc"
@@ -11272,6 +11302,12 @@ void atcommand_basecommands(void) {
 #ifdef Pandas_AtCommand_Aura
 		ACMD_DEF(aura),					// 激活指定的光环组合 [Sola丶小克]
 #endif // Pandas_AtCommand_Aura
+#ifdef Pandas_AtCommand_ReloadLaphineDB
+		ACMD_DEF2("reloadlaphinedb", reload),			// 重新加载 Laphine 数据库 [Sola丶小克]
+#endif // Pandas_AtCommand_ReloadLaphineDB
+#ifdef Pandas_AtCommand_ReloadBarterDB
+		ACMD_DEF2("reloadbarterdb", reload),			// 重新加载 Barters 以物易物数据库 [Sola丶小克]
+#endif // Pandas_AtCommand_ReloadBarterDB
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
 #include "../custom/atcommand_def.inc"
@@ -11585,6 +11621,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(refineui),
 		ACMD_DEFR(stylist, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEF(addfame),
+		ACMD_DEFR(enchantgradeui, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 	};
 	AtCommandInfo* atcommand;
 	int i;

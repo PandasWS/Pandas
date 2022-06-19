@@ -12,6 +12,53 @@
 
 -------------------------------------------------------------------------------
 
+## [v1.1.13] - `2022-06-19`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- 香草、忘我、人鱼姬的思念、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 升级提示
+
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.13_logs.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.13_main_use_sql_db.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+### 新增功能
+
+- 实现 `reloadlaphinedb` 管理员指令, 用于重新加载 Laphine 数据库 (#596)
+- 实现 `reloadbarterdb` 管理员指令, 用于重新加载以物易物数据库 (#597)
+- 实现 `getbossinfo` 脚本指令, 用于查询 BOSS 魔物重生时间及其坟墓等信息 (#598)
+- 实现 `whodropitem` 脚本指令, 用于查询指定道具会从哪些魔物身上掉落 (#591)
+- 实现 `OnPCStorageAddFilter` 过滤器事件, 当玩家准备将道具存入仓库时触发过滤器 (感谢 "香草" 实现) (#539)
+- 实现 `OnPCStorageDelFilter` 过滤器事件, 当玩家准备将道具取出仓库时触发过滤器 (感谢 "香草" 实现) (#540)
+
+### 功能调整
+
+- 同步 kRO 截止 `2022-06-13` 可用的 NPC 外观编号范围 (#595)
+- 使 `OnMobDropItemExpress` 能够返回即将掉落道具的魔物的游戏单位编号 (#593)
+- 使 `OnPCViewEquipFilter` 可以知道被查看角色是否允许其他人看他的装备 (#594)
+
+### 缺陷修正
+
+- 修正 `bonus3 bAddEffOnSkill` 中 `PC_BONUS_CHK_SC` 带入检测参数错误的问题 (感谢 "忘我" 反馈) (#575)
+
+-------------------------------------------------------------------------------
+
 ## [v1.1.12] - `2022-05-15`
 
 ### 特别感谢
@@ -41,7 +88,8 @@
 
 ### 升级提示
 
-- 升级到 `1.1.12` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.12_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.12_main.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -57,6 +105,7 @@
 - 使得 `getunitdata` / `setunitdata` 可以读取或设置特定魔物单位的经验值 (感谢 "人鱼姬的思念" 实现) (#526)
 
 ### 功能调整
+
 - 完善对于 `script4each` 字符串转义的说明 (感谢 "小林" 指出) (#553)
 - 更新繁体中文的技能名称翻译对照表 (感谢 "SSBoyz" 提交) (#563)
 - 对疾风缓存机制进行重构, 并调整各类声明和定义的位置 (#565)
@@ -86,8 +135,10 @@
 
 ### 升级提示
 
-- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.11_main_use_sql_db.sql`
-- 升级到 `1.1.11` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.11_logs.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.11_logs.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.11_main_use_sql_db.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -140,8 +191,10 @@
 
 ### 升级提示
 
-- 升级到 `1.1.10` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.10_main.sql`
-- 升级到 `1.1.10` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.10_logs.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.10_main.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.10_logs.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -213,8 +266,10 @@
 
 ### 升级提示
 
-- 升级到 `1.1.8` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.8_main.sql`
-- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.8_main_use_sql_db.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.8_main.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.8_main_use_sql_db.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -258,7 +313,8 @@
 
 ### 升级提示
 
-- 若您启用了 WEB 接口服务器, 那么请在 WEB 接口数据库导入: `sql-files\web\upgrades\upgrade_to_1.1.7_web.sql`
+- 若您启用了 WEB 接口服务器, 那么请在 WEB 接口数据库导入:
+	- `sql-files\web\upgrades\upgrade_to_1.1.7_web.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -324,7 +380,8 @@
 
 ### 升级提示
 
-- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.5_main_use_sql_db.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.5_main_use_sql_db.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -393,8 +450,10 @@
 
 ### 升级提示
 
-- 升级到 `1.1.2` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.2_main.sql`
-- 升级到 `1.1.2` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.2_logs.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.2_main.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.2_logs.sql`
 - 由于 `msg_conf` 中地图服务器的消息编号有所调整, 请注意使用最新的消息数据库
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
@@ -431,7 +490,11 @@
 
 ### 升级提示
 
-- 升级到 `1.1.1` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.1_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.1_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
 
 ### 新增功能
 
@@ -476,7 +539,12 @@
 
 ### 升级提示
 
-- 升级到 `1.1.0` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.0_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.0_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
 - 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
 - 本次 `rAthena` 官方整合了多个物品数据文件到 `item_db.yml` 单文件中
 - 本次 `rAthena` 官方提升 `quest_db.yml` 的数据版本 (从 1 调整为 2)
@@ -521,7 +589,8 @@
 
 ### 升级提示
 
-- 升级到 `1.0.8` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.8_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.8_main.sql`
 
 ### 新增功能
 
@@ -542,9 +611,12 @@
 
 ### 升级提示
 
-- 升级到 `1.0.7` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.7_main.sql`
-	- 若启用 `SQL` 版本的魔物/物品数据库, 那么还需导入: `sql-files\main\upgrades\upgrade_to_1.0.7_main_use_sql_db.sql`
-- 升级到 `1.0.7` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.0.7_logs.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.7_main.sql`
+- 若启用 `SQL` 版本的魔物/物品数据库, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.7_main_use_sql_db.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.0.7_logs.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -604,7 +676,11 @@
 
 ### 升级提示
 
-- 升级到 `1.0.6` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.6_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.6_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
 
 ### 新增功能
 
@@ -637,7 +713,11 @@
 
 ### 升级提示
 
-- 升级到 `1.0.5` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.5_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.5_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
 
 ### 新增功能
 
@@ -678,7 +758,12 @@
 
 ### 升级提示
 
-- 升级到 `1.0.3` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.3_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.3_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
 - 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
 - 本次 `rAthena` 官方整合了多个技能数据文件到 `skill_db.yml` 单文件中
 - 使用 `csv2yaml.exe` 可以将 `txt` 数据文件升级为 `yml` 格式的数据文件
@@ -796,6 +881,7 @@
 
 -------------------------------------------------------------------------------
 
+[v1.1.13]: https://github.com/PandasWS/Pandas/compare/v1.1.12...v1.1.13
 [v1.1.12]: https://github.com/PandasWS/Pandas/compare/v1.1.11...v1.1.12
 [v1.1.11]: https://github.com/PandasWS/Pandas/compare/v1.1.10...v1.1.11
 [v1.1.10]: https://github.com/PandasWS/Pandas/compare/v1.1.9...v1.1.10

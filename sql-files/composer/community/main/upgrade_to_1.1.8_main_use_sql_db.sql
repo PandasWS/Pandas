@@ -9,9 +9,22 @@
 -- upgrade_20211118.sql
 -- -----------------------------------------------
 
-ALTER TABLE `item_db_re`
-	ADD COLUMN `class_fourth` tinyint unsigned DEFAULT NULL
-;
-ALTER TABLE `item_db2_re`
-	ADD COLUMN `class_fourth` tinyint unsigned DEFAULT NULL
-;
+DROP PROCEDURE IF EXISTS UPDATE_PANDAS_MAIN_USESQLDB;
+
+DELIMITER $$
+CREATE PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB()
+BEGIN
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'item_db_re') THEN
+		ALTER TABLE `item_db_re`
+			ADD COLUMN `class_fourth` tinyint unsigned DEFAULT NULL;
+	END IF;
+	
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'item_db2_re') THEN
+		ALTER TABLE `item_db2_re`
+			ADD COLUMN `class_fourth` tinyint unsigned DEFAULT NULL;
+	END IF;
+END $$
+DELIMITER ;
+
+CALL UPDATE_PANDAS_MAIN_USESQLDB();
+DROP PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB;

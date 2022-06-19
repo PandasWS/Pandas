@@ -224,27 +224,27 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
-	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器 [聽風]
+	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDCREATE
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
-	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时触发过滤器 [聽風]
+	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDJOIN
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器 [聽風]
+	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
-	const char* partycreate_filter_name;	// NPCF_PARTYCREATE	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器 [聽風]
+	const char* partycreate_filter_name;	// NPCF_PARTYCREATE	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYCREATE
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
-	const char* partyjoin_filter_name;	// NPCF_PARTYJOIN	// OnPCPartyJoinFilter	// 当玩家即将加入队伍时触发过滤器 [聽風]
+	const char* partyjoin_filter_name;	// NPCF_PARTYJOIN	// OnPCPartyJoinFilter	// 当玩家即将加入队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYJOIN
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器 [聽風]
+	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROPITEM
@@ -254,6 +254,14 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_CLICKTOMB
 	const char* clicktomb_filter_name;	// NPCF_CLICKTOMB	// OnPCClickTombFilter	// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	const char* storage_add_filter_name;	// NPCF_STORAGE_ADD	// OnPCStorageAddFilter	// 当玩家准备将道具存入仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	const char* storage_del_filter_name;	// NPCF_STORAGE_DEL	// OnPCStorageDelFilter	// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/

@@ -148,7 +148,8 @@ std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 // Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
 //************************************ 
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
-	if (!sd || !md) return;
+	nullpo_retv(sd);
+	nullpo_retv(md);
 
 	struct status_data* status;
 	status = &md->status;
@@ -185,7 +186,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
 	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
 	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
-	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target && target->m >= 0 ? map[target->m].name : ""));	// 死亡单位所在的地图名称
 	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -193,7 +194,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
-	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src && src->m >= 0 ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
 	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -232,11 +233,12 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	struct item_data* id = itemdb_search(nameid);
 
 	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS)) {
+		mapreg_setreg(add_str("$@mobdrop_gid"), (md ? md->bl.id : 0));
 		mapreg_setreg(add_str("$@mobdrop_mobid"), (md ? md->mob_id : 0));
 		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
 		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
 		mapreg_setreg(add_str("$@mobdrop_from"), drop_type);
-		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md ? map[md->bl.m].name : ""));
+		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md && md->bl.m >= 0 ? map[md->bl.m].name : ""));
 		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
 		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
 		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
@@ -286,6 +288,104 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	return npc_express_aide_mobdropitem(md, src, 0, nameid, drop_rate, drop_type);
 }
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+//************************************
+// Method:      npc_event_aide_storage_add
+// Description: 用来触发 OnPCStorageAddFilter 过滤器事件的辅助函数
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * store
+// Parameter:   int idx
+// Parameter:   int amount
+// Parameter:   int item_from
+// Returns:     bool
+//				返回 true 表示被中断, 返回 false 表示没有被中断
+// Author:      Sola丶小克(CairoLee)  2022/06/18 21:45
+//************************************
+bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_from) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, store);
+
+	struct item* idata = nullptr;
+
+	switch (item_from) {
+	case TABLE_INVENTORY:
+		if (idx >= 0 && idx < MAX_INVENTORY) {
+			idata = &sd->inventory.u.items_inventory[idx];
+		}
+		break;
+	case TABLE_CART:
+		if (idx >= 0 && idx < MAX_CART) {
+			idata = &sd->cart.u.items_cart[idx];
+		}
+		break;
+	}
+
+	if (idata == nullptr) {
+		return false;
+	}
+
+	pc_setreg(sd, add_str("@storeitem_src_from"), item_from);				// 即将存入的道具来源 (1: 背包; 2: 手推车)
+	pc_setreg(sd, add_str("@storeitem_src_idx"), idx);						// 即将存入的道具序号 (若在从背包来则是背包序号, 若从手推车来则是手推车中的物品序号)
+	pc_setreg(sd, add_str("@storeitem_src_nameid"), idata->nameid);			// 即将存入的道具编号
+	pc_setreg(sd, add_str("@storeitem_src_amount"), amount);				// 即将存入的道具数量
+
+	pc_setreg(sd, add_str("@storeitem_dst_type"), (int)(store->type - 2));	// 计划将其存放到的目标仓库类型 (1: 个人仓库; 2: 公会仓库)
+	pc_setreg(sd, add_str("@storeitem_dst_storeid"), store->stor_id);		// 计划将其存放到的目标仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+
+	return npc_script_filter(sd, NPCF_STORAGE_ADD);
+}
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+//************************************
+// Method:      npc_event_aide_storage_del
+// Description: 用来触发 OnPCStorageDelFilter 过滤器事件的辅助函数
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * store
+// Parameter:   int idx
+// Parameter:   int amount
+// Parameter:   int item_to
+// Returns:     bool
+//				返回 true 表示被中断, 返回 false 表示没有被中断
+// Author:      Sola丶小克(CairoLee)  2022/06/19 08:39
+//************************************ 
+bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, store);
+
+	struct item* idata = nullptr;
+
+	switch (store->type) {
+	case TABLE_STORAGE:
+		if (idx >= 0 && idx < store->max_amount) {
+			idata = &store->u.items_storage[idx];
+		}
+		break;
+	case TABLE_GUILD_STORAGE:
+		if (idx >= 0 && idx < store->max_amount) {
+			idata = &store->u.items_guild[idx];
+		}
+		break;
+	}
+
+	if (idata == nullptr) {
+		return false;
+	}
+
+	pc_setreg(sd, add_str("@removeitem_src_from"), (int)(store->type - 2));	// 即将取出的道具来源仓库类型 (1: 个人仓库; 2: 公会仓库)
+	pc_setreg(sd, add_str("@removeitem_src_storeid"), store->stor_id);		// 即将取出的道具来源仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+	pc_setreg(sd, add_str("@removeitem_src_idx"), idx);						// 即将取出的道具索引序号
+	pc_setreg(sd, add_str("@removeitem_src_nameid"), idata->nameid);		// 即将取出的道具编号
+	pc_setreg(sd, add_str("@removeitem_src_amount"), amount);				// 即将取出的道具数量
+
+	pc_setreg(sd, add_str("@removeitem_dst_type"), item_to);				// 计划将其存放到的目的地 (1: 背包; 2: 手推车)
+
+	return npc_script_filter(sd, NPCF_STORAGE_DEL);
+	
+	return false;
+}
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -1048,6 +1148,32 @@ void BarterDatabase::loadingFinished(){
 		}
 	}
 }
+
+#ifdef Pandas_AtCommand_ReloadBarterDB
+//************************************
+// Method:      npc_reload_barters_sub
+// Description: 用于遍历卸载以物易物商店的子函数
+// Parameter:   struct npc_data * nd
+// Parameter:   va_list args
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2022/06/16 07:58
+//************************************ 
+static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
+	nullpo_retr(0, nd);
+	
+	if (nd->subtype != NPCTYPE_BARTER)
+		return 0;
+
+	npc_unload_duplicates(nd);
+	npc_unload(nd, true);
+
+	return 0;
+}
+
+void BarterDatabase::clear() {
+	map_foreachnpc(npc_reload_barters_sub);
+}
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 BarterDatabase barter_db;
 
@@ -3467,7 +3593,7 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 					return e_purchase_result::PURCHASE_FAIL_GOODS;
 				}
 			}else{
-				for( int i = 0; i < requirement->amount; i++ ){
+				for( int i = 0; i < (requirement->amount * amount); i++ ){
 					int j;
 
 					for( j = 0; j < MAX_INVENTORY; j++ ){
@@ -6276,27 +6402,27 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
-		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDCREATE
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
-		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDJOIN
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
-		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYCREATE
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
-		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYJOIN
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROPITEM
@@ -6306,6 +6432,14 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_CLICKTOMB
 		NPCF_CLICKTOMB,	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+		NPCF_STORAGE_ADD,	// storage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+		NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6484,32 +6618,32 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
 	case NPCF_GUILDCREATE:
-		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDCREATE
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
 	case NPCF_GUILDJOIN:
-		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDJOIN
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
 	case NPCF_GUILDLEAVE:
-		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
 	case NPCF_PARTYCREATE:
-		return script_config.partycreate_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+		return script_config.partycreate_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYCREATE
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
 	case NPCF_PARTYJOIN:
-		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYJOIN
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	case NPCF_PARTYLEAVE:
-		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROPITEM
@@ -6521,6 +6655,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_CLICKTOMB:
 		return script_config.clicktomb_filter_name;	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
 #endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	case NPCF_STORAGE_ADD:
+		return script_config.storage_add_filter_name;	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	case NPCF_STORAGE_DEL:
+		return script_config.storage_del_filter_name;	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

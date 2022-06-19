@@ -304,7 +304,7 @@ int mercenary_delete(s_mercenary_data *md, int reply) {
 		pc_setreg(sd, add_str("@mer_leave_reason"), reply);
 
 		pc_setreg(sd, add_str("@mer_mapid"), (md ? md->bl.m : -1));
-		pc_setregstr(sd, add_str("@mer_mapname$"), (md ? map[md->bl.m].name : ""));
+		pc_setregstr(sd, add_str("@mer_mapname$"), (md && md->bl.m >= 0 ? map[md->bl.m].name : ""));
 		pc_setreg(sd, add_str("@mer_x"), (md ? md->bl.x : 0));
 		pc_setreg(sd, add_str("@mer_y"), (md ? md->bl.y : 0));
 
@@ -419,7 +419,7 @@ bool mercenary_recv_data(s_mercenary *merc, bool flag)
 		pc_setreg(sd, add_str("@mer_lifetime"), merc->life_time);
 
 		pc_setreg(sd, add_str("@mer_mapid"), (md ? md->bl.m : -1));
-		pc_setregstr(sd, add_str("@mer_mapname$"), (md ? map[md->bl.m].name : ""));
+		pc_setregstr(sd, add_str("@mer_mapname$"), (md && md->bl.m >= 0? map[md->bl.m].name : ""));
 		pc_setreg(sd, add_str("@mer_x"), (md ? md->bl.x : 0));
 		pc_setreg(sd, add_str("@mer_y"), (md ? md->bl.y : 0));
 

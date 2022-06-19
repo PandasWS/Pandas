@@ -68,7 +68,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.12.0"
+	#define Pandas_Version "1.1.13.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -178,7 +178,7 @@
 
 	// 以下选项开关需要依赖 Pandas_Struct_Npc_Data_Pandas 的拓展
 	#ifdef Pandas_Struct_Npc_Data_Pandas
-		// 使 npc_data 结构体可记录此 npc 的自毁策略 [Sola丶小克]
+		// 使 npc_data 结构体可记录此 NPC 的自毁策略 [Sola丶小克]
 		// 结构体修改定位 npc.hpp -> npc_data.pandas.destruction_strategy
 		#define Pandas_Struct_Npc_Data_DestructionStrategy
 	#endif // Pandas_Struct_Npc_Data_Pandas
@@ -773,6 +773,10 @@
 	#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 		#define Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
+	// 是否扩展 e_job_types 枚举类型的可选值 [Sola丶小克]
+	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
+	#define Pandas_Update_NPC_Identity_Information
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -981,23 +985,8 @@
 	// 备注: 单次获得的经验超过 long 的有效阈值范围后就会溢出成负数, 但最新的有效经验值区间是 int64
 	#define Pandas_Fix_GainExp_Display_Overflow
 
-	// 修正 rAthena 在 status_change_start 引入的重算逻辑导致的一系列异常 [Sola丶小克]
-	// 主要包含以下两个情况:
-	// - 重算导致清空了 autospell 的防止多次执行, 在特殊构造下会导致死循环
-	//   - 将怒爆的 Cooldown 设置为 0 之后
-	//   - 穿戴一件具有 100% 触发怒爆的装备如: bonus5 bAutoSpellOnSkill,7,7,5,1000,0;
-	//   - 找个剑士使用怒爆, 则会直接导致崩溃
-	// - 重算导致在 autobonus 的 bonus script 中使用 sc_start 会导致能力重算事件被递归执行多次
-	//   - 在特殊情况下这会导致地图服务器因栈溢出而崩溃
-	//   - 让某个装备具备脚本: bonus5 bAutoSpell,20,3,1000,BF_WEAPON,1;
-	//   - 改造小青的幽魂道具 (编号: 19136) 让它脚本中的 autobonus 变成以下脚本:
-	//     - autobonus "{ sc_start SC_MONSTER_TRANSFORM,5000,1631; bonus bMatkRate,30; bonus bCritAtkRate,30; }",1000,5000,BF_WEAPON,"{ specialeffect2 EF_POTION_BERSERK; showscript "Eddga Power !"; }"; 
-	//     - autobonus "{ sc_start SC_MONSTER_TRANSFORM,5000,1631; bonus bMatkRate,30; bonus bCritAtkRate,30; bonus2 bIgnoreDefClassRate,Class_All,50; bonus2 bIgnoreMdefClassRate,Class_All,50;}", 1000, 5000, BF_MAGIC, "{ specialeffect2 EF_POTION_BERSERK; showscript "Eddga Power !"; }";
-	//   - 使用普通攻击, 可发现以下异常特征:
-	//     - 面板数据错乱
-	//     - 能力重算事件被多次重复递归调用
-	//     - 有概率的导致地图服务器堆栈溢出崩溃
-	#define Pandas_Fix_Status_Change_Start_Infinite_Recalculate_Status
+	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
+	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1434,6 +1423,16 @@
 		// 事件类型: Filter / 事件名称: OnPCClickTombFilter
 		// 常量名称: NPCF_CLICKTOMB / 变量名称: clicktomb_filter_name
 		#define Pandas_NpcFilter_CLICKTOMB
+
+		// 当玩家准备将道具存入仓库时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCStorageAddFilter
+		// 常量名称: NPCF_STORAGE_ADD / 变量名称: storage_add_filter_name
+		#define Pandas_NpcFilter_STORAGE_ADD
+
+		// 当玩家准备将道具取出仓库时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCStorageDelFilter
+		// 常量名称: NPCF_STORAGE_DEL / 变量名称: storage_del_filter_name
+		#define Pandas_NpcFilter_STORAGE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1689,6 +1688,14 @@
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
 	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]
+	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
+	#define Pandas_AtCommand_ReloadLaphineDB
+
+	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
+	// 重新加载 Barters 以物易物数据库 (barters.yml)
+	#define Pandas_AtCommand_ReloadBarterDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -2130,6 +2137,14 @@
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
 	// 随机获取一个数值型数组的索引序号, 数组中每个元素的值为权重值
 	#define Pandas_ScriptCommand_GetRateIdx
+
+	// 是否启用 getbossinfo 脚本指令 [Sola丶小克]
+	// 该指令用于查询 BOSS 魔物重生时间及其坟墓等信息
+	#define Pandas_ScriptCommand_GetBossInfo
+
+	// 是否启用 whodropitem 脚本指令 [Sola丶小克]
+	// 该指令用于查询指定道具会从哪些魔物身上掉落以及掉落的机率信息
+	#define Pandas_ScriptCommand_WhoDropItem
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
