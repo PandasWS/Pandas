@@ -2481,6 +2481,9 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 bool npc_express_aide_mobdropitem(struct mob_data* md,
 	struct block_list* src, struct item_drop_list* dlist, t_itemid nameid, int drop_rate, int drop_type);
 #endif // Pandas_NpcExpress_MOBDROPITEM
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to);
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_Helper_Common_Function
 struct event_data* npc_event_data(const char* eventname);
