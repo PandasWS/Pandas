@@ -740,7 +740,7 @@
 
 --------------------------------------------------------------
 
-*OnPCStorageAddFilter:
+*OnPCStorageDelFilter:
 
 当玩家准备将道具取出仓库时触发过滤器 [香草]
 
@@ -761,7 +761,7 @@
 	@removeitem_src_nameid		即将取出的道具编号
 	@removeitem_src_amount		即将取出的道具数量
 
-	@removeitem_dst_type		将其存放到的目的地 (1: 背包; 2: 手推车)
+	@removeitem_dst_type		计划将其存放到的目的地 (1: 背包; 2: 手推车)
 
 注意事项:
 	此事件触发时无法确保玩家最终的道具一定就能够成功从仓库中取出,

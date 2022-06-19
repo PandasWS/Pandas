@@ -330,7 +330,7 @@ bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* s
 	pc_setreg(sd, add_str("@removeitem_src_nameid"), idata->nameid);		// 即将取出的道具编号
 	pc_setreg(sd, add_str("@removeitem_src_amount"), amount);				// 即将取出的道具数量
 
-	pc_setreg(sd, add_str("@removeitem_dst_type"), item_to);				// 将其存放到的目的地 (1: 背包; 2: 手推车)
+	pc_setreg(sd, add_str("@removeitem_dst_type"), item_to);				// 计划将其存放到的目的地 (1: 背包; 2: 手推车)
 
 	return npc_script_filter(sd, NPCF_STORAGE_DEL);
 	
