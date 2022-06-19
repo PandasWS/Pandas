@@ -331,7 +331,7 @@ bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* s
 	pc_setreg(sd, add_str("@storeitem_src_amount"), amount);				// 即将存入的道具数量
 
 	pc_setreg(sd, add_str("@storeitem_dst_type"), (int)(store->type - 2));	// 计划将其存放到的目标仓库类型 (1: 个人仓库; 2: 公会仓库)
-	pc_setreg(sd, add_str("@storeitem_dst_id"), store->stor_id);			// 计划将其存放到的目标仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+	pc_setreg(sd, add_str("@storeitem_dst_storeid"), store->stor_id);		// 计划将其存放到的目标仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
 
 	return npc_script_filter(sd, NPCF_STORAGE_ADD);
 }

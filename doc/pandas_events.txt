@@ -758,7 +758,7 @@
 	@storeitem_src_amount	即将存入的道具数量
 	
 	@storeitem_dst_type		计划将其存放到的目标仓库类型 (1: 个人仓库; 2: 公会仓库)
-	@storeitem_dst_id		计划将其存放到的目标仓库编号
+	@storeitem_dst_storeid	计划将其存放到的目标仓库编号
 							对于公会仓库而言, 此选项的值无意义 (固定为 0).
 							当我们在 conf/inter_server.yml 中定义多个玩家个人仓库,
 							并使用 openstorage2 指令打开它们进行物品存放的时候,
