@@ -148,8 +148,12 @@ std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 // Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
 //************************************ 
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
-	nullpo_retv(sd);
 	nullpo_retv(md);
+
+	// 此处不再使用 nullpo_retv 对 sd 进行判断
+	// 因为被系统杀死的魔物 sd 将永远为 0, 而使用 nullpo_retv 会导致终端抛出空指针错误
+	// 在这个场景下, 空指针是可预期
+	if (!sd) return;
 
 	struct status_data* status;
 	status = &md->status;
