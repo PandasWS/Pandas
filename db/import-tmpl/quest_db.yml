@@ -51,6 +51,7 @@
 #       Item        Item to drop.
 #       Count       Amount of items that will drop. Non-stackable items default to 1. (Default: 1)
 #       Rate        Item drop rate. (10000 = 100%)
+#   Bound           此任务的所属单位. QUEST_CHAR(默认): 角色单位, QUEST_ACCOUNT: 账号单位
 ###########################################################################
 
 Header:

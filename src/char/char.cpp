@@ -878,6 +878,47 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 }
 
 /**
+ * Return Account ID by Char ID
+ */
+int char_get_account_id(uint32 char_id)
+{
+	int account_id;
+	DBMap* char_db_ = char_get_chardb();
+	struct mmo_charstatus* cd = (struct mmo_charstatus*)idb_get(char_db_, char_id);
+	if (cd)
+		account_id = cd->account_id;
+	else
+	{
+		SqlStmt* stmt;
+		stmt = SqlStmt_Malloc(sql_handle);
+		if (stmt == NULL)
+		{
+			SqlStmt_ShowDebug(stmt);
+			return 0;
+		}
+
+		// read char data
+		if (SQL_ERROR == SqlStmt_Prepare(stmt, "SELECT account_id FROM `%s` WHERE `char_id`=? ", schema_config.char_db)
+			|| SQL_ERROR == SqlStmt_BindParam(stmt, 0, SQLDT_INT, &char_id, 0)
+			|| SQL_ERROR == SqlStmt_Execute(stmt)
+			|| SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &account_id, 0, NULL, NULL)
+			)
+		{
+			SqlStmt_ShowDebug(stmt);
+			SqlStmt_Free(stmt);
+			return 0;
+		}
+		if (SqlStmt_NextRow(stmt) != SQL_SUCCESS)
+		{
+			SqlStmt_Free(stmt);
+			return 0;
+		}
+		SqlStmt_Free(stmt);
+	}
+	return account_id;
+}
+
+/**
  * Returns the correct gender ID for the given character and enum value.
  *
  * If the per-character sex is defined but not supported by the current packetver, the account gender is returned.
@@ -2554,6 +2595,11 @@ bool char_checkdb(void){
 	}
 	//checking quest_db
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT  `char_id`,`quest_id`,`state`,`time`,`count1`,`count2`,`count3` from `%s`;", schema_config.quest_db) ){
+		Sql_ShowDebug(sql_handle);
+		return false;
+	}
+	//checking quest_db_acc
+	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT  `account_id`,`quest_id`,`state`,`time`,`count1`,`count2`,`count3` from `%s`;", schema_config.quest_db_acc)) {
 		Sql_ShowDebug(sql_handle);
 		return false;
 	}
