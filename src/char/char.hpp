@@ -77,6 +77,7 @@ struct Schema_Config {
 	char friend_db[DB_NAME_LEN];
 	char hotkey_db[DB_NAME_LEN];
 	char quest_db[DB_NAME_LEN];
+	char quest_db_acc[DB_NAME_LEN];
 	char homunculus_db[DB_NAME_LEN];
 	char skill_homunculus_db[DB_NAME_LEN];
 	char mercenary_db[DB_NAME_LEN];
