@@ -1176,6 +1176,7 @@ static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
 
 void BarterDatabase::clear() {
 	map_foreachnpc(npc_reload_barters_sub);
+	TypesafeYamlDatabase::clear();
 }
 #endif // Pandas_AtCommand_ReloadBarterDB
 
