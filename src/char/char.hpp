@@ -350,5 +350,5 @@ int char_msg_config_read(const char *cfgName);
 const char* char_msg_txt(int msg_number);
 void char_do_final_msg(void);
 bool char_config_read(const char* cfgName, bool normal);
-
+int char_get_account_id(uint32 char_id);
 #endif /* CHAR_HPP */

@@ -2765,6 +2765,8 @@ void char_sql_config_read(const char* cfgName) {
 			safestrncpy(schema_config.hotkey_db, w2, sizeof(schema_config.hotkey_db));
 		else if(!strcmpi(w1,"quest_db"))
 			safestrncpy(schema_config.quest_db,w2,sizeof(schema_config.quest_db));
+		else if (!strcmpi(w1, "quest_db_acc"))
+			safestrncpy(schema_config.quest_db_acc, w2, sizeof(schema_config.quest_db_acc));
 		else if(!strcmpi(w1,"homunculus_db"))
 			safestrncpy(schema_config.homunculus_db,w2,sizeof(schema_config.homunculus_db));
 		else if(!strcmpi(w1,"skill_homunculus_db"))
@@ -2831,6 +2833,7 @@ void char_set_default_sql(){
 	safestrncpy(schema_config.friend_db,"friends",sizeof(schema_config.friend_db));
 	safestrncpy(schema_config.hotkey_db,"hotkey",sizeof(schema_config.hotkey_db));
 	safestrncpy(schema_config.quest_db,"quest",sizeof(schema_config.quest_db));
+	safestrncpy(schema_config.quest_db_acc, "quest", sizeof(schema_config.quest_db_acc));
 	safestrncpy(schema_config.homunculus_db,"homunculus",sizeof(schema_config.homunculus_db));
 	safestrncpy(schema_config.skill_homunculus_db,"skill_homunculus",sizeof(schema_config.skill_homunculus_db));
 	safestrncpy(schema_config.mercenary_db,"mercenary",sizeof(schema_config.mercenary_db));
