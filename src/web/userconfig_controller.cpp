@@ -210,7 +210,10 @@ HANDLER_FUNC(userconfig_save) {
 			json data_from_db = json::parse(A2UWE(databuf));
 			json data_from_client = json::parse(req.get_file_value("data").content);
 
-			data_from_db.merge_patch_v2(data_from_client, false);
+			// 此处需要允许 null 节点对数据进行覆盖
+			// 否则当玩家在客户端中重置快捷键设置的时候, 会发送上来一个全部都为 null 的节点,
+			// 此时服务端忽略掉它们, 会导致玩家下次登录还会发现快捷键还在
+			data_from_db.merge_patch_v2(data_from_client, true);
 			data = U2AWE(data_from_db.dump(3));
 		}
 	}
