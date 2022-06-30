@@ -1014,8 +1014,7 @@ void clif_dropflooritem( struct flooritem_data* fitem, bool canShowEffect ){
 #endif // Pandas_ScriptCommand_Next_Dropitem_Special
 
 #endif
-
-	clif_send(&p, sizeof(p), &fitem->bl, AREA);
+	clif_send( &p, sizeof(p), &fitem->bl, AREA );
 }
 
 
@@ -1056,7 +1055,6 @@ void clif_clearunit_single(int id, clr_type type, int fd)
 	WFIFOL(fd,2) = id;
 	WFIFOB(fd,6) = type;
 	WFIFOSET(fd, packet_len(0x80));
-
 }
 
 #ifdef Pandas_Ease_Mob_Stuck_After_Dead
@@ -1075,10 +1073,6 @@ static TIMER_FUNC(clif_clearunit_twice_sub) {
 	WBUFB(buf, 6) = (clr_type)id;
 
 	clif_send(buf, packet_len(0x80), bl, (clr_type)id == CLR_DEAD ? AREA_DEAD : AREA_WOS);
-
-#ifdef Pandas_Cross_Server
-	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x80), bl, (clr_type)id == CLR_DEAD ? AREA_DEAD : AREA_WOS);
-#endif
 
 	ers_free(twice_clearunit_ers, bl);
 	return 0;
@@ -1105,18 +1099,27 @@ void clif_clearunit_area(struct block_list* bl, clr_type type)
 
 #ifndef Pandas_Ease_Mob_Stuck_After_Dead
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA : AREA_WOS);
+#ifdef Pandas_Cross_Server
+	if(type == CLR_DEAD)
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x80), bl, AREA);
+#endif
 #else
 	clif_send(buf, packet_len(0x80), bl, type == CLR_DEAD ? AREA_DEAD : AREA_WOS);
+#ifdef Pandas_Cross_Server
+	if (type == CLR_DEAD)
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x80), bl, AREA_DEAD);
+#endif
 #endif // Pandas_Ease_Mob_Stuck_After_Dead
 
 	if(disguised(bl)) {
 		WBUFL(buf,2) = disguised_bl_id( bl->id );
 		clif_send(buf, packet_len(0x80), bl, SELF);
+#ifdef Pandas_Cross_Server
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x80), bl, SELF);
+#endif
 	}
 
-#ifdef Pandas_Cross_Server
-	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x80), bl, SELF);
-#endif
+
 
 #ifdef Pandas_Ease_Mob_Stuck_After_Dead
 	if (!battle_config.repeat_clearunit_interval) {
@@ -1274,6 +1277,7 @@ void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore
 /*==========================================
  * Prepares 'unit standing/spawning' packet
  *------------------------------------------*/
+//这一段如果另外发CS修正包很可能造成重影问题，请务必注意
 static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target target, struct block_list* tbl ){
 	nullpo_retv( bl );
 
@@ -1437,11 +1441,6 @@ static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target
 #endif // Pandas_Player_Suspend_System
 
 	clif_send( &p, sizeof( p ), tbl, target );
-
-#ifdef Pandas_Cross_Server
-	sp_clif_send(p.AID, &p, sizeof(p), tbl, target);
-#endif
-
 	// if disguised, send to self
 	if( disguised( bl ) ){
 #if PACKETVER >= 20091103
@@ -1455,10 +1454,6 @@ static void clif_set_unit_idle( struct block_list* bl, bool walking, send_target
 		p.GID = disguised_bl_id( bl->id );
 #endif
 		clif_send(&p, sizeof(p), bl, SELF);
-
-#ifdef Pandas_Cross_Server
-		sp_clif_send(p.AID, &p, sizeof(p), tbl, target);
-#endif
 	}
 
 #ifdef Pandas_Aura_Mechanism
@@ -1604,9 +1599,6 @@ static void clif_spawn_unit( struct block_list *bl, enum send_target target ){
 
 		if( sd->status.class_ != sd->disguise ){
 			clif_send( &p, sizeof( p ), bl, target );
-#ifdef Pandas_Cross_Server
-			sp_clif_send(p.AID, &p, sizeof(p), bl, target);
-#endif
 		}
 
 #if PACKETVER >= 20091103
@@ -1620,14 +1612,8 @@ static void clif_spawn_unit( struct block_list *bl, enum send_target target ){
 		p.GID = disguised_bl_id( bl->id );
 #endif
 		clif_send( &p, sizeof( p ), bl, SELF );
-#ifdef Pandas_Cross_Server
-		sp_clif_send(p.AID, &p, sizeof(p), bl, SELF);
-#endif
 	}else{
 		clif_send( &p, sizeof( p ), bl, target );
-#ifdef Pandas_Cross_Server
-		sp_clif_send(p.AID, &p, sizeof(p), bl, target);
-#endif
 	}
 
 #ifdef Pandas_Aura_Mechanism
@@ -2306,9 +2292,6 @@ void clif_move(struct unit_data *ud)
 			WBUFPOS2(buf,6,bl->x,bl->y,ud->to_x,ud->to_y,8,8);
 			WBUFL(buf,12)=client_tick(gettick());
 			clif_send(buf, packet_len(0x86), bl, SELF);
-#ifdef Pandas_Cross_Server
-			sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x86), bl, SELF);
-#endif
 		}
 		return;
 	}
@@ -2336,9 +2319,6 @@ void clif_move(struct unit_data *ud)
 	if (disguised(bl)) {
 		WBUFL(buf,2)=disguised_bl_id(bl->id);
 		clif_send(buf, packet_len(0x86), bl, SELF);
-#ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x86), bl, SELF);
-#endif
 	}
 	clif_ally_only = false;
 }
@@ -2447,15 +2427,10 @@ void clif_fixpos(struct block_list *bl)
 	WBUFW(buf,6) = bl->x;
 	WBUFW(buf,8) = bl->y;
 	clif_send(buf, packet_len(0x88), bl, AREA);
-#ifdef Pandas_Cross_Server
-	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x88), bl, AREA);
-#endif
+
 	if( disguised(bl) ) {
 		WBUFL(buf,2) = disguised_bl_id(bl->id);
 		clif_send(buf, packet_len(0x88), bl, SELF);
-#ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x88), bl, SELF);
-#endif
 	}
 }
 
@@ -12617,11 +12592,11 @@ void clif_parse_GetCharNameRequest(int fd, struct map_session_data *sd)
 	if( id < 0 && -id == sd->bl.id ) // for disguises [Valaris]
 		id = sd->bl.id;
 
-/*#ifdef Pandas_Cross_Server
+#ifdef Pandas_Cross_Server
 	if(is_cross_server)
 		if(abs(id) == get_real_id(sd->bl.id))
 			id = sd->bl.id;
-#endif*/
+#endif
 
 	bl = map_id2bl(id);
 	if( bl == NULL )
