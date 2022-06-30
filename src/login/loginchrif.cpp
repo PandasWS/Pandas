@@ -10,6 +10,7 @@
 #include "../common/socket.hpp" //wfifo session
 #include "../common/strlib.hpp" //safeprint
 #include "../common/timer.hpp" //difftick
+#include "../common/crossserver.hpp"
 
 #include "account.hpp"
 #include "login.hpp"
@@ -493,6 +494,13 @@ int logchrif_parse_upd_global_accreg(int fd, int id, char* ip){
 		struct mmo_account acc;
 		AccountDB* accounts = login_get_accounts_db();
 		uint32 account_id = RFIFOL(fd,4);
+
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+		is_fake_id(account_id);
+#endif
+		account_id = get_real_id(account_id);
+#endif
 
 		if( !accounts->load_num(accounts, &acc, account_id) )
 			ShowStatus("Char-server '%s': receiving (from the char-server) of account_reg2 (account: %d not found, ip: %s).\n", ch_server[id].name, account_id, ip);

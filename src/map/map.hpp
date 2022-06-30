@@ -1272,8 +1272,14 @@ bool map_blid_exists( int id );
 const char* map_mapid2mapname(int m);
 int16 map_mapindex2mapid(unsigned short mapindex);
 int16 map_mapname2mapid(const char* name);
+
+#ifndef Pandas_Cross_Server
 int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port);
 int map_setipport(unsigned short map, uint32 ip, uint16 port);
+#else
+int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port, uint32 cs_id);
+int map_setipport(unsigned short map, uint32 ip, uint16 port,uint32 cs_id);
+#endif
 int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseallipport(void);
 void map_addiddb(struct block_list *);

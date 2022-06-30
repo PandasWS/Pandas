@@ -23,6 +23,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -11465,6 +11466,26 @@ void clif_parse_WantToConnection(int fd, struct map_session_data* sd)
 		clif_authfail_fd(fd,1);// server closed
 		return;
 	}
+
+	if (is_cross_server)
+	{
+		const auto it = logintoken_to_cs_id.find(login_id1);
+		if (it == logintoken_to_cs_id.end())
+		{
+			ShowWarning("" CL_BLUE "[Cross Server]" CL_RESET "clif_parse_WantToConnection: 'login_id1 to cs id' not found where char-server passed.Player AID:%d CID:%d logind_id1:%d.\n", account_id, char_id);
+			WFIFOHEAD(fd, packet_len(0x6a));
+			WFIFOW(fd, 0) = 0x6a;
+			WFIFOB(fd, 2) = 3; // Rejected by server
+			WFIFOSET(fd, packet_len(0x6a));
+			set_eof(fd);
+			return;
+		}
+		int cs_id = it->second;
+		account_id = make_fake_id(account_id, cs_id);
+		char_id = make_fake_id(char_id, cs_id);
+		logintoken_to_cs_id.erase(it);
+	}
+
 
 	//Check for double login.
 	bl = map_id2bl(account_id);

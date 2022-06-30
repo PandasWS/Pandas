@@ -22,6 +22,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "atcommand.hpp" // get_atcommand_level()
@@ -6971,8 +6972,23 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		struct script_state *st;
 
 		//if can't find any map-servers, just abort setting position.
+#ifndef Pandas_Cross_Server
 		if(!sd->mapindex || map_mapname2ipport(mapindex,&ip,&port))
 			return SETPOS_NO_MAPSERVER;
+#else
+		{
+			int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
+			if (!sd->mapindex || map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
+				return SETPOS_NO_MAPSERVER;
+			if (is_cross_server)
+			{
+				int tfd = chrif_get_char_fd(cs_id);
+				if (tfd <= 0 || !chrif_fd_isconnected(tfd))
+					return SETPOS_NO_MAPSERVER;
+			}
+		}
+		
+#endif
 
 		if (sd->npc_id){
 			npc_event_dequeue(sd,false);

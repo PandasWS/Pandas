@@ -218,10 +218,11 @@ struct mmo_map_server {
 	uint16 port;
 	int users;
 	std::vector<uint16> map;
+	uint32 server_id;
 };
 extern struct mmo_map_server map_server[MAX_MAP_SERVERS];
 
-#define AUTH_TIMEOUT 30000
+#define AUTH_TIMEOUT 5000
 struct auth_node {
 	uint32 account_id;
 	uint32 char_id;

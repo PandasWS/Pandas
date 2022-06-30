@@ -22,6 +22,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char_clif.hpp"
 #include "char_cnslif.hpp"
@@ -119,6 +120,7 @@ void char_set_charselect(uint32 account_id) {
 void char_set_char_online(int map_id, uint32 char_id, uint32 account_id) {
 	struct online_char_data* character;
 	struct mmo_charstatus *cp;
+
 
 	//Update DB
 	if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `online`='1', `last_login`=NOW() WHERE `char_id`='%d' LIMIT 1", schema_config.char_db, char_id) )
@@ -561,16 +563,34 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 			printname = "Inventory";
 			tablename = schema_config.inventory_db;
 			selectoption = "char_id";
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+			is_fake_id(id);
+#endif
+			id = get_real_id(id);
+#endif
 			break;
 		case TABLE_CART:
 			printname = "Cart";
 			tablename = schema_config.cart_db;
 			selectoption = "char_id";
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+			is_fake_id(id);
+#endif
+			id = get_real_id(id);
+#endif
 			break;
 		case TABLE_STORAGE:
 			printname = inter_premiumStorage_getPrintableName(stor_id);
 			tablename = inter_premiumStorage_getTableName(stor_id);
 			selectoption = "account_id";
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+			is_fake_id(id);
+#endif
+			id = get_real_id(id);
+#endif
 			break;
 		case TABLE_GUILD_STORAGE:
 			printname = "Guild Storage";
@@ -777,6 +797,12 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			selectoption = "char_id";
 			storage = p->u.items_inventory;
 			max2 = MAX_INVENTORY;
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+			is_fake_id(id);
+#endif
+			id = get_real_id(id);
+#endif
 			break;
 		case TABLE_CART:
 			printname = "Cart";
@@ -784,6 +810,12 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			selectoption = "char_id";
 			storage = p->u.items_cart;
 			max2 = MAX_CART;
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+			is_fake_id(id);
+#endif
+			id = get_real_id(id);
+#endif
 			break;
 		case TABLE_STORAGE:
 			printname = "Storage";
@@ -791,6 +823,12 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			selectoption = "account_id";
 			storage = p->u.items_storage;
 			max2 = inter_premiumStorage_getMax(p->stor_id);
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+			is_fake_id(id);
+#endif
+			id = get_real_id(id);
+#endif
 			break;
 		case TABLE_GUILD_STORAGE:
 			printname = "Guild Storage";
@@ -2204,6 +2242,14 @@ void char_read_fame_list(void)
 int char_loadName(uint32 char_id, char* name){
 	char* data;
 	size_t len;
+
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+	is_fake_id(char_id);
+#endif
+	int cs_id = get_cs_id(char_id);
+	char_id = get_real_id(char_id);
+#endif
 
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `name` FROM `%s` WHERE `char_id`='%d'", schema_config.char_db, char_id) )
 		Sql_ShowDebug(sql_handle);

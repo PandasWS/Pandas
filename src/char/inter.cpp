@@ -16,6 +16,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_logif.hpp"
@@ -516,6 +517,12 @@ void mapif_parse_accinfo(int fd) {
 				Sql_FreeResult(sql_handle);
 			} else {// more than one, listing... [Dekamaster/Nightroad]
 				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(214),(int)Sql_NumRows(sql_handle));
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+				is_fake_id(u_aid);
+#endif
+				int cs_id = get_cs_id(u_aid);
+#endif
 				while ( SQL_SUCCESS == Sql_NextRow(sql_handle) ) {
 					int class_;
 					short base_level, job_level, online;
@@ -528,13 +535,25 @@ void mapif_parse_accinfo(int fd) {
 					Sql_GetData(sql_handle, 4, &data, NULL); job_level = atoi(data);
 					Sql_GetData(sql_handle, 5, &data, NULL); online = atoi(data);
 
-					inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(215), account_id, name, job_name(class_), base_level, job_level, online?"Online":"Offline");
+#ifdef Pandas_Cross_Server
+					account_id = make_fake_id(account_id, cs_id);
+#endif
+					inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(215), account_id, name, job_name(class_), base_level, job_level, online ? "Online" : "Offline");
+					
 				}
 				Sql_FreeResult(sql_handle);
 				return;
 			}
 		}
 	}
+
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+	is_fake_id(u_aid);
+#endif
+	u_aid = get_cs_id(u_aid);
+#endif
+	//TODO: 这里传过来的account_id或许是手动输入的?所以不必计较,只要保证u_aid是real就行
 
 	/* it will only get here if we have a single match then ask login-server to fetch the `login` record */
 	if (!account_id || chlogif_req_accinfo(fd, u_fd, u_aid, account_id, type) != 1) {
@@ -550,6 +569,12 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
 	int group_id, int logincount, int state, const char *email, const char *last_ip, const char *lastlogin,
 	const char *birthdate, const char *userid)
 {
+
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+	is_fake_id(u_aid);
+#endif
+#endif
 	
 	if (map_fd <= 0 || !session_isActive(map_fd))
 		return; // check if we have a valid fd
@@ -993,7 +1018,7 @@ int inter_init_sql(const char *file)
 	//DB connection initialized
 	sql_handle = Sql_Malloc();
 	ShowInfo("Connect Character DB server.... (Character Server)\n");
-	if( SQL_ERROR == Sql_Connect(sql_handle, char_server_id.c_str(), char_server_pw.c_str(), char_server_ip.c_str(), (uint16)char_server_port, char_server_db.c_str()))
+	if (SQL_ERROR == Sql_Connect(sql_handle, char_server_id.c_str(), char_server_pw.c_str(), char_server_ip.c_str(), (uint16)char_server_port, char_server_db.c_str()))
 	{
 		ShowError("Couldn't connect with username = '%s', host = '%s', port = '%d', database = '%s'\n",
 			char_server_id.c_str(), char_server_ip.c_str(), char_server_port, char_server_db.c_str());

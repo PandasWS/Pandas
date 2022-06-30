@@ -38,6 +38,7 @@
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
 	#define Pandas_WebServer
+	#define Pandas_InterestingFeatures
 #endif // Pandas
 
 #ifndef GIT_BRANCH
@@ -778,6 +779,20 @@
 	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
 	#define Pandas_Update_NPC_Identity_Information
 #endif // Pandas_CreativeWork
+
+#ifdef Pandas_InterestingFeatures
+
+	// 是否启用跨服服务
+    // 所有参与跨服的都服务器都必须打开此开关
+    // 相关设定与说明请看doc
+	#define Pandas_Cross_Server
+
+	#ifdef Pandas_Cross_Server
+		//方便debug输入的AID/CID是fake id的情景
+		#define Pandas_Fake_Id_Check_Debug
+	#endif
+
+#endif
 
 // ============================================================================
 // 官方缺陷修正组 - Pandas_Bugfix
