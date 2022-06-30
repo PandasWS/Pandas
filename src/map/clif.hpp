@@ -1002,6 +1002,9 @@ void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, e
 void clif_displayexp(struct map_session_data *sd, t_exp exp, char type, bool quest, bool lost);
 
 int clif_send(const void* buf, int len, struct block_list* bl, enum send_target type);
+//special clif_send
+bool sp_clif_send(uint32& aid, const void* buf, int len, block_list* bl, enum send_target type);
+
 void do_init_clif(void);
 void do_final_clif(void);
 

@@ -25505,6 +25505,9 @@ Body:
       Armor: true
     ArmorLevel: 1
     Refineable: true
+    Script: |
+      skill "GC_CLOAKINGEXCEED",5;
+      skill "AS_CLOAKING",10;
   - Id: 2302
     AegisName: Cotton_Shirt_
     Name: Cotton Shirt

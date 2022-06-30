@@ -1,5 +1,8 @@
 ﻿#include "crossserver.hpp"
 
+#include "strlib.hpp"
+
+
 //from local conf
 bool is_cross_server;
 const char* CS_CONF_NAME;
@@ -59,7 +62,7 @@ int cs_config_read(const char* cfgName)
 		if (strcmpi(w1, "server_id") == 0)
 			csd->server_id = atoi(w2);
 		else if (strcmpi(w1, "server_name") == 0)
-			csd->server_name.assign(w2, 1024);
+			safestrncpy(csd->server_name, w2, sizeof(csd->server_name));
 		else if (strcmpi(w1, "char_server_ip") == 0)
 			csd->char_server_ip.assign(w2, 1024);
 		else if (strcmpi(w1, "char_server_port") == 0)
@@ -141,11 +144,12 @@ int get_cs_prefix(int cs_id)
  * \brief 从fake id返回real id(即原来服务器上的AID、CID)
  * 不是fake id也不会受到影响
  * \param id : real id
+ * \param force : 负数也强制转换
  * \return 
  */
-int get_real_id(int id)
+int get_real_id(int id,bool force)
 {
-	if (id <= 0)
+	if (id <= 0 && !force)
 		return id;
 	return id % cs_id_factor;
 }
@@ -339,6 +343,8 @@ void chrif_logintoken_received(int fd) {
 	const auto it = std::make_pair(login_id1, cs_id);
 	logintoken_to_cs_id.insert(it);
 }
+
+
 
 //默认检查isValid
 int check_fd_valid(int fd, int flag)

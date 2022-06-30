@@ -582,8 +582,7 @@ int chrif_connectack(int fd) {
 	}
 #else
 
-	if (!is_cross_server || cs_init_done)
-		npc_event_runall(script_config.inter_init_event_name);
+	if (!is_cross_server || cs_init_done)npc_event_runall(script_config.inter_init_event_name);
 
 	if (!char_init_done) {
 		npc_event_runall(script_config.inter_init_once_event_name);

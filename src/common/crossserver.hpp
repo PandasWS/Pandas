@@ -11,6 +11,8 @@
 #include "showmsg.hpp"
 #include "malloc.hpp"
 
+struct block_list;
+enum send_target : uint8;
 struct map_data_other_server;
 constexpr auto cs_id_factor = 10000000;
 constexpr auto MAX_CHAR_SERVERS = 5;
@@ -60,7 +62,7 @@ enum SqlHandlerType {
 
 struct cross_server_data {
 	int server_id = 0;
-	std::string server_name = "[CS]";
+	char server_name[6];
 
 	std::string char_server_ip = "127.0.0.1";
 	int char_server_port = 6121;
@@ -92,7 +94,7 @@ int cs_config_read(const char* cfgName);
 //common
 int get_cs_id(int id);
 int get_cs_prefix(int cs_id);
-int get_real_id(int id);
+int get_real_id(int id,bool force = false);
 int make_fake_id(int id, int cs_id);
 bool is_fake_id(int id);
 map_data_other_server* findmap(int cs_id, uint32 mapindex);
