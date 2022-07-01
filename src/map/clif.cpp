@@ -6545,13 +6545,38 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 		WBUFL(buf,8)=disguised_bl_id(dst->id);
 		clif_send(buf,packet_len(0x1de),dst,SELF);
 #ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 4), buf, packet_len(0x1de), dst, SELF);
+		if (is_cross_server)
+		{
+			if (src->type == BL_PC)
+				WBUFL(buf, 4) = get_real_id(src->id);
+			clif_send(buf, packet_len(0x1de), dst, SELF);
+			WBUFL(buf, 4) = src->id;
+		}
 #endif
 	} else
 	{
+
 		clif_send(buf, packet_len(0x1de), dst, AREA);
 #ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 4), buf, packet_len(0x1de), dst, AREA);
+		if (is_cross_server){
+			if(src->type == BL_PC || dst->type == BL_PC)
+			{
+				if(src->type == BL_PC)
+				{
+					WBUFL(buf, 4) = get_real_id(src->id);
+					clif_send(buf, packet_len(0x1de), src, SELF);
+				}
+				
+				if (dst->type == BL_PC)
+				{
+					WBUFL(buf, 4) = src->id;
+					WBUFL(buf, 8) = dst->id;
+					clif_send(buf, packet_len(0x1de), src, SELF);
+				}
+			}
+			WBUFL(buf, 4) = src->id;
+			WBUFL(buf, 8) = dst->id;
+		}
 #endif
 	}
 
@@ -6563,7 +6588,11 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 			WBUFL(buf,24)=-1;
 		clif_send(buf,packet_len(0x1de),src,SELF);
 #ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 4), buf, packet_len(0x1de), src, SELF);
+		if (is_cross_server)
+		{
+			WBUFL(buf, 4) = get_real_id(disguised_bl_id(src->id));
+			clif_send(buf, packet_len(0x1de), src, SELF);
+		}
 #endif
 	}
 #endif
@@ -6672,32 +6701,60 @@ bool clif_skill_nodamage(struct block_list *src,struct block_list *dst, uint16 s
 	{
 		clif_send(buf, packet_len(cmd), dst, AREA);
 #ifdef Pandas_Cross_Server
-		//当释放对象是自身的时候，需要做特殊处理 - X
 		//当双Id出现时，同时做处理比较好
-		//以下情况列举:(假设自身Id 120,200 | 对方Id:221,201)
+		//以下情况列举:(假设自身Id 1200,200 | 对方Id:2201,201)
 		//情况1: 源=自己 目标=对方时,target type为Area则会出现
-		//       自己视角: 120向221做出动作,但自己客户端只识别200和221
-		//       他人视角: 120向221做出动作,他人眼中可识别120和221
-		//       此时需要补上 200向221的视角,target type为SELF
+		//       自己视角: 1200向2201做出动作,但自己客户端只识别200和2201
+		//       他人视角: 1200向2201做出动作,他人眼中可识别1200和2201
+		//       此时需要对自己补上 200向2201的视角
 		//
 		//情况2: 源=对方 目标=自己时,target type为Area则会出现
-		//       自己视角: 221向120做出动作,但自己客户端只识别221和200
-		//       他人视角: 221向120做出动作,他人眼中可识别221和120
-		//       此时需要补上 221向120的视角,target type为SELF
+		//       自己视角: 2201向1200做出动作,但自己客户端只识别2201和200
+		//       他人视角: 2201向1200做出动作,他人眼中可识别2201和1200
+		//       此时需要对自己补上 2201向200的视角
 		//
 		//情况3: 源=空 目标=自己时,target type为Area则会出现
-		//       自己视角: 120做出动作,但自己客户端只识别200
-		//       他人视角: 120做出动作,他人眼中可识别120
-		//       此时需要补上 120做出动作的视角,target type为SELF
+		//       自己视角: 1200被动作,但自己客户端只识别200
+		//       他人视角: 1200被动作,他人眼中可识别1200
+		//       此时需要对自己补上 200被动作的视角
 		//
-		//综上结论: 补上源真实id，目标真实id,target type为SELF,加上怪物和空检查
+		//情况4: 源=自己时 目标=自己时,target type为Area则会出现
+		//       自己视角: 1200向1200做出动作,但自己客户端只识别200
+		//       他人视角: 1200向1200做出动作,他人眼中可识别1200
+		//       此时需要补上 200向200的视角,target type为SELF
+		//
+		//其余情况无需补充
 		if(is_cross_server)
 		{
-			if(dst->type == BL_PC)
+			//情况4、1、2
+			if(src)
+			{
+				//情况4
+				if(src->type == BL_PC && src == dst)
+				{
+					WBUFL(buf, 6 + offset) = get_real_id(dst->id);
+					WBUFL(buf, 10 + offset) = get_real_id(src->id);
+					clif_send(buf, packet_len(cmd), dst, SELF);
+				}else if (src->type == BL_PC || dst->type == BL_PC)
+				{
+					if(src->type == BL_PC){
+						WBUFL(buf, 10 + offset) = get_real_id(src->id);
+						clif_send(buf, packet_len(cmd), src, SELF);
+					}
+					if(dst->type == BL_PC)
+					{
+						WBUFL(buf, 10 + offset) = src->id;
+						WBUFL(buf, 6 + offset) = get_real_id(dst->id);
+						clif_send(buf, packet_len(cmd), dst, SELF);
+					}
+				}
+			}
+			//情况3
+			else if (dst->type == BL_PC)
+			{
 				WBUFL(buf, 6 + offset) = get_real_id(dst->id);
-			if(src && src->type == BL_PC)
-				WBUFL(buf, 10 + offset) = get_real_id(src->id);
-			clif_send(buf, packet_len(cmd), dst, AREA);
+				clif_send(buf, packet_len(cmd), dst, SELF);
+			}
 		}
 		
 #endif
@@ -13991,6 +14048,22 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
+
+
+#ifdef Pandas_Cross_Server
+	//由于跨服记载的客户端id不同
+	//自己对 疑似自己 的id使用技能时,需要转换
+	if(is_cross_server && (inf & (INF_ATTACK_SKILL|INF_SUPPORT_SKILL)))
+	{
+		if(sd && sd->bl.type == BL_PC)
+		{
+			if(target_id == get_real_id(sd->bl.id) || (target_id < 0 && -target_id == get_real_id(sd->bl.id,true)))
+			{
+				target_id = sd->bl.id;
+			}
+		}
+	}
+#endif
 
 #ifdef Pandas_NpcFilter_USE_SKILL
 	if (sd && sd->bl.type == BL_PC) {

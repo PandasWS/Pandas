@@ -25508,6 +25508,7 @@ Body:
     Script: |
       skill "GC_CLOAKINGEXCEED",5;
       skill "AS_CLOAKING",10;
+      bonus bIntravision;
   - Id: 2302
     AegisName: Cotton_Shirt_
     Name: Cotton Shirt
