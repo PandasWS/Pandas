@@ -6984,8 +6984,12 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 			{
 				int tfd = chrif_get_char_fd(cs_id);
 				if (tfd <= 0 || !chrif_fd_isconnected(tfd))
-					return SETPOS_NO_MAPSERVER;
+					return SETPOS_NO_MAPSERVER;//这里是该跨服的char掉了.一般不会发生.发生了map-serv会卡主
+				
 			}
+			if(ip == 0 || (short)port == 0)
+				return SETPOS_NO_MAPSERVER;
+			//TODO: 应该实现一个事件
 		}
 		
 #endif

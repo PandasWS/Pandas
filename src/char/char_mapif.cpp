@@ -1481,13 +1481,11 @@ int chmapif_parse_reqcharban(int fd){
 			Sql_FreeResult(sql_handle);
 			return 1;
 		} else {
-			int t_cid=0,t_aid=0;
+			int t_cid=0,t_aid=0,offset=0;
 			char* data;
 			time_t unban_time;
 			time_t now = time(NULL);
 			SqlStmt* stmt = SqlStmt_Malloc(sql_handle);
-
-			//TODO: 当确认到这是来自跨服的请求时,需要fake t_cid,t_aid
 
 			Sql_GetData(sql_handle, 0, &data, NULL); t_aid = atoi(data);
 			Sql_GetData(sql_handle, 1, &data, NULL); t_cid = atoi(data);
@@ -1526,7 +1524,21 @@ int chmapif_parse_reqcharban(int fd){
 					WBUFL(buf,2) = t_cid;
 					WBUFB(buf,6) = 2;
 					WBUFL(buf,7) = (unsigned int)unban_time;
-					chmapif_sendall(buf, 11);
+#ifdef Pandas_Cross_Server
+					if(marked_cs_id)
+					{
+						int i;
+						ARR_FIND(0, ARRAYLENGTH(map_server), i, fd == map_server[i].fd);
+						if(i != ARRAYLENGTH(map_server))
+						{
+							int cs_id = map_server[i].server_id;
+							WBUFL(buf, 2) = make_fake_id(t_cid, cs_id);
+							offset += 4;
+							WBUFL(buf, 7) = cs_id;
+						}
+					}
+#endif
+					chmapif_sendall(buf, 11+offset);
 					// disconnect player if online on char-server
 					char_disconnect_player(t_aid);
 			}
@@ -1839,7 +1851,7 @@ void do_init_chmapif(void){
  * @param id: id of map-serv (should be >0, FIXME)
  */
 void chmapif_server_reset(int id){
-	int j = 0;
+	int j = 0,offset = 0;
 	unsigned char buf[16384];
 	int fd = map_server[id].fd;
 	DBMap* online_char_db = char_get_onlinedb();
@@ -1848,12 +1860,15 @@ void chmapif_server_reset(int id){
 	WBUFW(buf,0) = 0x2b20;
 	WBUFL(buf,4) = htonl(map_server[id].ip);
 	WBUFW(buf,8) = htons(map_server[id].port);
-	//TODO: Cross Server相关
+#ifdef Pandas_Cross_Server
+	WBUFL(buf, 10) = map_server[id].server_id;
+	offset += 4;
+#endif // Pandas_Cross_Server
 	for(size_t i = 0; i < map_server[id].map.size(); i++)
 		if (map_server[id].map[i])
-			WBUFW(buf,10+(j++)*4) = map_server[id].map[i];
+			WBUFW(buf,10+offset+(j++)*4) = map_server[id].map[i];
 	if (j > 0) {
-		WBUFW(buf,2) = j * 4 + 10;
+		WBUFW(buf,2) = j * 4 + 10 + offset;
 		chmapif_sendallwos(fd, buf, WBUFW(buf,2));
 	}
 	online_char_db->foreach(online_char_db,char_db_setoffline,id); //Tag relevant chars as 'in disconnected' server.

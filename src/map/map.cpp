@@ -3235,7 +3235,7 @@ int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port,uint32 cs_i
 
 	mdos = (struct map_data_other_server*)uidb_get(map_db,(unsigned int)name);
 #ifdef Pandas_Cross_Server
-	if (is_cross_server && !(mdos == NULL || mdos->cell))
+	if (is_cross_server && (mdos == NULL || !mdos->cell))
 		mdos = findmap(cs_id, (unsigned int)name);
 #endif
 	if(mdos==NULL || mdos->cell) //If gat isn't null, this is a local map.

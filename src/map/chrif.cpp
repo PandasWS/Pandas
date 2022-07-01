@@ -462,9 +462,27 @@ int chrif_removemap(int fd) {
 	int i, j;
 	uint32 ip =  RFIFOL(fd,4);
 	uint16 port = RFIFOW(fd,8);
-
-	for(i = 10, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
+#ifndef Pandas_Cross_Server
+	for (i = 10, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
 		map_eraseipport(RFIFOW(fd, i), ip, port);
+#else
+	uint32 cs_id = RFIFOW(fd, 10);
+	if(!is_cross_server)
+	{
+		for (i = 14, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
+			map_eraseipport(RFIFOW(fd, i), ip, port);
+	}
+	else if(cs_id > 0){
+		auto it = map_dbs.find(cs_id);
+		if(it != map_dbs.end())
+		{
+			auto tmap_db = it->second;
+			db_destroy(tmap_db);
+			map_dbs.erase(it);
+		}
+	}
+	
+#endif
 
 	other_mapserver_count--;
 

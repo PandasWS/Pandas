@@ -282,6 +282,12 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 	int errors = 0; //If there are any errors while saving, "cp" will not be updated at the end.
 	StringBuf buf;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(p->char_id);
+	p->char_id = get_real_id(p->char_id);
+	p->account_id = get_real_id(p->account_id);
+#endif
+
 	if (char_id!=p->char_id) return 0;
 
 	cp = (struct mmo_charstatus *)idb_ensure(char_db_, char_id, char_create_charstatus);
@@ -479,12 +485,17 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 
 	diff = 0;
 	for(i = 0; i < MAX_FRIENDS; i++){
-		if(p->friends[i].char_id != cp->friends[i].char_id ||
-			p->friends[i].account_id != cp->friends[i].account_id){
+		if (p->friends[i].char_id != cp->friends[i].char_id ||
+			p->friends[i].account_id != cp->friends[i].account_id) {
 			diff = 1;
 			break;
 		}
 	}
+
+#ifdef Pandas_Cross_Server
+	//跨服好友数据应该存在中立服中
+	if (cs_id) diff = 0;
+#endif
 
 	if(diff == 1)
 	{	//Save friends

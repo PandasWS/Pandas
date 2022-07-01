@@ -1,15 +1,12 @@
 ﻿#pragma once
 
 #include "sql.hpp"
-#include <vector>
 #include <map>
 #include <string>
 #include "socket.hpp"
 
 #include "cbasetypes.hpp"
-#include "nullpo.hpp"
-#include "showmsg.hpp"
-#include "malloc.hpp"
+
 
 struct block_list;
 enum send_target : uint8;
@@ -43,7 +40,7 @@ extern int cs_ids[MAX_CHAR_SERVERS];
 int check_fd_valid(int fd, int flag = 0);
 int chrif_fd_isconnected(int fd);
 int chrif_get_char_fd(int cs_id);
-int chrif_get_cs_id(int fd);
+int chrif_get_cs_id(int map_fd);
 bool chrif_check_all_cs_char_fd_health(void);
 bool chrif_set_cs_fd_state(int fd, int state, int connected);
 void chrif_set_global_fd_state(int fd, int &char_fd, int& chrif_state, int& chrif_connected);

@@ -1,6 +1,10 @@
 ﻿#include "crossserver.hpp"
 
 #include "strlib.hpp"
+#include <vector>
+#include "nullpo.hpp"
+#include "showmsg.hpp"
+#include "malloc.hpp"
 
 
 //from local conf
@@ -369,8 +373,8 @@ int chrif_get_char_fd(int cs_id) {
 	return cs_char_fds[i];
 }
 
-int chrif_get_cs_id(int fd) {
-	int index = check_fd_valid(fd, 1);
+int chrif_get_cs_id(int map_fd) {
+	int index = check_fd_valid(map_fd, 1);
 	if (index == -1) return 0;
 	return cs_ids[index] > 0 ? cs_ids[index] : 0;
 }
