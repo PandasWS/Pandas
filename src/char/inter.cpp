@@ -1143,7 +1143,7 @@ void inter_MMO_Status_sendCache(int fd) {
 			Sql_GetData(sql_handle, 1, &data, NULL); cache->account_id = atoi(data);
 			Sql_GetData(sql_handle, 2, &data, NULL); cache->party_id = atoi(data);
 			Sql_GetData(sql_handle, 3, &data, NULL); cache->guild_id = atoi(data);
-			cache->cs_id = marked_cs_id;
+			cache->cs_id = get_cs_id(cache->char_id);
 			memcpy(WFIFOP(fd, offset), cache, size);
 			len += size;
 			offset += size;

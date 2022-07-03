@@ -5874,23 +5874,26 @@ void do_final(void){
 
 	map_db->destroy(map_db, map_db_final);
 #ifdef Pandas_Cross_Server
-	auto cs = cs_configs_map.begin();
-	while (cs != cs_configs_map.end())
+	if(is_cross_server)
 	{
-		aFree(cs->second);
-		const auto next = std::next(cs);
-		cs_configs_map.erase(cs);
-		cs = next;
+		auto cs = cs_configs_map.begin();
+		while (cs != cs_configs_map.end())
+		{
+			aFree(cs->second);
+			const auto next = std::next(cs);
+			cs_configs_map.erase(cs);
+			cs = next;
+		}
+		auto mdb = map_dbs.begin();
+		if (mdb != map_dbs.begin())
+		{
+			auto db = mdb->second;
+			auto next = std::next(mdb);
+			db->destroy(db, NULL);
+			mdb = next;
+		}
+		mmo_status_cache_map->destroy(mmo_status_cache_map, NULL);
 	}
-	auto mdb = map_dbs.begin();
-	if(mdb != map_dbs.begin())
-	{
-		auto db = mdb->second;
-		auto next = std::next(mdb);
-		db->destroy(db,NULL);
-		mdb = next;
-	}
-	mmo_status_cache_map->destroy(mmo_status_cache_map, NULL);
 #endif
 
 	for (int i = 0; i < map_num; i++) {

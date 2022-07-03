@@ -877,6 +877,7 @@ void chrif_authok(int fd) {
 		char_id = make_fake_id(char_id, cs_id);
 		status->account_id = account_id;
 		status->char_id = char_id;
+		//在这里替换掉party_id,guild_id等等
 	}
 #endif
 

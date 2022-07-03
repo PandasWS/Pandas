@@ -8639,13 +8639,10 @@ void clif_party_member_info(struct party_data *p, struct map_session_data *sd)
 	mapindex_getmapname_ext(map_mapid2mapname(sd->bl.m), WBUFCP(buf,offset+63));
 	WBUFB(buf,offset+79) = (p->party.item&1)?1:0;
 	WBUFB(buf,offset+80) = (p->party.item&2)?1:0;
-#ifndef Pandas_Cross_Server
-	clif_send(buf,packet_len(cmd),&sd->bl,PARTY);
-#else
-	if(!is_cross_server)
-		clif_send(buf, packet_len(cmd), &sd->bl, PARTY);
-	else {
-		clif_send(buf, packet_len(cmd), &sd->bl, PARTY_WOS);
+	clif_send(buf, packet_len(cmd), &sd->bl, PARTY);
+#ifdef Pandas_Cross_Server
+	if(is_cross_server && (p->party.member[i].leader))
+	{
 		WBUFL(buf, 2) = get_real_id(sd->status.account_id);
 		clif_send(buf, packet_len(cmd), &sd->bl, SELF);
 	}
@@ -8681,6 +8678,8 @@ void clif_party_info(struct party_data* p, struct map_session_data *sd)
 
 	WBUFW(buf,0) = cmd;
 	safestrncpy(WBUFCP(buf,4), p->party.name, NAME_LENGTH);
+	int self_index = -1;
+	int leader_id = 0;
 	for(i = 0, c = 0; i < MAX_PARTY; i++)
 	{
 		struct party_member* m = &p->party.member[i];
@@ -8689,9 +8688,25 @@ void clif_party_info(struct party_data* p, struct map_session_data *sd)
 		if(party_sd == NULL) party_sd = p->data[i].sd;
 
 		WBUFL(buf,PRE_SIZE+c*M_SIZE) = m->account_id;
+#ifdef Pandas_Cross_Server
+		if(is_cross_server)
+		{
+			if(m->leader)
+			{
+				if (sd && sd->status.account_id == m->account_id)
+					self_index = i;
+				if (party_sd && party_sd->status.account_id == m->account_id)
+					self_index = i;
+			}
+		}
+#endif
 		safestrncpy(WBUFCP(buf,PRE_SIZE+c*M_SIZE+4), m->name, NAME_LENGTH);
 		mapindex_getmapname_ext(mapindex_id2name(m->map), WBUFCP(buf,PRE_SIZE+c*M_SIZE+PRE_SIZE));
 		WBUFB(buf,PRE_SIZE+c*M_SIZE+44) = (m->leader) ? 0 : 1;
+#ifdef Pandas_Cross_Server
+		if (m->leader)
+			leader_id = m->account_id;
+#endif
 		WBUFB(buf,PRE_SIZE+c*M_SIZE+45) = (m->online) ? 0 : 1;
 #if PACKETVER >= 20170502
 		WBUFW(buf,PRE_SIZE+c*M_SIZE+46) = m->class_;
@@ -8709,9 +8724,21 @@ void clif_party_info(struct party_data* p, struct map_session_data *sd)
 #endif
 
 	if(sd) { // send only to self
+#ifdef Pandas_Cross_Server
+		//假设当自己是队伍队长时,通知自己时则需要给上真实id
+		if(self_index > -1)
+			WBUFL(buf, PRE_SIZE + self_index * M_SIZE) = get_real_id(sd->status.account_id);
+#endif
 		clif_send(buf, WBUFW(buf,2), &sd->bl, SELF);
 	} else if (party_sd) { // send to whole party
 		clif_send(buf, WBUFW(buf,2), &party_sd->bl, PARTY);
+#ifdef Pandas_Cross_Server
+		if(self_index > -1)
+		{
+			WBUFL(buf, PRE_SIZE + self_index * M_SIZE) = get_real_id(party_sd->status.account_id);
+			clif_send(buf, WBUFW(buf, 2), &party_sd->bl, SELF);
+		}
+#endif
 	}
 }
 
@@ -11874,7 +11901,8 @@ void clif_parse_WantToConnection(int fd, struct map_session_data* sd)
 		if(cache != NULL)
 		{
 			sd->status.party_id = cache->party_id;//重置原char带来的party_id
-			party_request_info(cache->party_id, sd->status.char_id);
+			/*if(sd->status.party_id > 0)
+				party_request_info(cache->party_id, sd->status.char_id);*/
 		}
 	}
 #endif

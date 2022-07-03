@@ -297,7 +297,7 @@ static void party_check_state(struct party_data *p)
 	}
 }
 
-int party_recv_info(struct party* sp, uint32 char_id)
+int party_recv_info(struct party* sp, uint32 char_id, int is_create)
 {
 	struct party_data* p;
 	struct party_member* member;
@@ -390,7 +390,14 @@ int party_recv_info(struct party* sp, uint32 char_id)
 		if( sd->party_creating ){
 			clif_party_option(p,sd,0x100);
 		}
-		clif_party_info(p,NULL);
+		//创建新队伍的时候,也会走这里且added_count == 1
+#ifdef Pandas_Cross_Server
+		if(is_cross_server && is_create)
+		{
+			clif_party_info(p, sd);
+		}else
+#endif
+			clif_party_info(p,NULL);
 
 		if (p->instance_id > 0)
 			instance_reqinfo(sd, p->instance_id);
@@ -416,13 +423,6 @@ int party_recv_info(struct party* sp, uint32 char_id)
 #endif
 		}
 	}
-
-#ifdef Pandas_Cross_Server
-	if(is_cross_server)
-	{
-		clif_party_info(p, sd);
-	}
-#endif
 
 	return 0;
 }

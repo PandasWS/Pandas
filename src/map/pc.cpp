@@ -2021,6 +2021,20 @@ void pc_reg_received(struct map_session_data *sd)
 	}
 
 #if PACKETVER_MAIN_NUM < 20190403 || PACKETVER_RE_NUM < 20190320 || PACKETVER_ZERO_NUM < 20190410
+#ifdef Pandas_Cross_Server
+	//在这里以替换的party_id,guild_id,等替换掉
+	if(is_cross_server)
+	{
+		const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
+		if (cache != nullptr)
+		{
+			sd->status.party_id = cache->party_id;
+			sd->status.guild_id = cache->guild_id;
+			//sd->status.party_id = cache->party_id;
+			//sd->status.party_id = cache->party_id;
+		}
+	}
+#endif
 	if (sd->instance_id > 0)
 		instance_reqinfo(sd, sd->instance_id);
 	if (sd->status.party_id > 0)

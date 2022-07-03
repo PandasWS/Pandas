@@ -1587,7 +1587,20 @@ void intif_parse_Registers(int fd)
 	int flag;
 	struct map_session_data *sd;
 	uint32 account_id = RFIFOL(fd,4), char_id = RFIFOL(fd,8);
+#ifdef Pandas_Cross_Server
+#ifdef Pandas_Fake_Id_Check_Debug
+	is_fake_id(account_id);
+	is_fake_id(char_id);
+#endif
+	int cs_id = get_cs_id(account_id);
+	if(!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
 	struct auth_node *node = chrif_auth_check(account_id, char_id, ST_LOGIN);
+
 	char type = RFIFOB(fd, 13);
 
 	if (node)
@@ -1780,15 +1793,20 @@ int intif_parse_PartyCreated(int fd)
  */
 int intif_parse_PartyInfo(int fd)
 {
-	if( RFIFOW(fd,2) == 12 ){
+	if (RFIFOW(fd, 2) == 12) {
 		ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", RFIFOL(fd,4), RFIFOL(fd,8));
 		party_recv_noinfo(RFIFOL(fd,8), RFIFOL(fd,4));
 		return 0;
 	}
-
+#ifndef Pandas_Cross_Server
 	if( RFIFOW(fd,2) != 8+sizeof(struct party) )
-		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", RFIFOL(fd,4), RFIFOL(fd,8), RFIFOW(fd,2), 8+sizeof(struct party));
+		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", RFIFOL(fd, 4), RFIFOL(fd, 8), RFIFOW(fd, 2), 8 + sizeof(struct party));
 	party_recv_info((struct party *)RFIFOP(fd,8), RFIFOL(fd,4));
+#else
+	if (RFIFOW(fd, 2) != 12 + sizeof(struct party))
+		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", RFIFOL(fd, 4), RFIFOL(fd, 8), RFIFOW(fd, 2), 12 + sizeof(struct party));
+	party_recv_info((struct party*)RFIFOP(fd, 12), RFIFOL(fd, 4), RFIFOL(fd, 8));
+#endif
 	return 1;
 }
 
