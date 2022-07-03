@@ -14,6 +14,7 @@ std::map<int, cross_server_data*> cs_configs_map;
 
 //init
 bool cs_init_done;
+//TODO:优化成DBMap* 结构 (但map更直观也方便调试查询)
 std::map<int, Sql*> map_handlers;
 std::map<int, Sql*> char_handlers;
 std::map<int, Sql*> login_handlers;
@@ -28,14 +29,32 @@ int cs_chrif_state[MAX_CHAR_SERVERS];
 char cs_charserver_names[MAX_CHAR_SERVERS];
 int cs_ids[MAX_CHAR_SERVERS];
 
+//from map-serv
+int marked_cs_id;
+
 //from char-serv
 std::map<int, int> logintoken_to_cs_id;
-int marked_cs_id;
+//TODO:优化成DBMap* 嵌套结构会更好吗?
 std::map<int, DBMap*> map_dbs;
-
 struct map_data_other_server;
 
+//from char-serv to map-serv local cache
+//多任意key对同一个value其实跟适合查询设计而不是缓存吧
+//但是char-serv,map-serv的这种架构下没办法了
+DBMap* mmo_status_cache_map;//uint32 char_id -> struct mmo_status_cache*
+DBData create_mmo_status_cache(DBKey key, va_list args) {
+	struct mmo_status_cache* cache;
+	CREATE(cache, struct mmo_status_cache, 1);
+	cache->char_id = key.i;
+	return db_ptr2data(cache);
+}
 
+
+/**
+ * \brief map-serv读取conf/cross_server/base.conf
+ * \param cfgName 
+ * \return 
+ */
 int cs_config_read(const char* cfgName)
 {
 	char line[1024];
@@ -108,7 +127,7 @@ int cs_config_read(const char* cfgName)
 		else if (strcmpi(w1, "import") == 0)
 			cs_config_read(w2);
 	}
-	if (csd->server_id > 0)
+	if (csd->server_id > 0 && csd->char_server_port > 0)
 	{
 		auto it = std::make_pair(csd->server_id, csd);
 		cs_configs_map.insert(it);
@@ -423,6 +442,20 @@ int switch_char_fd(uint32 id, int& char_fd, int& chrif_state) {
 	chrif_state = cs_chrif_state[index];
 	char_fd = tfd;
 	if (!(session_isValid(char_fd) && chrif_state == 2)) {
+		return -1;
+	}
+	return char_fd;
+}
+
+int switch_char_fd_cs_id(uint32 cs_id, int& char_fd) {
+	int tfd = chrif_get_char_fd(cs_id);
+	if (tfd == -1)
+		return -1;
+	int index = check_fd_valid(char_fd);
+	if (index == -1)
+		return -1;
+	char_fd = tfd;
+	if (!session_isValid(char_fd)) {
 		return -1;
 	}
 	return char_fd;

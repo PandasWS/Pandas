@@ -456,13 +456,18 @@ int chmapif_parse_reqsavechar(int fd, int id){
 	else {
 		int aid = RFIFOL(fd,4), cid = RFIFOL(fd,8), size = RFIFOW(fd,2);
 #ifdef Pandas_Cross_Server
+		int cs_id = 0;
+		//CS服的AID和CID直接保存,非CS服的需要做去前缀处理
+		if(!is_cross_server)
+		{
 #ifdef Pandas_Fake_Id_Check_Debug
-		is_fake_id(aid);
-		is_fake_id(cid);
+			is_fake_id(aid);
+			is_fake_id(cid);
 #endif
-		int cs_id = get_cs_id(aid);
-		aid = get_real_id(aid);
-		cid = get_real_id(cid);
+			cs_id = get_cs_id(aid);
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
 #endif
 		struct online_char_data* character;
 		DBMap* online_char_db = char_get_onlinedb();
@@ -1813,6 +1818,9 @@ int chmapif_parse(int fd){
 // Initialization process (currently only initialization inter_mapif)
 int chmapif_init(int fd){
 	return inter_mapif_init(fd);
+}
+int chmapif_init_cs(int fd) {
+	return inter_mapif_init_cs(fd);
 }
 
 /**

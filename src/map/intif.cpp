@@ -12,6 +12,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -46,6 +47,7 @@ static const int packet_len_table[] = {
 	12,-1, 7, 3,  0, 0, 0, 0,  0, 0,-1, 9, -1, 0,  0, 0, //0x3880  Pet System,  Storages
 	-1,-1, 7, 3,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x3890  Homunculus [albator]
 	-1,-1, 8, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38A0  Clans
+	-1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38B0  Cross Server
 };
 
 extern int char_fd; // inter server Fd used for char_fd
@@ -97,6 +99,10 @@ struct map_session_data *inter_search_sd(uint32 account_id, uint32 char_id)
  */
 int intif_create_pet(uint32 account_id,uint32 char_id,short pet_class,short pet_lv, t_itemid pet_egg_id, t_itemid pet_equip,short intimate,short hungry,char rename_flag,char incubate,const char *pet_name)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 28 + NAME_LENGTH);
@@ -126,6 +132,10 @@ int intif_create_pet(uint32 account_id,uint32 char_id,short pet_class,short pet_
  */
 int intif_request_petdata(uint32 account_id,uint32 char_id,int pet_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 14);
@@ -146,6 +156,10 @@ int intif_request_petdata(uint32 account_id,uint32 char_id,int pet_id)
  */
 int intif_save_petdata(uint32 account_id,struct s_pet *p)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, sizeof(struct s_pet) + 8);
@@ -165,6 +179,7 @@ int intif_save_petdata(uint32 account_id,struct s_pet *p)
  */
 int intif_delete_petdata(int pet_id)
 {
+	//TODO: request的是哪个char的
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,6);
@@ -184,6 +199,10 @@ int intif_delete_petdata(int pet_id)
  */
 int intif_rename(struct map_session_data *sd, int type, char *name)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -221,6 +240,10 @@ int intif_broadcast(const char* mes, int len, int type)
 	if (other_mapserver_count < 1)
 		return 0; //No need to send.
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	WFIFOHEAD(inter_fd, 16 + lp + len);
 	WFIFOW(inter_fd,0)  = 0x3000;
 	WFIFOW(inter_fd,2)  = 16 + lp + len;
@@ -258,6 +281,10 @@ int intif_broadcast2(const char* mes, int len, unsigned long fontColor, short fo
 	// Send to the local players
 	clif_broadcast2(NULL, mes, len, fontColor, fontType, fontSize, fontAlign, fontY, ALL_CLIENT);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(0), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -315,6 +342,11 @@ int intif_wis_message(struct map_session_data *sd, char *nick, char *mes, int me
 	int headersize = 8 + 2 * NAME_LENGTH;
 
 	nullpo_ret(sd);
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -347,6 +379,10 @@ int intif_wis_message(struct map_session_data *sd, char *nick, char *mes, int me
  */
 int intif_wis_reply(int id, int flag)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,7);
@@ -371,6 +407,10 @@ int intif_wis_reply(int id, int flag)
 int intif_wis_message_to_gm(char *wisp_name, int permission, char *mes)
 {
 	int mes_len;
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	mes_len = strlen(mes) + 1; // + null
@@ -401,6 +441,10 @@ int intif_saveregistry(struct map_session_data *sd)
 	int plen = 0;
 	size_t len;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer() || !sd->regs.vars)
 		return -1;
 
@@ -525,6 +569,10 @@ int intif_request_registry(struct map_session_data *sd, int flag)
 {
 	nullpo_ret(sd);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -548,6 +596,10 @@ int intif_request_registry(struct map_session_data *sd, int flag)
  */
 bool intif_request_guild_storage(uint32 account_id, int guild_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return false;
 	WFIFOHEAD(inter_fd,10);
@@ -566,6 +618,10 @@ bool intif_request_guild_storage(uint32 account_id, int guild_id)
  */
 bool intif_send_guild_storage(uint32 account_id, struct s_storage *gstor)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(0), char_fd);
+#endif
 	if (CheckForCharServer())
 		return false;
 #ifndef Pandas_Unlock_Storage_Capacity_Limit
@@ -599,6 +655,10 @@ bool intif_send_guild_storage(uint32 account_id, struct s_storage *gstor)
  */
 int intif_create_party(struct party_member *member,char *name,int item,int item2)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	nullpo_ret(member);
@@ -622,6 +682,10 @@ int intif_create_party(struct party_member *member,char *name,int item,int item2
  */
 int intif_request_partyinfo(int party_id, uint32 char_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,10);
@@ -640,6 +704,10 @@ int intif_request_partyinfo(int party_id, uint32 char_id)
  */
 int intif_party_addmember(int party_id,struct party_member *member)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,8+sizeof(struct party_member));
@@ -661,6 +729,10 @@ int intif_party_addmember(int party_id,struct party_member *member)
  */
 int intif_party_changeoption(int party_id,uint32 account_id,int exp,int item)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,14);
@@ -682,6 +754,10 @@ int intif_party_changeoption(int party_id,uint32 account_id,int exp,int item)
  */
 int intif_party_leave(int party_id, uint32 account_id, uint32 char_id, const char *name, enum e_party_member_withdraw type)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -704,6 +780,10 @@ int intif_party_leave(int party_id, uint32 account_id, uint32 char_id, const cha
  */
 int intif_party_changemap(struct map_session_data *sd,int online)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	int16 m, mapindex;
 
 	if (CheckForCharServer())
@@ -740,6 +820,10 @@ int intif_party_changemap(struct map_session_data *sd,int online)
  */
 int intif_break_party(int party_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,6);
@@ -762,6 +846,10 @@ int intif_break_party(int party_id)
  */
 int intif_party_message(int party_id,uint32 account_id,const char *mes,int len)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -787,6 +875,10 @@ int intif_party_message(int party_id,uint32 account_id,const char *mes,int len)
  */
 int intif_party_leaderchange(int party_id,uint32 account_id,uint32 char_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,14);
@@ -805,6 +897,10 @@ int intif_party_leaderchange(int party_id,uint32 account_id,uint32 char_id)
  */
 int intif_party_sharelvlupdate(unsigned int share_lvl)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,6);
@@ -822,6 +918,10 @@ int intif_party_sharelvlupdate(unsigned int share_lvl)
  */
 int intif_guild_create(const char *name,const struct guild_member *master)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	nullpo_ret(master);
@@ -843,6 +943,10 @@ int intif_guild_create(const char *name,const struct guild_member *master)
  */
 int intif_guild_request_info(int guild_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,6);
@@ -860,6 +964,10 @@ int intif_guild_request_info(int guild_id)
  */
 int intif_guild_addmember(int guild_id,struct guild_member *m)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,sizeof(struct guild_member)+8);
@@ -880,6 +988,10 @@ int intif_guild_addmember(int guild_id,struct guild_member *m)
  */
 int intif_guild_change_gm(int guild_id, const char* name, int len)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, len + 8);
@@ -902,6 +1014,10 @@ int intif_guild_change_gm(int guild_id, const char* name, int len)
  */
 int intif_guild_leave(int guild_id,uint32 account_id,uint32 char_id,int flag,const char *mes)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 55);
@@ -927,6 +1043,10 @@ int intif_guild_leave(int guild_id,uint32 account_id,uint32 char_id,int flag,con
  */
 int intif_guild_memberinfoshort(int guild_id,uint32 account_id,uint32 char_id,int online,int lv,int class_)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 19);
@@ -948,6 +1068,10 @@ int intif_guild_memberinfoshort(int guild_id,uint32 account_id,uint32 char_id,in
  */
 int intif_guild_break(int guild_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 6);
@@ -968,6 +1092,10 @@ int intif_guild_break(int guild_id)
  */
 int intif_guild_message(int guild_id,uint32 account_id,const char *mes,int len)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -995,6 +1123,10 @@ int intif_guild_message(int guild_id,uint32 account_id,const char *mes,int len)
  */
 int intif_guild_change_basicinfo(int guild_id,int type,const void *data,int len)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, len + 10);
@@ -1020,6 +1152,10 @@ int intif_guild_change_basicinfo(int guild_id,int type,const void *data,int len)
 int intif_guild_change_memberinfo(int guild_id,uint32 account_id,uint32 char_id,
 	int type,const void *data,int len)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, len + 18);
@@ -1043,6 +1179,10 @@ int intif_guild_change_memberinfo(int guild_id,uint32 account_id,uint32 char_id,
  */
 int intif_guild_position(int guild_id,int idx,struct guild_position *p)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, sizeof(struct guild_position)+12);
@@ -1065,6 +1205,10 @@ int intif_guild_position(int guild_id,int idx,struct guild_position *p)
  */
 int intif_guild_skillup(int guild_id, uint16 skill_id, uint32 account_id, int max)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if( CheckForCharServer() )
 		return 0;
 	WFIFOHEAD(inter_fd, 18);
@@ -1088,6 +1232,10 @@ int intif_guild_skillup(int guild_id, uint16 skill_id, uint32 account_id, int ma
  */
 int intif_guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 account_id2,int flag)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,19);
@@ -1110,6 +1258,10 @@ int intif_guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 a
  */
 int intif_guild_notice(int guild_id,const char *mes1,const char *mes2)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,186);
@@ -1130,6 +1282,10 @@ int intif_guild_notice(int guild_id,const char *mes1,const char *mes2)
  */
 int intif_guild_emblem(int guild_id,int len,const char *data)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	if(guild_id<=0 || len<0 || len>2000)
@@ -1146,6 +1302,10 @@ int intif_guild_emblem(int guild_id,int len,const char *data)
 
 int intif_guild_emblem_version(int guild_id, int emblem_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	if (guild_id <= 0)
@@ -1165,6 +1325,10 @@ int intif_guild_emblem_version(int guild_id, int emblem_id)
  * @param castle_ids Pointer to array of castle IDs.
  */
 bool intif_guild_castle_dataload( const std::vector<int32>& castle_ids ){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if( CheckForCharServer() ){
 		return false;
 	}
@@ -1191,6 +1355,10 @@ bool intif_guild_castle_dataload( const std::vector<int32>& castle_ids ){
  */
 int intif_guild_castle_datasave(int castle_id,int index, int value)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,9);
@@ -1214,6 +1382,10 @@ int intif_guild_castle_datasave(int castle_id,int index, int value)
  */
 int intif_homunculus_create(uint32 account_id, struct s_homunculus *sh)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, sizeof(struct s_homunculus)+8);
@@ -1233,6 +1405,10 @@ int intif_homunculus_create(uint32 account_id, struct s_homunculus *sh)
  */
 int intif_homunculus_requestload(uint32 account_id, int homun_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 10);
@@ -1251,6 +1427,10 @@ int intif_homunculus_requestload(uint32 account_id, int homun_id)
  */
 int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, sizeof(struct s_homunculus)+8);
@@ -1270,6 +1450,9 @@ int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh)
  */
 int intif_homunculus_requestdelete(int homun_id)
 {
+#ifdef Pandas_Cross_Server
+	//TODO: 决定来自哪个服务器
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 6);
@@ -3871,6 +4054,21 @@ int intif_parse_clan_onlinecount( int fd ){
 	return 1;
 }
 
+int intif_parse_mmo_status_cache(int fd)
+{
+	int size = sizeof(struct mmo_status_cache), count = (RFIFOL(fd, 2) - 4 - 2) / size;
+	for (int i = 0; i < count; i++) {
+		const auto ptr = reinterpret_cast<mmo_status_cache*>(RFIFOP(fd, 4 + 2 + size * i));
+		const auto cache = static_cast<mmo_status_cache*>(idb_ensure(mmo_status_cache_map, ptr->char_id, create_mmo_status_cache));
+		cache->char_id = ptr->char_id;
+		cache->account_id = ptr->account_id;
+		cache->party_id = ptr->party_id;
+		cache->guild_id = ptr->guild_id;
+		cache->cs_id = ptr->cs_id;
+	}
+	return 1;
+}
+
 //-----------------------------------------------------------------
 
 /**
@@ -4014,6 +4212,9 @@ int intif_parse(int fd)
 	case 0x38A0:	intif_parse_clans(fd); break;
 	case 0x38A1:	intif_parse_clan_message(fd); break;
 	case 0x38A2:	intif_parse_clan_onlinecount(fd); break;
+
+	//Cross Server
+	case 0x38B0:	intif_parse_mmo_status_cache(fd); break;
 
 	default:
 		ShowError("intif_parse : unknown packet %d %x\n",fd,RFIFOW(fd,0));

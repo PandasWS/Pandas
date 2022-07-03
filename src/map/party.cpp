@@ -14,6 +14,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "atcommand.hpp"	//msg_txt()
@@ -190,6 +191,15 @@ void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *
 		sd->status.party_id = party_id;
 		clif_party_created(sd,0); // Success message
 
+#ifdef Pandas_Cross_Server
+		if(is_cross_server)
+		{
+			//成功建立队伍时,更新缓存
+			const auto cache = static_cast<mmo_status_cache*>(idb_ensure(mmo_status_cache_map, char_id, create_mmo_status_cache));
+			cache->party_id = party_id;
+			cache->account_id = sd->status.account_id;
+		}
+#endif
 		achievement_update_objective(sd, AG_PARTY, 1, 1);
 
 		// We don't do any further work here because the char-server sends a party info packet right after creating the party
@@ -230,7 +240,18 @@ int party_recv_noinfo(int party_id, uint32 char_id)
 		sd = map_charid2sd(char_id);
 
 		if( sd && sd->status.party_id == party_id )
+		{
 			sd->status.party_id = 0;
+#ifdef Pandas_Cross_Server
+			if(is_cross_server)
+			{
+				const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, char_id));
+				if (cache != nullptr)
+					cache->party_id = 0;
+			}
+#endif
+		}
+			
 	}
 
 	return 0;
@@ -383,8 +404,25 @@ int party_recv_info(struct party* sp, uint32 char_id)
 	if( char_id != 0 ) { // requester
 		sd = map_charid2sd(char_id);
 		if( sd && sd->status.party_id == sp->party_id && party_getmemberid(p,sd) == -1 )
+		{
 			sd->status.party_id = 0;// was not in the party
+#ifdef Pandas_Cross_Server
+			if (is_cross_server)
+			{
+				const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
+				if (cache != nullptr)
+					cache->party_id = 0;
+			}
+#endif
+		}
 	}
+
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		clif_party_info(p, sd);
+	}
+#endif
 
 	return 0;
 }
@@ -730,7 +768,18 @@ void party_member_joined(struct map_session_data *sd)
 		if (p->instance_id > 0)
 			instance_reqinfo(sd, p->instance_id);
 	} else
+	{
 		sd->status.party_id = 0; //He does not belongs to the party really?
+#ifdef Pandas_Cross_Server
+		if (is_cross_server)
+		{
+			const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
+			if (cache != nullptr)
+				cache->party_id = 0;
+		}
+#endif
+	}
+		
 }
 
 /// Invoked (from char-server) when a new member is added to the party.
@@ -935,6 +984,14 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 #endif
 
 		sd->status.party_id = 0;
+#ifdef Pandas_Cross_Server
+		if (is_cross_server)
+		{
+			const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, char_id));
+			if (cache != nullptr)
+				cache->party_id = 0;
+		}
+#endif
 		clif_name_area(&sd->bl); //Update name display [Skotlex]
 		//TODO: hp bars should be cleared too
 

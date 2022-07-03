@@ -11,6 +11,7 @@
 struct block_list;
 enum send_target : uint8;
 struct map_data_other_server;
+struct mmo_status_cache;
 constexpr auto cs_id_factor = 10000000;
 constexpr auto MAX_CHAR_SERVERS = 5;
 
@@ -28,6 +29,9 @@ extern std::map<int, cross_server_data*> cs_configs_map;
 extern std::map<int, int> logintoken_to_cs_id;
 extern int marked_cs_id;
 extern std::map<int, DBMap*> map_dbs;
+extern DBMap* mmo_status_cache_map;
+extern DBData create_mmo_status_cache(DBKey key, va_list args);
+
 
 
 //char fd
@@ -45,6 +49,7 @@ bool chrif_check_all_cs_char_fd_health(void);
 bool chrif_set_cs_fd_state(int fd, int state, int connected);
 void chrif_set_global_fd_state(int fd, int &char_fd, int& chrif_state, int& chrif_connected);
 int switch_char_fd(uint32 id, int& char_fd, int& chrif_state);
+int switch_char_fd_cs_id(uint32 cs_id, int& char_fd);
 
 enum SqlHandlerType {
 	SQLTYPE_NONE = 0, // no used
@@ -82,6 +87,16 @@ struct cross_server_data {
 	std::string log_db_database_id = "ragnarok";
 	std::string log_db_database_pw;
 	std::string log_db_database_db = "log";
+};
+
+struct mmo_status_cache
+{
+	int cs_id;
+	int char_id;
+	int account_id;
+	int party_id;
+	int guild_id;
+
 };
 
 

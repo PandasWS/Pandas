@@ -350,6 +350,10 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	WFIFOB(char_fd,12) = (flag&CSAVE_QUIT) ? 1 : 0; //Flag to tell char-server this character is quitting.
 
 	// If the user is on a instance map, we have to fake his current position
+
+#ifdef Pandas_Cross_Server
+	struct mmo_charstatus temp_save_instance;
+#endif
 	if( map_getmapdata(sd->bl.m)->instance_id ){
 		struct mmo_charstatus status;
 
@@ -358,13 +362,39 @@ int chrif_save(struct map_session_data *sd, int flag) {
 		// Change his current position to his savepoint
 		memcpy( &status.last_point, &status.save_point, sizeof( struct point ) );
 		// Copy the copied status into the packet
+
 		memcpy( WFIFOP( char_fd, 13 ), &status, sizeof( struct mmo_charstatus ) );
+#ifdef Pandas_Cross_Server
+		temp_save_instance = status;
+#endif
 	} else {
 		// Copy the whole status into the packet
 		memcpy( WFIFOP( char_fd, 13 ), &sd->status, sizeof( struct mmo_charstatus ) );
+#ifdef Pandas_Cross_Server
+		temp_save_instance = sd->status;
+#endif
+
 	}
 
 	WFIFOSET(char_fd, WFIFOW(char_fd,2));
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+	{
+		//CS的char服也存一份,只需要部分内容，如party等等
+		int tfd = char_fd;
+		switch_char_fd_cs_id(0, char_fd);
+		WFIFOHEAD(char_fd, mmo_charstatus_len);
+		WFIFOW(char_fd, 0) = 0x2b01;
+		WFIFOW(char_fd, 2) = mmo_charstatus_len;
+		WFIFOL(char_fd, 4) = sd->status.account_id;
+		WFIFOL(char_fd, 8) = sd->status.char_id;
+		WFIFOB(char_fd, 12) = (flag & CSAVE_QUIT) ? 1 : 0;
+		memcpy(WFIFOP(char_fd, 13), &temp_save_instance, sizeof(struct mmo_charstatus));
+		WFIFOSET(char_fd, WFIFOW(char_fd, 2));
+		char_fd = tfd;
+	}
+#endif
 
 	if( sd->status.pet_id > 0 && sd->pd )
 		intif_save_petdata(sd->status.account_id,&sd->pd->pet);
@@ -378,6 +408,8 @@ int chrif_save(struct map_session_data *sd, int flag) {
 		intif_quest_save(sd);
 	if (sd->achievement_data.save)
 		intif_achievement_save(sd);
+
+
 
 	return 0;
 }
@@ -2158,7 +2190,27 @@ static TIMER_FUNC(check_connect_char_server){
 #ifdef Pandas_Cross_Server
 	} else
 	{
-		int index = 0;
+		if(cs_char_fds[0] <= 0 || session[cs_char_fds[0]] == NULL)
+		{
+			cs_ids[0] = 0;
+			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to CS Char Server. Please wait.\n");
+			cs_chrif_state[0] = chrif_state = 0;
+			int tfd = make_connection(char_ip, char_port, false, 10);
+			if (tfd == -1)
+				return 0;
+			session[tfd]->func_parse = chrif_parse;
+			session[tfd]->flag.server = 1;
+			realloc_fifo(tfd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
+
+			//这里通知char-serv他们的marked_cs_id
+			chrif_connect(tfd, 0);
+			cs_char_fds[0] = tfd;
+			cs_chrif_state[0] = chrif_state;
+			cs_chrif_connected[0] = (cs_chrif_state[0] == 2);
+		}
+
+
+		int index = 1;
 		for (auto it = cs_configs_map.begin(); it != cs_configs_map.end() && index < MAX_CHAR_SERVERS; it++, index++)
 		{
 			if (cs_char_fds[index] <= 0 || session[cs_char_fds[index]] == NULL)

@@ -12,6 +12,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_clif.hpp"
@@ -833,6 +834,9 @@ int chlogif_isconnected(){
 }
 
 void do_init_chlogif(void) {
+#ifdef Pandas_Cross_Server
+	//if (is_cross_server) return;
+#endif
 	// establish char-login connection if not present
 	add_timer_func_list(chlogif_check_connect_logserver, "check_connect_login_server");
 	add_timer_interval(gettick() + 1000, chlogif_check_connect_logserver, 0, 0, 10 * 1000);

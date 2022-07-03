@@ -4472,10 +4472,13 @@ int inter_config_read(const char *cfgName)
 #endif
 		}
 #undef RENEWALPREFIX
+#ifdef Pandas_Cross_Server
 		if (strcmpi(w1, "cross_server") == 0) {
 			is_cross_server = config_switch(w2);
 			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server Set: %s\n", w2);
-		}else if( strcmpi( w1, "barter_table" ) == 0 )
+		}else
+#endif
+		if( strcmpi( w1, "barter_table" ) == 0 )
 			safestrncpy( barter_table, w2, sizeof(barter_table) );
 		else if( strcmpi( w1, "buyingstore_db" ) == 0 )
 			safestrncpy( buyingstores_table, w2, sizeof(buyingstores_table) );
@@ -4628,6 +4631,11 @@ int map_sql_init(void)
 			Sql_Free(qsmysql_handle);
 			exit(EXIT_FAILURE);
 		}
+
+		const auto pr1 = std::make_pair(0, mmysql_handle);
+		const auto pr2 = std::make_pair(0, qsmysql_handle);
+		map_handlers.insert(pr1);
+		query_handlers.insert(pr2);
 
 		auto it = cs_configs_map.begin();
 		while (it != cs_configs_map.end())
@@ -5865,6 +5873,25 @@ void do_final(void){
 #endif // Pandas_Player_Suspend_System
 
 	map_db->destroy(map_db, map_db_final);
+#ifdef Pandas_Cross_Server
+	auto cs = cs_configs_map.begin();
+	while (cs != cs_configs_map.end())
+	{
+		aFree(cs->second);
+		const auto next = std::next(cs);
+		cs_configs_map.erase(cs);
+		cs = next;
+	}
+	auto mdb = map_dbs.begin();
+	if(mdb != map_dbs.begin())
+	{
+		auto db = mdb->second;
+		auto next = std::next(mdb);
+		db->destroy(db,NULL);
+		mdb = next;
+	}
+	mmo_status_cache_map->destroy(mmo_status_cache_map, NULL);
+#endif
 
 	for (int i = 0; i < map_num; i++) {
 		struct map_data *mapdata = map_getmapdata(i);
@@ -6184,9 +6211,9 @@ int do_init(int argc, char *argv[])
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
 	{
-		//TODO map_db的处理替换
 		cs_config_read(CS_CONF_NAME);
 		map_dbs.insert(std::make_pair(0, map_db));
+		mmo_status_cache_map = idb_alloc(DB_OPT_RELEASE_DATA);
 	}
 #endif
 

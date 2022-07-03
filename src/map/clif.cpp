@@ -8646,7 +8646,8 @@ void clif_party_member_info(struct party_data *p, struct map_session_data *sd)
 		clif_send(buf, packet_len(cmd), &sd->bl, PARTY);
 	else {
 		clif_send(buf, packet_len(cmd), &sd->bl, PARTY_WOS);
-		sp_clif_send(WBUFL(buf, 2), buf, packet_len(cmd), &sd->bl, PARTY);
+		WBUFL(buf, 2) = get_real_id(sd->status.account_id);
+		clif_send(buf, packet_len(cmd), &sd->bl, SELF);
 	}
 #endif
 }
@@ -11866,6 +11867,17 @@ void clif_parse_WantToConnection(int fd, struct map_session_data* sd)
 	WFIFOSET(fd,packet_len(0x283));
 #endif
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		auto cache = (struct mmo_status_cache*)idb_get(mmo_status_cache_map, sd->status.char_id);
+		if(cache != NULL)
+		{
+			sd->status.party_id = cache->party_id;//重置原char带来的party_id
+			party_request_info(cache->party_id, sd->status.char_id);
+		}
+	}
+#endif
 	chrif_authreq(sd,false);
 }
 

@@ -284,8 +284,11 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 
 #ifdef Pandas_Cross_Server
 	int cs_id = get_cs_id(p->char_id);
-	p->char_id = get_real_id(p->char_id);
-	p->account_id = get_real_id(p->account_id);
+	if(!is_cross_server)
+	{
+		p->char_id = get_real_id(p->char_id);
+		p->account_id = get_real_id(p->account_id);
+	}
 #endif
 
 	if (char_id!=p->char_id) return 0;
@@ -295,8 +298,36 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 	StringBuf_Init(&buf);
 	memset(save_status, 0, sizeof(save_status));
 
+
+#ifdef Pandas_Cross_Server
+	bool inserted = false;
+	if(is_cross_server)
+	{
+		//中立char时很可能出现的问题
+		//在缓存中但不在表里,update会失败(但返回值不是SQL_ERROR)
+		//replace into考虑到实际操作量和情况，不予采用
+		//on duplcate update 考虑到逻辑清晰的问题，不予采用
+		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, p->char_id)
+			|| Sql_NumRows(sql_handle) == 0) {
+			if (Sql_NumRows(sql_handle) == 0) {
+				if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`account_id`, `party_id`, `guild_id`) VALUES ('%d', '%d', '%d', '%d')",schema_config.char_db, p->char_id, p->account_id, 0, 0)) {
+					Sql_ShowDebug(sql_handle);
+				}else {
+					inserted = true;
+				}
+			}
+			else {
+				Sql_ShowDebug(sql_handle);
+			}
+		}
+		Sql_FreeResult(sql_handle);
+	}
+#endif
 	if (
-		(p->base_exp != cp->base_exp) || (p->base_level != cp->base_level) ||
+#ifdef Pandas_Cross_Server
+		inserted || 
+#endif
+		((p->base_exp != cp->base_exp) || (p->base_level != cp->base_level) ||
 		(p->job_level != cp->job_level) || (p->job_exp != cp->job_exp) ||
 		(p->zeny != cp->zeny) ||
 		(p->last_point.map != cp->last_point.map) ||
@@ -317,10 +348,9 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		(p->show_equip != cp->show_equip) || (p->hotkey_rowshift2 != cp->hotkey_rowshift2) ||
 		(p->max_ap != cp->max_ap) || (p->ap != cp->ap) || (p->trait_point != cp->trait_point) ||
 		(p->pow != cp->pow) || (p->sta != cp->sta) || (p->wis != cp->wis) ||
-		(p->spl != cp->spl) || (p->con != cp->con) || (p->crt != cp->crt)
+		(p->spl != cp->spl) || (p->con != cp->con) || (p->crt != cp->crt))
 	)
 	{	//Save status
-
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `base_level`='%d', `job_level`='%d',"
 			"`base_exp`='%" PRIu64 "', `job_exp`='%" PRIu64 "', `zeny`='%d',"
 			"`max_hp`='%u',`hp`='%u',`max_sp`='%u',`sp`='%u',`status_point`='%d',`skill_point`='%d',"
@@ -345,7 +375,14 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			p->base_exp, p->job_exp, p->zeny,
 			p->max_hp, p->hp, p->max_sp, p->sp, p->status_point, p->skill_point,
 			p->str, p->agi, p->vit, p->int_, p->dex, p->luk,
-			p->option, p->party_id, p->guild_id, p->pet_id, p->hom_id, p->ele_id,
+			p->option,
+#ifndef Pandas_Cross_Server
+			p->party_id,
+#else
+			//非CS char-serv接到中立服数据时,不保存party_id,因为他是中立服的id
+			!is_cross_server&&cs_id?cp->party_id:p->party_id,
+#endif
+			p->guild_id, p->pet_id, p->hom_id, p->ele_id,
 			p->weapon, p->shield, p->head_top, p->head_mid, p->head_bottom,
 			mapindex_id2name(p->last_point.map), p->last_point.x, p->last_point.y,
 			mapindex_id2name(p->save_point.map), p->save_point.x, p->save_point.y, p->rename,
@@ -361,6 +398,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		} else
 			strcat(save_status, " status");
 	}
+
 
 	//Values that will seldom change (to speed up saving)
 	if (
@@ -494,7 +532,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 
 #ifdef Pandas_Cross_Server
 	//跨服好友数据应该存在中立服中
-	if (cs_id) diff = 0;
+	if (cs_id && !is_cross_server) diff = 0;
 #endif
 
 	if(diff == 1)
@@ -3346,6 +3384,17 @@ void do_final(void)
 	char_db_->destroy(char_db_, NULL);
 	online_char_db->destroy(online_char_db, NULL);
 	auth_db->destroy(auth_db, NULL);
+
+#ifdef Pandas_Cross_Server
+	auto cs = cs_configs_map.begin();
+	while (cs != cs_configs_map.end())
+	{
+		aFree(cs->second);
+		const auto next = std::next(cs);
+		cs_configs_map.erase(cs);
+		cs = next;
+	}
+#endif
 
 	if( char_fd != -1 )
 	{

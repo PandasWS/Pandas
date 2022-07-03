@@ -690,7 +690,7 @@ int chclif_parse_maplogin(int fd){
 				marked_cs_id = tcs_id;
 				ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "This Char Server [Cross Server Marked ID] is %d from Main Cross Server.\n", marked_cs_id);
 			}
-			map_server[i].server_id = marked_cs_id;
+			map_server[i].server_id = tcs_id;
 #endif
 			map_server[i].fd = fd;
 			map_server[i].ip = ntohl(RFIFOL(fd,54));
@@ -701,6 +701,12 @@ int chclif_parse_maplogin(int fd){
 			session[fd]->flag.server = 1;
 			realloc_fifo(fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 			chmapif_init(fd);
+#ifdef Pandas_Cross_Server
+			if(is_cross_server)
+			{
+				chmapif_init_cs(fd);
+			}
+#endif
 		}
 		RFIFOSKIP(fd,60);
 	}
@@ -1389,6 +1395,12 @@ int chclif_parse(int fd) {
 	struct char_session_data* sd = (struct char_session_data*)session[fd]->session_data;
 	uint32 ipl = session[fd]->client_addr;
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		
+	}
+#endif
 	// disconnect any player if no login-server.
 	if(login_fd < 0)
 		set_eof(fd);

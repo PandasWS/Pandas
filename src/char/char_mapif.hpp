@@ -49,6 +49,7 @@ void chmapif_changemapserv_ack(int fd, bool nok);
 
 int chmapif_parse(int fd);
 int chmapif_init(int fd);
+int chmapif_init_cs(int fd);
 void chmapif_server_init(int id);
 void chmapif_server_destroy(int id);
 void do_init_chmapif(void);
