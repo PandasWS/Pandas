@@ -310,7 +310,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, p->char_id)
 			|| Sql_NumRows(sql_handle) == 0) {
 			if (Sql_NumRows(sql_handle) == 0) {
-				if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`account_id`, `party_id`, `guild_id`) VALUES ('%d', '%d', '%d', '%d')",schema_config.char_db, p->char_id, p->account_id, 0, 0)) {
+				if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`account_id`, `name`, `party_id`, `guild_id`, `partner_id`, `clan_id`) VALUES ('%d', '%d', '%s', '%d', '%d', '%d', '%d')",schema_config.char_db, p->char_id, p->account_id,p->name, p->party_id, p->guild_id,p->partner_id,p->clan_id)) {
 					Sql_ShowDebug(sql_handle);
 				}else {
 					inserted = true;
@@ -321,6 +321,18 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			}
 		}
 		Sql_FreeResult(sql_handle);
+	}
+	//当这份数据从中立服传到非中立服进行保存时
+	//p的特定数据应当被替换为原来CP的数据
+	//否则最后的memcpy会出现覆盖问题
+	if(!is_cross_server && cs_id)
+	{
+		p->party_id = cp->party_id;
+		p->guild_id = cp->guild_id;
+		p->clan_id = cp->clan_id;
+		p->partner_id = cp->partner_id;
+		memset(&p->friends, 0, sizeof(struct s_friend));
+		memcpy(p->friends,cp->friends, sizeof(struct s_friend));
 	}
 #endif
 	if (
@@ -375,14 +387,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			p->base_exp, p->job_exp, p->zeny,
 			p->max_hp, p->hp, p->max_sp, p->sp, p->status_point, p->skill_point,
 			p->str, p->agi, p->vit, p->int_, p->dex, p->luk,
-			p->option,
-#ifndef Pandas_Cross_Server
-			p->party_id,
-#else
-			//非CS char-serv接到中立服数据时,不保存party_id,因为他是中立服的id
-			!is_cross_server&&cs_id?cp->party_id:p->party_id,
-#endif
-			p->guild_id, p->pet_id, p->hom_id, p->ele_id,
+			p->option,p->party_id,p->guild_id, p->pet_id, p->hom_id, p->ele_id,
 			p->weapon, p->shield, p->head_top, p->head_mid, p->head_bottom,
 			mapindex_id2name(p->last_point.map), p->last_point.x, p->last_point.y,
 			mapindex_id2name(p->save_point.map), p->save_point.x, p->save_point.y, p->rename,
@@ -529,11 +534,6 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			break;
 		}
 	}
-
-#ifdef Pandas_Cross_Server
-	//跨服好友数据应该存在中立服中
-	if (cs_id && !is_cross_server) diff = 0;
-#endif
 
 	if(diff == 1)
 	{	//Save friends

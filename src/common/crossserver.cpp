@@ -209,6 +209,50 @@ bool is_fake_id(int id)
 	return false;
 }
 
+/**
+ * \brief 移除前缀
+ * \param fake_name 
+ */
+void get_real_name(char* fake_name)
+{
+	if (cs_configs_map.empty()) return;
+	auto cs = cs_configs_map.begin();
+	while (cs != cs_configs_map.end())
+	{
+		
+		const auto config = cs->second;
+		const auto needle = config->server_name;
+		if (strlen(needle) == 0 || needle[0] == '\0') continue;
+
+		const size_t len = strlen(fake_name);
+		const size_t len2 = strlen(needle);
+		if (len <= len2) continue;
+		for (int i = 0; i < len; ++i) {
+			if (fake_name[i] == *needle) {
+				// matched starting char -- loop through remaining chars
+				const char* h, * n;
+				for (h = &fake_name[i], n = needle; *h && *n; ++h, ++n) {
+					if (*h != *n) {
+						break;
+					}
+				}
+				if (!*n) {
+					char* temp;
+					CREATE(temp, char, len - i);
+					memcpy(temp, fake_name, len);
+					memset(fake_name, 0, len);
+					
+					for(int st = len2,c = 0;st < len;st++,c++)
+						fake_name[c] = temp[st];
+					aFree(temp);
+					return;
+				}
+			}
+		}
+		cs++;
+	}
+}
+
 
 /**
  * \brief 根据cs_id切换对应类型连接的数据库hanlder

@@ -109,7 +109,7 @@ int get_cs_prefix(int cs_id);
 int get_real_id(int id,bool force = false);
 int make_fake_id(int id, int cs_id);
 bool is_fake_id(int id);
-map_data_other_server* findmap(int cs_id, uint32 mapindex);
+void get_real_name(char* fake_name);
 
 //Sql
 Sql* Sql_GetHandler(SqlHandlerType type, int cs_id);
@@ -122,3 +122,6 @@ void chrif_logintoken_pass(int fd, uint32 account_id, uint32 char_id, uint32 log
 
 //from char-serv to map-serv
 void chrif_logintoken_received(int fd);
+
+//map.cpp
+map_data_other_server* findmap(int cs_id, uint32 mapindex);

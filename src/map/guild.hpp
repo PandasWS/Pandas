@@ -47,6 +47,7 @@ t_exp guild_getexp(struct map_session_data *sd,t_exp exp); // [Celest]
 int guild_create(struct map_session_data *sd, const char *name);
 int guild_created(uint32 account_id,int guild_id);
 int guild_request_info(int guild_id);
+int guild_request_info_cs(int char_id);
 int guild_recv_noinfo(int guild_id);
 int guild_recv_info(struct guild *sg);
 int guild_npc_request_info(int guild_id,const char *ev);

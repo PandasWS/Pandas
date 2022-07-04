@@ -258,6 +258,38 @@ struct party_data *inter_party_fromsql(int party_id)
 	return p;
 }
 
+// Read party_id from mysql
+struct party_data* inter_party_id_fromsql(int char_id)
+{
+	int party_id = 0;
+	struct mmo_charstatus* cd;
+	char* data;
+
+	if (char_id <= 0)
+		return nullptr;
+
+	//Load from memory
+	cd = static_cast<mmo_charstatus*>(idb_get(char_get_chardb(), char_id));
+	if (cd == nullptr)
+	{
+		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `party_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db,char_id)) {
+			Sql_ShowDebug(sql_handle);
+			Sql_FreeResult(sql_handle);
+			return nullptr;
+		}
+		else {
+			if(SQL_SUCCESS == Sql_NextRow(sql_handle))
+			{
+				Sql_GetData(sql_handle, 0, &data, NULL); party_id = atoi(data);
+			}
+			Sql_FreeResult(sql_handle);
+		}
+	}else
+		party_id = cd->party_id;
+
+	return inter_party_fromsql(party_id);
+}
+
 int inter_party_sql_init(void)
 {
 	//memory alloc
@@ -393,7 +425,11 @@ void mapif_party_noinfo(int fd, int party_id, uint32 char_id)
 	WFIFOL(fd,4) = char_id;
 	WFIFOL(fd,8) = party_id;
 	WFIFOSET(fd, 12);
+#ifdef Pandas_Cross_Server
+	if(party_id != 0 && party_id != 9999)
+#endif
 	ShowWarning("int_party: info not found (party_id=%d char_id=%d)\n", party_id, char_id);
+
 }
 
 //Digest party information
@@ -605,6 +641,16 @@ void mapif_parse_PartyInfo(int fd, int party_id, uint32 char_id)
 		mapif_party_info(fd, &p->party, char_id);
 	else
 		mapif_party_noinfo(fd, party_id, char_id);
+}
+
+void mapif_parse_PartyInfoCS(int fd, int none, uint32 char_id)
+{
+	struct party_data* p;
+	p = inter_party_id_fromsql(char_id);
+	if (p)
+		mapif_party_info(fd, &p->party, char_id);
+	else
+		mapif_party_noinfo(fd, 0, char_id);
 }
 
 // Add a player to party request
@@ -865,6 +911,7 @@ int inter_party_parse_frommap(int fd)
 	case 0x3027: mapif_parse_PartyMessage(fd, RFIFOL(fd,4), RFIFOL(fd,8), RFIFOCP(fd,12), RFIFOW(fd,2)-12); break;
 	case 0x3029: mapif_parse_PartyLeaderChange(fd, RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10)); break;
 	case 0x302A: mapif_parse_PartyShareLevel(fd, RFIFOL(fd,2)); break;
+	case 0x302B: mapif_parse_PartyInfoCS(fd, RFIFOL(fd, 2), RFIFOL(fd, 6)); break;
 	default:
 		return 0;
 	}

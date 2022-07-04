@@ -3671,6 +3671,8 @@ map_data_other_server* findmap(int cs_id, uint32 mapindex)
 }
 
 
+
+
 /*==========================================
  * Add mapindex to db of another map server
  *------------------------------------------*/

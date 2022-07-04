@@ -216,6 +216,11 @@ int party_request_info(int party_id, uint32 char_id)
 	return intif_request_partyinfo(party_id, char_id);
 }
 
+int party_request_info_auto(uint32 char_id)
+{
+	return intif_request_partyinfo_cs(char_id);
+}
+
 /**
  * Close trade window if party member is kicked when trade a party bound item
  * @param sd
@@ -239,7 +244,11 @@ int party_recv_noinfo(int party_id, uint32 char_id)
 
 		sd = map_charid2sd(char_id);
 
-		if( sd && sd->status.party_id == party_id )
+		if( sd && (sd->status.party_id == party_id
+#ifdef Pandas_Cross_Server
+			|| is_cross_server
+#endif
+			))
 		{
 			sd->status.party_id = 0;
 #ifdef Pandas_Cross_Server
@@ -368,6 +377,21 @@ int party_recv_info(struct party* sp, uint32 char_id, int is_create)
 	memset(&p->state, 0, sizeof(p->state));
 	memset(&p->data, 0, sizeof(p->data));
 
+#ifdef Pandas_Cross_Server
+	//覆写sp->party_id -> 跨服默认的9999
+	if (char_id != 0) { // requester
+		sd = map_charid2sd(char_id);
+		if (sd && party_getmemberid(p, sd) > -1)
+		{
+			if(sd->status.party_id != sp->party_id && sd->status.party_id > 0 && sd->status.party_id != 9999)
+				intif_party_leave(sd->status.party_id, sd->status.account_id, char_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE);
+			sd->status.party_id = sp->party_id;
+		}
+			
+	}
+#endif
+	
+
 	for( member_id = 0; member_id < MAX_PARTY; member_id++ ) {
 		member = &p->party.member[member_id];
 		if ( member->char_id == 0 )
@@ -410,6 +434,12 @@ int party_recv_info(struct party* sp, uint32 char_id, int is_create)
 
 	if( char_id != 0 ) { // requester
 		sd = map_charid2sd(char_id);
+#ifdef Pandas_Cross_Server
+		if(is_cross_server && party_getmemberid(p, sd) > -1)
+		{
+			sd->status.party_id = sp->party_id;
+		}
+#endif
 		if( sd && sd->status.party_id == sp->party_id && party_getmemberid(p,sd) == -1 )
 		{
 			sd->status.party_id = 0;// was not in the party
@@ -756,9 +786,15 @@ void party_member_joined(struct map_session_data *sd)
 	int i;
 
 	if (!p) {
+#ifndef Pandas_Cross_Server
 		party_request_info(sd->status.party_id, sd->status.char_id);
+#else
+		//强制使用从char服查询获取的char_id而不指定party_id,否则切换服务器时会出现队伍问题
+		intif_request_partyinfo_cs(sd->status.char_id);
+#endif
 		return;
 	}
+
 
 	ARR_FIND( 0, MAX_PARTY, i, p->party.member[i].account_id == sd->status.account_id && p->party.member[i].char_id == sd->status.char_id );
 

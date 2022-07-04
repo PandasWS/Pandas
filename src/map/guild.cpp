@@ -554,6 +554,10 @@ int guild_request_info(int guild_id) {
 	return intif_guild_request_info(guild_id);
 }
 
+int guild_request_info_cs(int char_id) {
+	return intif_guild_request_info_cs(char_id);
+}
+
 //Information request with event
 int guild_npc_request_info(int guild_id,const char *event) {
 	if( guild_search(guild_id) ) {
@@ -859,7 +863,11 @@ void guild_member_joined(struct map_session_data *sd) {
 	int i;
 	g=guild_search(sd->status.guild_id);
 	if (!g) {
+#ifndef Pandas_Cross_Server
 		guild_request_info(sd->status.guild_id);
+#else
+		guild_request_info_cs(sd->status.char_id);
+#endif
 		return;
 	}
 	if (strcmp(sd->status.name,g->master) == 0) {	// set the Guild Master flag

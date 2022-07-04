@@ -534,6 +534,39 @@ struct guild * inter_guild_fromsql(int guild_id)
 	return g;
 }
 
+// Read guild from sql
+struct guild* inter_guild_id_fromsql(int char_id)
+{
+	int guild_id = 0;
+	struct mmo_charstatus* cd;
+	char* data;
+
+	if (char_id <= 0)
+		return nullptr;
+
+	//Load from memory
+	cd = static_cast<mmo_charstatus*>(idb_get(char_get_chardb(), char_id));
+	if (cd == nullptr)
+	{
+		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `guild_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, char_id)) {
+			Sql_ShowDebug(sql_handle);
+			Sql_FreeResult(sql_handle);
+			return nullptr;
+		}
+		else {
+			if (SQL_SUCCESS == Sql_NextRow(sql_handle))
+			{
+				Sql_GetData(sql_handle, 0, &data, NULL); guild_id = atoi(data);
+			}
+			Sql_FreeResult(sql_handle);
+		}
+	}
+	else
+		guild_id = cd->guild_id;
+
+	return inter_guild_fromsql(guild_id);
+}
+
 /**
  * Get the max storage size of a guild.
  * @param guild_id: Guild ID to search
@@ -1372,6 +1405,20 @@ int mapif_parse_GuildInfo(int fd,int guild_id)
 	return 0;
 }
 
+// Return guild info to client
+int mapif_parse_GuildInfoCS(int fd, int char_id)
+{
+	struct guild* g = inter_guild_id_fromsql(char_id); //We use this because on start-up the info of castle-owned guilds is requied. [Skotlex]
+	if (g)
+	{
+		if (!guild_calcinfo(g))
+			mapif_guild_info(fd, g);
+	}
+	else
+		mapif_guild_noinfo(fd, char_id); // Failed to load info
+	return 0;
+}
+
 // Add member to guild
 int mapif_parse_GuildAddMember(int fd,int guild_id,struct guild_member *m)
 {
@@ -2041,7 +2088,7 @@ int inter_guild_parse_frommap(int fd)
 	case 0x3040: mapif_parse_GuildCastleDataLoad(fd,RFIFOW(fd,2),(int *)RFIFOP(fd,4)); break;
 	case 0x3041: mapif_parse_GuildCastleDataSave(fd,RFIFOW(fd,2),RFIFOB(fd,4),RFIFOL(fd,5)); break;
 	case 0x3042: mapif_parse_GuildEmblemVersion(fd, RFIFOL(fd, 2), RFIFOL(fd, 6)); break;
-
+	case 0x3043: mapif_parse_GuildInfoCS(fd, RFIFOL(fd, 2)); break;
 	default:
 		return 0;
 	}

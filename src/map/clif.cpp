@@ -8662,6 +8662,7 @@ void clif_party_member_info(struct party_data *p, struct map_session_data *sd)
 void clif_party_info(struct party_data* p, struct map_session_data *sd)
 {
 	struct map_session_data* party_sd = NULL;
+	struct map_session_data* leader_sd = NULL;
 	int i, c;
 #if PACKETVER < 20170502
 	const int M_SIZE = 46; // 4+NAME_LENGTH+MAP_NAME_LENGTH_EXT+1+1
@@ -8693,9 +8694,13 @@ void clif_party_info(struct party_data* p, struct map_session_data *sd)
 		{
 			if(m->leader)
 			{
+				leader_id = m->account_id;
+				//Party补充通知目标选为leader
+				leader_sd = p->data[i].sd;
+
 				if (sd && sd->status.account_id == m->account_id)
 					self_index = i;
-				if (party_sd && party_sd->status.account_id == m->account_id)
+				else if (leader_sd && leader_sd->status.account_id == m->account_id)
 					self_index = i;
 			}
 		}
@@ -8703,10 +8708,6 @@ void clif_party_info(struct party_data* p, struct map_session_data *sd)
 		safestrncpy(WBUFCP(buf,PRE_SIZE+c*M_SIZE+4), m->name, NAME_LENGTH);
 		mapindex_getmapname_ext(mapindex_id2name(m->map), WBUFCP(buf,PRE_SIZE+c*M_SIZE+PRE_SIZE));
 		WBUFB(buf,PRE_SIZE+c*M_SIZE+44) = (m->leader) ? 0 : 1;
-#ifdef Pandas_Cross_Server
-		if (m->leader)
-			leader_id = m->account_id;
-#endif
 		WBUFB(buf,PRE_SIZE+c*M_SIZE+45) = (m->online) ? 0 : 1;
 #if PACKETVER >= 20170502
 		WBUFW(buf,PRE_SIZE+c*M_SIZE+46) = m->class_;
@@ -8721,6 +8722,11 @@ void clif_party_info(struct party_data* p, struct map_session_data *sd)
 	WBUFB(buf,PRE_SIZE+c*M_SIZE+1) = (p->party.item & 2) ? 1 : 0;
 	WBUFL(buf,PRE_SIZE+c*M_SIZE+2) = 0; // unknown
 	WBUFW(buf,2) = PRE_SIZE+c*M_SIZE+6;
+#endif
+
+#ifdef Pandas_Cross_Server
+	if(!sd && leader_sd)
+		party_sd = leader_sd; //当以全队为目标时，假设leader_sd存在则改为它
 #endif
 
 	if(sd) { // send only to self
@@ -11894,18 +11900,6 @@ void clif_parse_WantToConnection(int fd, struct map_session_data* sd)
 	WFIFOSET(fd,packet_len(0x283));
 #endif
 
-#ifdef Pandas_Cross_Server
-	if(is_cross_server)
-	{
-		auto cache = (struct mmo_status_cache*)idb_get(mmo_status_cache_map, sd->status.char_id);
-		if(cache != NULL)
-		{
-			sd->status.party_id = cache->party_id;//重置原char带来的party_id
-			/*if(sd->status.party_id > 0)
-				party_request_info(cache->party_id, sd->status.char_id);*/
-		}
-	}
-#endif
 	chrif_authreq(sd,false);
 }
 
@@ -13129,6 +13123,10 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 	}
 
 	// searching destination character
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		get_real_name(target);
+#endif
 	dstsd = map_nick2sd(target,false);
 
 	if (dstsd == NULL || strcmp(dstsd->status.name, target) != 0) {
@@ -15025,6 +15023,10 @@ void clif_parse_PartyInvite2(int fd, struct map_session_data *sd){
 		return;
 	}
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		get_real_name(name);
+#endif
 	t_sd = map_nick2sd(name,false);
 
 	if(t_sd && t_sd->state.noask) {// @noask [LuzZza]

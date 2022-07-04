@@ -383,16 +383,20 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	{
 		//CS的char服也存一份,只需要部分内容，如party等等
 		int tfd = char_fd;
-		switch_char_fd_cs_id(0, char_fd);
-		WFIFOHEAD(char_fd, mmo_charstatus_len);
-		WFIFOW(char_fd, 0) = 0x2b01;
-		WFIFOW(char_fd, 2) = mmo_charstatus_len;
-		WFIFOL(char_fd, 4) = sd->status.account_id;
-		WFIFOL(char_fd, 8) = sd->status.char_id;
-		WFIFOB(char_fd, 12) = (flag & CSAVE_QUIT) ? 1 : 0;
-		memcpy(WFIFOP(char_fd, 13), &temp_save_instance, sizeof(struct mmo_charstatus));
-		WFIFOSET(char_fd, WFIFOW(char_fd, 2));
-		char_fd = tfd;
+		if(switch_char_fd_cs_id(0, char_fd))
+		{
+			switch_char_fd_cs_id(0, char_fd);
+			WFIFOHEAD(char_fd, mmo_charstatus_len);
+			WFIFOW(char_fd, 0) = 0x2b01;
+			WFIFOW(char_fd, 2) = mmo_charstatus_len;
+			WFIFOL(char_fd, 4) = sd->status.account_id;
+			WFIFOL(char_fd, 8) = sd->status.char_id;
+			WFIFOB(char_fd, 12) = (flag & CSAVE_QUIT) ? 1 : 0;
+			memcpy(WFIFOP(char_fd, 13), &temp_save_instance, sizeof(struct mmo_charstatus));
+			WFIFOSET(char_fd, WFIFOW(char_fd, 2));
+			char_fd = tfd;
+		}
+		
 	}
 #endif
 
@@ -492,12 +496,15 @@ int chrif_recvmap(int fd) {
 // remove specified maps (used when some other map-server disconnects)
 int chrif_removemap(int fd) {
 	int i, j;
-	uint32 ip =  RFIFOL(fd,4);
-	uint16 port = RFIFOW(fd,8);
 #ifndef Pandas_Cross_Server
+	uint32 ip = RFIFOL(fd, 4);
+	uint16 port = RFIFOW(fd, 8);
 	for (i = 10, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
 		map_eraseipport(RFIFOW(fd, i), ip, port);
 #else
+	//ip和port被转过,源代码没逆回来多半是个bug
+	uint32 ip = ntohl(RFIFOL(fd, 4));
+	uint16 port = ntohs(RFIFOW(fd, 8));
 	uint32 cs_id = RFIFOW(fd, 10);
 	if(!is_cross_server)
 	{

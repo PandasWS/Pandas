@@ -2025,11 +2025,12 @@ void pc_reg_received(struct map_session_data *sd)
 	//在这里以替换的party_id,guild_id,等替换掉
 	if(is_cross_server)
 	{
+		sd->status.party_id = 9999; 
 		const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
 		if (cache != nullptr)
 		{
-			sd->status.party_id = cache->party_id;
-			sd->status.guild_id = cache->guild_id;
+			
+			//sd->status.guild_id = cache->guild_id;
 			//sd->status.party_id = cache->party_id;
 			//sd->status.party_id = cache->party_id;
 		}
@@ -6998,8 +6999,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 			{
 				int tfd = chrif_get_char_fd(cs_id);
 				if (tfd <= 0 || !chrif_fd_isconnected(tfd))
-					return SETPOS_NO_MAPSERVER;//这里是该跨服的char掉了.一般不会发生.发生了map-serv会卡主
-				
+					return SETPOS_NO_MAPSERVER;//这里应该是跨服的char掉了.一般不会发生.发生了map-serv会卡主
 			}
 			if(ip == 0 || (short)port == 0)
 				return SETPOS_NO_MAPSERVER;

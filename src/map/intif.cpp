@@ -697,6 +697,27 @@ int intif_request_partyinfo(int party_id, uint32 char_id)
 }
 
 /**
+ * 直接从char服查询party_id，而不是通过传入的party_id
+ * @param char_id : Player id requesting
+ * @return 0=error, 1=msg sent
+ */
+int intif_request_partyinfo_cs(uint32 char_id)
+{
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+	if (CheckForCharServer())
+		return 0;
+	WFIFOHEAD(inter_fd, 10);
+	WFIFOW(inter_fd, 0) = 0x302B;
+	WFIFOL(inter_fd, 2) = 0;
+	WFIFOL(inter_fd, 6) = char_id;
+	WFIFOSET(inter_fd, 10);
+	return 1;
+}
+
+/**
  * Request to add a member to party
  * @param party_id : Party to add member to
  * @param member : member to add to party
@@ -953,6 +974,26 @@ int intif_guild_request_info(int guild_id)
 	WFIFOW(inter_fd,0) = 0x3031;
 	WFIFOL(inter_fd,2) = guild_id;
 	WFIFOSET(inter_fd,6);
+	return 1;
+}
+
+/**
+ * Request Guild information
+ * @param char_id : char_id to get info from
+ * @return  0=error, 1=msg_sent
+ */
+int intif_guild_request_info_cs(int char_id)
+{
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+	if (CheckForCharServer())
+		return 0;
+	WFIFOHEAD(inter_fd, 6);
+	WFIFOW(inter_fd, 0) = 0x3043;
+	WFIFOL(inter_fd, 2) = char_fd;
+	WFIFOSET(inter_fd, 6);
 	return 1;
 }
 
@@ -1794,6 +1835,9 @@ int intif_parse_PartyCreated(int fd)
 int intif_parse_PartyInfo(int fd)
 {
 	if (RFIFOW(fd, 2) == 12) {
+#ifdef Pandas_Cross_Server
+		if(RFIFOL(fd, 8) != 0 && RFIFOL(fd, 8) != 9999)
+#endif
 		ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", RFIFOL(fd,4), RFIFOL(fd,8));
 		party_recv_noinfo(RFIFOL(fd,8), RFIFOL(fd,4));
 		return 0;
