@@ -216,10 +216,8 @@ bool is_fake_id(int id)
 void get_real_name(char* fake_name)
 {
 	if (cs_configs_map.empty()) return;
-	auto cs = cs_configs_map.begin();
-	while (cs != cs_configs_map.end())
+	for(auto cs = cs_configs_map.begin();cs != cs_configs_map.end();cs=std::next(cs))
 	{
-		
 		const auto config = cs->second;
 		const auto needle = config->server_name;
 		if (strlen(needle) == 0 || needle[0] == '\0') continue;
@@ -241,15 +239,14 @@ void get_real_name(char* fake_name)
 					CREATE(temp, char, len - i);
 					memcpy(temp, fake_name, len);
 					memset(fake_name, 0, len);
-					
-					for(int st = len2,c = 0;st < len;st++,c++)
+
+					for (int st = len2, c = 0; st < len; st++, c++)
 						fake_name[c] = temp[st];
 					aFree(temp);
 					return;
 				}
 			}
 		}
-		cs++;
 	}
 }
 
