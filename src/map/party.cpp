@@ -216,10 +216,6 @@ int party_request_info(int party_id, uint32 char_id)
 	return intif_request_partyinfo(party_id, char_id);
 }
 
-int party_request_info_auto(uint32 char_id)
-{
-	return intif_request_partyinfo_cs(char_id);
-}
 
 /**
  * Close trade window if party member is kicked when trade a party bound item
@@ -251,14 +247,6 @@ int party_recv_noinfo(int party_id, uint32 char_id)
 			))
 		{
 			sd->status.party_id = 0;
-#ifdef Pandas_Cross_Server
-			if(is_cross_server)
-			{
-				const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, char_id));
-				if (cache != nullptr)
-					cache->party_id = 0;
-			}
-#endif
 		}
 			
 	}
@@ -378,12 +366,12 @@ int party_recv_info(struct party* sp, uint32 char_id, int is_create)
 	memset(&p->data, 0, sizeof(p->data));
 
 #ifdef Pandas_Cross_Server
-	//覆写sp->party_id -> 跨服默认的9999
+	//覆写sp->party_id
 	if (char_id != 0) { // requester
 		sd = map_charid2sd(char_id);
 		if (sd && party_getmemberid(p, sd) > -1)
 		{
-			if(sd->status.party_id != sp->party_id && sd->status.party_id > 0 && sd->status.party_id != 9999)
+			if(sd->status.party_id != sp->party_id && sd->status.party_id > 0)
 				intif_party_leave(sd->status.party_id, sd->status.account_id, char_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE);
 			sd->status.party_id = sp->party_id;
 		}
@@ -786,12 +774,7 @@ void party_member_joined(struct map_session_data *sd)
 	int i;
 
 	if (!p) {
-#ifndef Pandas_Cross_Server
 		party_request_info(sd->status.party_id, sd->status.char_id);
-#else
-		//强制使用从char服查询获取的char_id而不指定party_id,否则切换服务器时会出现队伍问题
-		intif_request_partyinfo_cs(sd->status.char_id);
-#endif
 		return;
 	}
 
@@ -806,14 +789,6 @@ void party_member_joined(struct map_session_data *sd)
 	} else
 	{
 		sd->status.party_id = 0; //He does not belongs to the party really?
-#ifdef Pandas_Cross_Server
-		if (is_cross_server)
-		{
-			const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
-			if (cache != nullptr)
-				cache->party_id = 0;
-		}
-#endif
 	}
 		
 }
@@ -1020,14 +995,7 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 #endif
 
 		sd->status.party_id = 0;
-#ifdef Pandas_Cross_Server
-		if (is_cross_server)
-		{
-			const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, char_id));
-			if (cache != nullptr)
-				cache->party_id = 0;
-		}
-#endif
+
 		clif_name_area(&sd->bl); //Update name display [Skotlex]
 		//TODO: hp bars should be cleared too
 

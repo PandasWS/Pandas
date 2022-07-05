@@ -829,6 +829,65 @@ bool sp_clif_send(uint32& aid, const void* buf, int len, block_list* bl, enum se
 	return true;
 }
 
+void sp_clif_send2(block_list* src, block_list* dst,int src_pos,int dst_pos, unsigned char* buf, int len, int disguised = 0)
+{
+	//当双Id出现时，同时做处理比较好
+	//以下情况列举:(假设自身Id 1200,200 | 对方Id:2201,201)
+	//情况1: 源=自己 目标=对方时,target type为Area则会出现
+	//       自己视角: 1200向2201做出动作,但自己客户端只识别200和2201
+	//       他人视角: 1200向2201做出动作,他人眼中可识别1200和2201
+	//       此时需要对自己补上 200向2201的视角
+	//
+	//情况2: 源=对方 目标=自己时,target type为Area则会出现
+	//       自己视角: 2201向1200做出动作,但自己客户端只识别2201和200
+	//       他人视角: 2201向1200做出动作,他人眼中可识别2201和1200
+	//       此时需要对自己补上 2201向200的视角
+	//
+	//情况3: 源=空 目标=自己时,target type为Area则会出现
+	//       自己视角: 1200被动作,但自己客户端只识别200
+	//       他人视角: 1200被动作,他人眼中可识别1200
+	//       此时需要对自己补上 200被动作的视角
+	//
+	//情况4: 源=自己时 目标=自己时,target type为Area则会出现
+	//       自己视角: 1200向1200做出动作,但自己客户端只识别200
+	//       他人视角: 1200向1200做出动作,他人眼中可识别1200
+	//       此时需要补上 200向200的视角,target type为SELF
+	//
+	//其余情况无需补充
+	if (is_cross_server)
+	{
+		//情况4、1、2
+		if (src)
+		{
+			//情况4
+			if (src->type == BL_PC && src == dst)
+			{
+				WBUFL(buf, dst_pos) = get_real_id(dst->id);
+				WBUFL(buf, src_pos) = get_real_id(src->id);
+				clif_send(buf, len, dst, SELF);
+			}
+			else if (src->type == BL_PC || dst->type == BL_PC)
+			{
+				if (src->type == BL_PC) {
+					WBUFL(buf, src_pos) = get_real_id(src->id);
+					clif_send(buf, len, src, SELF);
+				}
+				if (dst->type == BL_PC)
+				{
+					WBUFL(buf, src_pos) = src->id;
+					WBUFL(buf, dst_pos) = get_real_id(dst->id);
+					clif_send(buf, len, dst, SELF);
+				}
+			}
+		}
+		//情况3
+		else if (dst->type == BL_PC)
+		{
+			WBUFL(buf, dst_pos) = get_real_id(dst->id);
+			clif_send(buf, len, dst, SELF);
+		}
+	}
+}
 
 /// Notifies the client, that it's connection attempt was accepted.
 /// 0073 <start time>.L <position>.3B <x size>.B <y size>.B (ZC_ACCEPT_ENTER)
@@ -5649,7 +5708,7 @@ int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int
 	{
 		clif_send(buf, packet_len(cmd), dst, AREA);
 #ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 6), buf, packet_len(cmd), dst, AREA);
+		sp_clif_send2(src, dst, 2, 6, buf, packet_len(cmd));
 #endif
 	}
 		
@@ -5667,7 +5726,22 @@ int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int
 #endif
 		clif_send(buf,packet_len(cmd),src,SELF);
 #ifdef Pandas_Cross_Server
-		sp_clif_send(WBUFL(buf, 6), buf, packet_len(cmd), src, SELF);
+		if (is_cross_server) {
+			if (src->type == BL_PC || dst->type == BL_PC)
+			{
+				if (src->type == BL_PC)
+				{
+					WBUFL(buf, 4) = get_real_id(disguised_bl_id(src->id));
+					clif_send(buf, packet_len(cmd), src, SELF);
+				}
+				if (dst->type == BL_PC)
+				{
+					WBUFL(buf, 4) = disguised_bl_id(src->id);
+					WBUFL(buf, 8) = disguised(dst)? get_real_id(dst->id): disguised_bl_id(get_real_id(dst->id));
+					clif_send(buf, packet_len(cmd), src, SELF);
+				}
+			}
+		}
 #endif
 	}
 
@@ -6558,7 +6632,7 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 
 		clif_send(buf, packet_len(0x1de), dst, AREA);
 #ifdef Pandas_Cross_Server
-		if (is_cross_server){
+		/*if (is_cross_server){
 			if(src->type == BL_PC || dst->type == BL_PC)
 			{
 				if(src->type == BL_PC)
@@ -6576,7 +6650,8 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 			}
 			WBUFL(buf, 4) = src->id;
 			WBUFL(buf, 8) = dst->id;
-		}
+		}*/
+		sp_clif_send2(src, dst, 4,8, buf, packet_len(0x1de));
 #endif
 	}
 
@@ -6724,39 +6799,7 @@ bool clif_skill_nodamage(struct block_list *src,struct block_list *dst, uint16 s
 		//       此时需要补上 200向200的视角,target type为SELF
 		//
 		//其余情况无需补充
-		if(is_cross_server)
-		{
-			//情况4、1、2
-			if(src)
-			{
-				//情况4
-				if(src->type == BL_PC && src == dst)
-				{
-					WBUFL(buf, 6 + offset) = get_real_id(dst->id);
-					WBUFL(buf, 10 + offset) = get_real_id(src->id);
-					clif_send(buf, packet_len(cmd), dst, SELF);
-				}else if (src->type == BL_PC || dst->type == BL_PC)
-				{
-					if(src->type == BL_PC){
-						WBUFL(buf, 10 + offset) = get_real_id(src->id);
-						clif_send(buf, packet_len(cmd), src, SELF);
-					}
-					if(dst->type == BL_PC)
-					{
-						WBUFL(buf, 10 + offset) = src->id;
-						WBUFL(buf, 6 + offset) = get_real_id(dst->id);
-						clif_send(buf, packet_len(cmd), dst, SELF);
-					}
-				}
-			}
-			//情况3
-			else if (dst->type == BL_PC)
-			{
-				WBUFL(buf, 6 + offset) = get_real_id(dst->id);
-				clif_send(buf, packet_len(cmd), dst, SELF);
-			}
-		}
-		
+		sp_clif_send2(src, dst, 10 + offset, 6 + offset, buf, packet_len(cmd));
 #endif
 	}
 		
@@ -9705,6 +9748,11 @@ void clif_guild_basicinfo(struct map_session_data *sd) {
 	WFIFOL(fd,70+offset+16) = 0;  // zeny
 #if PACKETVER >= 20160622
 	WFIFOL(fd,70+offset+20) = g->member[0].char_id;  // leader
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		if(g->member[0].char_id == sd->status.char_id)
+			WFIFOL(fd, 70 + offset + 20) = get_real_id(g->member[0].char_id);
+#endif
 #endif
 
 	WFIFOSET(fd,packet_len(cmd));
@@ -9775,6 +9823,15 @@ void clif_guild_memberlist(struct map_session_data *sd)
 			continue;
 		WFIFOL(fd,c*size+ 4)=m->account_id;
 		WFIFOL(fd,c*size+ 8)=m->char_id;
+#ifdef Pandas_Cross_Server
+		if (is_cross_server)
+		{
+			if(m->account_id == sd->status.account_id)
+				WFIFOL(fd, c * size + 4) = get_real_id(m->account_id);
+			if (m->char_id == sd->status.char_id)
+				WFIFOL(fd, c * size + 8) = get_real_id(m->char_id);
+		}
+#endif
 		WFIFOW(fd,c*size+12)=m->hair;
 		WFIFOW(fd,c*size+14)=m->hair_color;
 		WFIFOW(fd,c*size+16)=m->gender;
@@ -12799,11 +12856,31 @@ void clif_changed_dir(struct block_list *bl, enum send_target target)
 	WBUFB(buf,8) = unit_getdir(bl);
 
 	clif_send(buf, packet_len(0x9c), bl, target);
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		if(bl->type == BL_PC)
+		{
+			WBUFL(buf, 2) = get_real_id(bl->id);
+			clif_send(buf, packet_len(0x9c), bl, SELF);
+		}
+	}
+#endif
 
 	if (disguised(bl)) {
 		WBUFL(buf,2) = disguised_bl_id(bl->id);
 		WBUFW(buf,6) = 0;
 		clif_send(buf, packet_len(0x9c), bl, SELF);
+#ifdef Pandas_Cross_Server
+		if (is_cross_server)
+		{
+			if (bl->type == BL_PC)
+			{
+				WBUFL(buf, 2) = get_real_id(disguised_bl_id(bl->id));
+				clif_send(buf, packet_len(0x9c), bl, SELF);
+			}
+		}
+#endif
 	}
 }
 

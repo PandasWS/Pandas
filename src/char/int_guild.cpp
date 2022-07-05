@@ -43,7 +43,11 @@ int mapif_guild_broken(int guild_id,int flag);
 bool guild_check_empty(struct guild *g);
 int guild_calcinfo(struct guild *g);
 int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len);
+#ifndef Pandas_Cross_Server
 int mapif_guild_info(int fd,struct guild *g);
+#else
+int mapif_guild_info(int fd, struct guild* g, int char_id = 0);
+#endif
 int guild_break_sub(int key,void *data,va_list ap);
 int inter_guild_tosql(struct guild *g,int flag);
 int guild_checkskill(struct guild *g, int id);
@@ -997,35 +1001,70 @@ int mapif_guild_created(int fd,uint32 account_id,struct guild *g)
 }
 
 // Guild not found
+#ifndef Pandas_Cross_Server
 int mapif_guild_noinfo(int fd,int guild_id)
+#else
+int mapif_guild_noinfo(int fd, int guild_id, int char_id = 0)
+#endif
 {
+	int offset = 0;
+#ifndef Pandas_Cross_Server
 #ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12];
 #else
 	unsigned char buf[12] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
+#else
+#ifndef Pandas_Crashfix_Variable_Init
+	unsigned char buf[16];
+#else
+	unsigned char buf[16] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
+	offset += 4;
+#endif
 	WBUFW(buf,0)=0x3831;
-	WBUFW(buf,2)=8;
+	WBUFW(buf,2)=8+offset;
 	WBUFL(buf,4)=guild_id;
+#ifdef Pandas_Cross_Server
+	WBUFL(buf,8)=char_id;
+	if(guild_id != 0)
+#endif
 	ShowWarning("int_guild: info not found %d\n",guild_id);
 	if(fd<0)
-		chmapif_sendall(buf,8);
+		chmapif_sendall(buf, WBUFW(buf, 2));
 	else
-		chmapif_send(fd,buf,8);
+		chmapif_send(fd,buf, WBUFW(buf, 2));
 	return 0;
 }
 
 // Send guild info
+#ifndef Pandas_Cross_Server
 int mapif_guild_info(int fd,struct guild *g)
+#else
+int mapif_guild_info(int fd, struct guild* g,int char_id)
+#endif
 {
+	int offset = 0;
+#ifndef Pandas_Cross_Server
 #ifndef Pandas_Crashfix_Variable_Init
-	unsigned char buf[8+sizeof(struct guild)];
+	unsigned char buf[8 + sizeof(struct guild)];
 #else
 	unsigned char buf[8 + sizeof(struct guild)] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
+#else
+#ifndef Pandas_Crashfix_Variable_Init
+	unsigned char buf[12 + sizeof(struct guild)];
+#else
+	unsigned char buf[12 + sizeof(struct guild)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
+	offset += 4;
+#endif
 	WBUFW(buf,0)=0x3831;
-	WBUFW(buf,2)=4+sizeof(struct guild);
-	memcpy(buf+4,g,sizeof(struct guild));
+	WBUFW(buf,2)=4+offset+sizeof(struct guild);
+#ifdef Pandas_Cross_Server
+	WBUFL(buf, 4)=char_id;
+#endif
+	memcpy(buf+4+offset,g,sizeof(struct guild));
 	if(fd<0)
 		chmapif_sendall(buf,WBUFW(buf,2));
 	else
@@ -1412,10 +1451,10 @@ int mapif_parse_GuildInfoCS(int fd, int char_id)
 	if (g)
 	{
 		if (!guild_calcinfo(g))
-			mapif_guild_info(fd, g);
+			mapif_guild_info(fd, g, char_id);
 	}
 	else
-		mapif_guild_noinfo(fd, char_id); // Failed to load info
+		mapif_guild_noinfo(fd, 0,char_id); // Failed to load info
 	return 0;
 }
 

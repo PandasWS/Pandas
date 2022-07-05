@@ -2021,27 +2021,25 @@ void pc_reg_received(struct map_session_data *sd)
 	}
 
 #if PACKETVER_MAIN_NUM < 20190403 || PACKETVER_RE_NUM < 20190320 || PACKETVER_ZERO_NUM < 20190410
-#ifdef Pandas_Cross_Server
-	//在这里以替换的party_id,guild_id,等替换掉
-	if(is_cross_server)
-	{
-		sd->status.party_id = 9999; 
-		const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
-		if (cache != nullptr)
-		{
-			
-			//sd->status.guild_id = cache->guild_id;
-			//sd->status.party_id = cache->party_id;
-			//sd->status.party_id = cache->party_id;
-		}
-	}
-#endif
 	if (sd->instance_id > 0)
 		instance_reqinfo(sd, sd->instance_id);
+#ifndef Pandas_Cross_Server
 	if (sd->status.party_id > 0)
 		party_member_joined(sd);
 	if (sd->status.guild_id > 0)
 		guild_member_joined(sd);
+#else
+	//强制使用从char服查询获取的char_id而不指定party_id,否则切换服务器时会出现队伍问题
+	intif_request_partyinfo_cs(sd->status.char_id);
+	intif_guild_request_info_cs(sd->status.char_id);
+	//此场合发生的情景有:
+	//①:角色在中立服切换到源服时
+	//②:角色在源服登陆时
+	//造成的结果:
+	//①: 角色在中立服持有公会或队伍,源服未持有公会或队伍,通过发送公会解散或队伍退出的封包,可使得客户端缓存的数据正确去掉
+	//②: 角色只要未持有队伍或公会,就依然会收到退出通知
+	//原因: 因为此刻无法判断是源服还是中立服切换的登陆,因为数据没有缓存协助追踪上一行为
+#endif
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
 #endif

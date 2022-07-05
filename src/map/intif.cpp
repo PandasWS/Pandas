@@ -992,7 +992,7 @@ int intif_guild_request_info_cs(int char_id)
 		return 0;
 	WFIFOHEAD(inter_fd, 6);
 	WFIFOW(inter_fd, 0) = 0x3043;
-	WFIFOL(inter_fd, 2) = char_fd;
+	WFIFOL(inter_fd, 2) = char_id;
 	WFIFOSET(inter_fd, 6);
 	return 1;
 }
@@ -1834,32 +1834,37 @@ int intif_parse_PartyCreated(int fd)
  */
 int intif_parse_PartyInfo(int fd)
 {
+
+#ifndef Pandas_Cross_Server
 	if (RFIFOW(fd, 2) == 12) {
-#ifdef Pandas_Cross_Server
-		if(RFIFOL(fd, 8) != 0 && RFIFOL(fd, 8) != 9999)
-#endif
-		ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", RFIFOL(fd,4), RFIFOL(fd,8));
-		party_recv_noinfo(RFIFOL(fd,8), RFIFOL(fd,4));
-#ifdef Pandas_Cross_Server
-		if(RFIFOL(fd,8) == 0)
-		{
-			auto sd = map_charid2sd(RFIFOL(fd, 4));
-			//刷新掉组队框里的内容
-			if(sd)
-				clif_party_withdraw(sd, sd->status.account_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE, SELF);
-		}
-#endif
+			ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", RFIFOL(fd, 4), RFIFOL(fd, 8));
+		party_recv_noinfo(RFIFOL(fd, 8), RFIFOL(fd, 4));
 		return 0;
 	}
-#ifndef Pandas_Cross_Server
-	if( RFIFOW(fd,2) != 8+sizeof(struct party) )
+	if (RFIFOW(fd, 2) != 8 + sizeof(struct party))
 		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", RFIFOL(fd, 4), RFIFOL(fd, 8), RFIFOW(fd, 2), 8 + sizeof(struct party));
-	party_recv_info((struct party *)RFIFOP(fd,8), RFIFOL(fd,4));
+	party_recv_info((struct party*)RFIFOP(fd, 8), RFIFOL(fd, 4));
 #else
-	if (RFIFOW(fd, 2) != 12 + sizeof(struct party))
-		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", RFIFOL(fd, 4), RFIFOL(fd, 8), RFIFOW(fd, 2), 12 + sizeof(struct party));
-	party_recv_info((struct party*)RFIFOP(fd, 12), RFIFOL(fd, 4), RFIFOL(fd, 8));
 #endif
+	int len = RFIFOW(fd, 2);
+	int char_id = RFIFOL(fd, 4);
+	if (len == 12) {
+		int party_id = RFIFOL(fd, 8);
+		if (party_id == 0)
+		{
+			auto sd = map_charid2sd(char_id);
+			//刷新掉组队框里的内容
+			if (sd)
+				clif_party_withdraw(sd, sd->status.account_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE, SELF);
+		}else 
+		ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", char_id, party_id);
+		party_recv_noinfo(party_id, char_id);
+		return 0;
+	}
+	int is_create = RFIFOL(fd, 8);
+	if (len != 12 + sizeof(struct party))
+		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", char_id, RFIFOL(fd, 8), len, 12 + sizeof(struct party));
+	party_recv_info((struct party*)RFIFOP(fd, 12), char_id, is_create);
 	return 1;
 }
 
@@ -1951,6 +1956,7 @@ int intif_parse_GuildCreated(int fd)
  */
 int intif_parse_GuildInfo(int fd)
 {
+#ifndef Pandas_Cross_Server
 	if(RFIFOW(fd,2) == 8) {
 		ShowWarning("intif: guild noinfo %d\n",RFIFOL(fd,4));
 		guild_recv_noinfo(RFIFOL(fd,4));
@@ -1959,6 +1965,25 @@ int intif_parse_GuildInfo(int fd)
 	if( RFIFOW(fd,2)!=sizeof(struct guild)+4 )
 		ShowError("intif: guild info : data size error Gid: %d recv size: %d Expected size: %" PRIuPTR "\n",RFIFOL(fd,4),RFIFOW(fd,2),sizeof(struct guild)+4);
 	guild_recv_info((struct guild *)RFIFOP(fd,4));
+#else
+	int len = RFIFOW(fd, 2);
+	if (len == 12) {
+		if (RFIFOL(fd, 4) == 0)
+		{
+			auto sd = map_charid2sd(RFIFOL(fd, 8));
+			//刷新掉公会框里的内容
+			if (sd)
+				clif_guild_broken(sd, 0);
+		}
+		else
+			ShowWarning("intif: guild noinfo %d\n", RFIFOL(fd, 4));
+		guild_recv_noinfo(RFIFOL(fd, 4));
+		return 0;
+	}
+	if (len != sizeof(struct guild) + 8)
+		ShowError("intif: guild info : data size error Gid: %d recv size: %d Expected size: %" PRIuPTR "\n", RFIFOL(fd, 4), RFIFOW(fd, 2), sizeof(struct guild) + 8);
+	guild_recv_info((struct guild*)RFIFOP(fd, 8), RFIFOL(fd, 4));
+#endif
 	return 1;
 }
 

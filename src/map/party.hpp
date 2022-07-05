@@ -60,7 +60,6 @@ struct map_session_data* party_getavailablesd(struct party_data *p);
 int party_create(struct map_session_data *sd,char *name, int item, int item2);
 void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *name);
 int party_request_info(int party_id, uint32 char_id);
-int party_request_info_auto(uint32 char_id);
 int party_invite(struct map_session_data *sd,struct map_session_data *tsd);
 void party_member_joined(struct map_session_data *sd);
 int party_member_added(int party_id,uint32 account_id,uint32 char_id,int flag);
