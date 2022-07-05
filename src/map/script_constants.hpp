@@ -4910,10 +4910,6 @@
 	export_constant(PLAYTIME);
 	export_constant(HUNTING);
 
-	/* quest bound types */
-	export_constant(QUEST_CHAR);
-	export_constant(QUEST_ACCOUNT);
-
 	/* status options */
 	export_constant(OPTION_NOTHING);
 	export_constant(OPTION_SIGHT);

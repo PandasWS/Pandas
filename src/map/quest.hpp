@@ -18,7 +18,6 @@
 
 struct map_session_data;
 enum e_size : uint8;
-enum e_quest_bound_type : uint8;
 
 struct s_quest_dropitem {
 	t_itemid nameid;
@@ -91,7 +90,6 @@ struct s_quest_db {
 	std::vector<std::shared_ptr<s_quest_objective>> objectives;
 	std::vector<std::shared_ptr<s_quest_dropitem>> dropitem;
 	std::string name;
-	uint32 bound;
 };
 
 #ifdef Pandas_YamlBlastCache_QuestDatabase

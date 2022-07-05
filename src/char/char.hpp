@@ -77,7 +77,6 @@ struct Schema_Config {
 	char friend_db[DB_NAME_LEN];
 	char hotkey_db[DB_NAME_LEN];
 	char quest_db[DB_NAME_LEN];
-	char quest_db_acc[DB_NAME_LEN];
 	char homunculus_db[DB_NAME_LEN];
 	char skill_homunculus_db[DB_NAME_LEN];
 	char mercenary_db[DB_NAME_LEN];
@@ -351,5 +350,5 @@ int char_msg_config_read(const char *cfgName);
 const char* char_msg_txt(int msg_number);
 void char_do_final_msg(void);
 bool char_config_read(const char* cfgName, bool normal);
-int char_get_account_id(uint32 char_id);
+
 #endif /* CHAR_HPP */
