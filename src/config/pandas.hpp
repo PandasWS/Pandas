@@ -790,6 +790,9 @@
 	#ifdef Pandas_Cross_Server
 		//方便debug输入的AID/CID是fake id的情景
 		#define Pandas_Fake_Id_Check_Debug
+
+		//自定义事件开关
+		#define Pandas_CS_Event
 	#endif
 
 #endif

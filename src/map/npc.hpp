@@ -2389,6 +2389,10 @@ enum npce_event : uint8 {
 #endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
+#ifdef Pandas_CS_Event
+	NPCF_CS,		// NPCF_CS  // cs_filter_name // 当玩家准备跨服时触发过滤器
+#endif
+
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
@@ -2421,6 +2425,10 @@ enum npce_event : uint8 {
 	NPCE_UNEQUIP,	// unequip_event_name	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 8>
+
+#ifdef Pandas_CS_Event
+	NPCE_CS_FAILED,		// NPCE_CS_FAILED		// cs_failed_event_name	// 当玩家跨服失败时触发事件
+#endif
 
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */

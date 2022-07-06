@@ -6994,16 +6994,64 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		{
 			int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
 			if (!sd->mapindex || map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
+			{
+#ifdef Pandas_CS_Event
+				pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+				pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+				pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+				pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+				pc_setreg(sd, add_str("@cs_tommap_id"), m);
+				pc_setreg(sd, add_str("@cs_tomap_x"), x);
+				pc_setreg(sd, add_str("@cs_tomap_y"), y);
+				pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+				npc_script_event(sd, NPCE_CS_FAILED);
+#endif
 				return SETPOS_NO_MAPSERVER;
+			}
+				
 			if (is_cross_server)
 			{
 				int tfd = chrif_get_char_fd(cs_id);
 				if (tfd <= 0 || !chrif_fd_isconnected(tfd))
+				{
+#ifdef Pandas_CS_Event
+					pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+					pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+					pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+					pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+					pc_setreg(sd, add_str("@cs_tomap_x"), x);
+					pc_setreg(sd, add_str("@cs_tomap_y"), y);
+					pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+					npc_script_event(sd, NPCE_CS_FAILED);
+#endif
 					return SETPOS_NO_MAPSERVER;//这里应该是跨服的char掉了.一般不会发生.发生了map-serv会卡主
+				}
 			}
 			if(ip == 0 || (short)port == 0)
+			{
+#ifdef Pandas_CS_Event
+				pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+				pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+				pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+				pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+				pc_setreg(sd, add_str("@cs_tomap_x"), x);
+				pc_setreg(sd, add_str("@cs_tomap_y"), y);
+				pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+				npc_script_event(sd, NPCE_CS_FAILED);
+#endif
 				return SETPOS_NO_MAPSERVER;
-			//TODO: 应该实现一个事件
+			}
+#ifdef Pandas_CS_Event
+			pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+			pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+			pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+			pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+			pc_setreg(sd, add_str("@cs_tomap_x"), x);
+			pc_setreg(sd, add_str("@cs_tomap_y"), y);
+			pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+#endif
+			if (npc_script_filter(sd, NPCF_CS))
+				return SETPOS_PROCESSHALT;
 		}
 #endif
 
