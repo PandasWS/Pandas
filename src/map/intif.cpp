@@ -46,7 +46,7 @@ static const int packet_len_table[] = {
 	-1, 3, 3, 0,  0, 0, 0, 0,  0, 0, 0, 0, -1, 3,  3, 0, //0x3870  Mercenaries [Zephyrus] / Elemental [pakpil]
 	12,-1, 7, 3,  0, 0, 0, 0,  0, 0,-1, 9, -1, 0,  0, 0, //0x3880  Pet System,  Storages
 	-1,-1, 7, 3,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x3890  Homunculus [albator]
-	-1,-1, 8, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38A0  Clans
+	-1,-1, 8,10,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38A0  Clans
 	-1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38B0  Cross Server
 };
 
@@ -4136,6 +4136,21 @@ int intif_clan_member_joined( int clan_id ){
 	return 1;
 }
 
+int intif_clan_member_joined_cs(int char_id) {
+	if (CheckForCharServer())
+		return 0;
+
+	if (other_mapserver_count < 1)
+		return 0; //No need to send.
+
+	WFIFOHEAD(inter_fd, 6);
+	WFIFOW(inter_fd, 0) = 0x30A4;
+	WFIFOL(inter_fd, 2) = char_id;
+	WFIFOSET(inter_fd, 6);
+
+	return 1;
+}
+
 int intif_parse_clan_onlinecount( int fd ){
 	struct clan* clan = clan_search(RFIFOL(fd,2));
 
@@ -4146,6 +4161,24 @@ int intif_parse_clan_onlinecount( int fd ){
 	clan->connect_member = RFIFOW(fd,6);
 
 	clif_clan_onlinecount(clan);
+
+	return 1;
+}
+
+int intif_parse_clan_joined_cs(int fd) {
+
+	const int char_id = RFIFOL(fd, 2);
+	const int clan_id = RFIFOL(fd, 6);
+
+	struct clan* clan = clan_search(clan_id);
+	TBL_PC* sd = map_charid2sd(char_id);
+
+	nullpo_retr(0, sd);
+	nullpo_retr(0, clan);
+
+	sd->status.clan_id = clan->id;
+
+	clan_member_joined(sd);
 
 	return 1;
 }
@@ -4308,6 +4341,7 @@ int intif_parse(int fd)
 	case 0x38A0:	intif_parse_clans(fd); break;
 	case 0x38A1:	intif_parse_clan_message(fd); break;
 	case 0x38A2:	intif_parse_clan_onlinecount(fd); break;
+	case 0x38A3:	intif_parse_clan_joined_cs(fd); break;
 
 	//Cross Server
 	case 0x38B0:	intif_parse_mmo_status_cache(fd); break;

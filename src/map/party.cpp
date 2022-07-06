@@ -191,15 +191,6 @@ void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *
 		sd->status.party_id = party_id;
 		clif_party_created(sd,0); // Success message
 
-#ifdef Pandas_Cross_Server
-		if(is_cross_server)
-		{
-			//成功建立队伍时,更新缓存
-			const auto cache = static_cast<mmo_status_cache*>(idb_ensure(mmo_status_cache_map, char_id, create_mmo_status_cache));
-			cache->party_id = party_id;
-			cache->account_id = sd->status.account_id;
-		}
-#endif
 		achievement_update_objective(sd, AG_PARTY, 1, 1);
 
 		// We don't do any further work here because the char-server sends a party info packet right after creating the party
@@ -431,14 +422,6 @@ int party_recv_info(struct party* sp, uint32 char_id, int is_create)
 		if( sd && sd->status.party_id == sp->party_id && party_getmemberid(p,sd) == -1 )
 		{
 			sd->status.party_id = 0;// was not in the party
-#ifdef Pandas_Cross_Server
-			if (is_cross_server)
-			{
-				const auto cache = static_cast<mmo_status_cache*>(idb_get(mmo_status_cache_map, sd->status.char_id));
-				if (cache != nullptr)
-					cache->party_id = 0;
-			}
-#endif
 		}
 	}
 

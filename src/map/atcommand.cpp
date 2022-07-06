@@ -22,6 +22,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -631,12 +632,44 @@ ACMD_FUNC(mapmove)
 		m = map_mapindex2mapid(mapindex);
 
 	if (m < 0) { // m < 0 means on different server! [Kevin]
-		clif_displaymessage(fd, msg_txt(sd,1)); // Map not found.
+		uint32 ip;
+		uint16 port;
+		bool found = true;
+#ifdef Pandas_Cross_Server
+		int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
+		if (!sd->mapindex || map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
+			found = false;
+		if (is_cross_server)
+		{
+			int tfd = chrif_get_char_fd(cs_id);
+			if (tfd <= 0 || !chrif_fd_isconnected(tfd))
+				found = false;
+		}
+		if (ip == 0 || (short)port == 0)
+			found = false;
+		if (!found) {
+#endif
 
-		if (battle_config.warp_suggestions_enabled)
-			warp_get_suggestions(sd, map_name);
+			clif_displaymessage(fd, msg_txt(sd, 1)); // Map not found.
 
-		return -1;
+			if (battle_config.warp_suggestions_enabled)
+				warp_get_suggestions(sd, map_name);
+
+				return -1;
+#ifdef Pandas_Cross_Server
+		}
+		else
+		{
+			int ret = pc_setpos(sd,mapindex,x,y, CLR_TELEPORT);
+			if(ret != SETPOS_OK)
+			{
+				clif_displaymessage(fd, msg_txt(sd, 1)); // Map not found.
+				return -1;
+			}
+			clif_displaymessage(fd, msg_txt(sd, 0)); // Warped.
+			return 0;
+		}
+#endif
 	}
 
 	if ((x || y) && map_getcell(m, x, y, CELL_CHKNOPASS))

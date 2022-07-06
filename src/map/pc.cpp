@@ -2028,10 +2028,13 @@ void pc_reg_received(struct map_session_data *sd)
 		party_member_joined(sd);
 	if (sd->status.guild_id > 0)
 		guild_member_joined(sd);
+	if (sd->status.clan_id > 0)
+		clan_member_joined(sd);
 #else
 	//强制使用从char服查询获取的char_id而不指定party_id,否则切换服务器时会出现队伍问题
 	intif_request_partyinfo_cs(sd->status.char_id);
 	intif_guild_request_info_cs(sd->status.char_id);
+	intif_clan_member_joined_cs(sd->status.char_id);
 	//此场合发生的情景有:
 	//①:角色在中立服切换到源服时
 	//②:角色在源服登陆时
@@ -2040,8 +2043,7 @@ void pc_reg_received(struct map_session_data *sd)
 	//②: 角色只要未持有队伍或公会,就依然会收到退出通知
 	//原因: 因为此刻无法判断是源服还是中立服切换的登陆,因为数据没有缓存协助追踪上一行为
 #endif
-	if (sd->status.clan_id > 0)
-		clan_member_joined(sd);
+	
 #endif
 
 	// pet
@@ -7003,7 +7005,6 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 				return SETPOS_NO_MAPSERVER;
 			//TODO: 应该实现一个事件
 		}
-		
 #endif
 
 		if (sd->npc_id){

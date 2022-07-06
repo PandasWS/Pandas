@@ -120,6 +120,7 @@ int intif_elemental_save(struct s_elemental *ele);
 int intif_clan_requestclans();
 int intif_clan_message(int clan_id,uint32 account_id,const char *mes,int len);
 int intif_clan_member_joined( int clan_id );
+int intif_clan_member_joined_cs(int char_id);
 int intif_clan_member_left( int clan_id );
 // ACHIEVEMENT SYSTEM
 void intif_request_achievements(uint32 char_id);

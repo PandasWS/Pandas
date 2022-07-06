@@ -704,7 +704,8 @@ int chclif_parse_maplogin(int fd){
 #ifdef Pandas_Cross_Server
 			if(is_cross_server)
 			{
-				chmapif_init_cs(fd);
+				//暂时注释掉发送缓存数据
+				//chmapif_init_cs(fd);
 			}
 #endif
 		}

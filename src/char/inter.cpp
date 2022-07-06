@@ -72,7 +72,7 @@ int inter_recv_packet_length[] = {
 	-1,10, 6,-1,  0, 0, 0, 0,  0, 0, 0, 0, -1,10,  6,-1,	// 3070-  Mercenary packets [Zephyrus], Elemental packets [pakpil]
 	52,14,-1, 6,  0, 0, 0, 0,  0, 0,13,-1,  0, 0,  0, 0,	// 3080-  Pet System, Storage
 	-1,10,-1, 6,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3090-  Homunculus packets [albator]
-	 2,-1, 6, 6,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 30A0-  Clan packets
+	 2,-1, 6, 6,  6, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 30A0-  Clan packets
 };
 
 struct WisData {
