@@ -1151,6 +1151,8 @@ void BarterDatabase::loadingFinished(){
 			}
 		}
 	}
+
+	TypesafeYamlDatabase::loadingFinished();
 }
 
 #ifdef Pandas_AtCommand_ReloadBarterDB
