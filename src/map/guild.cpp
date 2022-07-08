@@ -783,6 +783,15 @@ int guild_invite(struct map_session_data *sd, struct map_session_data *tsd) {
 	if( (i=guild_getposition(sd))<0 || !(g->position[i].mode&GUILD_PERM_INVITE) )
 		return 0; //Invite permission.
 
+#ifdef Pandas_CS_Diff_Server_Party_Join
+//在guild 权限之后检查是否允许不同服的玩家进入对方公会
+	if (is_cross_server && !battle_config.diff_server_guild_join && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))
+	{
+		clif_guild_inviteack(sd, 1);
+		return 0;
+	}
+#endif
+
 	if(!battle_config.invite_request_check) {
 #ifndef Pandas_PacketFunction_PartyJoinRequest
 	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite) { //checking if there no other invitation pending

@@ -469,6 +469,15 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 		return 0;
 	}
 
+#ifdef Pandas_CS_Diff_Server_Party_Join
+	//在party 权限之后检查是否允许不同服的玩家组队
+	if (is_cross_server && !battle_config.diff_server_party_join && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))
+	{
+		clif_displaymessage(sd->fd, msg_txt(sd, 81)); // "Your GM level doesn't authorize you to preform this action on the specified player."
+		return 0;
+	}
+#endif
+
 	if( tsd == NULL) {
 		clif_party_invite_reply(sd, "", PARTY_REPLY_OFFLINE);
 		return 0;

@@ -2986,6 +2986,18 @@ bool intif_mail_checkreceiver( struct map_session_data* sd, char* name ){
 		return true;
 	}
 
+	//这里允许直接发到对方服务器上,就不用清理rodex box
+	//目前唯一发现的缺陷就是邮件超过日期后,无法退回
+
+#ifdef Pandas_CS_Diff_Server_Mail
+	//在mail 权限之后检查是否允许不同服的玩家互发邮件
+	//如果对方不在线，则不给发
+	if (is_cross_server && (!tsd || (!battle_config.diff_server_mail && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))))
+	{
+		return false;
+	}
+#endif
+
 	if( CheckForCharServer() )
 		return false;
 

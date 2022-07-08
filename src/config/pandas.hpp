@@ -793,6 +793,22 @@
 
 		//自定义事件开关
 		#define Pandas_CS_Event
+
+		//不同服的玩家的交易
+		#define Pandas_CS_Diff_Server_Trade
+
+		//不同服的玩家的互发邮件
+		#define Pandas_CS_Diff_Server_Mail
+
+		//不同服的玩家的进入对方摆摊
+		#define Pandas_CS_Diff_Server_Vending
+
+		//不同服的玩家的交易
+		#define Pandas_CS_Diff_Server_Party_Join
+
+		//不同服的玩家的交易
+		#define Pandas_CS_Diff_Server_Guild_Join
+
 	#endif
 
 #endif

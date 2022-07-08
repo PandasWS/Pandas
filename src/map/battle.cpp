@@ -10509,6 +10509,21 @@ static const struct _battle_data {
 	{ "mob_setunitdata_persistence",       &battle_config.mob_setunitdata_persistence,      1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
+#ifdef Pandas_CS_Diff_Server_Trade
+	{ "diff_server_trade",       &battle_config.diff_server_trade,      1,      0,      1, },
+#endif
+#ifdef Pandas_CS_Diff_Server_Mail
+	{ "diff_server_mail",       &battle_config.diff_server_mail,      1,      0,      1, },
+#endif
+#ifdef Pandas_CS_Diff_Server_Vending
+	{ "diff_server_vending",       &battle_config.diff_server_vending,      1,      0,      1, },
+#endif
+#ifdef Pandas_CS_Diff_Server_Party_Join
+	{ "diff_server_party_join",       &battle_config.diff_server_party_join,      1,      0,      1, },
+#endif
+#ifdef Pandas_CS_Diff_Server_Guild_Join
+	{ "diff_server_guild_join",       &battle_config.diff_server_guild_join,      1,      0,      1, },
+#endif
 #include "../custom/battle_config_init.inc"
 };
 

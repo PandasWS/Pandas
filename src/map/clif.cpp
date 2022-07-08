@@ -18233,9 +18233,22 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 		return; // Ignore it
 	}
 
+
 	char receiver[NAME_LENGTH];
 
 	safestrncpy(receiver, RFIFOCP(fd, 4), NAME_LENGTH);
+
+#ifdef Pandas_CS_Diff_Server_Mail
+	//在mail 权限之后检查是否允许不同服的玩家互发邮件
+	//如果对方不在线，则不给发，否则需要加入离线name->account_id获得源服id
+	if (is_cross_server)
+	{
+		struct map_session_data* tsd;
+		tsd = map_nick2sd(receiver, false);
+		if(!tsd || (!battle_config.diff_server_mail && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id)))
+			return;
+	}
+#endif
 
 //	char sender[NAME_LENGTH];
 
