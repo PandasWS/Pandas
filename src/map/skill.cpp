@@ -24500,6 +24500,8 @@ void SkillDatabase::loadingFinished(){
 			skill->unit_target |= BL_SKILL;
 	}
 #endif // Pandas_YamlBlastCache_SkillDatabase
+
+	TypesafeCachedYamlDatabase::loadingFinished();
 }
 
 /**
