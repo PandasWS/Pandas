@@ -18,6 +18,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "battle.hpp"

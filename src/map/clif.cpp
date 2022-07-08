@@ -10708,6 +10708,16 @@ void clif_specialeffect_single(struct block_list* bl, int type, int fd)
 	WFIFOL(fd,2) = bl->id;
 	WFIFOL(fd,6) = type;
 	WFIFOSET(fd,10);
+#ifdef Pandas_Cross_Server
+	if(is_cross_server && bl->type == BL_PC)
+	{
+		WFIFOHEAD(fd, 10);
+		WFIFOW(fd, 0) = 0x1f3;
+		WFIFOL(fd, 2) = get_real_id(bl->id);
+		WFIFOL(fd, 6) = type;
+		WFIFOSET(fd, 10);
+	}
+#endif
 }
 
 
@@ -10727,11 +10737,17 @@ void clif_specialeffect_value(struct block_list* bl, int effect_id, int num, sen
 	WBUFL(buf,10) = num;
 
 	clif_send(buf, packet_len(0x284), bl, target);
+#ifdef Pandas_Cross_Server
+	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x284), bl, target);
+#endif
 
 	if( disguised(bl) )
 	{
 		WBUFL(buf,2) = disguised_bl_id(bl->id);
 		clif_send(buf, packet_len(0x284), bl, SELF);
+#ifdef Pandas_Cross_Server
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x284), bl, SELF);
+#endif
 	}
 }
 
@@ -10749,10 +10765,27 @@ void clif_specialeffect_remove(struct block_list* bl_src, int effect, enum send_
 
 	clif_send( &p, sizeof( struct PACKET_ZC_REMOVE_EFFECT ), bl_target, e_target );
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		if(bl_src == bl_target && bl_src->type == BL_PC)
+			p.aid = get_real_id(bl_src->id);
+		clif_send(&p, sizeof(struct PACKET_ZC_REMOVE_EFFECT), bl_target, SELF);
+	}
+#endif
+
 	if( disguised(bl_src) )
 	{
 		p.aid = disguised_bl_id( bl_src->id );
 		clif_send( &p, sizeof( struct PACKET_ZC_REMOVE_EFFECT ), bl_src, SELF );
+#ifdef Pandas_Cross_Server
+		if (is_cross_server)
+		{
+			if (bl_src == bl_target && bl_src->type == BL_PC)
+				p.aid = get_real_id(disguised_bl_id(bl_src->id),true);
+			clif_send(&p, sizeof(struct PACKET_ZC_REMOVE_EFFECT), bl_target, SELF);
+		}
+#endif
 	}
 #endif
 }
@@ -10780,6 +10813,13 @@ void clif_messagecolor_target(struct block_list *bl, unsigned long color, const 
 	memcpy(WBUFCP(buf,12), msg, msg_len);
 
 	clif_send(buf, WBUFW(buf,2), (sd == NULL ? bl : &(sd->bl)), type);
+#ifdef Pandas_Cross_Server
+	block_list* tbl = (sd == NULL ? bl : &(sd->bl));
+	if(sd && sd->bl.id == tbl->id)
+	{
+		sp_clif_send(WBUFL(buf, 4), buf, WBUFW(buf, 2), (sd == NULL ? bl : &(sd->bl)), type);
+	}
+#endif
 }
 
 /**

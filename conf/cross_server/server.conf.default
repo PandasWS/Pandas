@@ -8,18 +8,9 @@ server_name: <待填写>
 // cross_server_id == server_id 的角色服务器的ip,端口
 char_server_ip: 127.0.0.1
 char_server_port: 6121
-// 角色服务器的 MySQL 连接配置信息
-// 注意: char_server_ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
-char_server_database_ip: 127.0.0.1
-char_server_database_port: 3306
-char_server_database_id: root
-char_server_database_pw: root
-char_server_database_db: <待填写>
 
 // cross_server_id == server_id 的地图服务器的ip,端口
 // 注意: map_server_ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
-map_server_ip: 127.0.0.1
-map_server_port: 5121
 // 地图服务器的 MySQL 连接配置信息
 map_server_database_ip: 127.0.0.1
 map_server_database_port: 3306

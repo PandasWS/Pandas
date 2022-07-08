@@ -283,7 +283,7 @@ int intif_broadcast2(const char* mes, int len, unsigned long fontColor, short fo
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(0), char_fd);
+		switch_char_fd_cs_id(0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -620,7 +620,7 @@ bool intif_send_guild_storage(uint32 account_id, struct s_storage *gstor)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(0), char_fd);
+		switch_char_fd_cs_id(0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return false;
@@ -2354,6 +2354,10 @@ QUESTLOG SYSTEM FUNCTIONS
  */
 void intif_request_questlog(struct map_session_data *sd)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return;
 	
@@ -2439,6 +2443,10 @@ int intif_quest_save(struct map_session_data *sd)
 {
 	int len = sizeof(struct quest) * sd->num_quests + 8;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if(CheckForCharServer())
 		return 0;
 
@@ -2463,6 +2471,10 @@ int intif_quest_save(struct map_session_data *sd)
  */
 void intif_request_achievements(uint32 char_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return;
 
@@ -2562,6 +2574,10 @@ int intif_achievement_save(struct map_session_data *sd)
 {
 	int len = sizeof(struct achievement) * sd->achievement_data.count + 8;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -2598,6 +2614,12 @@ void intif_parse_achievementreward(int fd){
  * Request the achievement rewards from the inter server.
  */
 int intif_achievement_reward(struct map_session_data *sd, struct s_achievement_db *adb){
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
+
 	if( CheckForCharServer() ){
 		return 0;
 	}
@@ -2628,6 +2650,11 @@ int intif_achievement_reward(struct map_session_data *sd, struct s_achievement_d
  */
 int intif_Mail_requestinbox(uint32 char_id, unsigned char flag, enum mail_inbox_type type)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -2694,6 +2721,11 @@ int intif_parse_Mail_inboxreceived(int fd)
  */
 int intif_Mail_read(int mail_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -2712,6 +2744,12 @@ int intif_Mail_read(int mail_id)
  * @return 0=error, 1=msg sent
  */
 bool intif_mail_getattach( struct map_session_data* sd, struct mail_message *msg, enum mail_attachment_type type){
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return false;
 
@@ -2772,6 +2810,12 @@ int intif_parse_Mail_getattach(int fd)
  */
 int intif_Mail_delete(uint32 char_id, int mail_id)
 {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -2833,6 +2877,11 @@ int intif_parse_Mail_delete(int fd)
  */
 int intif_Mail_return(uint32 char_id, int mail_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -2894,6 +2943,11 @@ int intif_parse_Mail_return(int fd)
 int intif_Mail_send(uint32 account_id, struct mail_message *msg)
 {
 	int len = sizeof(struct mail_message) + 8;
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 
 	if (CheckForCharServer())
 		return 0;
@@ -2998,6 +3052,11 @@ bool intif_mail_checkreceiver( struct map_session_data* sd, char* name ){
 	}
 #endif
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if( CheckForCharServer() )
 		return false;
 
@@ -3027,6 +3086,11 @@ bool intif_mail_checkreceiver( struct map_session_data* sd, char* name ){
 int intif_Auction_requestlist(uint32 char_id, short type, int price, const char* searchtext, short page)
 {
 	int len = NAME_LENGTH + 16;
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 
 	if( CheckForCharServer() )
 		return 0;
@@ -3069,6 +3133,11 @@ static void intif_parse_Auction_results(int fd)
 int intif_Auction_register(struct auction_data *auction)
 {
 	int len = sizeof(struct auction_data) + 4;
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 
 	if( CheckForCharServer() )
 		return 0;
@@ -3126,6 +3195,12 @@ static void intif_parse_Auction_register(int fd)
  */
 int intif_Auction_cancel(uint32 char_id, unsigned int auction_id)
 {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if( CheckForCharServer() )
 		return 0;
 
@@ -3167,6 +3242,11 @@ static void intif_parse_Auction_cancel(int fd)
  */
 int intif_Auction_close(uint32 char_id, unsigned int auction_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if( CheckForCharServer() )
 		return 0;
 
@@ -3211,6 +3291,11 @@ static void intif_parse_Auction_close(int fd)
 int intif_Auction_bid(uint32 char_id, const char* name, unsigned int auction_id, int bid)
 {
 	int len = 16 + NAME_LENGTH;
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 
 	if( CheckForCharServer() )
 		return 0;
@@ -3280,6 +3365,8 @@ static void intif_parse_Auction_message(int fd)
 int intif_mercenary_create(struct s_mercenary *merc)
 {
 	int size = sizeof(struct s_mercenary) + 4;
+
+	//TODO: [CS]服务
 
 	if( CheckForCharServer() )
 		return 0;

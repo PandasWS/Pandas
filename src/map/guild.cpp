@@ -648,7 +648,11 @@ int guild_recv_noinfo(int guild_id) {
 }
 
 //Get and display information for all member
-int guild_recv_info(struct guild *sg,int char_id) {
+#ifndef Pandas_Cross_Server
+int guild_recv_info(struct guild* sg) {
+#else
+int guild_recv_info(struct guild* sg, int char_id) {
+#endif
 	struct guild *g,before;
 	int i,bm,m;
 	DBData data;

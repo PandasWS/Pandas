@@ -94,16 +94,6 @@ int cs_config_read(const char* cfgName)
 			csd->char_server_database_ip.assign(w2, 1024);
 		else if (strcmpi(w1, "char_server_database_port") == 0)
 			csd->char_server_database_port = atoi(w2);
-		else if (strcmpi(w1, "char_server_database_id") == 0)
-			csd->char_server_database_id.assign(w2, 1024);
-		else if (strcmpi(w1, "char_server_database_pw") == 0)
-			csd->char_server_database_pw.assign(w2, 1024);
-		else if (strcmpi(w1, "char_server_database_db") == 0)
-			csd->char_server_database_db.assign(w2, 1024);
-		else if (strcmpi(w1, "map_server_ip") == 0)
-			csd->map_server_ip.assign(w2, 1024);
-		else if (strcmpi(w1, "map_server_port") == 0)
-			csd->map_server_port = atoi(w2);
 		else if (strcmpi(w1, "map_server_database_ip") == 0)
 			csd->map_server_database_ip.assign(w2, 1024);
 		else if (strcmpi(w1, "map_server_database_port") == 0)

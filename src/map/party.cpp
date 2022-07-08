@@ -285,7 +285,11 @@ static void party_check_state(struct party_data *p)
 	}
 }
 
+#ifndef Pandas_Cross_Server
+int party_recv_info(struct party* sp, uint32 char_id)
+#else
 int party_recv_info(struct party* sp, uint32 char_id, int is_create)
+#endif
 {
 	struct party_data* p;
 	struct party_member* member;

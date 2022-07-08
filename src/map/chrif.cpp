@@ -884,7 +884,6 @@ void chrif_authok(int fd) {
 		char_id = make_fake_id(char_id, cs_id);
 		status->account_id = account_id;
 		status->char_id = char_id;
-		//在这里替换掉party_id,guild_id等等
 	}
 #endif
 
@@ -1274,7 +1273,7 @@ int chrif_changedsex(int fd) {
 int chrif_divorce(int partner_id1, int partner_id2) {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server) {
-		//TODO:[CS]服务处理
+		switch_char_fd(partner_id1, char_fd, chrif_state);
 	}
 #endif
 	

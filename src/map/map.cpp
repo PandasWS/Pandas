@@ -3718,7 +3718,23 @@ int map_eraseallipport_sub(DBKey key, DBData *data, va_list va)
 
 int map_eraseallipport(void)
 {
-	map_db->foreach(map_db,map_eraseallipport_sub);
+#ifndef Pandas_Cross_Server
+	map_db->foreach(map_db, map_eraseallipport_sub);
+#else
+	for (int i = 0; i < ARRAYLENGTH(cs_char_fds); i++)
+	{
+		int fd = cs_char_fds[i];
+		int cs_id = cs_ids[i];
+		if (fd <= 0 || cs_id < 0) continue;
+		if (session_isValid(fd) && cs_chrif_state[i]) continue;
+		auto it = map_dbs.find(cs_id);
+		if (it != map_dbs.end())
+		{
+			auto mdb = it->second;
+			mdb->foreach(mdb, map_eraseallipport_sub);
+		}
+	}
+#endif
 	return 1;
 }
 
@@ -4737,12 +4753,6 @@ int log_sql_init(void)
 			Sql_ShowDebug(logmysql_handle);
 			Sql_Free(logmysql_handle);
 			exit(EXIT_FAILURE);
-		}
-		if (!default_codepage.empty()) {
-			if (SQL_ERROR == Sql_SetEncoding(mmysql_handle, default_codepage.c_str()))
-				Sql_ShowDebug(mmysql_handle);
-			if (SQL_ERROR == Sql_SetEncoding(qsmysql_handle, default_codepage.c_str()))
-				Sql_ShowDebug(qsmysql_handle);
 		}
 
 		auto it = cs_configs_map.begin();

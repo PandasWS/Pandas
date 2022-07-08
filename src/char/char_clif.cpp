@@ -1396,12 +1396,6 @@ int chclif_parse(int fd) {
 	struct char_session_data* sd = (struct char_session_data*)session[fd]->session_data;
 	uint32 ipl = session[fd]->client_addr;
 
-#ifdef Pandas_Cross_Server
-	if(is_cross_server)
-	{
-		
-	}
-#endif
 	// disconnect any player if no login-server.
 	if(login_fd < 0)
 		set_eof(fd);
