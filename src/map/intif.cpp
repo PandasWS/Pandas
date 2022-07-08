@@ -2473,7 +2473,7 @@ void intif_request_achievements(uint32 char_id)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+		switch_char_fd_cs_id(get_cs_id(char_id), char_fd);
 #endif
 	if (CheckForCharServer())
 		return;
