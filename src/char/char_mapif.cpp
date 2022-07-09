@@ -1869,7 +1869,7 @@ void chmapif_server_reset(int id){
 	WBUFL(buf,4) = htonl(map_server[id].ip);
 	WBUFW(buf,8) = htons(map_server[id].port);
 #ifdef Pandas_Cross_Server
-	WBUFL(buf, 10) = map_server[id].server_id;
+	WBUFL(buf, 10) = marked_cs_id;
 	offset += 4;
 #endif // Pandas_Cross_Server
 	for(size_t i = 0; i < map_server[id].map.size(); i++)

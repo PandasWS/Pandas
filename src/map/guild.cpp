@@ -693,7 +693,7 @@ int guild_recv_info(struct guild* sg, int char_id) {
 	}
 
 #ifdef Pandas_Cross_Server
-	//覆写sp->party_id
+	//覆写sd->guild_id
 	if (char_id != 0) { // requester
 		sd = map_charid2sd(char_id);
 		if (sd && guild_getindex(g,sd->status.account_id,sd->status.char_id) > -1)
@@ -711,7 +711,17 @@ int guild_recv_info(struct guild* sg, int char_id) {
 			sd = g->member[i].sd = guild_sd_check(g->guild_id, g->member[i].account_id, g->member[i].char_id);
 			if (sd) clif_name_area(&sd->bl); // [LuzZza]
 #ifdef Pandas_Cross_Server
-			if (sd && sd->state.gmaster_flag) clif_name_self(&sd->bl);
+			if (sd && guild_getindex(g, sd->status.account_id, sd->status.char_id) > -1)
+			{
+				sd->status.guild_id = g->guild_id;
+				sd->guild = g;
+				auto master_sd = map_nick2sd(g->master, false);
+				if (master_sd && sd->status.char_id == master_sd->status.char_id)
+				{
+					sd->state.gmaster_flag = 1;
+					clif_name_self(&sd->bl);
+				}
+			} 
 #endif
 			m++;
 		}else
