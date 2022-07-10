@@ -696,26 +696,6 @@ int intif_request_partyinfo(int party_id, uint32 char_id)
 	return 1;
 }
 
-/**
- * 直接从char服查询party_id，而不是通过传入的party_id
- * @param char_id : Player id requesting
- * @return 0=error, 1=msg sent
- */
-int intif_request_partyinfo_cs(uint32 char_id)
-{
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-		switch_char_fd_cs_id(0, char_fd);
-#endif
-	if (CheckForCharServer())
-		return 0;
-	WFIFOHEAD(inter_fd, 10);
-	WFIFOW(inter_fd, 0) = 0x302B;
-	WFIFOL(inter_fd, 2) = 0;
-	WFIFOL(inter_fd, 6) = char_id;
-	WFIFOSET(inter_fd, 10);
-	return 1;
-}
 
 /**
  * Request to add a member to party

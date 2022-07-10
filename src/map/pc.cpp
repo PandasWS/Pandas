@@ -2032,7 +2032,7 @@ void pc_reg_received(struct map_session_data *sd)
 		clan_member_joined(sd);
 #else
 	//强制使用从char服查询获取的char_id而不指定party_id,否则切换服务器时会出现队伍问题
-	intif_request_partyinfo_cs(sd->status.char_id);
+	party_member_joined(sd);
 	intif_guild_request_info_cs(sd->status.char_id);
 	intif_clan_member_joined_cs(sd->status.char_id);
 	//此场合发生的情景有:
