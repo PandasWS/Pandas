@@ -8923,7 +8923,7 @@ void status_calc_slave_mode(struct mob_data *md, struct mob_data *mmd)
 			sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, MD_CANMOVE|MD_NORANDOMWALK|MD_CANATTACK, 0, 0, 0);
 			break;
 		default: //Copy master
-			if (status_has_mode(&mmd->status,MD_AGGRESSIVE))
+			if (status_has_mode(&md->status,MD_AGGRESSIVE))
 				sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 0);
 			else
 				sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, 0, 0, MD_AGGRESSIVE, 0);
