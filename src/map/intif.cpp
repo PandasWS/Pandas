@@ -47,7 +47,6 @@ static const int packet_len_table[] = {
 	12,-1, 7, 3,  0, 0, 0, 0,  0, 0,-1, 9, -1, 0,  0, 0, //0x3880  Pet System,  Storages
 	-1,-1, 7, 3,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x3890  Homunculus [albator]
 	-1,-1, 8,10,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38A0  Clans
-	-1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38B0  Cross Server
 };
 
 extern int char_fd; // inter server Fd used for char_fd
@@ -4262,20 +4261,6 @@ int intif_parse_clan_joined_cs(int fd) {
 	return 1;
 }
 
-int intif_parse_mmo_status_cache(int fd)
-{
-	int size = sizeof(struct mmo_status_cache), count = (RFIFOL(fd, 2) - 4 - 2) / size;
-	for (int i = 0; i < count; i++) {
-		const auto ptr = reinterpret_cast<mmo_status_cache*>(RFIFOP(fd, 4 + 2 + size * i));
-		const auto cache = static_cast<mmo_status_cache*>(idb_ensure(mmo_status_cache_map, ptr->char_id, create_mmo_status_cache));
-		cache->char_id = ptr->char_id;
-		cache->account_id = ptr->account_id;
-		cache->party_id = ptr->party_id;
-		cache->guild_id = ptr->guild_id;
-		cache->cs_id = ptr->cs_id;
-	}
-	return 1;
-}
 
 //-----------------------------------------------------------------
 
@@ -4421,9 +4406,6 @@ int intif_parse(int fd)
 	case 0x38A1:	intif_parse_clan_message(fd); break;
 	case 0x38A2:	intif_parse_clan_onlinecount(fd); break;
 	case 0x38A3:	intif_parse_clan_joined_cs(fd); break;
-
-	//Cross Server
-	case 0x38B0:	intif_parse_mmo_status_cache(fd); break;
 
 	default:
 		ShowError("intif_parse : unknown packet %d %x\n",fd,RFIFOW(fd,0));

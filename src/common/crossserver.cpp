@@ -30,17 +30,6 @@ std::map<int, int> logintoken_to_cs_id;
 std::map<int, DBMap*> map_dbs;
 struct map_data_other_server;
 
-//from char-serv to map-serv local cache
-//多任意key对同一个value其实跟适合查询设计而不是缓存吧
-//但是char-serv,map-serv的这种架构下没办法了
-DBMap* mmo_status_cache_map;//uint32 char_id -> struct mmo_status_cache*
-DBData create_mmo_status_cache(DBKey key, va_list args) {
-	struct mmo_status_cache* cache;
-	CREATE(cache, struct mmo_status_cache, 1);
-	cache->char_id = key.i;
-	return db_ptr2data(cache);
-}
-
 
 /**
  * \brief map-serv读取conf/cross_server/base.conf

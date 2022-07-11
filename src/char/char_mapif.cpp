@@ -1819,9 +1819,6 @@ int chmapif_parse(int fd){
 int chmapif_init(int fd){
 	return inter_mapif_init(fd);
 }
-int chmapif_init_cs(int fd) {
-	return inter_mapif_init_cs(fd);
-}
 
 /**
  * Initializes a server structure.

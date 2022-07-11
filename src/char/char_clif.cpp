@@ -709,13 +709,6 @@ int chclif_parse_maplogin(int fd){
 			session[fd]->flag.server = 1;
 			realloc_fifo(fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 			chmapif_init(fd);
-#ifdef Pandas_Cross_Server
-			if(is_cross_server)
-			{
-				//暂时注释掉发送缓存数据
-				//chmapif_init_cs(fd);
-			}
-#endif
 		}
 		RFIFOSKIP(fd,60);
 	}

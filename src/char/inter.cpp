@@ -1124,51 +1124,9 @@ void inter_Storage_sendInfo(int fd) {
 }
 
 
-/**
- * \brief
- *  0x38B0 <len>.W { <mmo_status_cache>.? }*?
- * \param fd 
- */
-void inter_MMO_Status_sendCache(int fd) {
-	int size = sizeof(struct mmo_status_cache);
-	int len = 2 + 4;
-	int offset = 2 + 4;
-	WFIFOHEAD(fd, len);
-	WFIFOW(fd, 0) = 0x38B0;
-	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`,`account_id`, `party_id`,`guild_id` FROM `%s`", schema_config.char_db)) {
-		Sql_ShowDebug(sql_handle);
-		Sql_FreeResult(sql_handle);
-	}
-	else {
-		while (SQL_SUCCESS == Sql_NextRow(sql_handle)) {
-			char* data;
-			struct mmo_status_cache* cache;
-			CREATE(cache, struct mmo_status_cache, 1);
-			Sql_GetData(sql_handle, 0, &data, NULL); cache->char_id = atoi(data);
-			Sql_GetData(sql_handle, 1, &data, NULL); cache->account_id = atoi(data);
-			Sql_GetData(sql_handle, 2, &data, NULL); cache->party_id = atoi(data);
-			Sql_GetData(sql_handle, 3, &data, NULL); cache->guild_id = atoi(data);
-			cache->cs_id = get_cs_id(cache->char_id);
-			memcpy(WFIFOP(fd, offset), cache, size);
-			len += size;
-			offset += size;
-		}
-		Sql_FreeResult(sql_handle);
-	}
-	WFIFOL(fd, 2) = len;
-	WFIFOSET(fd, len);
-}
-
 int inter_mapif_init(int fd)
 {
 	inter_Storage_sendInfo(fd);
-	return 0;
-}
-
-int inter_mapif_init_cs(int fd)
-{
-	
-	inter_MMO_Status_sendCache(fd);
 	return 0;
 }
 

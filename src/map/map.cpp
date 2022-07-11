@@ -5801,7 +5801,6 @@ void do_final(void){
 			db->destroy(db, NULL);
 			mdb = next;
 		}
-		mmo_status_cache_map->destroy(mmo_status_cache_map, NULL);
 	}
 #endif
 
@@ -6125,7 +6124,6 @@ int do_init(int argc, char *argv[])
 	{
 		cs_config_read(CS_CONF_NAME);
 		map_dbs.insert(std::make_pair(0, map_db));
-		mmo_status_cache_map = idb_alloc(DB_OPT_RELEASE_DATA);
 	}
 #endif
 

@@ -22,8 +22,6 @@ extern std::map<int, cross_server_data*> cs_configs_map;
 extern std::map<int, int> logintoken_to_cs_id;
 extern int marked_cs_id;
 extern std::map<int, DBMap*> map_dbs;
-extern DBMap* mmo_status_cache_map;
-extern DBData create_mmo_status_cache(DBKey key, va_list args);
 
 //char fd
 extern bool cs_init_done;
