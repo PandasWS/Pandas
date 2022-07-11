@@ -14,14 +14,6 @@ std::map<int, cross_server_data*> cs_configs_map;
 
 //init
 bool cs_init_done;
-//TODO:优化成DBMap* 结构 (但map更直观也方便调试查询)
-std::map<int, Sql*> map_handlers;
-std::map<int, Sql*> char_handlers;
-std::map<int, Sql*> login_handlers;
-std::map<int, Sql*> log_handlers;
-std::map<int, Sql*> query_handlers;
-std::map<int, Sql*> query_async_handlers;
-std::map<int, Sql*> accountdb_handlers;
 
 int cs_chrif_connected[MAX_CHAR_SERVERS];
 int cs_char_fds[MAX_CHAR_SERVERS];
@@ -94,26 +86,6 @@ int cs_config_read(const char* cfgName)
 			csd->char_server_ip.assign(w2, 1024);
 		else if (strcmpi(w1, "char_server_port") == 0)
 			csd->char_server_port = atoi(w2);
-		else if (strcmpi(w1, "map_server_database_ip") == 0)
-			csd->map_server_database_ip.assign(w2, 1024);
-		else if (strcmpi(w1, "map_server_database_port") == 0)
-			csd->map_server_database_port = atoi(w2);
-		else if (strcmpi(w1, "map_server_database_id") == 0)
-			csd->map_server_database_id.assign(w2, 1024);
-		else if (strcmpi(w1, "map_server_database_pw") == 0)
-			csd->map_server_database_pw.assign(w2, 1024);
-		else if (strcmpi(w1, "map_server_database_db") == 0)
-			csd->map_server_database_db.assign(w2, 1024);
-		else if (strcmpi(w1, "log_db_database_ip") == 0)
-			csd->log_db_database_ip.assign(w2, 1024);
-		else if (strcmpi(w1, "log_db_database_id") == 0)
-			csd->log_db_database_id.assign(w2, 1024);
-		else if (strcmpi(w1, "log_db_database_pw") == 0)
-			csd->log_db_database_pw.assign(w2, 1024);
-		else if (strcmpi(w1, "log_db_database_port") == 0)
-			csd->log_db_database_port = atoi(w2);
-		else if (strcmpi(w1, "log_db_database_db") == 0)
-			csd->log_db_database_db.assign(w2, 1024);
 		else if (strcmpi(w1, "import") == 0)
 			cs_config_read(w2);
 	}
@@ -238,118 +210,6 @@ void get_real_name(char* fake_name)
 			}
 		}
 	}
-}
-
-
-/**
- * \brief 根据cs_id切换对应类型连接的数据库hanlder
- * \param type 
- * \param cs_id 
- * \return 
- */
-Sql* Sql_GetHandler(SqlHandlerType type, int cs_id)
-{
-	std::map<int, Sql*>* handler;
-	switch (type)
-	{
-	case SQLTYPE_MAP:
-		handler = &map_handlers;
-		break;
-	case SQLTYPE_CHAR:
-		handler = &char_handlers;
-		//基本不需要切换 除非1个char对着多个login
-		break;
-	case SQLTYPE_LOGIN:
-		handler = &login_handlers;
-		//基本不需要切换
-		break;
-	case SQLTYPE_LOG:
-		handler = &log_handlers;
-		break;
-	case SQLTYPE_QUERY:
-		handler = &query_handlers;
-		break;
-	case SQLTYPE_QUERY_ASYNC:
-		handler = &query_async_handlers;
-		break;
-	case SQLTYPE_ACCOUNTDB:
-		handler = &accountdb_handlers;
-		break;
-	case SQLTYPE_NONE:
-	default:
-		return nullptr;
-	}
-
-	return handler == nullptr ? nullptr : (handler->find(cs_id) != handler->end() ? handler->find(cs_id)->second : nullptr);
-}
-
-/**
- * \brief 切换handler
- * \param sql_handler 由于默认是全局变量，为减少代码量而传地址
- * \param type 
- * \param cs_id 
- * \return 
- */
-bool switch_handler(Sql* &sql_handler,SqlHandlerType type, int cs_id)
-{
-	const auto handler = Sql_GetHandler(type, cs_id);
-	if(handler != nullptr)
-	{
-		sql_handler = handler;
-		return true;
-	}
-	return false;
-}
-
-
-/**
- * Establishes a connection to schema
- * @param self : sql handle
- * @param user : username to access
- * @param passwd : password
- * @param host : hostname
- * @param port : port
- * @param db : schema name
- * @param cs_id : 用于定位是跨服服务器的数据库连接
- * @return
- */
-int Sql_Connect(Sql* self, const char* user, const char* passwd, const char* host, uint16 port, const char* db, SqlHandlerType type, int cs_id)
-{
-	int ret = Sql_Connect(self, user, passwd, host, port, db);
-
-	if (ret != SQL_SUCCESS)
-		return ret;
-
-	const auto pr = std::make_pair(cs_id, self);
-
-	switch (type)
-	{
-	case SQLTYPE_MAP:
-		map_handlers.insert(pr);
-		break;
-	case SQLTYPE_CHAR:
-		char_handlers.insert(pr);
-		break;
-	case SQLTYPE_LOGIN:
-		login_handlers.insert(pr);
-		break;
-	case SQLTYPE_LOG:
-		log_handlers.insert(pr);
-		break;
-	case SQLTYPE_QUERY:
-		query_handlers.insert(pr);
-		break;
-	case SQLTYPE_QUERY_ASYNC:
-		query_async_handlers.insert(pr);
-		break;
-	case SQLTYPE_ACCOUNTDB:
-		accountdb_handlers.insert(pr);
-		break;
-	case SQLTYPE_NONE:
-		break;
-	}
-
-	return SQL_SUCCESS;
 }
 
 

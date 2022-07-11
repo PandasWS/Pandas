@@ -17,13 +17,6 @@ constexpr auto MAX_CHAR_SERVERS = 5;
 
 struct cross_server_data;
 extern bool is_cross_server;
-extern std::map<int, Sql*> map_handlers;
-extern std::map<int, Sql*> char_handlers;
-extern std::map<int, Sql*> login_handlers;
-extern std::map<int, Sql*> log_handlers;
-extern std::map<int, Sql*> query_handlers;
-extern std::map<int, Sql*> query_async_handlers;
-extern std::map<int, Sql*> accountdb_handlers;
 extern const char* CS_CONF_NAME;
 extern std::map<int, cross_server_data*> cs_configs_map;
 extern std::map<int, int> logintoken_to_cs_id;
@@ -31,8 +24,6 @@ extern int marked_cs_id;
 extern std::map<int, DBMap*> map_dbs;
 extern DBMap* mmo_status_cache_map;
 extern DBData create_mmo_status_cache(DBKey key, va_list args);
-
-
 
 //char fd
 extern bool cs_init_done;
@@ -51,17 +42,6 @@ void chrif_set_global_fd_state(int fd, int &char_fd, int& chrif_state, int& chri
 int switch_char_fd(uint32 id, int& char_fd, int& chrif_state);
 int switch_char_fd_cs_id(uint32 cs_id, int& char_fd);
 
-enum SqlHandlerType {
-	SQLTYPE_NONE = 0, // no used
-	SQLTYPE_MAP,
-	SQLTYPE_CHAR, // no used
-	SQLTYPE_LOGIN, // no used
-	SQLTYPE_LOG,
-	SQLTYPE_QUERY,
-	SQLTYPE_QUERY_ASYNC,
-	SQLTYPE_ACCOUNTDB  // no used
-};
-
 struct cross_server_data {
 	int server_id = 0;
 	char server_name[6];
@@ -72,17 +52,6 @@ struct cross_server_data {
 	std::string char_server_ip = "127.0.0.1";
 	int char_server_port = 6121;
 
-	int map_server_database_port = 3306;
-	std::string map_server_database_ip = "127.0.0.1";
-	std::string map_server_database_id = "ragnarok";
-	std::string map_server_database_pw;
-	std::string map_server_database_db = "ragnarok";
-
-	int log_db_database_port = 3306;
-	std::string log_db_database_ip = "127.0.0.1";
-	std::string log_db_database_id = "ragnarok";
-	std::string log_db_database_pw;
-	std::string log_db_database_db = "log";
 };
 
 struct mmo_status_cache
@@ -107,10 +76,6 @@ int make_fake_id(int id, int cs_id);
 bool is_fake_id(int id);
 void get_real_name(char* fake_name);
 
-//Sql
-Sql* Sql_GetHandler(SqlHandlerType type, int cs_id);
-bool switch_handler(Sql*& sql_handler, SqlHandlerType type, int cs_id);
-int Sql_Connect(Sql* self, const char* user, const char* passwd, const char* host, uint16 port, const char* db, SqlHandlerType type, int cs_id);
 
 //fd
 //char-serv to map-serv

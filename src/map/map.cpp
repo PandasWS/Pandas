@@ -4637,67 +4637,6 @@ int map_sql_init(void)
 		Sql_ShowDebug(qsmysql_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-	{
-		if (cs_configs_map.empty())
-		{
-			ShowError("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server config import nothing ! Please check 'conf/base.conf' to import conf!\n");
-			Sql_ShowDebug(mmysql_handle);
-			Sql_Free(mmysql_handle);
-			Sql_ShowDebug(qsmysql_handle);
-			Sql_Free(qsmysql_handle);
-			exit(EXIT_FAILURE);
-		}
-
-		const auto pr1 = std::make_pair(0, mmysql_handle);
-		const auto pr2 = std::make_pair(0, qsmysql_handle);
-		map_handlers.insert(pr1);
-		query_handlers.insert(pr2);
-
-		auto it = cs_configs_map.begin();
-		while (it != cs_configs_map.end())
-		{
-			const auto cs_id = it->first;
-			const auto config = it->second;
-
-			const auto sql1 = Sql_Malloc();
-			const auto sql2 = Sql_Malloc();
-			const auto sql3 = Sql_Malloc();
-			if (SQL_ERROR == Sql_Connect(sql1, config->map_server_database_id.c_str(), config->map_server_database_pw.c_str(), config->map_server_database_ip.c_str(), config->map_server_database_port, config->map_server_database_db.c_str(), SQLTYPE_MAP, cs_id) ||
-				SQL_ERROR == Sql_Connect(sql2, config->map_server_database_id.c_str(), config->map_server_database_pw.c_str(), config->map_server_database_ip.c_str(), config->map_server_database_port, config->map_server_database_db.c_str(), SQLTYPE_QUERY, cs_id) ||
-				SQL_ERROR == Sql_Connect(sql3, config->map_server_database_id.c_str(), config->map_server_database_pw.c_str(), config->map_server_database_ip.c_str(), config->map_server_database_port, config->map_server_database_db.c_str(), SQLTYPE_QUERY_ASYNC, cs_id))
-			{
-				ShowError("" CL_BLUE "[Cross Server]" CL_RESET "Couldn't connect with cs_id='%d' uname='%s',host='%s',port='%d',database='%s'\n",
-					cs_id, config->map_server_database_id.c_str(), config->map_server_database_ip.c_str(), config->map_server_database_port, config->map_server_database_db.c_str());
-				Sql_ShowDebug(sql1);
-				Sql_Free(sql1);
-				Sql_ShowDebug(sql2);
-				Sql_Free(sql2);
-				Sql_ShowDebug(sql3);
-				Sql_Free(sql3);
-				exit(EXIT_FAILURE);
-			}
-#ifndef Pandas_SQL_Configure_Optimization
-			if (!default_codepage.empty()) {
-				if (SQL_ERROR == Sql_SetEncoding(mmysql_handle, default_codepage.c_str()))
-					Sql_ShowDebug(mmysql_handle);
-				if (SQL_ERROR == Sql_SetEncoding(qsmysql_handle, default_codepage.c_str()))
-					Sql_ShowDebug(qsmysql_handle);
-			}
-#else
-			if (SQL_ERROR == Sql_SetEncoding(sql1, map_codepage, default_codepage.c_str(), "Map-Server"))
-				Sql_ShowDebug(sql1);
-			if (SQL_ERROR == Sql_SetEncoding(sql2, map_codepage, default_codepage.c_str(), nullptr))
-				Sql_ShowDebug(sql2);
-			if (SQL_ERROR == Sql_SetEncoding(sql3, map_codepage, default_codepage.c_str(), nullptr))
-				Sql_ShowDebug(sql3);
-#endif // Pandas_SQL_Configure_Optimization
-			it = std::next(it);
-		}
-		ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Connect success! (Cross Map Server Database Connection)\n");
-	}
-#endif
 
 	return 0;
 }
@@ -4744,48 +4683,6 @@ int log_sql_init(void)
 		Sql_ShowDebug(logmysql_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-	{
-		if (cs_configs_map.empty())
-		{
-			ShowError("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server config import nothing ! Please check 'conf/base.conf' to import conf!\n");
-			Sql_ShowDebug(logmysql_handle);
-			Sql_Free(logmysql_handle);
-			exit(EXIT_FAILURE);
-		}
-
-		auto it = cs_configs_map.begin();
-		while (it != cs_configs_map.end())
-		{
-			const auto cs_id = it->first;
-			const auto config = it->second;
-
-			const auto log_sql = Sql_Malloc();
-			if (SQL_ERROR == Sql_Connect(log_sql, config->log_db_database_id.c_str(), config->log_db_database_pw.c_str(), config->log_db_database_ip.c_str(), config->log_db_database_port, config->log_db_database_db.c_str(), SQLTYPE_LOG, cs_id))
-			{
-				ShowError("" CL_BLUE "[Cross Server]" CL_RESET "Couldn't connect with cs_id='%d' uname='%s',host='%s',port='%d',database='%s'\n",
-					cs_id, config->map_server_database_id.c_str(), config->map_server_database_ip.c_str(), config->map_server_database_port, config->map_server_database_db.c_str());
-				Sql_ShowDebug(logmysql_handle);
-				Sql_Free(logmysql_handle);
-				Sql_ShowDebug(log_sql);
-				Sql_Free(log_sql);
-				exit(EXIT_FAILURE);
-			}
-#ifndef Pandas_SQL_Configure_Optimization
-			if (!default_codepage.empty())
-				if (SQL_ERROR == Sql_SetEncoding(logmysql_handle, default_codepage.c_str()))
-					Sql_ShowDebug(logmysql_handle);
-#else
-			if (SQL_ERROR == Sql_SetEncoding(log_sql, log_codepage, default_codepage.c_str(), "Log"))
-				Sql_ShowDebug(log_sql);
-#endif // Pandas_SQL_Configure_Optimization
-			it = std::next(it);
-		}
-		ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Successfully '" CL_GREEN "connected" CL_RESET "' to Database '" CL_WHITE "%s" CL_RESET "'.\n", log_db_db.c_str());
-	}
-
-#endif
 
 	return 0;
 }
