@@ -43,7 +43,6 @@
     <ClInclude Include="performance.hpp" />
     <ClInclude Include="processmutex.hpp" />
     <ClInclude Include="random.hpp" />
-    <ClInclude Include="serialize.hpp" />
     <ClInclude Include="showmsg.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="sql.hpp" />

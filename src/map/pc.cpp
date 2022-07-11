@@ -13834,25 +13834,6 @@ void SkillTreeDatabase::loadingFinished() {
 	TypesafeYamlDatabase::loadingFinished();
 }
 
-#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 21:05
-//************************************ 
-const std::string SkillTreeDatabase::getDependsHash() {
-	// 在 SkillTreeDatabase 中使用到了 SKILL_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%") %
-		this->getCacheHashByName("SKILL_DB")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_SkillTreeDatabase
-
 /**
  * Calculates base hp of player. Reference: http://irowiki.org/wiki/Max_HP
  * @param level: Base level of player
@@ -14417,26 +14398,6 @@ void JobDatabase::loadingFinished() {
 
 	TypesafeCachedYamlDatabase::loadingFinished();
 }
-
-#ifdef Pandas_YamlBlastCache_JobDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 JobDatabase 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/12/25 15:06
-//************************************ 
-void JobDatabase::afterCacheRestore() {
-	for (const auto& it : *this) {
-		auto job = it.second;
-
-		// ==================================================================
-		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
-		// ==================================================================
-		SERIALIZE_SET_MEMORY_ZERO(job->noenter_map);
-	}
-}
-#endif // Pandas_YamlBlastCache_JobDatabase
 
 /**
  * Read job_noenter_map.txt
