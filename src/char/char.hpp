@@ -160,6 +160,10 @@ struct Char_Config {
 struct CharServ_Config {
 	char userid[24];
 	char passwd[24];
+#ifdef Pandas_Cross_Server
+	char cs_userid[24];
+	char cs_passwd[24];
+#endif
 	char server_name[20];
 	char wisp_server_name[NAME_LENGTH];
 	char login_ip_str[128];
@@ -179,6 +183,7 @@ struct CharServ_Config {
 #if PACKETVER_SUPPORTS_PINCODE
 	struct Pincode_Config pincode_config;
 #endif
+
 
 	int save_log; // show loading/saving messages
 	int log_char;	// loggin char or not [devil]

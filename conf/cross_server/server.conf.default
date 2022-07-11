@@ -2,15 +2,19 @@
 //请务必再三确认
 server_id: <恰当的数字>
 
-//最长6位,英数标点符号:1位 中文2位
+//最大6个字符长度,作为跨服时名字的前缀,中文算2个字符长度
 server_name: <待填写>
 
-// cross_server_id == server_id 的角色服务器的ip,端口
+//输入被连接的服务器的cs_userid,cs_passwd
+userid: <待填写>
+passwd: <待填写>
+
+//对应的角色服务器的ip,端口
+// 注意: ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
 char_server_ip: 127.0.0.1
 char_server_port: 6121
 
-// cross_server_id == server_id 的地图服务器的ip,端口
-// 注意: map_server_ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
+// 注意: ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
 // 地图服务器的 MySQL 连接配置信息
 map_server_database_ip: 127.0.0.1
 map_server_database_port: 3306
@@ -20,7 +24,7 @@ map_server_database_db: <待填写>
 
 
 // 日志数据库的 MySQL 连接配置信息
-// 注意: log_db_ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
+// 注意: ip 如果是域名, 那么禁止超过63个字符(包括标点符号)
 log_db_database_ip: 127.0.0.1
 log_db_database_port: 3306
 log_db_database_id: root

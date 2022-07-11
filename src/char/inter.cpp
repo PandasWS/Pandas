@@ -885,7 +885,12 @@ int inter_config_read(const char* cfgName)
 			is_cross_server = config_switch(w2);
 			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server Set: %s\n", w2);
 		}
-		else
+		else if (strcmpi(w1, "cs_userid") == 0) {
+			safestrncpy(charserv_config.cs_userid, w2, sizeof(charserv_config.cs_userid));
+		}
+		else if (strcmpi(w1, "cs_passwd") == 0) {
+			safestrncpy(charserv_config.cs_passwd, w2, sizeof(charserv_config.cs_passwd));
+		}else
 #endif
 		if(!strcmpi(w1,"char_server_ip"))
 			char_server_ip = w2;

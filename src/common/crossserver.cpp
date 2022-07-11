@@ -86,14 +86,14 @@ int cs_config_read(const char* cfgName)
 			csd->server_id = atoi(w2);
 		else if (strcmpi(w1, "server_name") == 0)
 			safestrncpy(csd->server_name, w2, sizeof(csd->server_name));
+		else if (strcmpi(w1, "userid") == 0)
+			safestrncpy(csd->userid, w2, sizeof(csd->userid));
+		else if (strcmpi(w1, "passwd") == 0)
+			safestrncpy(csd->passwd, w2, sizeof(csd->passwd));
 		else if (strcmpi(w1, "char_server_ip") == 0)
 			csd->char_server_ip.assign(w2, 1024);
 		else if (strcmpi(w1, "char_server_port") == 0)
 			csd->char_server_port = atoi(w2);
-		else if (strcmpi(w1, "char_server_database_ip") == 0)
-			csd->char_server_database_ip.assign(w2, 1024);
-		else if (strcmpi(w1, "char_server_database_port") == 0)
-			csd->char_server_database_port = atoi(w2);
 		else if (strcmpi(w1, "map_server_database_ip") == 0)
 			csd->map_server_database_ip.assign(w2, 1024);
 		else if (strcmpi(w1, "map_server_database_port") == 0)
@@ -215,7 +215,7 @@ void get_real_name(char* fake_name)
 		const size_t len = strlen(fake_name);
 		const size_t len2 = strlen(needle);
 		if (len <= len2) continue;
-		for (int i = 0; i < len; ++i) {
+		for (unsigned int i = 0; i < len; ++i) {
 			if (fake_name[i] == *needle) {
 				// matched starting char -- loop through remaining chars
 				const char* h, * n;
@@ -230,7 +230,7 @@ void get_real_name(char* fake_name)
 					memcpy(temp, fake_name, len);
 					memset(fake_name, 0, len);
 
-					for (int st = len2, c = 0; st < len; st++, c++)
+					for (unsigned int st = len2, c = 0; st < len; st++, c++)
 						fake_name[c] = temp[st];
 					aFree(temp);
 					return;
@@ -405,8 +405,8 @@ int check_fd_valid(int fd, int flag)
 {
 	if (fd <= 0 || (!flag && !session_isValid(fd))) return -1;
 	int index;
-	ARR_FIND(0, std::size(cs_char_fds), index, cs_char_fds[index] == fd);
-	return index == std::size(cs_char_fds) ? -1 : index;
+	ARR_FIND(0, ARRAYLENGTH(cs_char_fds), index, cs_char_fds[index] == fd);
+	return index == ARRAYLENGTH(cs_char_fds) ? -1 : index;
 }
 
 int chrif_fd_isconnected(int fd) {
@@ -418,8 +418,8 @@ int chrif_fd_isconnected(int fd) {
 
 int chrif_get_char_fd(int cs_id) {
 	int i;
-	ARR_FIND(0, std::size(cs_ids), i, cs_ids[i] == cs_id);
-	if (i == std::size(cs_ids)) return -1;
+	ARR_FIND(0, ARRAYLENGTH(cs_ids), i, cs_ids[i] == cs_id);
+	if (i == ARRAYLENGTH(cs_ids)) return -1;
 	return cs_char_fds[i];
 }
 
@@ -431,15 +431,15 @@ int chrif_get_cs_id(int map_fd) {
 
 bool chrif_check_all_cs_char_fd_health(void) {
 	int i;
-	ARR_FIND(0, std::size(cs_chrif_connected), i, cs_ids[i] > 0 && (cs_char_fds[i] <= 0));
-	return i == std::size(cs_chrif_connected);
+	ARR_FIND(0, ARRAYLENGTH(cs_chrif_connected), i, cs_ids[i] > 0 && (cs_char_fds[i] <= 0));
+	return i == ARRAYLENGTH(cs_chrif_connected);
 }
 
 bool chrif_set_cs_fd_state(int fd, int state, int connected) {
 	if (fd <= 0) return false;
 	int index;
-	ARR_FIND(0, std::size(cs_char_fds), index, cs_char_fds[index] == fd);
-	if (index == std::size(cs_char_fds)) return false;
+	ARR_FIND(0, ARRAYLENGTH(cs_char_fds), index, cs_char_fds[index] == fd);
+	if (index == ARRAYLENGTH(cs_char_fds)) return false;
 	if (state != -1) cs_chrif_state[index] = state;//0,1,2
 	if (connected != -1) cs_chrif_connected[index] = connected;//0,1
 	return true;

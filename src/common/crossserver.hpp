@@ -66,16 +66,12 @@ struct cross_server_data {
 	int server_id = 0;
 	char server_name[6];
 
+	char userid[NAME_LENGTH];
+	char passwd[NAME_LENGTH];
+
 	std::string char_server_ip = "127.0.0.1";
 	int char_server_port = 6121;
-	int char_server_database_port = 3306;
-	std::string char_server_database_ip = "127.0.0.1";
-	std::string char_server_database_id = "ragnarok";
-	std::string char_server_database_pw;
-	std::string char_server_database_db = "ragnarok";
 
-	std::string map_server_ip = "127.0.0.1";
-	int map_server_port = 6900;
 	int map_server_database_port = 3306;
 	std::string map_server_database_ip = "127.0.0.1";
 	std::string map_server_database_id = "ragnarok";

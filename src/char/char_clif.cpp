@@ -677,8 +677,16 @@ int chclif_parse_maplogin(int fd){
 		ARR_FIND( 0, ARRAYLENGTH(map_server), i, map_server[i].fd <= 0 );
 		if( runflag != CHARSERVER_ST_RUNNING ||
 			i == ARRAYLENGTH(map_server) ||
+#ifndef Pandas_Cross_Server
 			strcmp(l_user, charserv_config.userid) != 0 ||
-			strcmp(l_pass, charserv_config.passwd) != 0 )
+			strcmp(l_pass, charserv_config.passwd) != 0
+#else
+			((strcmp(l_user, charserv_config.userid) != 0 ||
+			strcmp(l_pass, charserv_config.passwd) != 0) &&
+			(strcmp(l_user, charserv_config.cs_userid) != 0 ||
+			strcmp(l_pass, charserv_config.cs_passwd) != 0))
+#endif
+		)
 		{
 			chmapif_connectack(fd, 3); //fail
 		} else {

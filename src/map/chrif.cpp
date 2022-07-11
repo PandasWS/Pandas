@@ -433,11 +433,24 @@ int chrif_connect(int fd,int cs_id = 0)
 	ShowStatus("Logging in to char server...\n", char_fd);
 	WFIFOHEAD(fd,60);
 	WFIFOW(fd,0) = 0x2af8;
+#ifndef Pandas_Cross_Server
 	memcpy(WFIFOP(fd,2), userid, NAME_LENGTH);
 	memcpy(WFIFOP(fd,26), passwd, NAME_LENGTH);
-#ifndef Pandas_Cross_Server
 	WFIFOL(fd, 50) = 0;
 #else
+	if(cs_id == 0)
+	{
+		memcpy(WFIFOP(fd, 2), userid, NAME_LENGTH);
+		memcpy(WFIFOP(fd, 26), passwd, NAME_LENGTH);
+	}
+	else {
+		const auto it = cs_configs_map.find(cs_id);
+		if(it != cs_configs_map.end())
+		{
+			memcpy(WFIFOP(fd, 2), it->second->userid, NAME_LENGTH);
+			memcpy(WFIFOP(fd, 26), it->second->passwd, NAME_LENGTH);
+		}
+	}
 	WFIFOL(fd, 50) = cs_id;
 #endif
 	WFIFOL(fd,54) = htonl(clif_getip());
