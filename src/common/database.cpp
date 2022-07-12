@@ -158,9 +158,16 @@ bool YamlDatabase::load(const std::string& path) {
 	}
 	fseek(f, 0, SEEK_END);
 	size_t size = ftell(f);
+#ifndef Pandas_Support_Read_UTF8BOM_Configure
 	char* buf = (char *)aMalloc(size+1);
 	rewind(f);
 	size_t real_size = fread(buf, sizeof(char), size, f);
+#else
+	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
+	char* buf = (char *)aMalloc(size*3+1);
+	rewind(f);
+	size_t real_size = fread(buf, sizeof(char), size*3, f);
+#endif // Pandas_Support_Read_UTF8BOM_Configure
 	// Zero terminate
 	buf[real_size] = '\0';
 	fclose(f);
