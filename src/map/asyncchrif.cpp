@@ -53,6 +53,15 @@ TIMER_FUNC(chrif_runtime) {
 	return 0;
 }
 
+void chrif_runtime_sub(void) {
+	int index = 0;
+	for (auto it = cs_configs_map.begin(); it != cs_configs_map.end() && index < MAX_CHAR_SERVERS; it++, index++)
+	{
+		const auto cs_id = it->first;
+		async_chrif_reconnect(cs_id, it);
+	}
+}
+
 void chrif_runtime2(void) {
 	while (runflag != CORE_ST_STOP) {
 		this_thread::sleep_for(chrono::milliseconds(1000));
@@ -97,9 +106,13 @@ void asyncchrif_init(void) {
 			cf->set_state(1);
 			cf->set_connected(0);
 		}
+		
 	}
-
-	ch_main_thread = new thread(chrif_runtime2);
+	//主线程阻塞检测
+	if(battle_config.sync_every_char)
+		add_timer_interval(gettick() + 1000, chrif_runtime, 0, 0, 10 * 1000);
+	else
+		ch_main_thread = new thread(chrif_runtime2);
 }
 
 

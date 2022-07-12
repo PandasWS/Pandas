@@ -529,8 +529,8 @@ int chrif_removemap(int fd) {
 		auto it = map_dbs.find(cs_id);
 		if(it != map_dbs.end())
 		{
-			auto tmap_db = it->second;
-			db_destroy(tmap_db);
+			db_destroy(it->second);
+			it->second = nullptr;
 			map_dbs.erase(it);
 		}
 	}
@@ -808,10 +808,7 @@ int chrif_sendmapack(int fd) {
 		chrif_on_ready();
 #ifdef Pandas_Cross_Server
 	else {
-		if (!cs_init_done)
-		{
-			cs_init_done = check_all_char_fd_health();
-		}
+		cs_init_done = check_all_char_fd_health();
 		if (cs_init_done) {
 			chrif_on_ready_cs();
 		}
@@ -1792,7 +1789,12 @@ int chrif_char_offline_nsd(uint32 account_id, uint32 char_id) {
  * Tell char-server to reset all chars offline [Wizputer]
  *-----------------------------------------*/
 int chrif_flush_fifo(void) {
-	//TODO: [CS]服务处理
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	chrif_check(-1);
 
 	set_nonblocking(char_fd, 0);
@@ -1806,7 +1808,12 @@ int chrif_flush_fifo(void) {
  * Tell char-server to reset all chars offline [Wizputer]
  *-----------------------------------------*/
 int chrif_char_reset_offline(void) {
-	//TODO:[CS]服务处理
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,2);
@@ -1864,8 +1871,8 @@ void chrif_on_disconnect(int fd) {
 		other_mapserver_count = 0;
 		cf->set_connected(0);
 		cf->set_state(0);
-		/*if(battle_config.sync_every_char)
-			add_timer(gettick() + 1000, chrif_runtime, 0, 0);*/
+		if(battle_config.sync_every_char)
+			add_timer(gettick() + 1000, chrif_runtime, 0, 0);
 	}
 #endif
 }

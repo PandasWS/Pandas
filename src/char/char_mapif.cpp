@@ -1106,6 +1106,10 @@ int chmapif_parse_setcharoffline(int fd){
  * @return : 0 not enough data received, 1 success
  */
 int chmapif_parse_setalloffline(int fd, int id){
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+		id = -1;
+#endif
 	char_set_all_offline(id);
 	RFIFOSKIP(fd,2);
 	return 1;

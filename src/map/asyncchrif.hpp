@@ -109,6 +109,7 @@ public:
 		{
 			const auto next = std::next(it);
 			aFree(it->second);
+			it->second = nullptr;
 			it = next;
 		}
 		this->charfd_status.clear();
@@ -157,6 +158,9 @@ extern bool check_all_char_fd_health(void);
 extern bool chrif_set_cs_fd_state(int fd, int state);
 extern void chrif_set_global_fd_state(int fd, int& char_fd, int& chrif_state, int& chrif_connected);
 extern TIMER_FUNC(chrif_runtime);
+void chrif_runtime_sub(void);
+void chrif_runtime2(void);
+
 
 int check_fd_valid(int fd, int flag = 0);
 int chrif_fd_isconnected(int fd);

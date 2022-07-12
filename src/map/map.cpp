@@ -6027,6 +6027,10 @@ void do_shutdown(void)
 			mapit_free(iter);
 			flush_fifos();
 		}
+#ifdef Pandas_Cross_Server
+		if (!is_cross_server)
+			chrif_char_reset_offline();
+#endif
 		chrif_check_shutdown();
 	}
 }
@@ -6079,7 +6083,7 @@ int do_init(int argc, char *argv[])
 	map_config_read(MAP_CONF_NAME);
 
 	if (save_settings == CHARSAVE_NONE)
-		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval/1000);
+		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval / 1000);
 
 	// loads npcs
 	map_reloadnpc(false);
@@ -6161,11 +6165,20 @@ int do_init(int argc, char *argv[])
 	do_init_instance();
 	do_init_chrif();
 #ifdef Pandas_Cross_Server
-	if(is_cross_server)
-		while (!cfs.fd_valid_by_cs_id(0)) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-			std::this_thread::yield();
+	if (is_cross_server)
+		if (battle_config.sync_every_char) {
+			while (!cfs.all_fd_valid()) {
+				chrif_runtime_sub();
+				std::this_thread::yield();
+			}
 		}
+		else {
+			while (!cfs.fd_valid_by_cs_id(0)) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+				std::this_thread::yield();
+			}
+		}
+
 #endif
 	do_init_clan();
 	do_init_clif();

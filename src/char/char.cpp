@@ -233,7 +233,19 @@ int char_db_kickoffline(DBKey key, DBData *data, va_list ap){
 
 	//Kick out any connected characters, and set them offline as appropriate.
 	if (character->server > -1)
-		mapif_disconnectplayer(map_server[character->server].fd, character->account_id, character->char_id, 1);
+	{
+		uint32 aid = character->account_id;
+		uint32 cid = character->char_id;
+#ifdef Pandas_Cross_Server
+		if(!is_cross_server)
+		{
+			int cs_id = map_server[character->server].server_id;
+			aid = make_fake_id(aid, cs_id);
+			cid = make_fake_id(cid, cs_id);
+		}
+#endif
+		mapif_disconnectplayer(map_server[character->server].fd, aid, cid, 1);
+	}
 	else if (character->waiting_disconnect == INVALID_TIMER)
 		char_set_char_offline(character->char_id, character->account_id);
 	else
