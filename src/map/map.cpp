@@ -23,6 +23,7 @@
 #include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
+#include "asyncchrif.hpp"
 #include "atcommand.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
@@ -3716,18 +3717,20 @@ int map_eraseallipport_sub(DBKey key, DBData *data, va_list va)
 	return 0;
 }
 
-int map_eraseallipport(void)
-{
 #ifndef Pandas_Cross_Server
-	map_db->foreach(map_db, map_eraseallipport_sub);
+int map_eraseallipport(void)
 #else
-	for (int i = 0; i < ARRAYLENGTH(cs_char_fds); i++)
+int map_eraseallipport(int fd)
+{
+	if(!is_cross_server)
+#endif
+	map_db->foreach(map_db, map_eraseallipport_sub);
+#ifdef Pandas_Cross_Server
+	else
 	{
-		int fd = cs_char_fds[i];
-		int cs_id = cs_ids[i];
-		if (fd <= 0 || cs_id < 0) continue;
-		if (session_isValid(fd) && cs_chrif_state[i]) continue;
-		auto it = map_dbs.find(cs_id);
+		const auto cf = cfs.findByFd(fd);
+		if (cf == nullptr) return 1;
+		auto it = map_dbs.find(cf->get_csid());
 		if (it != map_dbs.end())
 		{
 			auto mdb = it->second;
@@ -5793,14 +5796,16 @@ void do_final(void){
 			cs_configs_map.erase(cs);
 			cs = next;
 		}
+		cs_configs_map.clear();
 		auto mdb = map_dbs.begin();
 		if (mdb != map_dbs.begin())
 		{
-			auto db = mdb->second;
 			auto next = std::next(mdb);
-			db->destroy(db, NULL);
+			mdb->second->destroy(mdb->second, NULL);
+			map_dbs.erase(mdb);
 			mdb = next;
 		}
+		map_dbs.clear();
 	}
 #endif
 
@@ -6155,6 +6160,13 @@ int do_init(int argc, char *argv[])
 	do_init_battle();
 	do_init_instance();
 	do_init_chrif();
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		while (!cfs.fd_valid_by_cs_id(0)) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+			std::this_thread::yield();
+		}
+#endif
 	do_init_clan();
 	do_init_clif();
 	do_init_script();

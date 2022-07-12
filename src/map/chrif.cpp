@@ -33,6 +33,7 @@
 #include "pet.hpp"
 #include "script.hpp" // script_config
 #include "storage.hpp"
+#include "asyncchrif.hpp"
 
 static TIMER_FUNC(check_connect_char_server);
 
@@ -637,7 +638,7 @@ int chrif_connectack(int fd) {
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		chrif_set_cs_fd_state(fd, chrif_state, chrif_connected);
+		chrif_set_cs_fd_state(fd, chrif_state);
 #endif
 
 	chrif_sendmap(fd);
@@ -738,6 +739,38 @@ void chrif_on_ready(void) {
 	}
 }
 
+/// Called when all the connection steps are completed.
+void chrif_on_ready_cs(void) {
+	
+
+	chrif_check_shutdown();
+
+	//If there are players online, send them to the char-server. [Skotlex]
+	send_users_tochar();
+
+	//Auth db reconnect handling
+	auth_db->foreach(auth_db, chrif_reconnect);
+
+	//Re-save any storages that were modified in the disconnection time. [Skotlex]
+	do_reconnect_storage();
+
+	//Re-save any guild castles that were modified in the disconnection time.
+	guild_castle_reconnect(-1, CD_NONE, 0);
+
+	// Charserver is ready for loading autotrader
+	if (!char_init_done)
+	{
+		do_init_buyingstore_autotrade();
+		do_init_vending_autotrade();
+#ifdef Pandas_Player_Suspend_System
+		// 将处于离线挂机和离开模式的玩家召回自动上线
+		suspend_recall_all();
+#endif // Pandas_Player_Suspend_System
+		char_init_done = true;
+		ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "CS Map Server is now online.\n");
+	}
+}
+
 
 /**
  * Maps are sent, then received misc info from char-server
@@ -769,15 +802,20 @@ int chrif_sendmapack(int fd) {
 	if (battle_config.etc_log)
 		ShowInfo("Received default map from char-server '" CL_WHITE "%s %d,%d" CL_RESET "'.\n", map_default.mapname, map_default.x, map_default.y);
 
-#ifndef Pandas_Cross_Server
-	chrif_on_ready();
-#else
-	if (is_cross_server && !cs_init_done)
-		cs_init_done = chrif_check_all_cs_char_fd_health();
-	if (!is_cross_server || cs_init_done)
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+#endif
 		chrif_on_ready();
-	if (is_cross_server)
-		chrif_set_cs_fd_state(fd, chrif_state, -1);
+#ifdef Pandas_Cross_Server
+	else {
+		if (!cs_init_done)
+		{
+			cs_init_done = check_all_char_fd_health();
+		}
+		if (cs_init_done) {
+			chrif_on_ready_cs();
+		}
+	}
 #endif
 
 	return 0;
@@ -1800,16 +1838,36 @@ int chrif_char_online(struct map_session_data *sd) {
 
 
 /// Called when the connection to Char Server is disconnected.
+#ifndef Pandas_Cross_Server
 void chrif_on_disconnect(void) {
-	if( chrif_connected != 1 )
-		ShowWarning("Connection to Char Server lost.\n\n");
-	chrif_connected = 0;
+#else
+void chrif_on_disconnect(int fd) {
+	if (!is_cross_server) {
+#endif
+		if (chrif_connected != 1)
+			ShowWarning("Connection to Char Server lost.\n\n");
+		chrif_connected = 0;
 
-	other_mapserver_count = 0; //Reset counter. We receive ALL maps from all map-servers on reconnect.
-	map_eraseallipport();
+		other_mapserver_count = 0; //Reset counter. We receive ALL maps from all map-servers on reconnect.
+#ifndef Pandas_Cross_Server
+		map_eraseallipport();
+#else
+		map_eraseallipport(fd);
+#endif
 
-	//Attempt to reconnect in a second. [Skotlex]
-	add_timer(gettick() + 1000, check_connect_char_server, 0, 0);
+		//Attempt to reconnect in a second. [Skotlex]
+		add_timer(gettick() + 1000, check_connect_char_server, 0, 0);
+#ifdef Pandas_Cross_Server
+	} else {
+		const auto cf = cfs.findByFd(fd);
+		if (cf == nullptr) return;
+		other_mapserver_count = 0;
+		cf->set_connected(0);
+		cf->set_state(0);
+		/*if(battle_config.sync_every_char)
+			add_timer(gettick() + 1000, chrif_runtime, 0, 0);*/
+	}
+#endif
 }
 
 /**
@@ -2059,7 +2117,11 @@ int chrif_parse(int fd) {
 	if ( session[fd]->flag.eof ) {
 		do_close(fd);
 		char_fd = -1;
+#ifndef Pandas_Cross_Server
 		chrif_on_disconnect();
+#else
+		chrif_on_disconnect(fd);
+#endif
 		return 0;
 	} else if ( session[fd]->flag.ping ) {/* we've reached stall time */
 		if( DIFF_TICK(last_tick, session[fd]->rdata_tick) > (stall_time * 2) ) {/* we can't wait any longer */
@@ -2185,81 +2247,26 @@ int send_users_tochar(void) {
  *------------------------------------------*/
 static TIMER_FUNC(check_connect_char_server){
 	static int displayed = 0;
-#ifdef Pandas_Cross_Server
-	if (!is_cross_server) {
-#endif
-		if (char_fd <= 0 || session[char_fd] == NULL) {
-			if (!displayed) {
-				ShowStatus("Attempting to connect to Char Server. Please wait.\n");
-				displayed = 1;
-			}
-
-			chrif_state = 0;
-			char_fd = make_connection(char_ip, char_port, false, 10);
-
-			if (char_fd == -1)//Attempt to connect later. [Skotlex]
-				return 0;
-
-			session[char_fd]->func_parse = chrif_parse;
-			session[char_fd]->flag.server = 1;
-			realloc_fifo(char_fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
-
-			chrif_connect(char_fd);
-			chrif_connected = (chrif_state == 2);
-		}
-#ifdef Pandas_Cross_Server
-	} else
-	{
-		if(cs_char_fds[0] <= 0 || session[cs_char_fds[0]] == NULL)
-		{
-			cs_ids[0] = 0;
-			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to CS Char Server. Please wait.\n");
-			cs_chrif_state[0] = chrif_state = 0;
-			int tfd = make_connection(char_ip, char_port, false, 10);
-			if (tfd == -1)
-				return 0;
-			session[tfd]->func_parse = chrif_parse;
-			session[tfd]->flag.server = 1;
-			realloc_fifo(tfd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
-
-			//这里通知char-serv他们的marked_cs_id
-			chrif_connect(tfd, 0);
-			cs_char_fds[0] = tfd;
-			cs_chrif_state[0] = chrif_state;
-			cs_chrif_connected[0] = (cs_chrif_state[0] == 2);
+	if (char_fd <= 0 || session[char_fd] == NULL) {
+		if (!displayed) {
+			ShowStatus("Attempting to connect to Char Server. Please wait.\n");
+			displayed = 1;
 		}
 
+		chrif_state = 0;
+		char_fd = make_connection(char_ip, char_port, false, 10);
 
-		int index = 1;
-		for (auto it = cs_configs_map.begin(); it != cs_configs_map.end() && index < MAX_CHAR_SERVERS; it++, index++)
-		{
-			if (cs_char_fds[index] <= 0 || session[cs_char_fds[index]] == NULL)
-			{
-				const auto cs_id = it->first;
-				const auto config = it->second;
-				cs_ids[index] = cs_id;
-				ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to Char Server [%d]. Please wait.\n", cs_id);
-				cs_chrif_state[index] = chrif_state = 0;
-				int tfd = make_connection(host2ip(config->char_server_ip.c_str()), config->char_server_port, false, 10);
+		if (char_fd == -1)//Attempt to connect later. [Skotlex]
+			return 0;
 
-				if (tfd == -1)//Attempt to connect later. [Skotlex]
-					continue;
+		session[char_fd]->func_parse = chrif_parse;
+		session[char_fd]->flag.server = 1;
+		realloc_fifo(char_fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 
-				session[tfd]->func_parse = chrif_parse;
-				session[tfd]->flag.server = 1;
-				realloc_fifo(tfd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
-
-				//这里通知char-serv他们的marked_cs_id
-				chrif_connect(tfd, cs_id);
-				cs_char_fds[index] = tfd;
-				cs_chrif_state[index] = chrif_state;
-				cs_chrif_connected[index] = (cs_chrif_state[index] == 2);
-
-			}
-		}
+		chrif_connect(char_fd);
+		chrif_connected = (chrif_state == 2);
 	}
-#endif
-	if ( chrif_isconnected() )
+	if (chrif_isconnected())
 		displayed = 0;
 	return 0;
 }
@@ -2268,7 +2275,11 @@ static TIMER_FUNC(check_connect_char_server){
  * Asks char server to remove friend_id from the friend list of char_id
  *------------------------------------------*/
 int chrif_removefriend(uint32 char_id, int friend_id) {
-	//TODO:[CS]服务处理
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -2350,9 +2361,29 @@ void do_init_chrif(void) {
 	auth_db = idb_alloc(DB_OPT_BASE);
 	auth_db_ers = ers_new(sizeof(struct auth_node),"chrif.cpp::auth_db_ers",ERS_OPT_NONE);
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server) {
+		char ip_str[16];
+		cross_server_data* csd;
+		CREATE(csd, struct cross_server_data, 1);
+		csd->server_id = 0;
+		safestrncpy(csd->server_name, "[CS]", sizeof(csd->server_name));
+		safestrncpy(csd->userid, userid, sizeof(csd->userid));
+		safestrncpy(csd->passwd, passwd, sizeof(csd->passwd));
+		ip2str(char_ip, ip_str);
+		csd->char_server_ip.assign(ip_str,16);
+		csd->char_server_port = char_port;
+		cs_configs_map.insert(std::make_pair(0, csd));
+		asyncchrif_init();
+	} else
+#endif
 	add_timer_func_list(check_connect_char_server, "check_connect_char_server");
+
 	add_timer_func_list(auth_db_cleanup, "auth_db_cleanup");
 
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+#endif
 	// establish map-char connection if not present
 	add_timer_interval(gettick() + 1000, check_connect_char_server, 0, 0, 10 * 1000);
 

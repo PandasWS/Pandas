@@ -1276,12 +1276,13 @@ int16 map_mapname2mapid(const char* name);
 #ifndef Pandas_Cross_Server
 int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port);
 int map_setipport(unsigned short map, uint32 ip, uint16 port);
+int map_eraseallipport(void);
 #else
 int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port, uint32 cs_id);
 int map_setipport(unsigned short map, uint32 ip, uint16 port,uint32 cs_id);
+int map_eraseallipport(int fd);
 #endif
 int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
-int map_eraseallipport(void);
 void map_addiddb(struct block_list *);
 #ifdef Pandas_BattleRecord
 void map_mobiddb(struct block_list* bl, int new_blockid);

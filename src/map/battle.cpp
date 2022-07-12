@@ -10509,6 +10509,7 @@ static const struct _battle_data {
 	{ "mob_setunitdata_persistence",       &battle_config.mob_setunitdata_persistence,      1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
+	{ "sync_every_char",       &battle_config.sync_every_char,      1,      0,      1, },
 #ifdef Pandas_CS_Diff_Server_Trade
 	{ "diff_server_trade",       &battle_config.diff_server_trade,      1,      0,      1, },
 #endif

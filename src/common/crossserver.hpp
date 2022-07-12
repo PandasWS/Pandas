@@ -2,6 +2,7 @@
 
 #include "sql.hpp"
 #include <map>
+#include <mutex>
 #include <string>
 #include "socket.hpp"
 
@@ -11,9 +12,7 @@
 struct block_list;
 enum send_target : uint8;
 struct map_data_other_server;
-struct mmo_status_cache;
 constexpr auto cs_id_factor = 10000000;
-constexpr auto MAX_CHAR_SERVERS = 5;
 
 struct cross_server_data;
 extern bool is_cross_server;
@@ -23,22 +22,7 @@ extern std::map<int, int> logintoken_to_cs_id;
 extern int marked_cs_id;
 extern std::map<int, DBMap*> map_dbs;
 
-//char fd
-extern bool cs_init_done;
-extern int cs_chrif_connected[MAX_CHAR_SERVERS];
-extern int cs_char_fds[MAX_CHAR_SERVERS];
-extern int cs_chrif_state[MAX_CHAR_SERVERS];
-extern char cs_charserver_names[MAX_CHAR_SERVERS];
-extern int cs_ids[MAX_CHAR_SERVERS];
-int check_fd_valid(int fd, int flag = 0);
-int chrif_fd_isconnected(int fd);
-int chrif_get_char_fd(int cs_id);
-int chrif_get_cs_id(int map_fd);
-bool chrif_check_all_cs_char_fd_health(void);
-bool chrif_set_cs_fd_state(int fd, int state, int connected);
-void chrif_set_global_fd_state(int fd, int &char_fd, int& chrif_state, int& chrif_connected);
-int switch_char_fd(uint32 id, int& char_fd, int& chrif_state);
-int switch_char_fd_cs_id(uint32 cs_id, int& char_fd);
+
 
 struct cross_server_data {
 	int server_id = 0;
@@ -52,15 +36,8 @@ struct cross_server_data {
 
 };
 
-struct mmo_status_cache
-{
-	int cs_id;
-	int char_id;
-	int account_id;
-	int party_id;
-	int guild_id;
 
-};
+
 
 
 //config read

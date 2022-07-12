@@ -24,6 +24,7 @@
 #include "../common/utils.hpp"
 #include "../common/crossserver.hpp"
 
+
 #include "achievement.hpp"
 #include "atcommand.hpp" // get_atcommand_level()
 #include "battle.hpp" // battle_config
@@ -57,6 +58,8 @@
 #include "storage.hpp"
 #include "unit.hpp" // unit_stop_attack(), unit_stop_walking()
 #include "vending.hpp" // struct s_vending
+#include "asyncchrif.hpp"
+
 
 #ifdef Pandas_Item_Amulet_System
 #include "itemamulet.hpp"

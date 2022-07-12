@@ -15,12 +15,6 @@ std::map<int, cross_server_data*> cs_configs_map;
 //init
 bool cs_init_done;
 
-int cs_chrif_connected[MAX_CHAR_SERVERS];
-int cs_char_fds[MAX_CHAR_SERVERS];
-int cs_chrif_state[MAX_CHAR_SERVERS];
-char cs_charserver_names[MAX_CHAR_SERVERS];
-int cs_ids[MAX_CHAR_SERVERS];
-
 //from map-serv
 int marked_cs_id;
 
@@ -82,7 +76,8 @@ int cs_config_read(const char* cfgName)
 	{
 		auto it = std::make_pair(csd->server_id, csd);
 		cs_configs_map.insert(it);
-	}
+	}else
+		aFree(csd);
 
 
 	fclose(fp);
@@ -247,96 +242,3 @@ void chrif_logintoken_received(int fd) {
 	logintoken_to_cs_id.insert(it);
 }
 
-
-
-//默认检查isValid
-int check_fd_valid(int fd, int flag)
-{
-	if (fd <= 0 || (!flag && !session_isValid(fd))) return -1;
-	int index;
-	ARR_FIND(0, ARRAYLENGTH(cs_char_fds), index, cs_char_fds[index] == fd);
-	return index == ARRAYLENGTH(cs_char_fds) ? -1 : index;
-}
-
-int chrif_fd_isconnected(int fd) {
-	int index = check_fd_valid(fd);
-	if (index == -1)
-		return 0;
-	return cs_chrif_state[index];
-}
-
-int chrif_get_char_fd(int cs_id) {
-	int i;
-	ARR_FIND(0, ARRAYLENGTH(cs_ids), i, cs_ids[i] == cs_id);
-	if (i == ARRAYLENGTH(cs_ids)) return -1;
-	return cs_char_fds[i];
-}
-
-int chrif_get_cs_id(int map_fd) {
-	int index = check_fd_valid(map_fd, 1);
-	if (index == -1) return 0;
-	return cs_ids[index] > 0 ? cs_ids[index] : 0;
-}
-
-bool chrif_check_all_cs_char_fd_health(void) {
-	int i;
-	ARR_FIND(0, ARRAYLENGTH(cs_chrif_connected), i, cs_ids[i] > 0 && (cs_char_fds[i] <= 0));
-	return i == ARRAYLENGTH(cs_chrif_connected);
-}
-
-bool chrif_set_cs_fd_state(int fd, int state, int connected) {
-	if (fd <= 0) return false;
-	int index;
-	ARR_FIND(0, ARRAYLENGTH(cs_char_fds), index, cs_char_fds[index] == fd);
-	if (index == ARRAYLENGTH(cs_char_fds)) return false;
-	if (state != -1) cs_chrif_state[index] = state;//0,1,2
-	if (connected != -1) cs_chrif_connected[index] = connected;//0,1
-	return true;
-}
-
-//设置全局状态
-void chrif_set_global_fd_state(int fd,int& char_fd,int& chrif_state,int& chrif_connected) {
-	int index = check_fd_valid(fd, 1);
-	if (index == -1) return;
-	char_fd = fd;
-	chrif_state = cs_chrif_state[index];
-	chrif_connected = cs_chrif_connected[index];
-}
-
-
-/**
- * \brief 根据传进来的AID/CID自动切换对应的char_fd
- * \param id 
- * \param char_fd 
- * \param chrif_state 
- * \return 
- */
-int switch_char_fd(uint32 id, int& char_fd, int& chrif_state) {
-	int cs_id = get_cs_id(id);
-	int tfd = chrif_get_char_fd(cs_id);
-	if (tfd == -1)
-		return -1;
-	int index = check_fd_valid(char_fd);
-	if (index == -1)
-		return -1;
-	chrif_state = cs_chrif_state[index];
-	char_fd = tfd;
-	if (!(session_isValid(char_fd) && chrif_state == 2)) {
-		return -1;
-	}
-	return char_fd;
-}
-
-int switch_char_fd_cs_id(uint32 cs_id, int& char_fd) {
-	int tfd = chrif_get_char_fd(cs_id);
-	if (tfd == -1)
-		return -1;
-	int index = check_fd_valid(char_fd);
-	if (index == -1)
-		return -1;
-	char_fd = tfd;
-	if (!session_isValid(char_fd)) {
-		return -1;
-	}
-	return char_fd;
-}
