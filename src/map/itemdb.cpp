@@ -1297,60 +1297,6 @@ void ItemDatabase::loadingFinished(){
 	TypesafeCachedYamlDatabase::loadingFinished();
 }
 
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 item_db 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:33
-//************************************ 
-void ItemDatabase::afterCacheRestore() {
-	for (const auto& it : *this) {
-		auto item = it.second;
-
-		// ==================================================================
-		// 反序列化后 std::string 保留的内存空间可能会小于 ITEM_NAME_LENGTH, 
-		// 这会导致在内存分段的情况下 memcpy 可能会导致越界崩溃. 
-		// 在此处显式的让物品名称字段保留 ITEM_NAME_LENGTH 长度的空间以避免错误.
-		// ==================================================================
-		item->name.reserve(ITEM_NAME_LENGTH);
-		item->ename.reserve(ITEM_NAME_LENGTH);
-
-		// ==================================================================
-		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
-		// ==================================================================
-		SERIALIZE_SET_MEMORY_ZERO(item->maxchance);
-		SERIALIZE_SET_MEMORY_ZERO(item->flag.no_equip);
-		SERIALIZE_SET_MEMORY_ZERO(item->flag.autoequip);
-		SERIALIZE_SET_MEMORY_ZERO(item->mob);
-		item->combos.clear();
-
-#ifdef Pandas_Struct_Item_Data_Properties
-		SERIALIZE_SET_MEMORY_ZERO(item->pandas.properties);
-#endif // Pandas_Struct_Item_Data_Properties
-
-		// ==================================================================
-		// 根据脚本明文重新生成脚本指令序列
-		// ==================================================================
-		item->script = parse_script(
-			item->pandas.script_plaintext.script.c_str(),
-			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-
-		item->equip_script = parse_script(
-			item->pandas.script_plaintext.equip_script.c_str(),
-			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-
-		item->unequip_script = parse_script(
-			item->pandas.script_plaintext.unequip_script.c_str(),
-			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-	}
-}
-#endif // Pandas_YamlBlastCache_ItemDatabase
-
 /**
  * Applies gender restrictions according to settings.
  * @param node: YAML node containing the entry.
@@ -2045,26 +1991,6 @@ uint8 ItemGroupDatabase::pc_get_itemgroup(uint16 group_id, bool identify, map_se
 
 	return 0;
 }
-
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 20:50
-//************************************ 
-const std::string ItemGroupDatabase::getDependsHash() {
-	// 在 ItemGroupDatabase 中使用到了 ITEM_DB 和 RANDOM_OPTION_GROUP 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%|%2%") %
-		this->getCacheHashByName("ITEM_DB") %
-		this->getCacheHashByName("RANDOM_OPTION_GROUP")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 
 /** Searches for the item_data. Use this to check if item exists or not.
 * @param nameid
@@ -2772,44 +2698,6 @@ void ComboDatabase::loadingFinished() {
 	TypesafeYamlDatabase::loadingFinished();
 }
 
-#ifdef Pandas_YamlBlastCache_ComboDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 itemdb_combo 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2022/04/26 22:41
-//************************************ 
-void ComboDatabase::afterCacheRestore() {
-	for (const auto& pair : *this) {
-		// ==================================================================
-		// 根据脚本明文重新生成脚本指令序列
-		// ==================================================================
-		pair.second->script = parse_script(
-			pair.second->script_plaintext.c_str(),
-			"itemdb_combo_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-	}
-}
-
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/04/26 22:44
-//************************************ 
-const std::string ComboDatabase::getDependsHash() {
-	// 在 ComboDatabase 中使用到了 ITEM_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%") %
-		this->getCacheHashByName("ITEM_DB")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_ComboDatabase
-
 #ifdef Pandas_Crashfix_RouletteData_UnInit
 //************************************
 // Method:      itemdb_dummy_roulette_db
@@ -3476,27 +3364,6 @@ bool RandomOptionDatabase::option_get_id(std::string name, uint16 &id) {
 	return false;
 }
 
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 random_option_db 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
-//************************************ 
-void RandomOptionDatabase::afterCacheRestore() {
-	for (const auto& pair : *this) {
-		// ==================================================================
-		// 根据脚本明文重新生成脚本指令序列
-		// ==================================================================
-		pair.second->script = parse_script(
-			pair.second->script_plaintext.c_str(),
-			"random_option_db_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-	}
-}
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
-
 const std::string RandomOptionGroupDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/item_randomopt_group.yml";
 }
@@ -3762,25 +3629,6 @@ bool RandomOptionGroupDatabase::option_get_id(std::string name, uint16 &id) {
 
 	return false;
 }
-
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 20:59
-//************************************ 
-const std::string RandomOptionGroupDatabase::getDependsHash() {
-	// 在 RandomOptionGroupDatabase 中使用到了 RANDOM_OPTION_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%") %
-		this->getCacheHashByName("RANDOM_OPTION_DB")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 
 /**
 * Read all item-related databases

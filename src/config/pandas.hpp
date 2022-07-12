@@ -27,7 +27,6 @@
 	#define Pandas_ScriptEngine
 	#define Pandas_Redeclaration
 	#define Pandas_UserExperience
-	#define Pandas_YamlBlastCache
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
@@ -1233,60 +1232,6 @@
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
 #endif // Pandas_UserExperience
-
-// ============================================================================
-// YAML 缓存组 - Pandas_YamlBlastCache
-// ============================================================================
-
-#ifdef Pandas_YamlBlastCache
-	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
-	#ifndef MINICORE
-		#define Pandas_YamlBlastCache_Serialize
-	#endif // MINICORE
-
-	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
-	#ifdef Pandas_YamlBlastCache_Serialize
-		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
-		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
-		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-			#define Pandas_YamlBlastCache_ItemDatabase
-		#endif // Pandas_Struct_Item_Data_Script_Plaintext
-
-		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_QuestDatabase
-
-		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_SkillDatabase
-
-		// 是否启用对 MobDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_MobDatabase
-
-		// 是否启用对 ItemGroupDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_ItemGroupDatabase
-
-		// 是否启用对 RandomOptionDatabase 的序列化支持 [Sola]
-		// 此选项需要依赖 Pandas_Struct_S_Random_Opt_Data_With_Plaintext 的拓展
-		#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-			#define Pandas_YamlBlastCache_RandomOptionDatabase
-		#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-
-		// 是否启用对 RandomOptionGroupDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_RandomOptionGroupDatabase
-
-		// 是否启用对 JobDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_JobDatabase
-
-		// 是否启用对 SkillTreeDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_SkillTreeDatabase
-
-		// 是否启用对 ComboDatabase 的序列化支持 [Sola丶小克]
-		// 此选项需要依赖 Pandas_Struct_S_Item_Combo_With_Plaintext 的拓展
-		#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
-			#define Pandas_YamlBlastCache_ComboDatabase
-		#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
-	#endif // Pandas_YamlBlastCache_Serialize
-#endif // Pandas_YamlBlastCache
-
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup
