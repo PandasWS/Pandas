@@ -914,26 +914,6 @@ bool QuestDatabase::reload() {
 	return true;
 }
 
-#ifdef Pandas_YamlBlastCache_QuestDatabase
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 21:07
-//************************************ 
-const std::string QuestDatabase::getDependsHash() {
-	// 在 QuestDatabase 中使用到了 ITEM_DB 和 MOB_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%|%2%") %
-		this->getCacheHashByName("ITEM_DB") %
-		this->getCacheHashByName("MOB_DB")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_QuestDatabase
-
 QuestDatabase quest_db;
 
 /**

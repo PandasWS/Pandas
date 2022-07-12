@@ -24412,9 +24412,6 @@ uint64 SkillDatabase::parseBodyNode(const ryml::NodeRef& node) {
 					skill->unit_flag.reset(static_cast<uint8>(constant));
 			}
 
-#ifndef Pandas_YamlBlastCache_SkillDatabase
-			// 将这部分应用操作挪动到: SkillDatabase::loadingFinished 来实现
-			// 避免疾风缓存将这里的值缓存住之后导致 defunit_not_enemy 战斗配置选项无效
 			if (skill->unit_flag[UF_NOENEMY] && battle_config.defnotenemy)
 				skill->unit_target = BCT_NOENEMY;
 
@@ -24426,7 +24423,6 @@ uint64 SkillDatabase::parseBodyNode(const ryml::NodeRef& node) {
 				skill->unit_target &= ~BL_MOB;
 			if (skill->unit_flag[UF_SKILL])
 				skill->unit_target |= BL_SKILL;
-#endif // Pandas_YamlBlastCache_SkillDatabase
 		} else {
 			if (!exists){
 				skill->unit_flag = UF_NONE;
@@ -24481,26 +24477,6 @@ void SkillDatabase::loadingFinished(){
 		ShowError( "There are more skills defined in the skill database (%d) than the MAX_SKILL (%d) define. Please increase it and recompile.\n", this->skill_num, MAX_SKILL );
 	}
 
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-	for (const auto& it : *this) {
-		auto skill = it.second;
-
-		// 从 parseBodyNode 把代码挪下来, 在此进行具体的战斗配置选项应用
-		// 因为疾风缓存在完成缓存的读取工作之后依然会触发 SkillDatabase::loadingFinished
-		if (skill->unit_flag[UF_NOENEMY] && battle_config.defnotenemy)
-			skill->unit_target = BCT_NOENEMY;
-
-		// By default, target just characters.
-		skill->unit_target |= BL_CHAR;
-		if (skill->unit_flag[UF_NOPC])
-			skill->unit_target &= ~BL_PC;
-		if (skill->unit_flag[UF_NOMOB])
-			skill->unit_target &= ~BL_MOB;
-		if (skill->unit_flag[UF_SKILL])
-			skill->unit_target |= BL_SKILL;
-	}
-#endif // Pandas_YamlBlastCache_SkillDatabase
-
 	TypesafeCachedYamlDatabase::loadingFinished();
 }
 
@@ -24519,46 +24495,6 @@ uint16 SkillDatabase::get_index( uint16 skill_id, bool silent, const char *func,
 
 	return idx;
 }
-
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 skill_db 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:36
-//************************************ 
-void SkillDatabase::afterCacheRestore() {
-	for (const auto& it : *this) {
-		auto skill = it.second;
-
-		// ==================================================================
-		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
-		// ==================================================================
-		SERIALIZE_SET_MEMORY_ZERO(skill->nocast);
-		SERIALIZE_SET_MEMORY_ZERO(skill->damage);
-		SERIALIZE_SET_MEMORY_ZERO(skill->abra_probability);
-		SERIALIZE_SET_MEMORY_ZERO(skill->improvisedsong_rate);
-	}
-}
-
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 21:01
-//************************************ 
-const std::string SkillDatabase::getDependsHash() {
-	// 在 SkillDatabase 中使用到了 ITEM_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%") %
-		this->getCacheHashByName("ITEM_DB")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_SkillDatabase
 
 SkillDatabase skill_db;
 
