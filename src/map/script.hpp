@@ -2408,6 +2408,28 @@ enum e_selfdeletion_flag : uint16 {
 };
 #endif // Pandas_ScriptCommand_SelfDeletion
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+enum e_inventory_query_flag : uint32{
+	INV_ID				= 0x00000001,
+	INV_IDX				= 0x00000002,
+	INV_AMOUNT			= 0x00000004,
+	INV_EQUIP			= 0x00000008,
+	INV_REFINE			= 0x00000010,
+	INV_IDENTIFY		= 0x00000020,
+	INV_ATTRIBUTE		= 0x00000040,
+	INV_CARD			= 0x00000080,
+	INV_EXPIRE			= 0x00000100,
+	INV_BOUND			= 0x00000200,
+	INV_GRADE			= 0x00000400,
+	INV_OPTION			= 0x00000800,
+	INV_TRADABLE		= 0x00001000,
+	INV_FAVORITE		= 0x00002000,
+	INV_UNIQUE			= 0x00004000,
+	INV_EQUIPSWITCH		= 0x00008000,
+	INV_ALL				= 0xFFFFFFFF
+};
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 /**
  * used to generate quick script_array entries
  **/

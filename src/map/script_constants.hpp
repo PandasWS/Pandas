@@ -219,6 +219,25 @@
 	export_constant(SELFDEL_WAITFREE);
 #endif // Pandas_ScriptCommand_SelfDeletion
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	export_constant(INV_ID);
+	export_constant(INV_IDX);
+	export_constant(INV_AMOUNT);
+	export_constant(INV_EQUIP);
+	export_constant(INV_REFINE);
+	export_constant(INV_IDENTIFY);
+	export_constant(INV_ATTRIBUTE);
+	export_constant(INV_CARD);
+	export_constant(INV_EXPIRE);
+	export_constant(INV_BOUND);
+	export_constant(INV_GRADE);
+	export_constant(INV_OPTION);
+	export_constant(INV_TRADABLE);
+	export_constant(INV_FAVORITE);
+	export_constant(INV_UNIQUE);
+	export_constant(INV_EQUIPSWITCH);
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 	/* min and maximum variable value */
 	export_constant(INT_MIN);
 	export_constant(INT_MAX);

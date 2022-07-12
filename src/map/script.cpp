@@ -15498,6 +15498,8 @@ BUILDIN_FUNC(petloot)
 	pd->loot->weight = 0;
 	return SCRIPT_CMD_SUCCESS;
 }
+
+#ifndef Pandas_ScriptCommand_GetInventoryList
 /*==========================================
  * Set arrays with info of all sd inventory :
  * @inventorylist_id, @inventorylist_amount, @inventorylist_equip,
@@ -15541,18 +15543,117 @@ BUILDIN_FUNC(getinventorylist)
 			}
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_tradable"), j),pc_can_trade_item(sd, i));
 			pc_setreg(sd,reference_uid(add_str("@inventorylist_favorite"), j),sd->inventory.u.items_inventory[i].favorite);
-#ifdef Pandas_ScriptResults_GetInventoryList
-			// 字符串数组 - @inventorylist_uid$ 用于保存道具的唯一编号
-			uint64 _tmp_for_gcc = sd->inventory.u.items_inventory[i].unique_id;
-			std::string unique_id = boost::str(boost::format("%1%") % _tmp_for_gcc);
-			pc_setregstr(sd, reference_uid(add_str("@inventorylist_uid$"), j), unique_id.c_str());
-#endif // Pandas_ScriptResults_GetInventoryList
 			j++;
 		}
 	}
 	pc_setreg(sd,add_str("@inventorylist_count"),j);
 	return SCRIPT_CMD_SUCCESS;
 }
+#else
+// {<角色编号>{,<想查询的数据>{,<仓库编号>}}}
+BUILDIN_FUNC(getinventorylist) {
+	struct map_session_data* sd = nullptr;
+	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
+	int j = 0, k = 0;
+	struct item* inventory = nullptr;
+	const char* command = script_getfuncname(st);
+	struct s_storage* stor = nullptr;
+	uint32 query_flag = INV_ALL;
+
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	if (script_hasdata(st, 3)) {
+		query_flag = script_getnum(st, 3);
+	}
+
+	// 根据不同的指令名称来决定读取什么位置的内容
+	if (!strcmp(command, "getinventorylist")) {
+		stor = &sd->inventory;
+		inventory = stor->u.items_inventory;
+	}
+	else if (!strcmp(command, "getcartlist")) {
+		stor = &sd->cart;
+		inventory = stor->u.items_cart;
+	}
+	else if (!strcmp(command, "getstoragelist")) {
+		stor = &sd->storage;
+		inventory = stor->u.items_storage;
+
+		// TODO: 对 premiumStorage 的支持
+	}
+	else if (!strcmp(command, "getguildstoragelist")) {
+		stor = guild2storage2(sd->status.guild_id);
+		if (stor) {
+			inventory = stor->u.items_guild;
+		}
+	}
+	else {
+		//ShowError("script:getinventorylist: unknown command '%s'\n", command);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (!stor || !inventory) {
+		//ShowError("script:getinventorylist: cannot read storage for %s\n", command);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+#define setreg(flag, arrayname, value)\
+	{ \
+		if ((query_flag & flag) == flag) \
+			pc_setreg(sd, reference_uid(add_str(arrayname), j), value); \
+	}
+#define setregstr(flag, arrayname, value)\
+	{ \
+		if ((query_flag & flag) == flag) \
+			pc_setregstr(sd, reference_uid(add_str(arrayname), j), value); \
+	}
+	
+	for (int i = 0; i < stor->max_amount; i++) {
+		if (inventory[i].nameid <= 0 || inventory[i].amount <= 0)
+			continue;
+		
+		setreg(INV_ID, "@inventorylist_id", inventory[i].nameid);
+		setreg(INV_IDX, "@inventorylist_idx", i);
+		setreg(INV_AMOUNT, "@inventorylist_amount", inventory[i].amount);
+		setreg(INV_EQUIP, "@inventorylist_equip", inventory[i].equip);
+		setreg(INV_REFINE, "@inventorylist_refine", inventory[i].refine);
+		setreg(INV_IDENTIFY, "@inventorylist_identify", inventory[i].identify);
+		setreg(INV_ATTRIBUTE, "@inventorylist_attribute", inventory[i].attribute);
+		for (k = 0; k < MAX_SLOTS; k++) {
+			sprintf(card_var, "@inventorylist_card%d", k + 1);
+			setreg(INV_CARD, card_var, inventory[i].card[k]);
+		}
+		setreg(INV_EXPIRE, "@inventorylist_expire", inventory[i].expire_time);
+		setreg(INV_BOUND, "@inventorylist_bound", inventory[i].bound);
+		setreg(INV_GRADE, "@inventorylist_enchantgrade", inventory[i].enchantgrade);
+		for (k = 0; k < MAX_ITEM_RDM_OPT; k++)
+		{
+			sprintf(randopt_var, "@inventorylist_option_id%d", k + 1);
+			setreg(INV_OPTION, randopt_var, inventory[i].option[k].id);
+			sprintf(randopt_var, "@inventorylist_option_value%d", k + 1);
+			setreg(INV_OPTION, randopt_var, inventory[i].option[k].value);
+			sprintf(randopt_var, "@inventorylist_option_parameter%d", k + 1);
+			setreg(INV_OPTION, randopt_var, inventory[i].option[k].param);
+		}
+		//setreg(INV_TRADABLE, "@inventorylist_tradable", pc_can_trade_item(sd, i));
+		setreg(INV_FAVORITE, "@inventorylist_favorite", inventory[i].favorite);
+
+		char unique_id[64 + 1] = { 0 };
+		sprintf(unique_id, "%" PRIu64, inventory[i].unique_id);
+		setregstr(INV_UNIQUE, "@inventorylist_uid$", unique_id);
+
+		setreg(INV_EQUIPSWITCH, "@inventorylist_equipswitch", inventory[i].equipSwitch);
+		j++;
+	}
+	pc_setreg(sd, add_str("@inventorylist_count"), j);
+
+#undef setreg
+#undef setregstr
+	
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_GetInventoryList
 
 /**
  * getskilllist ({<char_id>});
@@ -32022,7 +32123,14 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getitemslots,"i"),
 	BUILDIN_DEF(makepet,"i"),
 	BUILDIN_DEF(getexp,"ii?"),
+#ifndef Pandas_ScriptCommand_GetInventoryList
 	BUILDIN_DEF(getinventorylist,"?"),
+#else
+	BUILDIN_DEF(getinventorylist,"???"),
+	BUILDIN_DEF2(getinventorylist,"getcartlist","???"),
+	BUILDIN_DEF2(getinventorylist,"getstoragelist", "???"),
+	BUILDIN_DEF2(getinventorylist,"getguildstoragelist", "???"),
+#endif // Pandas_ScriptCommand_GetInventoryList
 	BUILDIN_DEF(getskilllist,"?"),
 	BUILDIN_DEF(clearitem,"?"),
 	BUILDIN_DEF(classchange,"i??"),

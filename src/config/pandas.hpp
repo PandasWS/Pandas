@@ -2090,6 +2090,23 @@
 	// 是否启用 whodropitem 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定道具会从哪些魔物身上掉落以及掉落的机率信息
 	#define Pandas_ScriptCommand_WhoDropItem
+
+	// 是否扩充 getinventorylist 脚本指令 [Sola丶小克]
+	// 主要包括了查询返回值的信息扩充, 衍生查询仓库和手推车的变体指令, 可控制每次需要被赋值的具体数组
+	// 
+	// - 查询返回值的信息扩充相比 rAthena 多返回以下内容
+	//	 - @inventorylist_uid$[]
+	//   - @inventorylist_equipswitch[]
+	// 
+	// - 衍生查询仓库和手推车的变体指令
+	//   - getstoragelist;
+	//   - getcartlist;
+	// 
+	// - 可控制每次需要被赋值的具体数组
+	//   - 用于缓解仓库和背包容量超大时候进行查询的性能问题
+	//
+	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
+	#define Pandas_ScriptCommand_GetInventoryList
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
@@ -2110,9 +2127,6 @@
 // ============================================================================
 
 #ifdef Pandas_ScriptResults
-	// 是否拓展 getinventorylist 脚本指令的返回数组 [Sola丶小克]
-	#define Pandas_ScriptResults_GetInventoryList
-
 	// 使 OnSellItem 标签可以返回被出售道具的背包序号 [Sola丶小克]
 	#define Pandas_ScriptResults_OnSellItem
 #endif // Pandas_ScriptResults
