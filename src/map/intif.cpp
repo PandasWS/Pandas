@@ -177,9 +177,16 @@ int intif_save_petdata(uint32 account_id,struct s_pet *p)
  * @param pet_id
  * @return 
  */
+#ifndef Pandas_Cross_Server
 int intif_delete_petdata(int pet_id)
 {
-	//TODO: request的是哪个char的
+#else
+int intif_delete_petdata(map_session_data* sd, int pet_id)
+{
+
+	if (is_cross_server)
+		switch_char_fd_cs_id(sd ? get_cs_id(sd->status.account_id) : 0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd,6);
@@ -1469,10 +1476,15 @@ int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh)
  * @param homun_id
  * @return 0=error, 1=msg sent
  */
+#ifndef Pandas_Cross_Server
 int intif_homunculus_requestdelete(int homun_id)
+#else
+int intif_homunculus_requestdelete(struct map_session_data* sd, int homun_id)
+#endif
 {
 #ifdef Pandas_Cross_Server
-	//TODO: 决定来自哪个服务器
+	if (is_cross_server)
+		switch_char_fd_cs_id(sd ? get_cs_id(sd->status.account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -1609,10 +1621,6 @@ void intif_parse_Registers(int fd)
 	struct map_session_data *sd;
 	uint32 account_id = RFIFOL(fd,4), char_id = RFIFOL(fd,8);
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(account_id);
-	is_fake_id(char_id);
-#endif
 	int cs_id = get_cs_id(account_id);
 	if(!is_cross_server)
 	{
@@ -1825,7 +1833,6 @@ int intif_parse_PartyInfo(int fd)
 		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", RFIFOL(fd, 4), RFIFOL(fd, 8), RFIFOW(fd, 2), 8 + sizeof(struct party));
 	party_recv_info((struct party*)RFIFOP(fd, 8), RFIFOL(fd, 4));
 #else
-#endif
 	int len = RFIFOW(fd, 2);
 	int char_id = RFIFOL(fd, 4);
 	if (len == 12) {
@@ -1836,8 +1843,9 @@ int intif_parse_PartyInfo(int fd)
 			//刷新掉组队框里的内容
 			if (sd)
 				clif_party_withdraw(sd, sd->status.account_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE, SELF);
-		}else 
-		ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", char_id, party_id);
+		}
+		else
+			ShowWarning("intif: party noinfo (char_id=%d party_id=%d)\n", char_id, party_id);
 		party_recv_noinfo(party_id, char_id);
 		return 0;
 	}
@@ -1845,6 +1853,8 @@ int intif_parse_PartyInfo(int fd)
 	if (len != 12 + sizeof(struct party))
 		ShowError("intif: party info : data size error (char_id=%d party_id=%d packet_len=%d expected_len=%" PRIuPTR ")\n", char_id, RFIFOL(fd, 8), len, 12 + sizeof(struct party));
 	party_recv_info((struct party*)RFIFOP(fd, 12), char_id, is_create);
+#endif
+	
 	return 1;
 }
 
@@ -3346,8 +3356,10 @@ int intif_mercenary_create(struct s_mercenary *merc)
 {
 	int size = sizeof(struct s_mercenary) + 4;
 
-	//TODO: [CS]服务
-
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(merc->char_id), char_fd);
+#endif
 	if( CheckForCharServer() )
 		return 0;
 
@@ -4300,6 +4312,7 @@ int intif_parse(int fd)
 		return 2;
 	}
 	// Processing branch
+
 	switch(cmd){
 	case 0x3800:
 		if (RFIFOL(fd,4) == 0xFF000000) //Normal announce.

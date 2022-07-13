@@ -1444,7 +1444,9 @@ int mapif_parse_GuildInfo(int fd,int guild_id)
 	return 0;
 }
 
+int mapif_parse_GuildInfoCS(int fd, int char_id);
 // Return guild info to client
+#ifdef Pandas_Cross_Server
 int mapif_parse_GuildInfoCS(int fd, int char_id)
 {
 	struct guild* g = inter_guild_id_fromsql(char_id); //We use this because on start-up the info of castle-owned guilds is requied. [Skotlex]
@@ -1457,6 +1459,7 @@ int mapif_parse_GuildInfoCS(int fd, int char_id)
 		mapif_guild_noinfo(fd, 0,char_id); // Failed to load info
 	return 0;
 }
+#endif
 
 // Add member to guild
 int mapif_parse_GuildAddMember(int fd,int guild_id,struct guild_member *m)
@@ -2127,7 +2130,9 @@ int inter_guild_parse_frommap(int fd)
 	case 0x3040: mapif_parse_GuildCastleDataLoad(fd,RFIFOW(fd,2),(int *)RFIFOP(fd,4)); break;
 	case 0x3041: mapif_parse_GuildCastleDataSave(fd,RFIFOW(fd,2),RFIFOB(fd,4),RFIFOL(fd,5)); break;
 	case 0x3042: mapif_parse_GuildEmblemVersion(fd, RFIFOL(fd, 2), RFIFOL(fd, 6)); break;
+#ifdef Pandas_Cross_Server
 	case 0x3043: mapif_parse_GuildInfoCS(fd, RFIFOL(fd, 2)); break;
+#endif
 	default:
 		return 0;
 	}

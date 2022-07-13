@@ -10,7 +10,8 @@ using namespace std;
 
 int m = 0;
 std::mutex mt;
-
+bool async_chrif_reconnect(int cs_id, const std::map<int, cross_server_data*>::iterator it);
+#ifdef Pandas_Cross_Server
 bool async_chrif_reconnect(int cs_id, const std::map<int, cross_server_data*>::iterator it)
 {
 	const auto config = it->second;
@@ -115,12 +116,11 @@ void asyncchrif_init(void) {
 		ch_main_thread = new thread(chrif_runtime2);
 }
 
-
-
 void asyncchrif_final()
 {
 	cfs.destroy();
 }
+#endif
 
 bool check_all_char_fd_health()
 {

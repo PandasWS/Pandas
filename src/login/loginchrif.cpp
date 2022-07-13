@@ -496,9 +496,6 @@ int logchrif_parse_upd_global_accreg(int fd, int id, char* ip){
 		uint32 account_id = RFIFOL(fd,4);
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-		is_fake_id(account_id);
-#endif
 		account_id = get_real_id(account_id);
 #endif
 

@@ -76,7 +76,11 @@ void intif_itembound_guild_retrieve(uint32 char_id, uint32 account_id, int guild
 int intif_create_pet(uint32 account_id, uint32 char_id, short pet_type, short pet_lv, t_itemid pet_egg_id, t_itemid pet_equip, short intimate, short hungry, char rename_flag, char incubate, const char *pet_name);
 int intif_request_petdata(uint32 account_id, uint32 char_id, int pet_id);
 int intif_save_petdata(uint32 account_id, struct s_pet *p);
+#ifndef Pandas_Cross_Server
 int intif_delete_petdata(int pet_id);
+#else
+int intif_delete_petdata(struct map_session_data* sd, int pet_id);
+#endif
 int intif_rename(struct map_session_data *sd, int type, char *name);
 #define intif_rename_pc(sd, name) intif_rename(sd, 0, name)
 #define intif_rename_pet(sd, name) intif_rename(sd, 1, name)
@@ -84,7 +88,11 @@ int intif_rename(struct map_session_data *sd, int type, char *name);
 int intif_homunculus_create(uint32 account_id, struct s_homunculus *sh);
 int intif_homunculus_requestload(uint32 account_id, int homun_id);
 int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh);
+#ifndef Pandas_Cross_Server
 int intif_homunculus_requestdelete(int homun_id);
+#else
+int intif_homunculus_requestdelete(struct map_session_data* sd, int homun_id);
+#endif
 
 /******QUEST SYTEM*******/
 void intif_request_questlog(struct map_session_data * sd);

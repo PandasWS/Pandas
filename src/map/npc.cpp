@@ -3478,7 +3478,11 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 		{
 			if( pet_db_search(sd->inventory.u.items_inventory[idx].nameid, PET_EGG) )
 			{
+#ifndef Pandas_Cross_Server
 				intif_delete_petdata(MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#else
+				intif_delete_petdata(sd,MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#endif
 			}
 		}
 

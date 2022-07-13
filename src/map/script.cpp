@@ -9009,7 +9009,11 @@ static void buildin_delitem_delete(struct map_session_data* sd, int idx, int* am
 	{
 		if( itemdb_type(itm->nameid) == IT_PETEGG && itm->card[0] == CARD0_PET )
 		{// delete associated pet
+#ifndef Pandas_Cross_Server
 			intif_delete_petdata(MakeDWord(itm->card[1], itm->card[2]));
+#else
+			intif_delete_petdata(sd,MakeDWord(itm->card[1], itm->card[2]));
+#endif
 		}
 		switch(loc) {
 			case TABLE_CART:

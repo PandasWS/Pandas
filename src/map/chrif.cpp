@@ -1522,7 +1522,10 @@ int chrif_updatefamelist(map_session_data &sd, e_rank ranktype) {
 
 int chrif_buildfamelist(void) {
 
-	//TODO:[CS服务]处理
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,2);
@@ -2205,12 +2208,60 @@ int chrif_parse(int fd) {
 
 // unused
 TIMER_FUNC(send_usercount_tochar){
-	chrif_check(-1);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server) {
+#endif
+		chrif_check(-1);
 
-	WFIFOHEAD(char_fd,4);
-	WFIFOW(char_fd,0) = 0x2afe;
-	WFIFOW(char_fd,2) = map_usercount();
-	WFIFOSET(char_fd,4);
+		WFIFOHEAD(char_fd, 4);
+		WFIFOW(char_fd, 0) = 0x2afe;
+		WFIFOW(char_fd, 2) = map_usercount();
+		WFIFOSET(char_fd, 4);
+#ifdef Pandas_Cross_Server
+	}
+	else {
+		struct map_session_data* sd;
+		struct s_mapiterator* iter;
+
+		iter = mapit_getallusers();
+
+		std::map<int, int> store;
+
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			int cs_id = get_cs_id(sd->status.account_id);
+			if (store.find(cs_id) == store.end()) {
+				store.insert(std::make_pair(cs_id, 0));
+			}
+			store.find(cs_id)->second++;
+		}
+
+		mapit_free(iter);
+
+		int fds[MAX_CHAR_SERVERS] = { 0 };
+		cfs.get_valid_fds(fds);
+		int len = ARRAYLENGTH(fds);
+		for (int j = 0; j < len; j++) {
+			if (fds[j] <= 0) continue;
+			const auto cf = cfs.findByFd(fds[j]);
+			if (cf == nullptr)
+				continue;
+			const int cs_id = cf->get_csid();
+			const auto total = store.find(cs_id) == store.end() ? 0 : store.find(cs_id)->second;
+			int users = cs_id == 0 ? map_usercount() : total;
+
+			switch_char_fd_cs_id(cs_id, char_fd);
+			if (!chrif_isconnected())
+				continue;
+
+			WFIFOHEAD(char_fd, 4);
+			WFIFOW(char_fd, 0) = 0x2afe;
+			WFIFOW(char_fd, 2) = users;
+			WFIFOSET(char_fd, 4);
+		}
+
+		store.clear();
+	}
+#endif
 	return 0;
 }
 
@@ -2223,27 +2274,102 @@ int send_users_tochar(void) {
 	struct map_session_data* sd;
 	struct s_mapiterator* iter;
 
-	//TODO:[CS]服务处理
-	chrif_check(-1);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server) {
+#endif
+		chrif_check(-1);
 
-	users = map_usercount();
+		users = map_usercount();
 
-	WFIFOHEAD(char_fd, 6+8*users);
-	WFIFOW(char_fd,0) = 0x2aff;
+		WFIFOHEAD(char_fd, 6 + 8 * users);
+		WFIFOW(char_fd, 0) = 0x2aff;
 
-	iter = mapit_getallusers();
+		iter = mapit_getallusers();
 
-	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) ) {
-		WFIFOL(char_fd,6+8*i) = sd->status.account_id;
-		WFIFOL(char_fd,6+8*i+4) = sd->status.char_id;
-		i++;
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			WFIFOL(char_fd, 6 + 8 * i) = sd->status.account_id;
+			WFIFOL(char_fd, 6 + 8 * i + 4) = sd->status.char_id;
+			i++;
+		}
+
+		mapit_free(iter);
+
+		WFIFOW(char_fd, 2) = 6 + 8 * users;
+		WFIFOW(char_fd, 4) = users;
+		WFIFOSET(char_fd, 6 + 8 * users);
+
+#ifdef Pandas_Cross_Server
 	}
+	else {
+		users = map_usercount();
 
-	mapit_free(iter);
+		iter = mapit_getallusers();
 
-	WFIFOW(char_fd,2) = 6 + 8*users;
-	WFIFOW(char_fd,4) = users;
-	WFIFOSET(char_fd, 6+8*users);
+		std::map<int, std::set<map_session_data*>> store;
+
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			int cs_id = get_cs_id(sd->status.account_id);
+			if (store.find(cs_id) == store.end()) {
+				store.insert(std::make_pair(cs_id, std::set< map_session_data*>()));
+			}
+			if (store.find(0) == store.end()) {
+				store.insert(std::make_pair(0, std::set< map_session_data*>()));
+			}
+			store.find(cs_id)->second.insert(sd);
+			store.find(0)->second.insert(sd);
+		}
+
+		mapit_free(iter);
+
+		int fds[MAX_CHAR_SERVERS] = { 0 };
+		cfs.get_valid_fds(fds);
+		int len = ARRAYLENGTH(fds);
+
+		for (int j = 0; j < len; j++) {
+			if (fds[j] <= 0) continue;
+			const auto cf = cfs.findByFd(fds[j]);
+			if (cf == nullptr)
+				continue;
+			const int cs_id = cf->get_csid();
+			if (store.find(cs_id) == store.end())
+				continue;
+			const auto st = store.find(cs_id)->second;
+			const int t_users = store.find(cs_id)->second.size();
+			const int len = 6 + 8 * t_users;
+
+			switch_char_fd_cs_id(cs_id,char_fd);
+			if (!chrif_isconnected())
+				continue;
+
+			WFIFOHEAD(char_fd, len);
+			WFIFOW(char_fd, 0) = 0x2aff;
+			WFIFOW(char_fd, 2) = len;
+			WFIFOW(char_fd, 4) = t_users;
+
+			auto it = st.begin();
+			while (it != st.end())
+			{
+				sd = *it;
+				WFIFOL(char_fd, 6 + 8 * i) = sd->status.account_id;
+				WFIFOL(char_fd, 6 + 8 * i + 4) = sd->status.char_id;
+				it = std::next(it);
+				i++;
+			}
+
+			WFIFOSET(char_fd, len);
+			i = 0;
+		}
+
+		const auto it = store.begin();
+		while (it != store.end())
+		{
+			auto empty = std::set< map_session_data*>();
+			it->second.swap(empty);
+		}
+		store.clear();
+		
+	}
+#endif
 
 	return 0;
 }

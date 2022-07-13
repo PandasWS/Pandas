@@ -35,9 +35,6 @@ struct achievement *mapif_achievements_fromsql(uint32 char_id, int *count)
 	int i;
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 
@@ -104,9 +101,6 @@ bool mapif_achievement_delete(uint32 char_id, int achievement_id)
 {
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 
@@ -130,9 +124,6 @@ bool mapif_achievement_add(uint32 char_id, struct achievement* ad)
 	int i;
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 
@@ -186,9 +177,6 @@ bool mapif_achievement_update(uint32 char_id, struct achievement* ad)
 	int i;
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 
@@ -243,9 +231,6 @@ int mapif_parse_achievement_save(int fd)
 	bool success = true;
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 
@@ -298,9 +283,6 @@ void mapif_achievement_load( int fd, uint32 char_id ){
 	int num_achievements = 0;
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 
@@ -354,9 +336,6 @@ int mapif_parse_achievement_reward(int fd){
 	int32 achievement_id = RFIFOL(fd, 6);
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(char_id);
-#endif
 	char_id = get_real_id(char_id);
 #endif
 

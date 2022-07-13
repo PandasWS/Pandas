@@ -22,11 +22,9 @@ extern std::map<int, int> logintoken_to_cs_id;
 extern int marked_cs_id;
 extern std::map<int, DBMap*> map_dbs;
 
-
-
 struct cross_server_data {
 	int server_id = 0;
-	char server_name[6];
+	char server_name[10];
 
 	char userid[NAME_LENGTH];
 	char passwd[NAME_LENGTH];
@@ -35,9 +33,6 @@ struct cross_server_data {
 	int char_server_port = 6121;
 
 };
-
-
-
 
 
 //config read

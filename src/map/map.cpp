@@ -1701,7 +1701,11 @@ TIMER_FUNC(map_clearflooritem_timer){
 
 
 	if (pet_db_search(fitem->item.nameid, PET_EGG))
+#ifndef Pandas_Cross_Server
 		intif_delete_petdata(MakeDWord(fitem->item.card[1], fitem->item.card[2]));
+#else
+		intif_delete_petdata(nullptr,MakeDWord(fitem->item.card[1], fitem->item.card[2]));
+#endif
 
 	clif_clearflooritem(fitem, 0);
 	map_deliddb(&fitem->bl);
@@ -3719,6 +3723,7 @@ int map_eraseallipport_sub(DBKey key, DBData *data, va_list va)
 
 #ifndef Pandas_Cross_Server
 int map_eraseallipport(void)
+{
 #else
 int map_eraseallipport(int fd)
 {

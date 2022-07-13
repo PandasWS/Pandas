@@ -3520,7 +3520,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( pd->pet.intimate > PET_INTIMATE_NONE )
 				intif_save_petdata(pd->pet.account_id,&pd->pet);
 			else { // Remove pet.
+#ifndef Pandas_Cross_Server
 				intif_delete_petdata(pd->pet.pet_id);
+#else
+				intif_delete_petdata(sd,pd->pet.pet_id);
+#endif
 
 				if (sd)
 					sd->status.pet_id = 0;
@@ -3615,7 +3619,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( hd->homunculus.intimacy > 0 )
 				hom_save(hd);
 			else {
+#ifndef Pandas_Cross_Server
 				intif_homunculus_requestdelete(hd->homunculus.hom_id);
+#else
+				intif_homunculus_requestdelete(sd,hd->homunculus.hom_id);
+#endif
 
 				if( sd )
 					sd->status.hom_id = 0;

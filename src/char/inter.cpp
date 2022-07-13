@@ -518,9 +518,6 @@ void mapif_parse_accinfo(int fd) {
 			} else {// more than one, listing... [Dekamaster/Nightroad]
 				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(214),(int)Sql_NumRows(sql_handle));
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-				is_fake_id(u_aid);
-#endif
 				int cs_id = get_cs_id(u_aid);
 #endif
 				while ( SQL_SUCCESS == Sql_NextRow(sql_handle) ) {
@@ -548,9 +545,6 @@ void mapif_parse_accinfo(int fd) {
 	}
 
 #ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(u_aid);
-#endif
 	u_aid = get_cs_id(u_aid);
 #endif
 	//TODO: 这里传过来的account_id或许是手动输入的?所以不必计较,只要保证u_aid是real就行

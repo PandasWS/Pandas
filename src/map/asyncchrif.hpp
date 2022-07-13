@@ -138,6 +138,25 @@ public:
 		return true;
 	}
 
+	void get_valid_fds(int* fds)
+	{
+		auto it = this->charfd_status.begin();
+		int index = 0;
+		while (it != this->charfd_status.end())
+		{
+			const auto next = std::next(it);
+			const auto cf = it->second;
+			if (cf->get_char_fd() <= 0 || !session_isValid(cf->get_char_fd()))
+			{
+				it = next;
+				continue;
+			}
+			fds[index] = cf->get_char_fd();
+			it = next;
+			index++;
+		}
+	}
+
 	~char_fd_status()
 	{
 		this->destroy();
@@ -148,7 +167,7 @@ public:
 extern char_fd_status cfs;
 extern int chrif_parse(int fd);
 #ifndef Pandas_Cross_Server
-extern int chrif_connect(int fd)
+extern int chrif_connect(int fd);
 #else
 extern int chrif_connect(int fd, int cs_id);
 #endif

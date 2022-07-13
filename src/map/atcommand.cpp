@@ -634,10 +634,10 @@ ACMD_FUNC(mapmove)
 		m = map_mapindex2mapid(mapindex);
 
 	if (m < 0) { // m < 0 means on different server! [Kevin]
+#ifdef Pandas_Cross_Server
 		uint32 ip;
 		uint16 port;
 		bool found = true;
-#ifdef Pandas_Cross_Server
 		int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
 		if (!sd->mapindex || map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
 			found = false;
@@ -9803,7 +9803,11 @@ ACMD_FUNC(delitem)
 
 		if( sd->inventory_data[idx]->type == IT_PETEGG && sd->inventory.u.items_inventory[idx].card[0] == CARD0_PET )
 		{// delete pet
+#ifndef Pandas_Cross_Server
 			intif_delete_petdata(MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#else
+			intif_delete_petdata(sd,MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#endif
 		}
 		pc_delitem(sd, idx, delamount, 0, 0, LOG_TYPE_COMMAND);
 

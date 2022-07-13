@@ -591,7 +591,11 @@ int mapif_parse_CreateParty(int fd, char *name, int item, int item2, struct part
 		//Add party to db
 		int_party_calc_state(p);
 		idb_put(party_db_, p->party.party_id, p);
-		mapif_party_info(fd, &p->party, 0,true);
+#ifndef Pandas_Cross_Server
+		mapif_party_info(fd, &p->party, 0);
+#else
+		mapif_party_info(fd, &p->party, 0, true);
+#endif
 		mapif_party_created(fd,leader->account_id,leader->char_id,&p->party);
 	} else { //Failed to create party.
 		aFree(p);
