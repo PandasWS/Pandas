@@ -3871,6 +3871,10 @@ struct script_state* script_alloc_state(struct script_code* rootscript, int pos,
 	st->unlockcmd = 0;
 #endif // Pandas_ScriptCommand_UnlockCmd
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	st->wating_premium_storage = 0;
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 	if( st->script->instances != USHRT_MAX )
 		st->script->instances++;
 	else {
@@ -15550,7 +15554,10 @@ BUILDIN_FUNC(getinventorylist)
 	return SCRIPT_CMD_SUCCESS;
 }
 #else
-// {<角色编号>{,<想查询的数据>{,<仓库编号>}}}
+// getinventorylist {<角色编号>{,<想查询的数据>}};
+// getcartlist {<角色编号>{,<想查询的数据>}};
+// getguildstoragelist {<角色编号>{,<想查询的数据>}};
+// getstoragelist {<仓库编号>{,<角色编号>{,<想查询的数据>}}};
 BUILDIN_FUNC(getinventorylist) {
 	struct map_session_data* sd = nullptr;
 	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
@@ -15560,32 +15567,71 @@ BUILDIN_FUNC(getinventorylist) {
 	struct s_storage* stor = nullptr;
 	uint32 query_flag = INV_ALL;
 
-	if (!script_charid2sd(2, sd))
-		return SCRIPT_CMD_FAILURE;
-
-	if (script_hasdata(st, 3)) {
-		query_flag = script_getnum(st, 3);
-	}
-
 	// 根据不同的指令名称来决定读取什么位置的内容
 	if (!strcmp(command, "getinventorylist")) {
+		if (!script_charid2sd(2, sd))
+			return SCRIPT_CMD_FAILURE;
+		if (script_hasdata(st, 3))
+			query_flag = script_getnum(st, 3);
+
 		stor = &sd->inventory;
 		inventory = stor->u.items_inventory;
 	}
 	else if (!strcmp(command, "getcartlist")) {
+		if (!script_charid2sd(2, sd))
+			return SCRIPT_CMD_FAILURE;
+		if (script_hasdata(st, 3))
+			query_flag = script_getnum(st, 3);
+
 		stor = &sd->cart;
 		inventory = stor->u.items_cart;
 	}
-	else if (!strcmp(command, "getstoragelist")) {
-		stor = &sd->storage;
-		inventory = stor->u.items_storage;
-
-		// TODO: 对 premiumStorage 的支持
-	}
 	else if (!strcmp(command, "getguildstoragelist")) {
+		if (!script_charid2sd(2, sd))
+			return SCRIPT_CMD_FAILURE;
+		if (script_hasdata(st, 3))
+			query_flag = script_getnum(st, 3);
+
 		stor = guild2storage2(sd->status.guild_id);
 		if (stor) {
 			inventory = stor->u.items_guild;
+		}
+	}
+	else if (!strcmp(command, "getstoragelist")) {
+		int stor_id = 0;
+
+		if (script_hasdata(st, 2))
+			stor_id = script_getnum(st, 2);
+		if (!script_charid2sd(3, sd))
+			return SCRIPT_CMD_FAILURE;
+		if (script_hasdata(st, 4))
+			query_flag = script_getnum(st, 4);
+
+		if (stor_id == 0) {
+			stor = &sd->storage;
+			inventory = stor->u.items_storage;
+		}
+		else if (!storage_exists(stor_id)) {
+			ShowError("buildin_%s: Invalid storage_id '%d'!\n", command, stor_id);
+			return SCRIPT_CMD_FAILURE;
+		}
+		else {
+			if (sd->premiumStorage.stor_id == stor_id || st->wating_premium_storage) {
+				// 如果现有的 premiumStorage 就是我们期望的拓展仓库
+				// 参考 storage_premiumStorage_load 的逻辑, 此时的 premiumStorage 内容可信
+				stor = &sd->premiumStorage;
+				inventory = stor->u.items_storage;
+
+				st->wating_premium_storage = 0;
+				st->state = RUN;
+			}
+			else if (!st->wating_premium_storage) {
+				// 否则, 需要先发送请求给角色服务器, 用于加载指定的拓展仓库内容
+				st->state = RERUNLINE;
+				st->wating_premium_storage = 1;
+				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
+				return SCRIPT_CMD_SUCCESS;
+			}
 		}
 	}
 	else {
@@ -32126,10 +32172,10 @@ struct script_function buildin_func[] = {
 #ifndef Pandas_ScriptCommand_GetInventoryList
 	BUILDIN_DEF(getinventorylist,"?"),
 #else
-	BUILDIN_DEF(getinventorylist,"???"),
-	BUILDIN_DEF2(getinventorylist,"getcartlist","???"),
+	BUILDIN_DEF(getinventorylist,"??"),
+	BUILDIN_DEF2(getinventorylist,"getcartlist","??"),
+	BUILDIN_DEF2(getinventorylist,"getguildstoragelist", "??"),
 	BUILDIN_DEF2(getinventorylist,"getstoragelist", "???"),
-	BUILDIN_DEF2(getinventorylist,"getguildstoragelist", "???"),
 #endif // Pandas_ScriptCommand_GetInventoryList
 	BUILDIN_DEF(getskilllist,"?"),
 	BUILDIN_DEF(clearitem,"?"),

@@ -506,6 +506,9 @@ struct script_state {
 #ifdef Pandas_ScriptCommand_UnlockCmd
 	unsigned unlockcmd : 1;
 #endif // Pandas_ScriptCommand_UnlockCmd
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	unsigned wating_premium_storage : 1;
+#endif // Pandas_ScriptCommand_GetInventoryList
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
 	unsigned mes_active : 1;  // Store if invoking character has a NPC dialog box open.
@@ -2410,23 +2413,23 @@ enum e_selfdeletion_flag : uint16 {
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
 enum e_inventory_query_flag : uint32{
-	INV_ID				= 0x00000001,
-	INV_IDX				= 0x00000002,
-	INV_AMOUNT			= 0x00000004,
-	INV_EQUIP			= 0x00000008,
-	INV_REFINE			= 0x00000010,
-	INV_IDENTIFY		= 0x00000020,
-	INV_ATTRIBUTE		= 0x00000040,
-	INV_CARD			= 0x00000080,
-	INV_EXPIRE			= 0x00000100,
-	INV_BOUND			= 0x00000200,
-	INV_GRADE			= 0x00000400,
-	INV_OPTION			= 0x00000800,
-	INV_TRADABLE		= 0x00001000,
-	INV_FAVORITE		= 0x00002000,
-	INV_UNIQUE			= 0x00004000,
-	INV_EQUIPSWITCH		= 0x00008000,
-	INV_ALL				= 0xFFFFFFFF
+	INV_ID				= 0x0001,
+	INV_IDX				= 0x0002,
+	INV_AMOUNT			= 0x0004,
+	INV_EQUIP			= 0x0008,
+	INV_REFINE			= 0x0010,
+	INV_IDENTIFY		= 0x0020,
+	INV_ATTRIBUTE		= 0x0040,
+	INV_CARD			= 0x0080,
+	INV_EXPIRE			= 0x0100,
+	INV_BOUND			= 0x0200,
+	INV_GRADE			= 0x0400,
+	INV_OPTION			= 0x0800,
+	INV_TRADABLE		= 0x1000,
+	INV_FAVORITE		= 0x2000,
+	INV_UNIQUE			= 0x4000,
+	INV_EQUIPSWITCH		= 0x8000,
+	INV_ALL				= 0xFFFF
 };
 #endif // Pandas_ScriptCommand_GetInventoryList
 

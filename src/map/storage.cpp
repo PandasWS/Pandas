@@ -1219,6 +1219,15 @@ void storage_guild_storage_quit(struct map_session_data* sd, int flag)
 void storage_premiumStorage_open(struct map_session_data *sd) {
 	nullpo_retv(sd);
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd->st && sd->npc_id) {
+		if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
+			ShowDebug("%s: Should not open the premiumStorage\n", __func__);
+			return;
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 	sd->state.storage_flag = 3;
 	storage_sortitem(sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage));
 	clif_storagelist(sd, sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage), storage_getName(sd->premiumStorage.stor_id));
