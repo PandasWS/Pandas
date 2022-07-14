@@ -986,6 +986,10 @@
 
 	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
 	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
+
+	// 修正 inter_server.yml 中的 Max 超大时没有妥善处理的问题 [Sola丶小克]
+	// 启用后 Max 字段的值最多不能超过 MAX_STORAGE 的值
+	#define Pandas_Fix_INTER_SERVER_DB_Field_Verify
 #endif // Pandas_Bugfix
 
 // ============================================================================

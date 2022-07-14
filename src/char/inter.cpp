@@ -971,6 +971,13 @@ uint64 InterServerDatabase::parseBodyNode( const ryml::NodeRef& node ){
 			return 0;
 		}
 
+#ifdef Pandas_Fix_INTER_SERVER_DB_Field_Verify
+		if (max > MAX_STORAGE) {
+			this->invalidWarning(node, "Node \"Max\" value is exceeds MAX_STORAGE, defaulting to MAX_STORAGE(%d).\n", MAX_STORAGE);
+			max = MAX_STORAGE;
+		}
+#endif // Pandas_Fix_INTER_SERVER_DB_Field_Verify
+
 		storage_table->max_num = max;
 	}else{
 		if( !existing ){
