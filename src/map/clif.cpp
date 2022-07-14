@@ -5136,6 +5136,15 @@ void clif_traderequest(struct map_session_data* sd, const char* name)
 	WFIFOHEAD(fd,packet_len(0x1f4));
 	WFIFOW(fd,0) = 0x1f4;
 	safestrncpy(WFIFOCP(fd,2), name, NAME_LENGTH);
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		char name_[NAME_LENGTH];
+		safestrncpy(name_, name, NAME_LENGTH);
+		make_fake_name(get_cs_id(tsd->status.account_id), name_);
+		safestrncpy(WFIFOCP(fd, 2), name_, NAME_LENGTH);
+	}
+#endif
 	WFIFOL(fd,26) = tsd->status.char_id;
 	WFIFOW(fd,30) = tsd->status.base_level;
 	WFIFOSET(fd,packet_len(0x1f4));
@@ -10992,14 +11001,15 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 #ifdef Pandas_Cross_Server
 			if(is_cross_server)
 			{
-				int t_cs_id = get_cs_id(sd->status.account_id);
+				make_fake_name(get_cs_id(sd->status.account_id), packet.name);
+				/*int t_cs_id = get_cs_id(sd->status.account_id);
 				const auto it = cs_configs_map.find(t_cs_id);
 				if(it != cs_configs_map.end())
 				{
 					memset(&packet.name, 0, NAME_LENGTH);
 					strncpy(packet.name, it->second->server_name, strlen(it->second->server_name));
 					strcat(packet.name, sd->status.name);
-				}
+				}*/
 			}
 #endif
 
@@ -13240,13 +13250,22 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 	}
 
 	// searching destination character
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-		get_real_name(target);
-#endif
 	dstsd = map_nick2sd(target,false);
 
+#ifndef Pandas_Cross_Server
 	if (dstsd == NULL || strcmp(dstsd->status.name, target) != 0) {
+#else
+	char t_name[NAME_LENGTH];
+	char s_name[NAME_LENGTH];
+	safestrncpy(t_name, target, NAME_LENGTH);
+	safestrncpy(s_name, sd->status.name, NAME_LENGTH);
+	if(is_cross_server)
+	{
+		get_real_name(t_name);
+		make_fake_name(get_cs_id(sd->status.account_id), s_name);
+	}
+	if (dstsd == NULL || strcmp(dstsd->status.name, t_name) != 0) {
+#endif
 		// player is not on this map-server
 		// At this point, don't send wisp/page if it's not exactly the same name, because (example)
 		// if there are 'Test' player on an other map-server and 'test' player on this map-server,
@@ -13310,7 +13329,12 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 	clif_wis_end(fd, 0); // 0: success to send wisper
 
 	// Normal message
-	clif_wis_message(dstsd, sd->status.name, message, strlen(message)+1, 0);
+#ifndef Pandas_Cross_Server
+	clif_wis_message(dstsd, sd->status.name, message, strlen(message) + 1, 0);
+#else
+	clif_wis_message(dstsd, s_name, message, strlen(message) + 1, 0);
+#endif
+	
 }
 
 
@@ -15140,10 +15164,6 @@ void clif_parse_PartyInvite2(int fd, struct map_session_data *sd){
 		return;
 	}
 
-#ifdef Pandas_Cross_Server
-	if(is_cross_server)
-		get_real_name(name);
-#endif
 	t_sd = map_nick2sd(name,false);
 
 	if(t_sd && t_sd->state.noask) {// @noask [LuzZza]
@@ -16680,6 +16700,15 @@ void clif_friendslist_toggle(struct map_session_data *sd,uint32 account_id, uint
 	WFIFOL(fd, 6) = sd->status.friends[i].char_id;
 	WFIFOB(fd,10) = !online; //Yeah, a 1 here means "logged off", go figure...
 #if PACKETVER >= 20180221
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+	{
+		char name[NAME_LENGTH];
+		safestrncpy(name, sd->status.friends[i].name, NAME_LENGTH);
+		make_fake_name(get_cs_id(sd->status.friends[i].account_id), name);
+		safestrncpy(WFIFOCP(fd, 11), name, NAME_LENGTH);
+	}else
+#endif
 	safestrncpy(WFIFOCP(fd, 11), sd->status.friends[i].name, NAME_LENGTH);
 #endif
 	WFIFOSET(fd, packet_len(0x206));
@@ -16721,7 +16750,11 @@ void clif_friendslist_send(struct map_session_data *sd)
 #endif
 	}
 
-	if (i) {
+	if (i
+#ifdef Pandas_Cross_Server
+		|| true
+#endif
+		) {
 		WFIFOW(fd,2) = 4 + size * i;
 		WFIFOSET(fd, WFIFOW(fd,2));
 	}
@@ -16768,7 +16801,12 @@ void clif_friendlist_req(struct map_session_data* sd, uint32 account_id, uint32 
 	WFIFOW(fd,0) = 0x207;
 	WFIFOL(fd,2) = account_id;
 	WFIFOL(fd,6) = char_id;
+
 	safestrncpy(WFIFOCP(fd,10), name, NAME_LENGTH);
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		make_fake_name(get_cs_id(account_id), WFIFOCP(fd, 10));
+#endif
 	WFIFOSET(fd,packet_len(0x207));
 }
 
@@ -18280,12 +18318,12 @@ void clif_parse_Mail_send(int fd, struct map_session_data *sd){
 
 #ifdef Pandas_CS_Diff_Server_Mail
 	//在mail 权限之后检查是否允许不同服的玩家互发邮件
-	//如果对方不在线，则不给发，否则需要加入离线name->account_id获得源服id
+	//当禁止以后 如果对方不在线 || 跨服,则不给发
 	if (is_cross_server)
 	{
 		struct map_session_data* tsd;
 		tsd = map_nick2sd(receiver, false);
-		if(!tsd || (!battle_config.diff_server_mail && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id)))
+		if(!battle_config.diff_server_mail && (!tsd || get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id)))
 			return;
 	}
 #endif

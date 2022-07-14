@@ -2936,7 +2936,12 @@ int intif_Mail_send(uint32 account_id, struct mail_message *msg)
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
+	{
 		switch_char_fd_cs_id(0, char_fd);
+		int sender_cs_id = get_cs_id(account_id);
+		make_fake_name(sender_cs_id, msg->send_name);
+		get_real_name(msg->dest_name);
+	}
 #endif
 
 	if (CheckForCharServer())
@@ -3030,16 +3035,13 @@ bool intif_mail_checkreceiver( struct map_session_data* sd, char* name ){
 		return true;
 	}
 
-	//这里允许直接发到对方服务器上,就不用清理rodex box
-	//目前唯一发现的缺陷就是邮件超过日期后,无法退回
-
+	//中立服邮件在中立服处理
 #ifdef Pandas_CS_Diff_Server_Mail
 	//在mail 权限之后检查是否允许不同服的玩家互发邮件
-	//如果对方不在线，则不给发
-	if (is_cross_server && (!tsd || (!battle_config.diff_server_mail && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))))
-	{
-		return false;
-	}
+	//当禁止以后 如果对方不在线 || 跨服,则不给发
+	if (is_cross_server)
+		if(!battle_config.diff_server_mail && (!tsd || (get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))))
+			return false;
 #endif
 
 #ifdef Pandas_Cross_Server
@@ -3763,7 +3765,12 @@ void intif_parse_broadcast_obtain_special_item(int fd) {
  */
 void intif_itembound_guild_retrieve(uint32 char_id,uint32 account_id,int guild_id) {
 	struct s_storage *gstor = guild2storage2(guild_id);
-	
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+#endif
+
 	if( CheckForCharServer() )
 		return;
 
@@ -4096,6 +4103,10 @@ void intif_parse_StorageInfo_recv(int fd) {
  */
 bool intif_storage_request(struct map_session_data *sd, enum storage_type type, uint8 stor_id, uint8 mode)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return false;
 
@@ -4124,6 +4135,10 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 	nullpo_retr(false, sd);
 	nullpo_retr(false, stor);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 	if (CheckForCharServer())
 		return false;
 
@@ -4161,6 +4176,10 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 }
 
 int intif_clan_requestclans(){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 	WFIFOHEAD(inter_fd, 2);
@@ -4174,6 +4193,10 @@ void intif_parse_clans( int fd ){
 }
 
 int intif_clan_message(int clan_id,uint32 account_id,const char *mes,int len){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -4198,6 +4221,10 @@ int intif_parse_clan_message( int fd ){
 }
 
 int intif_clan_member_left( int clan_id ){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -4213,6 +4240,10 @@ int intif_clan_member_left( int clan_id ){
 }
 
 int intif_clan_member_joined( int clan_id ){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -4228,6 +4259,10 @@ int intif_clan_member_joined( int clan_id ){
 }
 
 int intif_clan_member_joined_cs(int char_id) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	if (CheckForCharServer())
 		return 0;
 
@@ -4239,6 +4274,20 @@ int intif_clan_member_joined_cs(int char_id) {
 	WFIFOL(inter_fd, 2) = char_id;
 	WFIFOSET(inter_fd, 6);
 
+	return 1;
+}
+
+int intif_load_cs_chara(int char_id)
+{
+	switch_char_fd_cs_id(0, char_fd);
+
+	if (CheckForCharServer())
+		return 0;
+
+	WFIFOHEAD(char_fd, 6);
+	WFIFOW(char_fd, 0) = 0x3008;
+	WFIFOL(char_fd, 2) = char_id;
+	WFIFOSET(char_fd, 6);
 	return 1;
 }
 
@@ -4276,7 +4325,7 @@ int intif_parse_clan_joined_cs(int fd) {
 
 
 //-----------------------------------------------------------------
-
+uint32 packet_trace_id = 0;
 /**
  * Communication from the inter server, Main entry point interface (inter<=>map) 
  * @param fd : inter-serv link
@@ -4308,6 +4357,9 @@ int intif_parse(int fd)
 			packet_len = RFIFOW(fd,2);
 #endif // Pandas_Unlock_Storage_Capacity_Limit
 	}
+#ifdef Pandas_Print_Trace_Packet
+	ShowDebug("R Trace:%d,cmd:%d,p:0x%04x,len:%d,time:%d.\n", packet_trace_id++, cmd, cmd, packet_len, gettick());
+#endif
 	if((int)RFIFOREST(fd)<packet_len){
 		return 2;
 	}

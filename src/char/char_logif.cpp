@@ -809,6 +809,7 @@ TIMER_FUNC(chlogif_check_connect_logserver){
 	}
 	session[login_fd]->func_parse = chlogif_parse;
 	session[login_fd]->flag.server = 1;
+	session[login_fd]->flag.type = 0;
 	realloc_fifo(login_fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 
 	WFIFOHEAD(login_fd,86);

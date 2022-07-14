@@ -26,8 +26,11 @@ bool async_chrif_reconnect(int cs_id, const std::map<int, cross_server_data*>::i
 			cf->set_connected(0);
 			cfs.add(cs_id, cf);
 		}
-		ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to Char Server [%d]. Please wait.\n", cs_id);
-
+		if(cs_id  == 0) {
+			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to CS Char Server. Please wait.\n");
+		} else {
+			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to Char Server [%d] Name [%s]. Please wait.\n", cs_id, config->server_name);
+		}
 		const int tfd = make_connection(host2ip(config->char_server_ip.c_str()), config->char_server_port, false, 10);
 		if (tfd == -1)
 			return true;
@@ -92,8 +95,12 @@ void asyncchrif_init(void) {
 				cf->set_connected(0);
 				cfs.add(cs_id, cf);
 			}
-			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to Char Server [%d]. Please wait.\n", cs_id);
-
+			if (cs_id == 0) {
+				ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to CS Char Server. Please wait.\n");
+			}
+			else {
+				ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Attempting to connect to Char Server [%d] Name [%s]. Please wait.\n", cs_id, config->server_name);
+			}
 			const int tfd = make_connection(host2ip(config->char_server_ip.c_str()), config->char_server_port, false, 10);
 			if (tfd == -1)
 				continue;

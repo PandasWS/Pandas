@@ -40,11 +40,13 @@ int cs_config_read(const char* cfgName);
 
 //common
 int get_cs_id(int id);
+int get_cs_id_by_fake_name(const char* name);
 int get_cs_prefix(int cs_id);
 int get_real_id(int id,bool force = false);
 int make_fake_id(int id, int cs_id);
 bool is_fake_id(int id);
 void get_real_name(char* fake_name);
+void make_fake_name(int cs_id, char* name);
 
 
 //fd
@@ -53,6 +55,8 @@ void chrif_logintoken_pass(int fd, uint32 account_id, uint32 char_id, uint32 log
 
 //from char-serv to map-serv
 void chrif_logintoken_received(int fd);
+extern int intif_load_cs_chara(int char_id);
+void chrif_load_cs_chara_received(int fd);
 
 //map.cpp
 map_data_other_server* findmap(int cs_id, uint32 mapindex);

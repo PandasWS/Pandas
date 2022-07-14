@@ -786,10 +786,15 @@
     // 所有参与跨服的都服务器都必须打开此开关
     // 相关设定与说明请看doc
 	#define Pandas_Cross_Server
-
+	
 	#ifdef Pandas_Cross_Server
-		//方便debug输入的AID/CID是fake id的情景
+		//方便debug输入的AID/CID是否fake_id
 		#define Pandas_Fake_Id_Check_Debug
+		#undef Pandas_Fake_Id_Check_Debug
+
+		//输出login - char -map之间封包的交互,方便测试实际耗时和追踪封包
+		#define Pandas_Print_Trace_Packet
+		#undef Pandas_Print_Trace_Packet
 
 		//自定义事件开关
 		#define Pandas_CS_Event

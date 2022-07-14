@@ -2011,6 +2011,14 @@ void pc_reg_received(struct map_session_data *sd)
 	sd->state.active = 1;
 	sd->state.pc_loaded = false; // Ensure inventory data and status data is loaded before we calculate player stats
 
+	//在这里发送读取cs中立服数据的请求
+#ifdef Pandas_Cross_Server
+	if(is_cross_server){
+		intif_load_cs_chara(sd->status.char_id);
+	}
+	clif_friendslist_send(sd);
+#endif
+
 	intif_storage_request(sd,TABLE_STORAGE, 0, STOR_MODE_ALL); // Request storage data
 	intif_storage_request(sd,TABLE_CART, 0, STOR_MODE_ALL); // Request cart data
 	intif_storage_request(sd,TABLE_INVENTORY, 0, STOR_MODE_ALL); // Request inventory data

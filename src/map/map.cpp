@@ -2434,7 +2434,7 @@ struct map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
+struct map_session_data* map_nick2sd(const char* nick, bool allow_partial)
 {
 	struct map_session_data* sd;
 	struct map_session_data* found_sd;
@@ -2444,20 +2444,29 @@ struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 
 	if( nick == NULL )
 		return NULL;
+	found_sd = NULL;
 
+#ifndef Pandas_Cross_Server
 	nicklen = strlen(nick);
 	iter = mapit_getallusers();
 
-	found_sd = NULL;
-	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
+	for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter))
 	{
-		if( allow_partial && battle_config.partial_name_scan )
+#ifdef Pandas_Cross_Server
+		if (cs_id > 0)
+		{
+			if (get_cs_id(sd->status.account_id) != cs_id)
+				continue;
+		}
+#endif
+		if (allow_partial && battle_config.partial_name_scan)
 		{// partial name search
-			if( strnicmp(sd->status.name, nick, nicklen) == 0 )
+			if (strnicmp(sd->status.name, nick, nicklen) == 0)
 			{
+
 				found_sd = sd;
 
-				if( strcmp(sd->status.name, nick) == 0 )
+				if (strcmp(sd->status.name, nick) == 0)
 				{// Perfect Match
 					qty = 1;
 					break;
@@ -2466,16 +2475,60 @@ struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 				qty++;
 			}
 		}
-		else if( strcasecmp(sd->status.name, nick) == 0 )
+		else if (strcasecmp(sd->status.name, nick) == 0)
 		{// exact search only
 			found_sd = sd;
 			qty = 1;
 			break;
 		}
 	}
+	
+#else
+	char nick_[NAME_LENGTH];
+	safestrncpy(nick_, nick, NAME_LENGTH);
+	int cs_id = 0;
+	if (is_cross_server)
+	{
+		cs_id = get_cs_id_by_fake_name(nick_);
+		get_real_name(nick_);
+	}
+	nicklen = strlen(nick_);
+	iter = mapit_getallusers();
+	
+	for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter))
+	{
+		if (cs_id > 0)
+			if (get_cs_id(sd->status.account_id) != cs_id)
+				continue;
+
+		if (allow_partial && battle_config.partial_name_scan)
+		{// partial name search
+			if (strnicmp(sd->status.name, nick_, nicklen) == 0)
+			{
+
+				found_sd = sd;
+
+				if (strcmp(sd->status.name, nick_) == 0)
+				{// Perfect Match
+					qty = 1;
+					break;
+				}
+
+				qty++;
+			}
+		}
+		else if (strcasecmp(sd->status.name, nick_) == 0)
+		{// exact search only
+			found_sd = sd;
+			qty = 1;
+			break;
+		}
+	}
+#endif
+
 	mapit_free(iter);
 
-	if( battle_config.partial_name_scan && qty != 1 )
+	if (battle_config.partial_name_scan && qty != 1)
 		found_sd = NULL;
 
 	return found_sd;

@@ -62,10 +62,10 @@ unsigned int party_share_level = 10;
 
 /// Received packet Lengths from map-server
 int inter_recv_packet_length[] = {
-	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  0,-1, 0, 0,  0, 0,  0, 0,	// 3000-
+	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  6,-1, 0, 0,  0, 0,  0, 0,	// 3000-
 	 6,-1, 0, 0,  0, 0, 0, 0, 10,-1, 0, 0,  0, 0,  0, 0,	// 3010-
 	-1,10,-1,14, 15+NAME_LENGTH,19, 6,-1, 14,14, 6, 0,  0, 0,  0, 0,	// 3020- Party
-	-1,-1,-1,-1, 55,19, 6,-1, 14,-1,-1,-1, 18,19,186,-1,	// 3030-
+	-1, 6,-1,-1, 55,19, 6,-1, 14,-1,-1,-1, 18,19,186,-1,	// 3030-
 	-1, 9,10, 6,  0, 0, 0, 0,  8, 6,11,10, 10,-1,6+NAME_LENGTH, 0,	// 3040-
 	-1,-1,10,10,  0,-1,12, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3050-  Auction System [Zephyrus]
 	 6,-1, 6,-1, 16+NAME_LENGTH+ACHIEVEMENT_NAME_LENGTH, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,	// 3060-  Quest system [Kevin] [Inkfish] / Achievements [Aleos]
@@ -556,6 +556,34 @@ void mapif_parse_accinfo(int fd) {
 	return;
 }
 
+
+/**
+ * \brief 中立服Map-Serv传来给中立服Char-Serv加载角色数据
+ * \param fd : map-serv link
+ */
+void mapif_parse_load_cs_chara(int fd)
+{
+	uint32 char_id = RFIFOL(fd, 2);
+	struct mmo_charstatus char_dat;
+	struct mmo_charstatus* char_data;
+	char_data = (struct mmo_charstatus*)uidb_get(char_get_chardb(), char_id);
+	if(char_data == nullptr)
+	{
+		char_mmo_char_fromsql(char_id, &char_dat, true);
+		char_data = (struct mmo_charstatus*)uidb_get(char_get_chardb(), char_id);
+	}
+	const auto node = (struct auth_node*)idb_get(char_get_authdb(), char_data->account_id);
+	if (runflag == CHARSERVER_ST_RUNNING && char_data) {
+		uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 8;
+		WFIFOHEAD(fd, mmo_charstatus_len);
+		WFIFOW(fd, 0) = 0x2b31;
+		WFIFOW(fd, 2) = mmo_charstatus_len;
+		WFIFOL(fd, 4) = node ? node->group_id : 0;
+		memcpy(WFIFOP(fd, 8), char_data, sizeof(struct mmo_charstatus));
+		WFIFOSET(fd, WFIFOW(fd, 2));
+	}
+}
+
 /**
  * Show account info from login-server to user
  */
@@ -564,12 +592,6 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
 	const char *birthdate, const char *userid)
 {
 
-#ifdef Pandas_Cross_Server
-#ifdef Pandas_Fake_Id_Check_Debug
-	is_fake_id(u_aid);
-#endif
-#endif
-	
 	if (map_fd <= 0 || !session_isActive(map_fd))
 		return; // check if we have a valid fd
 
@@ -1541,6 +1563,9 @@ int inter_parse_frommap(int fd)
 	case 0x3005: mapif_parse_RegistryRequest(fd); break;
 	case 0x3006: mapif_parse_NameChangeRequest(fd); break;
 	case 0x3007: mapif_parse_accinfo(fd); break;
+#ifdef Pandas_Cross_Server
+	case 0x3008: mapif_parse_load_cs_chara(fd); break;
+#endif
 	/* 0x3008 unused */
 	case 0x3009: mapif_parse_broadcast_item(fd); break;
 	default:

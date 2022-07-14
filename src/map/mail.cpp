@@ -7,6 +7,7 @@
 #include "../common/showmsg.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "atcommand.hpp"
 #include "battle.hpp"

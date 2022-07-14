@@ -707,6 +707,7 @@ int chclif_parse_maplogin(int fd){
 			map_server[i].map = {};
 			session[fd]->func_parse = chmapif_parse;
 			session[fd]->flag.server = 1;
+			session[fd]->flag.type = 2;
 			realloc_fifo(fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 			chmapif_init(fd);
 		}

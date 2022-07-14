@@ -2,12 +2,14 @@
   Type: CONSOLE_TRANSLATE_DB
   Version: 1
 Body:
+- Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]Done reading %s.\n"
+  Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]已读取 %s.\n"
 - Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]Cross Server Set: %s\n"
   Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]中立服务器开关 %s\n"
 - Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]Attempting to connect to CS Char Server. Please wait.\n"
   Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]正在尝试连接到中立角色服务器 请稍候...\n"
-- Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]Attempting to connect to Char Server [%d]. Please wait.\n"
-  Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]正在尝试连接到角色服务器 [%d], 请稍候...\n"
+- Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]Attempting to connect to Char Server [%d] Name [%s]. Please wait.\n"
+  Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]正在尝试连接到角色服务器 [%d] 识别名:%s, 请稍候...\n"
 - Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]This Char Server [Cross Server Marked ID] is %d from Main Cross Server.\n"
   Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]此角色服务器的[跨服ID]已被 中立服务器 设定为 %d.\n"
 - Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]clif_parse_WantToConnection: 'login_id1 to cs id' not found where char-server passed.Player AID:%d CID:%d logind_id1:%d.\n"
@@ -24,6 +26,8 @@ Body:
   Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]发送角色: %s 的令牌1: %d 至 地图服务器[%d]...\n"
 - Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]Id:[{CL_LT_YELLOW}]%d[{CL_RESET}] is fake,it's real id is:[{CL_LT_YELLOW}]%d[{CL_RESET}].\n"
   Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]Id:[{CL_LT_YELLOW}]%d[{CL_RESET}]是伪Id,它的真实值是:[{CL_LT_YELLOW}]%d[{CL_RESET}].\n"
+- Original: "[{CL_BLUE}][Cross Server][{CL_RESET}]CS Map Server is now online.\n"
+  Translation: "[{CL_BLUE}][跨服处理][{CL_RESET}]中立地图服务器已上线, 玩家可以进入管辖地图了.\n"
 - Original: "\t admin:@<atcommand> => Uses an atcommand. Do NOT use commands requiring an attached player.\n"
   Translation: ""
 - Original: "\t admin:map:<map> <x> <y> => Changes the map from which console commands are executed.\n"

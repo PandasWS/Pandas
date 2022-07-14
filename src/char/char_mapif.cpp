@@ -449,7 +449,6 @@ int chmapif_parse_reqsavechar(int fd, int id){
 		int aid = RFIFOL(fd,4), cid = RFIFOL(fd,8), size = RFIFOW(fd,2);
 #ifdef Pandas_Cross_Server
 		int cs_id = 0;
-		//CS服的AID和CID直接保存,非CS服的需要做去前缀处理
 		if(!is_cross_server)
 		{
 			cs_id = get_cs_id(aid);
@@ -1303,8 +1302,6 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOL(fd, 2) = make_fake_id(account_id, cs_id);
 			WFIFOL(fd, 6) = make_fake_id(char_id, cs_id);
 #endif
-			WFIFOL(fd,2) = account_id;
-			WFIFOL(fd,6) = char_id;
 			WFIFOL(fd,10) = login_id1;
 			WFIFOB(fd,14) = sex;
 			WFIFOL(fd,15) = htonl(ip);
@@ -1679,6 +1676,7 @@ void chmapif_connectack(int fd, uint8 errCode){
 	WFIFOSET(fd,3);
 }
 
+uint32 packet_trace_id = 0;
 /**
  * Entry point from map-server to char-server.
  * Function that checks incoming command, then splits it to the correct handler.
@@ -1706,6 +1704,12 @@ int chmapif_parse(int fd){
 
 	while(RFIFOREST(fd) >= 2){
 		int next=1;
+
+#ifdef Pandas_Print_Trace_Packet
+		int cmd = RFIFOW(fd, 0);
+		int len = RFIFOREST(fd);
+		ShowDebug("R Trace:%d,cmd:%d,p:0x%04x,len:%d,time:%d.\n", packet_trace_id++, cmd, cmd, len, gettick());
+#endif
 
 		switch(RFIFOW(fd,0)){
 			case 0x2afa: next=chmapif_parse_getmapname(fd,id); break;

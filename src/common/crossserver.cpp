@@ -97,6 +97,40 @@ int get_cs_id(int id)
 	return id / cs_id_factor;
 }
 
+/**
+ * \brief 算出cross server id.如果不是被跨服fake的 id，则返回0
+ * \param id : AID/CID
+ * \return
+ */
+int get_cs_id_by_fake_name(const char* name)
+{
+	for (auto cs = cs_configs_map.begin(); cs != cs_configs_map.end(); cs = std::next(cs))
+	{
+		const auto config = cs->second;
+		const auto needle = config->server_name;
+		if (strlen(needle) == 0 || needle[0] == '\0') continue;
+
+		const size_t len = strlen(name);
+		const size_t len2 = strlen(needle);
+		if (len <= len2) continue;
+		for (unsigned int i = 0; i < len; ++i) {
+			if (name[i] == *needle) {
+				// matched starting char -- loop through remaining chars
+				const char* h, * n;
+				for (h = &name[i], n = needle; *h && *n; ++h, ++n) {
+					if (*h != *n) {
+						break;
+					}
+				}
+				if (!*n) {
+					return config->server_id;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 
 /**
  * \brief 根据cs_id算出附加值,用于fake AID、CID
@@ -120,6 +154,11 @@ int get_real_id(int id,bool force)
 {
 	if (id <= 0 && !force)
 		return id;
+#ifdef Pandas_Fake_Id_Check_Debug
+	if (id % cs_id_factor > 0)
+		ShowDebug("" CL_BLUE "[Cross Server]" CL_RESET "Id:" CL_LT_YELLOW "%d" CL_RESET " is fake,it's real id is:" CL_LT_YELLOW "%d" CL_RESET ".\n", id, get_real_id(id));
+#endif
+	
 	return id % cs_id_factor;
 }
 
@@ -194,6 +233,48 @@ void get_real_name(char* fake_name)
 			}
 		}
 	}
+}
+
+/**
+ * \brief 增加前缀
+ * \param fake_name
+ */
+void make_fake_name(int cs_id,char* name)
+{
+	if (cs_configs_map.empty() || cs_id == 0) return;
+	const auto cs = cs_configs_map.find(cs_id);
+	if (cs == cs_configs_map.end()) return;
+	const auto config = cs->second;
+	const auto needle = config->server_name;
+	if (strlen(needle) == 0 || needle[0] == '\0') return;
+	const size_t len = strlen(name);
+	const size_t len2 = strlen(needle);
+	if (len > len2)
+	{
+		for (unsigned int i = 0; i < len; ++i) {
+			if (name[i] == *needle) {
+				// matched starting char -- loop through remaining chars
+				const char* h, * n;
+				for (h = &name[i], n = needle; *h && *n; ++h, ++n) {
+					if (*h != *n) {
+						break;
+					}
+				}
+				if (!*n) {
+					//已经有前缀
+					return;
+				}
+			}
+		}
+	}
+	char temp_name[NAME_LENGTH];
+	safestrncpy(temp_name, name, NAME_LENGTH);
+	memset(name, 0, NAME_LENGTH);
+	strncpy(name, needle, strlen(needle));
+	if(name[strlen(needle)] != '\0')
+		name[strlen(needle)] = '\0';
+	strncat(name, temp_name, NAME_LENGTH);
+	return;
 }
 
 
