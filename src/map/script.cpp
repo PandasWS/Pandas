@@ -15593,9 +15593,11 @@ BUILDIN_FUNC(getinventorylist) {
 			query_flag = script_getnum(st, 3);
 
 		stor = guild2storage2(sd->status.guild_id);
-		if (stor) {
-			inventory = stor->u.items_guild;
+		if (!stor) {
+			ShowError("buildin_%s: Can not open the guild storage, please check whether the character is in the guild!\n", command);
+			return SCRIPT_CMD_FAILURE;
 		}
+		inventory = stor->u.items_guild;
 	}
 	else if (!strcmp(command, "getstoragelist")) {
 		int stor_id = 0;
@@ -15682,7 +15684,7 @@ BUILDIN_FUNC(getinventorylist) {
 			sprintf(randopt_var, "@inventorylist_option_parameter%d", k + 1);
 			setreg(INV_OPTION, randopt_var, inventory[i].option[k].param);
 		}
-		//setreg(INV_TRADABLE, "@inventorylist_tradable", pc_can_trade_item(sd, i));
+		setreg(INV_TRADABLE, "@inventorylist_tradable", pc_can_trade_storage_item(sd, inventory, i));
 		setreg(INV_FAVORITE, "@inventorylist_favorite", inventory[i].favorite);
 
 		char unique_id[64 + 1] = { 0 };

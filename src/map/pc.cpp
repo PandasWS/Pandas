@@ -1037,6 +1037,19 @@ bool pc_can_trade_item(map_session_data *sd, int index) {
 	return false;
 }
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+bool pc_can_trade_storage_item(map_session_data* sd, struct item* inventory, int index) {
+	if (sd && inventory && index >= 0) {
+		return (inventory[index].expire_time == 0 &&
+			(inventory[index].bound == 0 || pc_can_give_bounded_items(sd)) &&
+			itemdb_cantrade(&inventory[index], pc_get_group_level(sd), pc_get_group_level(sd))
+			);
+	}
+
+	return false;
+}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 /*==========================================
  * Prepares character for saving.
  * @param sd
