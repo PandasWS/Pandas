@@ -4104,8 +4104,13 @@ void intif_parse_StorageInfo_recv(int fd) {
 bool intif_storage_request(struct map_session_data *sd, enum storage_type type, uint8 stor_id, uint8 mode)
 {
 #ifdef Pandas_Cross_Server
-	if (is_cross_server)
+	if (is_cross_server) {
+#ifndef Pandas_CS_Inherit_All_Storage
 		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#else
+		switch_char_fd_cs_id(battle_config.inherit_source_server_all_storage ? get_cs_id(sd->status.account_id) : 0, char_fd);
+#endif
+	}
 #endif
 	if (CheckForCharServer())
 		return false;
@@ -4136,8 +4141,13 @@ bool intif_storage_save(struct map_session_data *sd, struct s_storage *stor)
 	nullpo_retr(false, stor);
 
 #ifdef Pandas_Cross_Server
-	if (is_cross_server)
+	if (is_cross_server) {
+#ifndef Pandas_CS_Inherit_All_Storage
 		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#else
+		switch_char_fd_cs_id(battle_config.inherit_source_server_all_storage ? get_cs_id(sd->status.account_id) : 0, char_fd);
+#endif
+	}
 #endif
 	if (CheckForCharServer())
 		return false;

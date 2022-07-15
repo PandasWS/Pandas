@@ -814,6 +814,9 @@
 		//不同服的玩家的交易
 		#define Pandas_CS_Diff_Server_Guild_Join
 
+		//继承源服的个人storage/inventory/cart等
+		#define Pandas_CS_Inherit_All_Storage
+
 	#endif
 
 #endif
