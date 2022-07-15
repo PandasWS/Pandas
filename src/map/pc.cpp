@@ -1038,13 +1038,11 @@ bool pc_can_trade_item(map_session_data *sd, int index) {
 }
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
-bool pc_can_trade_storage_item(map_session_data* sd, struct item* inventory, int index) {
-	if (sd && inventory && index >= 0) {
-		return (inventory[index].expire_time == 0 &&
-			(inventory[index].bound == 0 || pc_can_give_bounded_items(sd)) &&
-			itemdb_cantrade(&inventory[index], pc_get_group_level(sd), pc_get_group_level(sd))
-			);
-	}
+bool pc_can_trade_item(map_session_data *sd, struct item& item) {
+	return (sd && item.expire_time == 0 &&
+		(item.bound == 0 || pc_can_give_bounded_items(sd)) &&
+		itemdb_cantrade(&item, pc_get_group_level(sd), pc_get_group_level(sd))
+		);
 
 	return false;
 }

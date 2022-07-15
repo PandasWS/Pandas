@@ -15557,7 +15557,7 @@ BUILDIN_FUNC(getinventorylist)
 // getinventorylist {<角色编号>{,<想查询的数据>}};
 // getcartlist {<角色编号>{,<想查询的数据>}};
 // getguildstoragelist {<角色编号>{,<想查询的数据>}};
-// getstoragelist {<仓库编号>{,<角色编号>{,<想查询的数据>}}};
+// getstoragelist {<角色编号>{,<想查询的数据>{,<仓库编号>}}};
 BUILDIN_FUNC(getinventorylist) {
 	struct map_session_data* sd = nullptr;
 	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
@@ -15567,34 +15567,27 @@ BUILDIN_FUNC(getinventorylist) {
 	struct s_storage* stor = nullptr;
 	uint32 query_flag = INV_ALL;
 
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+	if (script_hasdata(st, 3))
+		query_flag = script_getnum(st, 3);
+
+	// 清空上一次可能残留的查询结果记录数
+	pc_setreg(sd, add_str("@inventorylist_count"), 0);
+	
 	// 根据不同的指令名称来决定读取什么位置的内容
-	if (!strcmp(command, "getinventorylist")) {
-		if (!script_charid2sd(2, sd))
+	if (!strcmp(command, "getcartlist")) {
+		if (!pc_iscarton(sd)) {
+			ShowError("buildin_%s: player doesn't have cart (CID=%d).\n", command, sd->status.char_id);
 			return SCRIPT_CMD_FAILURE;
-		if (script_hasdata(st, 3))
-			query_flag = script_getnum(st, 3);
-
-		stor = &sd->inventory;
-		inventory = stor->u.items_inventory;
-	}
-	else if (!strcmp(command, "getcartlist")) {
-		if (!script_charid2sd(2, sd))
-			return SCRIPT_CMD_FAILURE;
-		if (script_hasdata(st, 3))
-			query_flag = script_getnum(st, 3);
-
+		}
 		stor = &sd->cart;
 		inventory = stor->u.items_cart;
 	}
 	else if (!strcmp(command, "getguildstoragelist")) {
-		if (!script_charid2sd(2, sd))
-			return SCRIPT_CMD_FAILURE;
-		if (script_hasdata(st, 3))
-			query_flag = script_getnum(st, 3);
-
 		stor = guild2storage2(sd->status.guild_id);
 		if (!stor) {
-			ShowError("buildin_%s: Can not open the guild storage, please check whether the character is in the guild!\n", command);
+			ShowError("buildin_%s: player doesn't have a guild (CID=%d).\n", command, sd->status.char_id);
 			return SCRIPT_CMD_FAILURE;
 		}
 		inventory = stor->u.items_guild;
@@ -15602,19 +15595,15 @@ BUILDIN_FUNC(getinventorylist) {
 	else if (!strcmp(command, "getstoragelist")) {
 		int stor_id = 0;
 
-		if (script_hasdata(st, 2))
-			stor_id = script_getnum(st, 2);
-		if (!script_charid2sd(3, sd))
-			return SCRIPT_CMD_FAILURE;
 		if (script_hasdata(st, 4))
-			query_flag = script_getnum(st, 4);
+			stor_id = script_getnum(st, 4);
 
 		if (stor_id == 0) {
 			stor = &sd->storage;
 			inventory = stor->u.items_storage;
 		}
 		else if (!storage_exists(stor_id)) {
-			ShowError("buildin_%s: Invalid storage_id '%d'!\n", command, stor_id);
+			ShowError("buildin_%s: Invalid storage id '%d'!\n", command, stor_id);
 			return SCRIPT_CMD_FAILURE;
 		}
 		else {
@@ -15637,12 +15626,12 @@ BUILDIN_FUNC(getinventorylist) {
 		}
 	}
 	else {
-		//ShowError("script:getinventorylist: unknown command '%s'\n", command);
-		return SCRIPT_CMD_FAILURE;
+		stor = &sd->inventory;
+		inventory = stor->u.items_inventory;
 	}
 
 	if (!stor || !inventory) {
-		//ShowError("script:getinventorylist: cannot read storage for %s\n", command);
+		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -15684,7 +15673,7 @@ BUILDIN_FUNC(getinventorylist) {
 			sprintf(randopt_var, "@inventorylist_option_parameter%d", k + 1);
 			setreg(INV_OPTION, randopt_var, inventory[i].option[k].param);
 		}
-		setreg(INV_TRADABLE, "@inventorylist_tradable", pc_can_trade_storage_item(sd, inventory, i));
+		setreg(INV_TRADABLE, "@inventorylist_tradable", pc_can_trade_item(sd, inventory[i]));
 		setreg(INV_FAVORITE, "@inventorylist_favorite", inventory[i].favorite);
 
 		char unique_id[64 + 1] = { 0 };
