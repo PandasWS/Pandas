@@ -15674,7 +15674,7 @@ BUILDIN_FUNC(getinventorylist) {
 		}
 		setreg(INV_EXPIRE, "@inventorylist_expire", inventory[i].expire_time);
 		setreg(INV_BOUND, "@inventorylist_bound", inventory[i].bound);
-		setreg(INV_GRADE, "@inventorylist_enchantgrade", inventory[i].enchantgrade);
+		setreg(INV_ENCHANTGRADE, "@inventorylist_enchantgrade", inventory[i].enchantgrade);
 		for (k = 0; k < MAX_ITEM_RDM_OPT; k++)
 		{
 			sprintf(randopt_var, "@inventorylist_option_id%d", k + 1);
@@ -15689,7 +15689,7 @@ BUILDIN_FUNC(getinventorylist) {
 
 		char unique_id[64 + 1] = { 0 };
 		sprintf(unique_id, "%" PRIu64, inventory[i].unique_id);
-		setregstr(INV_UNIQUE, "@inventorylist_uid$", unique_id);
+		setregstr(INV_UID, "@inventorylist_uid$", unique_id);
 
 		setreg(INV_EQUIPSWITCH, "@inventorylist_equipswitch", inventory[i].equipSwitch);
 		j++;

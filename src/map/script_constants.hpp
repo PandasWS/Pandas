@@ -230,11 +230,11 @@
 	export_constant(INV_CARD);
 	export_constant(INV_EXPIRE);
 	export_constant(INV_BOUND);
-	export_constant(INV_GRADE);
+	export_constant(INV_ENCHANTGRADE);
 	export_constant(INV_OPTION);
 	export_constant(INV_TRADABLE);
 	export_constant(INV_FAVORITE);
-	export_constant(INV_UNIQUE);
+	export_constant(INV_UID);
 	export_constant(INV_EQUIPSWITCH);
 	export_constant(INV_ALL);
 #endif // Pandas_ScriptCommand_GetInventoryList
