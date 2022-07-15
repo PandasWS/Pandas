@@ -15554,10 +15554,12 @@ BUILDIN_FUNC(getinventorylist)
 	return SCRIPT_CMD_SUCCESS;
 }
 #else
-// getinventorylist {<角色编号>{,<想查询的数据>}};
-// getcartlist {<角色编号>{,<想查询的数据>}};
-// getguildstoragelist {<角色编号>{,<想查询的数据>}};
-// getstoragelist {<角色编号>{,<想查询的数据>{,<仓库编号>}}};
+/* ===========================================================
+ * getinventorylist {<角色编号>{,<想查询的数据类型>}};
+ * getcartlist {<角色编号>{,<想查询的数据类型>}};
+ * getguildstoragelist {<角色编号>{,<想查询的数据类型>}};
+ * getstoragelist {<角色编号>{,<想查询的数据类型>{,<仓库编号>}}};
+ * -----------------------------------------------------------*/
 BUILDIN_FUNC(getinventorylist) {
 	struct map_session_data* sd = nullptr;
 	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
