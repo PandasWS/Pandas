@@ -8923,7 +8923,11 @@ void status_calc_slave_mode(struct mob_data *md, struct mob_data *mmd)
 			sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, MD_CANMOVE|MD_NORANDOMWALK|MD_CANATTACK, 0, 0, 0);
 			break;
 		default: //Copy master
+#ifndef Pandas_Crashfix_Prevent_NullPointer
 			if (status_has_mode(&mmd->status,MD_AGGRESSIVE))
+#else
+			if (mmd && status_has_mode(&mmd->status,MD_AGGRESSIVE))
+#endif // Pandas_Crashfix_Prevent_NullPointer
 				sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 0);
 			else
 				sc_start4(NULL, &md->bl, SC_MODECHANGE, 100, 1, 0, 0, MD_AGGRESSIVE, 0);
