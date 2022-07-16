@@ -15575,7 +15575,35 @@ BUILDIN_FUNC(getinventorylist) {
 		query_flag = script_getnum(st, 3);
 
 	// 清空上一次可能残留的查询结果记录数
+	script_cleararray_pc(sd, "@inventorylist_id");
+	script_cleararray_pc(sd, "@inventorylist_idx");
+	script_cleararray_pc(sd, "@inventorylist_amount");
+	script_cleararray_pc(sd, "@inventorylist_equip");
+	script_cleararray_pc(sd, "@inventorylist_refine");
+	script_cleararray_pc(sd, "@inventorylist_identify");
+	script_cleararray_pc(sd, "@inventorylist_attribute");
+	for (k = 0; k < MAX_SLOTS; k++) {
+		sprintf(card_var, "@inventorylist_card%d", k + 1);
+		script_cleararray_pc(sd, card_var);
+	}
+	script_cleararray_pc(sd, "@inventorylist_expire");
+	script_cleararray_pc(sd, "@inventorylist_bound");
+	script_cleararray_pc(sd, "@inventorylist_enchantgrade");
+	for (k = 0; k < MAX_ITEM_RDM_OPT; k++) {
+		sprintf(randopt_var, "@inventorylist_option_id%d", k + 1);
+		script_cleararray_pc(sd, randopt_var);
+		sprintf(randopt_var, "@inventorylist_option_value%d", k + 1);
+		script_cleararray_pc(sd, randopt_var);
+		sprintf(randopt_var, "@inventorylist_option_parameter%d", k + 1);
+		script_cleararray_pc(sd, randopt_var);
+	}
+	script_cleararray_pc(sd, "@inventorylist_tradable");
+	script_cleararray_pc(sd, "@inventorylist_favorite");
+	script_cleararray_pc(sd, "@inventorylist_uid$");
+	script_cleararray_pc(sd, "@inventorylist_equipswitch");
+	
 	pc_setreg(sd, add_str("@inventorylist_count"), 0);
+	
 	
 	// 根据不同的指令名称来决定读取什么位置的内容
 	if (!strcmp(command, "getcartlist")) {
@@ -15666,8 +15694,7 @@ BUILDIN_FUNC(getinventorylist) {
 		setreg(INV_EXPIRE, "@inventorylist_expire", inventory[i].expire_time);
 		setreg(INV_BOUND, "@inventorylist_bound", inventory[i].bound);
 		setreg(INV_ENCHANTGRADE, "@inventorylist_enchantgrade", inventory[i].enchantgrade);
-		for (k = 0; k < MAX_ITEM_RDM_OPT; k++)
-		{
+		for (k = 0; k < MAX_ITEM_RDM_OPT; k++) {
 			sprintf(randopt_var, "@inventorylist_option_id%d", k + 1);
 			setreg(INV_OPTION, randopt_var, inventory[i].option[k].id);
 			sprintf(randopt_var, "@inventorylist_option_value%d", k + 1);
