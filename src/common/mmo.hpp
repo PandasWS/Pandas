@@ -339,12 +339,19 @@ enum e_quest_state : uint8 {
 	Q_COMPLETE, ///< Completed quest
 };
 
+// Quest Bound Type
+enum e_quest_bound_type : uint8 {
+	QUEST_CHAR,	  ///< 角色独享的任务
+	QUEST_ACCOUNT,  ///< 账号共享的任务
+};
+
 /// Questlog entry
 struct quest {
 	int quest_id;                    ///< Quest ID
 	uint32 time;                     ///< Expiration time
 	int count[MAX_QUEST_OBJECTIVES]; ///< Kill counters of each quest objective
 	e_quest_state state;             ///< Current quest state
+	e_quest_bound_type quest_bound;  ///< Quest所属单位
 };
 
 /// Achievement log entry

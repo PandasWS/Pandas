@@ -410,6 +410,25 @@ uint64 QuestDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		}
 	}
 
+	if (this->nodeExists(node, "Bound"))
+	{
+		int64 quest_bound = QUEST_CHAR;
+		std::string quest_bound_str;
+
+		if (!this->asString(node, "Bound", quest_bound_str) || !script_get_constant(quest_bound_str.c_str(), &quest_bound)) {
+			this->invalidWarning(node, "Invalid Quest Bound Type,Quest Id:%d. skipping.\n", quest_id);
+			return 0;
+		}
+
+		if(quest_bound < QUEST_CHAR || quest_bound > QUEST_ACCOUNT)
+		{
+			ShowInfo("Invalid Quest Bound Type,Quest Id:%d.skipping.\n", quest_id);
+			return 0;
+		}
+
+		quest->bound = static_cast<uint32>(quest_bound);
+	}
+
 	if (!exists)
 		this->put(quest_id, quest);
 
@@ -556,6 +575,7 @@ int quest_add(struct map_session_data *sd, int quest_id)
 	sd->quest_log[n].quest_id = qi->id;
 	sd->quest_log[n].time = (uint32)quest_time(qi);
 	sd->quest_log[n].state = Q_ACTIVE;
+	sd->quest_log[n].quest_bound = static_cast<e_quest_bound_type>(qi->bound);
 	sd->save_quest = true;
 
 	clif_quest_add(sd, &sd->quest_log[n]);
