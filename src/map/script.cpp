@@ -15606,16 +15606,21 @@ BUILDIN_FUNC(getinventorylist) {
 	// 根据不同的指令名称来决定读取什么位置的内容
 	if (!strcmp(command, "getcartlist")) {
 		if (!pc_iscarton(sd)) {
-			ShowError("buildin_%s: player doesn't have cart (CID=%d).\n", command, sd->status.char_id);
+			ShowError("buildin_%s: player doesn't have cart (CID: %d).\n", command, sd->status.char_id);
 			return SCRIPT_CMD_FAILURE;
 		}
 		stor = &sd->cart;
 		inventory = stor->u.items_cart;
 	}
 	else if (!strcmp(command, "getguildstoragelist")) {
+		if (!sd->status.guild_id) {
+			ShowError("buildin_%s: player doesn't join the guild (CID: %d).\n", command, sd->status.char_id);
+			return SCRIPT_CMD_FAILURE;
+		}
+		
 		stor = guild2storage2(sd->status.guild_id);
 		if (!stor) {
-			ShowError("buildin_%s: player doesn't have a guild (CID=%d).\n", command, sd->status.char_id);
+			ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
 			return SCRIPT_CMD_FAILURE;
 		}
 		inventory = stor->u.items_guild;
