@@ -826,6 +826,15 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 	size_t len;
 	unsigned int plen = 0;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(account_id);
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	switch( type ) {
 		case 3: //char reg
 			if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `key`, `index`, `value` FROM `%s` WHERE `char_id`='%" PRIu32 "'", schema_config.char_reg_str_table, char_id) )
@@ -1544,6 +1553,15 @@ int mapif_parse_Registry(int fd)
 	uint32 account_id = RFIFOL(fd, 4), char_id = RFIFOL(fd, 8);
 	uint16 count = RFIFOW(fd, 12);
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(account_id);
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	if( count ) {
 		int cursor = 14, i;
 		bool isLoginActive = session_isActive(login_fd);
@@ -1630,6 +1648,15 @@ int mapif_parse_NameChangeRequest(int fd)
 	char_id = RFIFOL(fd,6);
 	type = RFIFOB(fd,10);
 	name = RFIFOCP(fd,11);
+
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(account_id);
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
 
 	// Check Authorised letters/symbols in the name
 	if (charserv_config.char_config.char_name_option == 1) { // only letters/symbols in char_name_letters are authorised

@@ -1629,6 +1629,11 @@ void intif_parse_Registers(int fd)
 		account_id = get_real_id(account_id);
 		char_id = get_real_id(char_id);
 	}
+	else {
+		cs_id = chrif_get_cs_id(fd);
+		account_id = make_fake_id(account_id, cs_id);
+		char_id = make_fake_id(char_id, cs_id);
+	}
 #endif
 	struct auth_node *node = chrif_auth_check(account_id, char_id, ST_LOGIN);
 

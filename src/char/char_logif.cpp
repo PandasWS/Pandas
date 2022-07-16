@@ -238,6 +238,15 @@ void chlogif_send_global_accreg(const char *key, unsigned int index, int64 int_v
 void chlogif_request_accreg2(uint32 account_id, uint32 char_id){
 	if (!chlogif_isconnected())
 		return;
+
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(account_id);
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
 	WFIFOHEAD(login_fd,10);
 	WFIFOW(login_fd,0) = 0x272e;
 	WFIFOL(login_fd,2) = account_id;

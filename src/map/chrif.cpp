@@ -349,9 +349,10 @@ int chrif_save(struct map_session_data* sd, int flag,bool resave) {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server){
 		if (resave) {
-			switch_char_fd(0, char_fd, chrif_state);
-		} else {
-			switch_char_fd(!inherit_source_server_chara_status ? 0 :get_cs_id(sd->status.account_id), char_fd, chrif_state);
+			switch_char_fd_cs_id(0, char_fd);
+		}
+		else {
+			switch_char_fd_cs_id(!inherit_source_server_chara_status ? 0 : get_cs_id(sd->status.account_id), char_fd);
 		}
 	}
 #endif
@@ -386,6 +387,7 @@ int chrif_save(struct map_session_data* sd, int flag,bool resave) {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server && inherit_source_server_chara_status && !resave){
 		//这里是为了在即使继承源服数据时，也会独立存一份guild_id,party_id等数据
+		sd->vars_dirty = true;
 		return chrif_save(sd, flag, true);
 	}
 #endif
