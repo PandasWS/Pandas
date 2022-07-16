@@ -367,7 +367,8 @@ NPC名称:
 如果要减少租赁时间的话, 第二个参数请使用负数.
 
 EQI装备位置:
-	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt
+	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt 文档
+	中 getequipid 脚本指令的使用说明.
 
 增减的时间秒数:
 	若需要减少时间的话, 请使用负数.
@@ -388,29 +389,8 @@ EQI装备位置:
 获取指定位置装备的背包序号. 注意该函数返回 0 不代表失败.
 
 EQI装备位置:
-	EQI_COMPOUND_ON (-1)      - Item slot that calls this script (In context of item script)
-	EQI_ACC_L (0)             - Accessory 1
-	EQI_ACC_R (1)             - Accessory 2
-	EQI_SHOES (2)             - Footgear (shoes, boots)
-	EQI_GARMENT (3)           - Garment (mufflers, hoods, manteaux)
-	EQI_HEAD_LOW (4)          - Lower Headgear (beards, some masks)
-	EQI_HEAD_MID (5)          - Middle Headgear (masks, glasses)
-	EQI_HEAD_TOP (6)          - Upper Headgear
-	EQI_ARMOR (7)             - Armor (jackets, robes)
-	EQI_HAND_L (8)            - Left hand (weapons, shields)
-	EQI_HAND_R (9)            - Right hand (weapons)
-	EQI_COSTUME_HEAD_TOP (10) - Upper Costume Headgear
-	EQI_COSTUME_HEAD_MID (11) - Middle Costume Headgear
-	EQI_COSTUME_HEAD_LOW (12) - Lower Costume Headgear
-	EQI_COSTUME_GARMENT (13)  - Costume Garment
-	EQI_AMMO (14)    		  - Arrow/Ammunition
-	EQI_SHADOW_ARMOR (15)     - Shadow Armor
-	EQI_SHADOW_WEAPON (16)    - Shadow Weapon
-	EQI_SHADOW_SHIELD (17)    - Shadow Shield
-	EQI_SHADOW_SHOES (18)     - Shadow Shoes
-	EQI_SHADOW_ACC_R (19)     - Shadow Accessory 2
-	EQI_SHADOW_ACC_L (20)     - Shadow Accessory 1
-
+	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt 文档
+	中 getequipid 脚本指令的使用说明.
 
 返回值:
 	-1 - 在指定的EQI装备位置找不到装备
@@ -441,7 +421,8 @@ EQI装备位置:
 获取指定位置装备的租赁到期剩余秒数.
 
 EQI装备位置:
-	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt
+	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt 文档
+	中 getequipid 脚本指令的使用说明.
 
 返回值:
 	-1 - 在指定的EQI装备位置找不到装备
@@ -3033,12 +3014,20 @@ function	script	getitem4	{
 
 --------------------------------------------------------------
 
-*getequipgrade <EQI装备位置>{,<角色编号>};
-	指令: getequipgrade
-	描述: 获取指定位置装备的评级等级
-	用法: getequipgrade <EQI装备位置>{,<角色编号>};
-	返回: 获取失败返回各种负数, 非 0 的正数表示获取到的装备的评级等级
-	作者: 人鱼姬的思念
+*getequipgrade {<EQI装备位置>{,<角色编号>}};
+
+获取指定位置装备的附魔评级. 注意该函数返回 0 不代表失败.
+该指令在装备穿戴脚本中使用时无需传递 <EQI装备位置> 参数.
+
+EQI装备位置:
+	是指 EQI_* 开头的位置常量, 可参考 doc/script_commands.txt 文档
+	中 getequipid 脚本指令的使用说明.
+
+返回值:
+	-1 - 在指定的EQI装备位置找不到装备
+	-2 - 填写的EQI装备位置无效
+	-3 - 指定的角色编号无效, 或者目标玩家不在线
+	其他大于等于 0 的数值则表示成功, 返回值就是所查位置装备的附魔评级
 
 --------------------------------------------------------------
 

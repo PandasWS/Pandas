@@ -2080,7 +2080,7 @@
 	#define Pandas_ScriptCommand_GetGradeItem
 
 	// 是否启用 getequipgrade 脚本指令 [人鱼姬的思念]
-	// 该指令用于获取指定位置装备的附魔评级等级
+	// 该指令用于获取指定位置装备的附魔评级
 	#define Pandas_ScriptCommand_GetEquipGrade
 
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
