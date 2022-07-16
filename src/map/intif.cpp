@@ -3620,6 +3620,13 @@ static bool intif_parse_StorageReceived(int fd)
 }
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
+//************************************
+// Method:      intif_parse_StorageReceived_hook
+// Description: 在 intif_parse_StorageReceived 之后进行后续处理的劫持函数
+// Parameter:   int fd
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/07/16 09:45
+//************************************
 static bool intif_parse_StorageReceived_hook(int fd) {
 	bool bReturn = intif_parse_StorageReceived(fd);
 #ifndef Pandas_Unlock_Storage_Capacity_Limit
@@ -3628,14 +3635,12 @@ static bool intif_parse_StorageReceived_hook(int fd) {
 	uint32 account_id = RFIFOL(fd, 5 + 2);
 #endif // Pandas_Unlock_Storage_Capacity_Limit
 	struct map_session_data* sd = map_id2sd(account_id);
-	ShowDebug("%s: account_id = %u\n", __func__, account_id);
 
 	if (!sd || !sd->st || !sd->npc_id) {
 		return bReturn;
 	}
 
 	if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
-		ShowDebug("%s: Script need contiune..\n", __func__);
 		npc_scriptcont(sd, sd->npc_id, false);
 	}
 	return bReturn;

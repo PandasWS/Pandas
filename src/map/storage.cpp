@@ -1221,8 +1221,11 @@ void storage_premiumStorage_open(struct map_session_data *sd) {
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
 	if (sd->st && sd->npc_id) {
+		// 正常的流程中 intif_parse_StorageReceived 和 storage_premiumStorage_load
+		// 都会调用 storage_premiumStorage_open 来打开客户端的仓库界面
+		//
+		// 但如果本次查询是为了响应 getstoragelist 的请求, 那么就没必要打开客户端的仓库界面
 		if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
-			ShowDebug("%s: Should not open the premiumStorage\n", __func__);
 			return;
 		}
 	}

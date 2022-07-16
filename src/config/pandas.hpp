@@ -2104,10 +2104,11 @@
 	// 
 	// - 衍生查询仓库和手推车的变体指令
 	//   - getstoragelist;
+	//   - getguildstoragelist;
 	//   - getcartlist;
 	// 
-	// - 可控制每次需要被赋值的具体数组
-	//   - 用于缓解仓库和背包容量超大时候进行查询的性能问题
+	// - 可控制每次想查询的数据类型
+	//   - 用于解决仓库和背包容量超大时候填充大量不使用的数据带来的性能问题
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
