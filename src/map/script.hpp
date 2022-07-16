@@ -344,6 +344,10 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_PC_TALK
 	const char* pc_talk_express_name;	// NPCX_PC_TALK	// OnPCTalkExpress	// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+	const char* pcharmed_express_name;	// NPCX_PCHARMED	// OnPCHarmedExpress	// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
