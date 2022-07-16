@@ -335,6 +335,7 @@ void char_set_charselect(uint32 account_id);
 void char_read_fame_list(void);
 
 int char_make_new_char( struct char_session_data* sd, char* name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style, short start_job, int sex );
+int char_make_new_char_cs(struct mmo_charstatus* status);
 
 void char_set_session_flag_(int account_id, int val, bool set);
 #define char_set_session_flag(account_id, val)   ( char_set_session_flag_((account_id), (val), true)  )

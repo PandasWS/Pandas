@@ -448,10 +448,9 @@ int chmapif_parse_reqsavechar(int fd, int id){
 	else {
 		int aid = RFIFOL(fd,4), cid = RFIFOL(fd,8), size = RFIFOW(fd,2);
 #ifdef Pandas_Cross_Server
-		int cs_id = 0;
+		int cs_id = get_cs_id(aid);
 		if(!is_cross_server)
 		{
-			cs_id = get_cs_id(aid);
 			aid = get_real_id(aid);
 			cid = get_real_id(cid);
 		}
@@ -1205,6 +1204,7 @@ int chmapif_parse_reqauth(int fd, int id){
 #endif
 		node = (struct auth_node*)idb_get(auth_db, account_id);
 		cd = (struct mmo_charstatus*)uidb_get(char_db_,char_id);
+		
 		if( cd == NULL )
 		{	//Really shouldn't happen. (or autotrade)
 				char_mmo_char_fromsql(char_id, &char_dat, true);
@@ -1271,6 +1271,7 @@ int chmapif_parse_reqauth(int fd, int id){
 #ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = account_id;
 #else
+			cd->inherit = false;
 			WFIFOL(fd, 4) = make_fake_id(account_id, cs_id);
 #endif
 			WFIFOL(fd,8) = node->login_id1;

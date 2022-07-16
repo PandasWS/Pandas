@@ -35,6 +35,7 @@
 #include "int_quest.hpp"
 #include "int_storage.hpp"
 
+
 std::string cfgFile = "inter_athena.yml"; ///< Inter-Config file
 InterServerDatabase interServerDb;
 
@@ -62,7 +63,7 @@ unsigned int party_share_level = 10;
 
 /// Received packet Lengths from map-server
 int inter_recv_packet_length[] = {
-	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  6,-1, 0, 0,  0, 0,  0, 0,	// 3000-
+	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  0,-1,-1, 0,  0, 0,  0, 0,	// 3000-
 	 6,-1, 0, 0,  0, 0, 0, 0, 10,-1, 0, 0,  0, 0,  0, 0,	// 3010-
 	-1,10,-1,14, 15+NAME_LENGTH,19, 6,-1, 14,14, 6, 0,  0, 0,  0, 0,	// 3020- Party
 	-1, 6,-1,-1, 55,19, 6,-1, 14,-1,-1,-1, 18,19,186,-1,	// 3030-
@@ -557,31 +558,147 @@ void mapif_parse_accinfo(int fd) {
 }
 
 
-/**
- * \brief 中立服Map-Serv传来给中立服Char-Serv加载角色数据
- * \param fd : map-serv link
- */
-void mapif_parse_load_cs_chara(int fd)
+void mapif_parse_inherit_cs_chara(int fd)
 {
-	uint32 char_id = RFIFOL(fd, 2);
+	struct auth_node* node;
+	DBMap* auth_db = char_get_authdb();
+
+	uint32 account_id, group_id, char_id;
+	uint32 login_id1, login_id2;
+	time_t expiration_time;
+	struct mmo_charstatus* status;
+	bool changing_mapservers;
+
+	//Check if both servers agree on the struct's size
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+	if (RFIFOW(fd, 2) - 25 != sizeof(struct mmo_charstatus)) {
+#else
+	// 由于多接收了两个字段, 因此这里的长度也需要适当加长, 否则会被当成无效封包
+	if (RFIFOW(fd, 2) - (25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH) != sizeof(struct mmo_charstatus)) {
+#endif // Pandas_Extract_SSOPacket_MacAddress
+		ShowError("chrif_authok: Data size mismatch! %d != %" PRIuPTR "\n", RFIFOW(fd, 2) - 25, sizeof(struct mmo_charstatus));
+		return;
+	}
+
+	account_id = RFIFOL(fd, 4);
+	login_id1 = RFIFOL(fd, 8);
+	login_id2 = RFIFOL(fd, 12);
+	expiration_time = (time_t)(int32)RFIFOL(fd, 16);
+	group_id = RFIFOL(fd, 20);
+	changing_mapservers = (RFIFOB(fd, 24)) > 0;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+	status = (struct mmo_charstatus*)RFIFOP(fd, 25);
+#else
+	// 接收两个新的额外字段, 保存到局部的 char 数组中, 后面需要用到
+	char macaddress[MACADDRESS_LENGTH] = { 0 };
+	char lanaddress[IP4ADDRESS_LENGTH] = { 0 };
+	safestrncpy(macaddress, RFIFOCP(fd, 25), MACADDRESS_LENGTH);
+	safestrncpy(lanaddress, RFIFOCP(fd, 25 + MACADDRESS_LENGTH), IP4ADDRESS_LENGTH);
+	// 读取完成额外字段后, 再从封包的最末尾读取 struct mmo_charstatus 的内容
+	status = (struct mmo_charstatus*)RFIFOP(fd, 25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
+	char_id = status->char_id;
+	// create temporary auth entry
+	int group_except_i;
+	if(!inherit_source_server_chara_group)
+	{
+		int g_len = ARRAYLENGTH(inherit_source_server_chara_group_except);
+		ARR_FIND(0, g_len, group_except_i, inherit_source_server_chara_group_except[group_except_i] > 0);
+		if(group_except_i != g_len)
+		{
+			ARR_FIND(0, g_len, group_except_i, inherit_source_server_chara_group_except[group_except_i] == group_id);
+			if(group_except_i == g_len)
+			{
+				//不在例外时,重置group_id为0
+				group_id = 0;
+			}
+		}
+	}
+	CREATE(node, struct auth_node, 1);
+	node->account_id = account_id;
+	node->char_id = char_id;
+	node->login_id1 = login_id1;
+	node->login_id2 = login_id2;
+	node->sex = status->sex;
+	node->group_id = group_id;
+	node->changing_mapservers = changing_mapservers;
+	safestrncpy(node->mac_address, macaddress, MACADDRESS_LENGTH);
+	safestrncpy(node->lan_address, macaddress, IP4ADDRESS_LENGTH);
+	idb_put(auth_db, account_id, node);
+
+	char_make_new_char_cs(status);
+
+	//再这里替换掉源服的数据
 	struct mmo_charstatus char_dat;
 	struct mmo_charstatus* char_data;
 	char_data = (struct mmo_charstatus*)uidb_get(char_get_chardb(), char_id);
-	if(char_data == nullptr)
+	if (char_data == nullptr)
 	{
 		char_mmo_char_fromsql(char_id, &char_dat, true);
 		char_data = (struct mmo_charstatus*)uidb_get(char_get_chardb(), char_id);
 	}
-	const auto node = (struct auth_node*)idb_get(char_get_authdb(), char_data->account_id);
-	if (runflag == CHARSERVER_ST_RUNNING && char_data) {
-		uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 8;
-		WFIFOHEAD(fd, mmo_charstatus_len);
-		WFIFOW(fd, 0) = 0x2b31;
-		WFIFOW(fd, 2) = mmo_charstatus_len;
-		WFIFOL(fd, 4) = node ? node->group_id : 0;
-		memcpy(WFIFOP(fd, 8), char_data, sizeof(struct mmo_charstatus));
-		WFIFOSET(fd, WFIFOW(fd, 2));
+
+	struct point* last_point;
+	CREATE(last_point, struct point, 1);
+	memcpy(last_point, &status->last_point, sizeof(struct point));
+
+	//以中立服角色代替整个源服角色数据
+	if(char_data)
+	{
+		if (!inherit_source_server_chara_status)
+		{
+			memset(status, 0, sizeof(struct mmo_charstatus));
+			memcpy(status, char_data, sizeof(struct mmo_charstatus));
+		}
+		else {
+			//即使不继承,也会替换特定的id
+			status->party_id = char_data->party_id;
+			status->guild_id = char_data->guild_id;
+			status->clan_id = char_data->clan_id;
+			status->partner_id = char_data->partner_id;
+			status->child = char_data->child;
+		}
 	}
+
+	if (changing_mapservers)
+	{
+		memcpy(&status->last_point, last_point, sizeof(struct point));
+	}
+	
+
+	
+	aFree(last_point);
+
+	status->inherit = true;
+
+	//发回去再次验证
+	uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	// 需要发送的内容除了 struct mmo_charstatus 和原先 25 字节的头之外,
+	// 还需要额外追加两个定长的字段长度
+	mmo_charstatus_len += MACADDRESS_LENGTH + IP4ADDRESS_LENGTH;
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
+	WFIFOHEAD(fd, mmo_charstatus_len);
+	WFIFOW(fd, 0) = 0x2afd;
+	WFIFOW(fd, 2) = mmo_charstatus_len;
+	WFIFOL(fd, 4) = account_id;
+	WFIFOL(fd, 8) = login_id1;
+	WFIFOL(fd, 12) = login_id2;
+	WFIFOL(fd, 16) = (uint32)expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
+	WFIFOL(fd, 20) = group_id;
+	WFIFOB(fd, 24) = changing_mapservers;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+	memcpy(WFIFOP(fd, 25), status, sizeof(struct mmo_charstatus));
+#else
+	// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
+	// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
+	safestrncpy(WFIFOCP(fd, 25), node->mac_address, MACADDRESS_LENGTH);
+	safestrncpy(WFIFOCP(fd, 25 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+	memcpy(WFIFOP(fd, 25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), status, sizeof(struct mmo_charstatus));
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
+	WFIFOSET(fd, WFIFOW(fd, 2));
 }
 
 /**
@@ -885,15 +1002,15 @@ int inter_config_read(const char* cfgName)
 
 	while(fgets(line, sizeof(line), fp)) {
 #ifndef Pandas_Crashfix_Variable_Init
-		char w1[24], w2[1024];
+		char w1[1024], w2[1024];
 #else
-		char w1[24] = { 0 }, w2[1024] = { 0 };
+		char w1[1024] = { 0 }, w2[1024] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
 
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 
-		if (sscanf(line, "%23[^:]: %1023[^\r\n]", w1, w2) != 2)
+		if (sscanf(line, "%1023[^:]: %1023[^\r\n]", w1, w2) != 2)
 			continue;
 
 #ifdef Pandas_Cross_Server
@@ -906,7 +1023,31 @@ int inter_config_read(const char* cfgName)
 		}
 		else if (strcmpi(w1, "cs_passwd") == 0) {
 			safestrncpy(charserv_config.cs_passwd, w2, sizeof(charserv_config.cs_passwd));
-		}else
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_status") == 0) {
+			inherit_source_server_chara_status = config_switch(w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_group") == 0) {
+			inherit_source_server_chara_group = config_switch(w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_group_except") == 0) {
+			int i,j;
+			int len = ARRAYLENGTH(inherit_source_server_chara_group_except);
+			//先找0
+			ARR_FIND(0, len, i, inherit_source_server_chara_group_except[i] == 0);
+			if(i != len)
+			{
+				//有位置则找重复
+				ARR_FIND(0, len, j, inherit_source_server_chara_group_except[j] == atoi(w2));
+				if(j == len)
+				{
+					//没找到重复时
+					inherit_source_server_chara_group_except[i] = atoi(w2);
+				}
+			}
+			
+		}
+		else
 #endif
 		if(!strcmpi(w1,"char_server_ip"))
 			char_server_ip = w2;
@@ -1563,11 +1704,9 @@ int inter_parse_frommap(int fd)
 	case 0x3005: mapif_parse_RegistryRequest(fd); break;
 	case 0x3006: mapif_parse_NameChangeRequest(fd); break;
 	case 0x3007: mapif_parse_accinfo(fd); break;
-#ifdef Pandas_Cross_Server
-	case 0x3008: mapif_parse_load_cs_chara(fd); break;
-#endif
 	/* 0x3008 unused */
 	case 0x3009: mapif_parse_broadcast_item(fd); break;
+	case 0x300A: mapif_parse_inherit_cs_chara(fd); break;
 	default:
 		if(  inter_party_parse_frommap(fd)
 		  || inter_guild_parse_frommap(fd)

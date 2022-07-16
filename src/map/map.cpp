@@ -4555,7 +4555,14 @@ int inter_config_read(const char *cfgName)
 		if (strcmpi(w1, "cross_server") == 0) {
 			is_cross_server = config_switch(w2);
 			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server Set: %s\n", w2);
-		}else
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_status") == 0) {
+			inherit_source_server_chara_status = config_switch(w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_group") == 0) {
+			inherit_source_server_chara_group = config_switch(w2);
+		}
+		else
 #endif
 		if( strcmpi( w1, "barter_table" ) == 0 )
 			safestrncpy( barter_table, w2, sizeof(barter_table) );

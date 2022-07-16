@@ -159,6 +159,7 @@ int intif_save_petdata(uint32 account_id,struct s_pet *p)
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
 		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -1458,6 +1459,7 @@ int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh)
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
 		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -3450,6 +3452,12 @@ int intif_mercenary_save(struct s_mercenary *merc)
 {
 	int size = sizeof(struct s_mercenary) + 4;
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(merc->char_id), char_fd);
+		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(merc->char_id) : 0, char_fd);
+#endif
+
 	if( CheckForCharServer() )
 		return 0;
 
@@ -3574,6 +3582,12 @@ int intif_parse_elemental_deleted(int fd)
 int intif_elemental_save(struct s_elemental *ele)
 {
 	int size = sizeof(struct s_elemental) + 4;
+
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(ele->char_id), char_fd);
+		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(ele->char_id) : 0, char_fd);
+#endif
 
 	if( CheckForCharServer() )
 		return 0;
@@ -4284,20 +4298,6 @@ int intif_clan_member_joined_cs(int char_id) {
 	WFIFOL(inter_fd, 2) = char_id;
 	WFIFOSET(inter_fd, 6);
 
-	return 1;
-}
-
-int intif_load_cs_chara(int char_id)
-{
-	switch_char_fd_cs_id(0, char_fd);
-
-	if (CheckForCharServer())
-		return 0;
-
-	WFIFOHEAD(char_fd, 6);
-	WFIFOW(char_fd, 0) = 0x3008;
-	WFIFOL(char_fd, 2) = char_id;
-	WFIFOSET(char_fd, 6);
 	return 1;
 }
 

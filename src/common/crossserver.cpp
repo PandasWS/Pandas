@@ -9,6 +9,9 @@
 
 //from local conf
 bool is_cross_server;
+bool inherit_source_server_chara_status = true;
+bool inherit_source_server_chara_group = true;
+char inherit_source_server_chara_group_except[5];
 const char* CS_CONF_NAME;
 std::map<int, cross_server_data*> cs_configs_map;
 

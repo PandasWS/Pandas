@@ -2011,14 +2011,6 @@ void pc_reg_received(struct map_session_data *sd)
 	sd->state.active = 1;
 	sd->state.pc_loaded = false; // Ensure inventory data and status data is loaded before we calculate player stats
 
-	//在这里发送读取cs中立服数据的请求
-#ifdef Pandas_Cross_Server
-	if(is_cross_server){
-		intif_load_cs_chara(sd->status.char_id);
-	}
-	clif_friendslist_send(sd);
-#endif
-
 	intif_storage_request(sd,TABLE_STORAGE, 0, STOR_MODE_ALL); // Request storage data
 	intif_storage_request(sd,TABLE_CART, 0, STOR_MODE_ALL); // Request cart data
 	intif_storage_request(sd,TABLE_INVENTORY, 0, STOR_MODE_ALL); // Request inventory data
@@ -2042,8 +2034,10 @@ void pc_reg_received(struct map_session_data *sd)
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
 #else
-	//强制使用从char服查询获取的char_id而不指定party_id,否则切换服务器时会出现队伍问题
+	//为了刷新画面而强制查询
 	party_member_joined(sd);
+	//guild_member_joined(sd);
+	//clan_member_joined(sd);
 	intif_guild_request_info_cs(sd->status.char_id);
 	intif_clan_member_joined_cs(sd->status.char_id);
 	//此场合发生的情景有:
@@ -2053,8 +2047,62 @@ void pc_reg_received(struct map_session_data *sd)
 	//①: 角色在中立服持有公会或队伍,源服未持有公会或队伍,通过发送公会解散或队伍退出的封包,可使得客户端缓存的数据正确去掉
 	//②: 角色只要未持有队伍或公会,就依然会收到退出通知
 	//原因: 因为此刻无法判断是源服还是中立服切换的登陆,因为数据没有缓存协助追踪上一行为
+	//由于了切换数据,所以要更新客户端数据
+	clif_updatestatus(sd, SP_SPEED);
+	clif_updatestatus(sd, SP_BASELEVEL);
+	clif_updatestatus(sd, SP_BASEEXP);
+	clif_updatestatus(sd, SP_NEXTBASEEXP);
+	clif_updatestatus(sd, SP_STATUSPOINT);
+	clif_updatestatus(sd, SP_JOBLEVEL);
+	clif_updatestatus(sd, SP_JOBEXP);
+	clif_updatestatus(sd, SP_NEXTJOBEXP);
+	clif_updatestatus(sd, SP_SKILLPOINT);
+	clif_updatestatus(sd, SP_CARTINFO);
+	clif_updatestatus(sd, SP_ZENY);
+	//Change look, if disguised, you need to undisguise
+	//to correctly calculate new job sprite without
+	if (sd->disguise)
+		pc_disguise(sd, 0);
+
+	status_set_viewdata(&sd->bl, sd->status.class_);
+	clif_changelook(&sd->bl, LOOK_BASE, sd->vd.class_); // move sprite update to prevent client crashes with incompatible equipment [Valaris]
+#if PACKETVER >= 20151001
+	clif_changelook(&sd->bl, LOOK_HAIR, sd->vd.hair_style); // Update player's head (only matters when switching to or from Doram)
 #endif
+	if (sd->vd.cloth_color)
+		clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
+	/*
+	if(sd->vd.body_style)
+		clif_changelook(&sd->bl,LOOK_BODY2,sd->vd.body_style);
+	*/
+	//Update skill tree.
+	pc_calc_skilltree(sd);
+	clif_skillinfoblock(sd);
+
+	//Remove peco/cart/falcon
+	i = sd->sc.option;
+	if (i & OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
+		i &= ~OPTION_RIDING;
+	if (i & OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
+		i &= ~OPTION_FALCON;
+	if (i & OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
+		i &= ~OPTION_DRAGON;
+	if (i & OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGMASTERY))
+		i &= ~OPTION_WUGRIDER;
+	if (i & OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
+		i &= ~OPTION_WUG;
+	if (i & OPTION_MADOGEAR) //You do not need a skill for this.
+		i &= ~OPTION_MADOGEAR;
+	if (i != sd->sc.option)
+		pc_setoption(sd, i);
+
+	if (sd->status.manner < 0)
+		clif_changestatus(sd, SP_MANNER, sd->status.manner);
+
+	pc_equiplookall(sd);
+	pc_show_questinfo(sd);
 	
+#endif
 #endif
 
 	// pet
@@ -6914,7 +6962,7 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	if(m < 0)
 	{
 		int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
-		if (!sd->mapindex || map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
+		if (map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
 		{
 #ifdef Pandas_CS_Event
 			pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);

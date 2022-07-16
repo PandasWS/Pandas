@@ -817,6 +817,9 @@
 		//继承源服的个人storage/inventory/cart等
 		#define Pandas_CS_Inherit_All_Storage
 
+		//继承源服的个人所有属性状态(包括职业,加点,等级,zeny,group等)
+		#define Pandas_CS_Inherit_Chara_Status
+
 	#endif
 
 #endif

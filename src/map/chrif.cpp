@@ -54,7 +54,7 @@ static const int packet_len_table[0x3e] = { // U - used, F - free
 	 2,10, 2,-1,-1,-1, 2, 7,	// 2b18-2b1f: U->2b18, U->2b19, U->2b1a, U->2b1b, U->2b1c, U->2b1d, U->2b1e, U->2b1f
 	-1,10, 8, 2, 2,14,19,19,	// 2b20-2b27: U->2b20, U->2b21, U->2b22, U->2b23, U->2b24, U->2b25, U->2b26, U->2b27
 	-1, 0, 6,15, 0, 6,-1,-1,	// 2b28-2b2f: U->2b28, F->2b29, U->2b2a, U->2b2b, F->2b2c, U->2b2d, U->2b2e, U->2b2f
-	24,-1,						// 2b30-:	  U->2b30, U->2b31,
+	24,							// 2b30-:	  U->2b30
 };
 
 //Used Packets:
@@ -166,7 +166,6 @@ struct auth_node* chrif_auth_check(uint32 account_id, uint32 char_id, enum sd_st
 
 bool chrif_auth_delete(uint32 account_id, uint32 char_id, enum sd_state state) {
 	struct auth_node *node;
-
 	if ( (node = chrif_auth_check(account_id, char_id, state) ) ) {
 		int fd = node->sd ? node->sd->fd : node->fd;
 
@@ -303,7 +302,11 @@ int chrif_isconnected(void) {
  *  CSAVE_INVENTORY: Character changed inventory data
  *  CSAVE_CART: Character changed cart data
  */
+#ifndef Pandas_Cross_Server
 int chrif_save(struct map_session_data *sd, int flag) {
+#else
+int chrif_save(struct map_session_data* sd, int flag,bool resave) {
+#endif
 	uint16 mmo_charstatus_len = 0;
 
 	nullpo_retr(-1, sd);
@@ -318,10 +321,6 @@ int chrif_save(struct map_session_data *sd, int flag) {
 		if ( !(flag&CSAVE_AUTOTRADE) && !chrif_auth_logout(sd, (flag&CSAVE_QUIT) ? ST_LOGOUT : ST_MAPCHANGE) )
 			ShowError("chrif_save: Failed to set up player %d:%d for proper quitting!\n", sd->status.account_id, sd->status.char_id);
 	}
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
-#endif
 	
 	chrif_check(-1); //Character is saved on reconnect.
 
@@ -347,6 +346,15 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	if (sd->vars_dirty)
 		intif_saveregistry(sd);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server){
+		if (resave) {
+			switch_char_fd(0, char_fd, chrif_state);
+		} else {
+			switch_char_fd(!inherit_source_server_chara_status ? 0 :get_cs_id(sd->status.account_id), char_fd, chrif_state);
+		}
+	}
+#endif
 	mmo_charstatus_len = sizeof(sd->status) + 13;
 	WFIFOHEAD(char_fd, mmo_charstatus_len);
 	WFIFOW(char_fd,0) = 0x2b01;
@@ -357,9 +365,6 @@ int chrif_save(struct map_session_data *sd, int flag) {
 
 	// If the user is on a instance map, we have to fake his current position
 
-#ifdef Pandas_Cross_Server
-	struct mmo_charstatus temp_save_instance;
-#endif
 	if( map_getmapdata(sd->bl.m)->instance_id ){
 		struct mmo_charstatus status;
 
@@ -370,39 +375,18 @@ int chrif_save(struct map_session_data *sd, int flag) {
 		// Copy the copied status into the packet
 
 		memcpy( WFIFOP( char_fd, 13 ), &status, sizeof( struct mmo_charstatus ) );
-#ifdef Pandas_Cross_Server
-		temp_save_instance = status;
-#endif
 	} else {
 		// Copy the whole status into the packet
 		memcpy( WFIFOP( char_fd, 13 ), &sd->status, sizeof( struct mmo_charstatus ) );
-#ifdef Pandas_Cross_Server
-		temp_save_instance = sd->status;
-#endif
 
 	}
 
 	WFIFOSET(char_fd, WFIFOW(char_fd,2));
 
 #ifdef Pandas_Cross_Server
-	if (is_cross_server)
-	{
-		//CS的char服也存一份,只需要部分内容，如party等等
-		int tfd = char_fd;
-		if(switch_char_fd_cs_id(0, char_fd))
-		{
-			switch_char_fd_cs_id(0, char_fd);
-			WFIFOHEAD(char_fd, mmo_charstatus_len);
-			WFIFOW(char_fd, 0) = 0x2b01;
-			WFIFOW(char_fd, 2) = mmo_charstatus_len;
-			WFIFOL(char_fd, 4) = sd->status.account_id;
-			WFIFOL(char_fd, 8) = sd->status.char_id;
-			WFIFOB(char_fd, 12) = (flag & CSAVE_QUIT) ? 1 : 0;
-			memcpy(WFIFOP(char_fd, 13), &temp_save_instance, sizeof(struct mmo_charstatus));
-			WFIFOSET(char_fd, WFIFOW(char_fd, 2));
-			char_fd = tfd;
-		}
-		
+	if (is_cross_server && inherit_source_server_chara_status && !resave){
+		//这里是为了在即使继承源服数据时，也会独立存一份guild_id,party_id等数据
+		return chrif_save(sd, flag, true);
 	}
 #endif
 
@@ -866,17 +850,19 @@ int chrif_skillcooldown_request(uint32 account_id, uint32 char_id) {
  *------------------------------------------*/
 void chrif_authreq(struct map_session_data *sd, bool autotrade) {
 	struct auth_node *node= chrif_search(sd->bl.id);
-#ifdef Pandas_Cross_Server
+
+	if( node != NULL || !chrif_isconnected() ) {
+		set_eof(sd->fd);
+		return;
+	}
+
+	#ifdef Pandas_Cross_Server
 	if (is_cross_server)
 	{
 		//从这里决定读取加载的chara数据
 		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
 	}
 #endif
-	if( node != NULL || !chrif_isconnected() ) {
-		set_eof(sd->fd);
-		return;
-	}
 
 	WFIFOHEAD(char_fd,20);
 	WFIFOW(char_fd,0) = 0x2b26;
@@ -935,7 +921,7 @@ void chrif_authok(int fd) {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
 	{
-		int cs_id = chrif_get_cs_id(fd);
+		int cs_id = !is_fake_id(account_id) ? chrif_get_cs_id(fd) : get_cs_id(account_id);
 		account_id = make_fake_id(account_id, cs_id);
 		char_id = make_fake_id(char_id, cs_id);
 		status->account_id = account_id;
@@ -979,7 +965,42 @@ void chrif_authok(int fd) {
 		node->char_id == char_id &&
 		node->login_id1 == login_id1 )
 	{ //Auth Ok
-		if (pc_authok(sd, login_id2, expiration_time, group_id, status, changing_mapservers))
+		//这里以源服的sd创建一个基础角色信息后再饶回来pc_authok
+		//把该传的信息都传了~
+		if(is_cross_server && !status->inherit){
+			int tfd = char_fd;
+			switch_char_fd_cs_id(0, char_fd);
+
+			uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 需要发送的内容除了 struct mmo_charstatus 和原先 25 字节的头之外,
+			// 还需要额外追加两个定长的字段长度
+			mmo_charstatus_len += MACADDRESS_LENGTH + IP4ADDRESS_LENGTH;
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
+			WFIFOHEAD(char_fd, mmo_charstatus_len);
+			WFIFOW(char_fd, 0) = 0x300A;
+			WFIFOW(char_fd, 2) = mmo_charstatus_len;
+			WFIFOL(char_fd, 4) = account_id;
+			WFIFOL(char_fd, 8) = node->login_id1;
+			WFIFOL(char_fd, 12) = login_id2;
+			WFIFOL(char_fd, 16) = (uint32)node->expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
+			WFIFOL(char_fd, 20) = group_id;
+			WFIFOB(char_fd, 24) = changing_mapservers;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+			memcpy(WFIFOP(char_fd, 25), status, sizeof(struct mmo_charstatus));
+#else
+			// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
+			// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
+			safestrncpy(WFIFOCP(char_fd, 25), macaddress, MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(char_fd, 25 + MACADDRESS_LENGTH), lanaddress, IP4ADDRESS_LENGTH);
+			memcpy(WFIFOP(char_fd, 25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), status, sizeof(struct mmo_charstatus));
+#endif // Pandas_Extract_SSOPacket_MacAddress
+			WFIFOSET(char_fd, WFIFOW(char_fd, 2));
+			char_fd = tfd;
+			return;
+		}
+		else if (pc_authok(sd, login_id2, expiration_time, group_id, status, changing_mapservers))
 			return;
 	} else { //Auth Failed
 		pc_authfail(sd);
@@ -2114,173 +2135,6 @@ int chrif_bsdata_received(int fd) {
 	return 0;
 }
 
-void chrif_load_cs_chara_received(int fd)
-{
-	struct mmo_charstatus char_dat;
-	struct map_session_data* sd;
-	struct map_session_data csd;
-	t_tick tick = gettick();
-	int group_id = RFIFOL(fd, 4);
-	memcpy(&char_dat, RFIFOP(fd, 8), sizeof(struct mmo_charstatus));
-
-	if (!(sd = map_charid2sd(char_dat.char_id))) {
-		return;
-	}
-
-	memcpy(&csd, sd, sizeof(struct map_session_data));
-
-	if (false) {
-		memcpy(&sd->status, &char_dat, sizeof(char_dat));
-		//Set the map-server used job id. [Skotlex]
-		uint64 class_ = pc_jobid2mapid(sd->status.class_);
-		if (class_ == -1 || !job_db.exists(sd->status.class_)) { //Invalid class?
-			ShowError("cs_chara_received: Invalid class %d for player %s (%d:%d). Class was changed to novice.\n", sd->status.class_, sd->status.name, sd->status.account_id, sd->status.char_id);
-			sd->status.class_ = JOB_NOVICE;
-			sd->class_ = MAPID_NOVICE;
-		}
-		else
-			sd->class_ = class_;
-
-		// Checks and fixes to character status data, that are required
-		// in case of configuration change or stuff, which cannot be
-		// checked on char-server.
-		sd->status.hair = cap_value(sd->status.hair, MIN_HAIR_STYLE, MAX_HAIR_STYLE);
-		sd->status.hair_color = cap_value(sd->status.hair_color, MIN_HAIR_COLOR, MAX_HAIR_COLOR);
-		sd->status.clothes_color = cap_value(sd->status.clothes_color, MIN_CLOTH_COLOR, MAX_CLOTH_COLOR);
-		sd->status.body = cap_value(sd->status.body, MIN_BODY_STYLE, MAX_BODY_STYLE);
-
-		//Initializations to null/0 unneeded since map_session_data was filled with 0 upon allocation.
-		sd->state.connect_new = 1;
-
-		sd->followtimer = INVALID_TIMER; // [MouseJstr]
-		sd->invincible_timer = INVALID_TIMER;
-		sd->npc_timer_id = INVALID_TIMER;
-		sd->pvp_timer = INVALID_TIMER;
-		sd->expiration_tid = INVALID_TIMER;
-		sd->autotrade_tid = INVALID_TIMER;
-		sd->respawn_tid = INVALID_TIMER;
-		sd->tid_queue_active = INVALID_TIMER;
-
-		sd->skill_keep_using.tid = INVALID_TIMER;
-		sd->skill_keep_using.skill_id = 0;
-		sd->skill_keep_using.level = 0;
-		sd->skill_keep_using.target = 0;
-
-#ifdef SECURE_NPCTIMEOUT
-		// Initialize to defaults/expected
-		sd->npc_idle_timer = INVALID_TIMER;
-		sd->npc_idle_tick = tick;
-		sd->npc_idle_type = NPCT_INPUT;
-		sd->state.ignoretimeout = false;
-#endif
-
-		sd->canuseitem_tick = tick;
-		sd->canusecashfood_tick = tick;
-		sd->canequip_tick = tick;
-		sd->cantalk_tick = tick;
-		sd->canskill_tick = tick;
-		sd->cansendmail_tick = tick;
-		sd->idletime = last_tick;
-
-		sd->regen.tick.hp = tick;
-		sd->regen.tick.sp = tick;
-
-		for (int i = 0; i < MAX_SPIRITBALL; i++)
-			sd->spirit_timer[i] = INVALID_TIMER;
-
-		if (battle_config.item_auto_get)
-			sd->state.autoloot = 10000;
-
-		if (battle_config.disp_experience)
-			sd->state.showexp = 1;
-		if (battle_config.disp_zeny)
-			sd->state.showzeny = 1;
-#ifdef VIP_ENABLE
-		if (!battle_config.vip_disp_rate)
-			sd->vip.disableshowrate = 1;
-#endif
-
-		if (!(battle_config.display_skill_fail & 2))
-			sd->state.showdelay = 1;
-
-		memset(&sd->inventory, 0, sizeof(struct s_storage));
-		memset(&sd->cart, 0, sizeof(struct s_storage));
-		memset(&sd->storage, 0, sizeof(struct s_storage));
-		memset(&sd->premiumStorage, 0, sizeof(struct s_storage));
-		memset(&sd->equip_index, -1, sizeof(sd->equip_index));
-		memset(&sd->equip_switch_index, -1, sizeof(sd->equip_switch_index));
-
-		if (pc_isinvisible(sd) && !pc_can_use_command(sd, "hide", COMMAND_ATCOMMAND)) {
-			sd->status.option &= ~OPTION_INVISIBLE;
-		}
-
-		status_change_init(&sd->bl);
-
-		sd->sc.option = sd->status.option; //This is the actual option used in battle.
-
-		unit_dataset(&sd->bl);
-
-		sd->guild_x = -1;
-		sd->guild_y = -1;
-
-		sd->delayed_damage = 0;
-
-		// Event Timers
-		for (int i = 0; i < MAX_EVENTTIMER; i++)
-			sd->eventtimer[i] = INVALID_TIMER;
-		// Rental Timer
-		sd->rental_timer = INVALID_TIMER;
-
-		for (int i = 0; i < 3; i++)
-			sd->hate_mob[i] = -1;
-
-		clif_inventory_expansion_info(sd);
-		//clif_authok(sd);
-
-		//Prevent S. Novices from getting the no-death bonus just yet. [Skotlex]
-		sd->die_counter = -1;
-
-#ifdef Pandas_BonusScript_Unique_ID
-		sd->pandas.bonus_script_counter = 0;
-#endif // Pandas_BonusScript_Unique_ID
-
-		// 以下这行注释是为了方便 pyhelp_extracter.py 提取翻译文本使用的
-		// ShowInfo("'" CL_WHITE "%s" CL_RESET "' logged in. (AID/CID: '" CL_WHITE "%d/%d" CL_RESET "', IP: '" CL_WHITE "%d.%d.%d.%d" CL_RESET "', Group '" CL_WHITE "%d" CL_RESET "').\n", sd->status.name, sd->status.account_id, sd->status.char_id, CONVIP(ip), sd->group_id);
-
-		pc_validate_skill(sd);
-
-		/* [Ind] */
-		sd->sc_display = NULL;
-		sd->sc_display_count = 0;
-
-#if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
-		sd->hatEffects = {};
-#endif
-
-		sd->catch_target_class = PET_CATCH_FAIL;
-
-		// Check EXP overflow, since in previous revision EXP on Max Level can be more than 'official' Max EXP
-		if (pc_is_maxbaselv(sd) && sd->status.base_exp > MAX_LEVEL_BASE_EXP) {
-			sd->status.base_exp = MAX_LEVEL_BASE_EXP;
-			clif_updatestatus(sd, SP_BASEEXP);
-		}
-		if (pc_is_maxjoblv(sd) && sd->status.job_exp > MAX_LEVEL_JOB_EXP) {
-			sd->status.job_exp = MAX_LEVEL_JOB_EXP;
-			clif_updatestatus(sd, SP_JOBEXP);
-		}
-	}
-
-	if (false)
-	{
-		sd->group_id = group_id;
-		pc_group_pc_load(sd);
-	}
-
-	memcpy(&sd->status.friends, &char_dat.friends, sizeof(sd->status.friends));
-	clif_friendslist_send(sd);
-}
-
-
 /*==========================================
  *
  *------------------------------------------*/
@@ -2369,7 +2223,6 @@ int chrif_parse(int fd) {
 			case 0x2b2b: chrif_parse_ack_vipActive(fd); break;
 			case 0x2b2f: chrif_bsdata_received(fd); break;
 			case 0x2b30: chrif_logintoken_received(fd); break;
-			case 0x2b31: chrif_load_cs_chara_received(fd); break;
 			default:
 				ShowError("chrif_parse : unknown packet (session #%d): 0x%x. Disconnecting.\n", fd, cmd);
 				set_eof(fd);

@@ -1114,7 +1114,7 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 #ifndef Pandas_Cross_Server
 		intif_homunculus_requestdelete(hom->hom_id);
 #else
-		intif_homunculus_requestdelete(hd->master,hom->hom_id);
+		intif_homunculus_requestdelete(sd,hom->hom_id);
 #endif
 		return;
 	}
