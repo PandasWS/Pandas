@@ -1947,7 +1947,7 @@ Body:
 - Original: "Request with AID %d and token %s unverified\n"
   Translation: ""
 - Original: "Requested '[{CL_WHITE}]%[{PRIdPTR}][{CL_RESET}]' guild castles from char-server...\n"
-  Translation: "已向角色服务器请求获取 '[{CL_WHITE}][{PRIdPTR}][{CL_RESET}]' 个公会城堡信息...\n"
+  Translation: "已向角色服务器请求获取 '[{CL_WHITE}]%[{PRIdPTR}][{CL_RESET}]' 个公会城堡信息...\n"
 - Original: "Requested non-existant character id: %d!\n"
   Translation: "请求加载的角色数据不存在 (角色编号: %d)\n"
 - Original: "Required guild skill \"%s\" with Id %u is out of the guild skill range [%u-%u], skipping.\n"
