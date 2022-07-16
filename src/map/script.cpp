@@ -15601,9 +15601,7 @@ BUILDIN_FUNC(getinventorylist) {
 	script_cleararray_pc(sd, "@inventorylist_favorite");
 	script_cleararray_pc(sd, "@inventorylist_uid$");
 	script_cleararray_pc(sd, "@inventorylist_equipswitch");
-	
 	pc_setreg(sd, add_str("@inventorylist_count"), 0);
-	
 	
 	// 根据不同的指令名称来决定读取什么位置的内容
 	if (!strcmp(command, "getcartlist")) {
