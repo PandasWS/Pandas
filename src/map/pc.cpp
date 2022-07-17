@@ -5537,7 +5537,7 @@ uint16 pc_inventoryblank(struct map_session_data *sd)
 
 	nullpo_ret(sd);
 
-	for(i = 0, b = 0; i < MAX_INVENTORY; i++){
+	for(i = 0, b = 0; i < sd->status.inventory_slots; i++){
 		if(sd->inventory.u.items_inventory[i].nameid == 0)
 			b++;
 	}
