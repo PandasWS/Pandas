@@ -1235,6 +1235,9 @@
 
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
+
+	// 优化加载与解析 YAML 文件时出现的一些报错体验 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml_Error
 #endif // Pandas_UserExperience
 
 // ============================================================================
