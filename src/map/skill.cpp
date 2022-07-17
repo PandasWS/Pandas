@@ -24356,7 +24356,12 @@ uint64 SkillDatabase::parseBodyNode(const ryml::NodeRef& node) {
 
 			skill->unit_id = static_cast<uint16>(constant);
 		} else {
+#ifndef Pandas_UserExperience_Yaml_Error
 			this->invalidWarning(unitNode["Id"], "Unit requires an Id.\n");
+#else
+			// 上面都已经判断 Id 节点不存在了, 这里就不应该用 ["Id"] 啦
+			this->invalidWarning(unitNode, "Unit requires an Id.\n");
+#endif // Pandas_UserExperience_Yaml_Error
 			return 0;
 		}
 
