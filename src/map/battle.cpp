@@ -9054,6 +9054,48 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 #endif // Pandas_Bonus3_bFinalAddClass
 
+#ifdef Pandas_NpcExpress_PCHARMED
+	if (src && target && damage > 0) {
+		// 负责执行事件的玩家对象 (事件执行者)
+		struct map_session_data* esd = nullptr;
+
+		// 若受伤害者不是玩家单位, 那么试图获取受伤害者的主人
+		if (target->type != BL_PC) {
+			struct block_list* mbl = nullptr;
+			mbl = battle_get_master(target);
+			if (mbl != nullptr && mbl->type == BL_PC) {
+				esd = BL_CAST(BL_PC, mbl);
+			}
+		}
+		
+		// 若负责执行事件的玩家对象依然没被指定
+		// 且受伤害者是一个玩家单位, 那么将受伤害者直接指定成负责执行事件的玩家
+		if (!esd && target->type == BL_PC) {
+			esd = (TBL_PC*)target;
+		}
+
+		// 若到这里还没有一个合适的事件执行者则不需要触发事件
+		if (esd) {
+			pc_setreg(esd, add_str("@harmed_target_type"), target->type);
+			pc_setreg(esd, add_str("@harmed_target_gid"), target->id);
+			
+			pc_setreg(esd, add_str("@harmed_src_type"), src->type);
+			pc_setreg(esd, add_str("@harmed_src_gid"), src->id);
+			pc_setreg(esd, add_str("@harmed_src_mobid"), (src->type == BL_MOB ? ((TBL_MOB*)src)->mob_id : 0));
+			
+			pc_setreg(esd, add_str("@harmed_damage_flag"), wd.flag);
+			pc_setreg(esd, add_str("@harmed_damage_skillid"), 0);
+			pc_setreg(esd, add_str("@harmed_damage_skilllv"), 0);
+			pc_setreg(esd, add_str("@harmed_damage_right"), wd.damage);
+			pc_setreg(esd, add_str("@harmed_damage_left"), wd.damage2);
+			npc_script_event(esd, NPCX_PCHARMED);
+			wd.damage = (int)cap_value(pc_readreg(esd, add_str("@harmed_damage_right")), INT_MIN, INT_MAX);
+			wd.damage2 = (int)cap_value(pc_readreg(esd, add_str("@harmed_damage_left")), INT_MIN, INT_MAX);
+			damage = wd.damage + wd.damage2;
+		}
+	}
+#endif // Pandas_NpcExpress_PCHARMED
+
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && target && damage > 0) {
 		// 负责执行事件的玩家对象 (事件执行者)
