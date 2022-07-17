@@ -1219,6 +1219,18 @@ void storage_guild_storage_quit(struct map_session_data* sd, int flag)
 void storage_premiumStorage_open(struct map_session_data *sd) {
 	nullpo_retv(sd);
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd->st && sd->npc_id) {
+		// 正常的流程中 intif_parse_StorageReceived 和 storage_premiumStorage_load
+		// 都会调用 storage_premiumStorage_open 来打开客户端的仓库界面
+		//
+		// 但如果本次查询是为了响应 getstoragelist 的请求, 那么就没必要打开客户端的仓库界面
+		if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
+			return;
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 	sd->state.storage_flag = 3;
 	storage_sortitem(sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage));
 	clif_storagelist(sd, sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage), storage_getName(sd->premiumStorage.stor_id));

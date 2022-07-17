@@ -1381,6 +1381,9 @@ bool pc_can_sell_item(struct map_session_data* sd, struct item * item, enum npc_
 bool pc_can_give_items(struct map_session_data *sd);
 bool pc_can_give_bounded_items(struct map_session_data *sd);
 bool pc_can_trade_item(map_session_data *sd, int index);
+#ifdef Pandas_ScriptCommand_GetInventoryList
+bool pc_can_trade_item(map_session_data* sd, struct item& item);
+#endif // Pandas_ScriptCommand_GetInventoryList
 
 bool pc_can_use_command(struct map_session_data *sd, const char *command, AtCommandType type);
 bool pc_has_permission( struct map_session_data* sd, e_pc_permission permission );
