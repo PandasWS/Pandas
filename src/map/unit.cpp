@@ -3648,7 +3648,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( mercenary_get_lifetime(md) > 0 )
 				mercenary_save(md);
 			else {
+#ifndef Pandas_Cross_Server
 				intif_mercenary_delete(md->mercenary.mercenary_id);
+#else
+				intif_mercenary_delete(sd,md->mercenary.mercenary_id);
+#endif
 
 				if( sd )
 					sd->status.mer_id = 0;
@@ -3671,7 +3675,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( elemental_get_lifetime(ed) > 0 )
 				elemental_save(ed);
 			else {
+#ifndef Pandas_Cross_Server
 				intif_elemental_delete(ed->elemental.elemental_id);
+#else
+				intif_elemental_delete(sd,ed->elemental.elemental_id);
+#endif
 
 				if( sd )
 					sd->status.ele_id = 0;

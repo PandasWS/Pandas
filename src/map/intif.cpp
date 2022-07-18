@@ -101,7 +101,7 @@ int intif_create_pet(uint32 account_id,uint32 char_id,short pet_class,short pet_
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -134,7 +134,7 @@ int intif_request_petdata(uint32 account_id,uint32 char_id,int pet_id)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -158,8 +158,7 @@ int intif_save_petdata(uint32 account_id,struct s_pet *p)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
-		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -186,7 +185,7 @@ int intif_delete_petdata(map_session_data* sd, int pet_id)
 {
 
 	if (is_cross_server)
-		switch_char_fd_cs_id(sd ? get_cs_id(sd->status.account_id) : 0, char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(sd->status.char_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -209,7 +208,7 @@ int intif_rename(struct map_session_data *sd, int type, char *name)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(sd->status.account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -242,16 +241,17 @@ int intif_broadcast(const char* mes, int len, int type)
 	// Send to the local players
 	clif_broadcast(NULL, mes, len, type, ALL_CLIENT);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
 	if (other_mapserver_count < 1)
 		return 0; //No need to send.
 
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-		switch_char_fd_cs_id(0, char_fd);
-#endif
 	WFIFOHEAD(inter_fd, 16 + lp + len);
 	WFIFOW(inter_fd,0)  = 0x3000;
 	WFIFOW(inter_fd,2)  = 16 + lp + len;
@@ -1458,8 +1458,7 @@ int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
-		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -1486,7 +1485,7 @@ int intif_homunculus_requestdelete(struct map_session_data* sd, int homun_id)
 {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(sd ? get_cs_id(sd->status.account_id) : 0, char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status && sd ? get_cs_id(sd->status.account_id) : 0, char_fd);
 #endif
 	if (CheckForCharServer())
 		return 0;
@@ -3367,7 +3366,7 @@ int intif_mercenary_create(struct s_mercenary *merc)
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(merc->char_id), char_fd);
+		switch_char_fd_cs_id( inherit_source_server_chara_status ? get_cs_id(merc->char_id) : 0, char_fd);
 #endif
 	if( CheckForCharServer() )
 		return 0;
@@ -3407,6 +3406,11 @@ int intif_parse_mercenary_received(int fd)
  */
 int intif_mercenary_request(int merc_id, uint32 char_id)
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(char_id) : 0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -3423,8 +3427,17 @@ int intif_mercenary_request(int merc_id, uint32 char_id)
  * @param merc_id
  * @return 0=error, 1=msg sent
  */
+#ifndef Pandas_Cross_Server
 int intif_mercenary_delete(int merc_id)
+#else
+int intif_mercenary_delete(struct map_session_data* sd, int merc_id)
+#endif
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status && sd ? get_cs_id(sd->status.char_id) : 0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -3459,8 +3472,7 @@ int intif_mercenary_save(struct s_mercenary *merc)
 
 #ifdef Pandas_Cross_Server
 	if(is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(merc->char_id), char_fd);
-		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(merc->char_id) : 0, char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(merc->char_id) : 0, char_fd);
 #endif
 
 	if( CheckForCharServer() )
@@ -3500,6 +3512,11 @@ int intif_elemental_create(struct s_elemental *ele)
 {
 	int size = sizeof(struct s_elemental) + 4;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(ele->char_id) : 0, char_fd);
+#endif
+
 	if( CheckForCharServer() )
 		return 0;
 
@@ -3538,6 +3555,12 @@ int intif_parse_elemental_received(int fd)
  */
 int intif_elemental_request(int ele_id, uint32 char_id)
 {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(char_id) : 0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -3554,8 +3577,17 @@ int intif_elemental_request(int ele_id, uint32 char_id)
  * @param ele_id : Elemental to delete
  * @return 0=error, 1=msg sent
  */
+#ifndef Pandas_Cross_Server
 int intif_elemental_delete(int ele_id)
+#else
+int intif_elemental_delete(struct map_session_data* sd, int ele_id)
+#endif
 {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status && sd ? get_cs_id(sd->status.char_id) : 0, char_fd);
+#endif
+
 	if (CheckForCharServer())
 		return 0;
 
@@ -3590,8 +3622,7 @@ int intif_elemental_save(struct s_elemental *ele)
 
 #ifdef Pandas_Cross_Server
 	if(is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(ele->char_id), char_fd);
-		//switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(ele->char_id) : 0, char_fd);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(ele->char_id) : 0, char_fd);
 #endif
 
 	if( CheckForCharServer() )
@@ -3628,6 +3659,11 @@ int intif_parse_elemental_saved(int fd)
  * @return : 0=error, 1=msg sent
  */
 int intif_request_accinfo(int u_fd, int aid, int group_lv, char* query, char type) {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(aid), char_fd);
+#endif
 
 	if( CheckForCharServer() )
 		return 0;
@@ -3693,14 +3729,28 @@ void intif_parse_MessageToFD(int fd) {
 int intif_broadcast_obtain_special_item(struct map_session_data *sd, t_itemid nameid, t_itemid sourceid, unsigned char type) {
 	nullpo_retr(0, sd);
 
+
+	char name[NAME_LENGTH];
+	safestrncpy(name, sd->status.name, NAME_LENGTH);
+
 	// Should not be here!
 	if (type == ITEMOBTAIN_TYPE_NPC) {
 		intif_broadcast_obtain_special_item_npc(sd, nameid);
 		return 0;
 	}
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		make_fake_name(get_cs_id(sd->status.account_id), name);
+#endif
+
 	// Send local
-	clif_broadcast_obtain_special_item(sd->status.name, nameid, sourceid, (enum BROADCASTING_SPECIAL_ITEM_OBTAIN)type);
+	clif_broadcast_obtain_special_item(name, nameid, sourceid, (enum BROADCASTING_SPECIAL_ITEM_OBTAIN)type);
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 
 	if (CheckForCharServer())
 		return 0;
@@ -3732,8 +3782,22 @@ int intif_broadcast_obtain_special_item(struct map_session_data *sd, t_itemid na
 int intif_broadcast_obtain_special_item_npc(struct map_session_data *sd, t_itemid nameid) {
 	nullpo_retr(0, sd);
 
+	char name[NAME_LENGTH];
+	safestrncpy(name, sd->status.name, NAME_LENGTH);
+
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		make_fake_name(get_cs_id(sd->status.account_id), name);
+#endif
+
 	// Send local
-	clif_broadcast_obtain_special_item(sd->status.name, nameid, 0, ITEMOBTAIN_TYPE_NPC);
+	clif_broadcast_obtain_special_item(name, nameid, 0, ITEMOBTAIN_TYPE_NPC);
+
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(get_cs_id(sd->status.account_id), char_fd);
+#endif
 
 	if (CheckForCharServer())
 		return 0;
@@ -3747,7 +3811,7 @@ int intif_broadcast_obtain_special_item_npc(struct map_session_data *sd, t_itemi
 	WFIFOL(inter_fd, 4) = nameid;
 	WFIFOW(inter_fd, 8) = 0;
 	WFIFOB(inter_fd, 10) = ITEMOBTAIN_TYPE_NPC;
-	safestrncpy(WFIFOCP(inter_fd, 11), sd->status.name, NAME_LENGTH);
+	safestrncpy(WFIFOCP(inter_fd, 11), name, NAME_LENGTH);
 	WFIFOSET(inter_fd, WFIFOW(inter_fd, 2));
 
 	return 1;
@@ -3787,7 +3851,7 @@ void intif_itembound_guild_retrieve(uint32 char_id,uint32 account_id,int guild_i
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd_cs_id(get_cs_id(account_id), char_fd);
+		switch_char_fd_cs_id(0, char_fd);
 #endif
 
 	if( CheckForCharServer() )

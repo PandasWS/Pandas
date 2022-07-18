@@ -12,9 +12,11 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "inter.hpp"
+
 
 int inter_homunculus_sql_init(void)
 {
@@ -275,7 +277,20 @@ bool mapif_homunculus_rename(char *name)
 
 void mapif_parse_homunculus_create(int fd, int len, uint32 account_id, struct s_homunculus* phd)
 {
+#ifdef Pandas_Cross_Server
+	int o_cid = phd->char_id;
+	if (!is_cross_server)
+	{
+		phd->char_id = get_real_id(phd->char_id);
+	}
+#endif
 	bool result = mapif_homunculus_save(phd);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		phd->char_id = o_cid;
+	}
+#endif
 	mapif_homunculus_created(fd, account_id, phd, result);
 }
 
@@ -294,7 +309,20 @@ void mapif_parse_homunculus_load(int fd, uint32 account_id, int homun_id)
 
 void mapif_parse_homunculus_save(int fd, int len, uint32 account_id, struct s_homunculus* phd)
 {
+#ifdef Pandas_Cross_Server
+	int o_cid = phd->char_id;
+	if (!is_cross_server)
+	{
+		phd->char_id = get_real_id(phd->char_id);
+	}
+#endif
 	bool result = mapif_homunculus_save(phd);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		phd->char_id = o_cid;
+	}
+#endif
 	mapif_homunculus_saved(fd, account_id, result);
 }
 

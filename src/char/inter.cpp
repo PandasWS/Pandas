@@ -828,6 +828,8 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 
 #ifdef Pandas_Cross_Server
 	int cs_id = get_cs_id(account_id);
+	int o_aid = account_id;
+	int o_cid = char_id;
 	if (!is_cross_server)
 	{
 		account_id = get_real_id(account_id);
@@ -855,8 +857,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 	WFIFOHEAD(fd, 60000 + 300);
 	WFIFOW(fd, 0) = 0x3804;
 	// 0x2 = length, set prior to being sent
+#ifndef Pandas_Cross_Server
 	WFIFOL(fd, 4) = account_id;
 	WFIFOL(fd, 8) = char_id;
+#else
+	WFIFOL(fd, 4) = o_aid;
+	WFIFOL(fd, 8) = o_cid;
+#endif
 	WFIFOB(fd, 12) = 0; // var type (only set when all vars have been sent, regardless of type)
 	WFIFOB(fd, 13) = 1; // is string type
 	WFIFOW(fd, 14) = 0; // count
@@ -902,8 +909,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 			WFIFOHEAD(fd, 60000 + 300);
 			WFIFOW(fd, 0) = 0x3804;
 			// 0x2 = length, set prior to being sent
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = account_id;
 			WFIFOL(fd, 8) = char_id;
+#else
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
+#endif
 			WFIFOB(fd, 12) = 0; // var type (only set when all vars have been sent, regardless of type)
 			WFIFOB(fd, 13) = 1; // is string type
 			WFIFOW(fd, 14) = 0; // count
@@ -935,8 +947,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 	WFIFOHEAD(fd, 60000 + 300);
 	WFIFOW(fd, 0) = 0x3804;
 	// 0x2 = length, set prior to being sent
+#ifndef Pandas_Cross_Server
 	WFIFOL(fd, 4) = account_id;
 	WFIFOL(fd, 8) = char_id;
+#else
+	WFIFOL(fd, 4) = o_aid;
+	WFIFOL(fd, 8) = o_cid;
+#endif
 	WFIFOB(fd, 12) = 0; // var type (only set when all vars have been sent, regardless of type)
 	WFIFOB(fd, 13) = 0; // is int type
 	WFIFOW(fd, 14) = 0; // count
@@ -978,8 +995,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 			WFIFOHEAD(fd, 60000 + 300);
 			WFIFOW(fd, 0) = 0x3804;
 			/* 0x2 = length, set prior to being sent */
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = account_id;
 			WFIFOL(fd, 8) = char_id;
+#else
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
+#endif
 			WFIFOB(fd, 12) = 0;/* var type (only set when all vars have been sent, regardless of type) */
 			WFIFOB(fd, 13) = 0;/* is int type */
 			WFIFOW(fd, 14) = 0;/* count */
@@ -1650,12 +1672,7 @@ int mapif_parse_NameChangeRequest(int fd)
 	name = RFIFOCP(fd,11);
 
 #ifdef Pandas_Cross_Server
-	int cs_id = get_cs_id(account_id);
-	if (!is_cross_server)
-	{
-		account_id = get_real_id(account_id);
-		char_id = get_real_id(char_id);
-	}
+	//这里无须处理aid,cid
 #endif
 
 	// Check Authorised letters/symbols in the name
@@ -1677,6 +1694,7 @@ int mapif_parse_NameChangeRequest(int fd)
 	//updated here, because changing it on the map won't make it be saved [Skotlex]
 
 	//name allowed.
+
 	mapif_namechange_ack(fd, account_id, char_id, type, 1, name);
 	return 0;
 }

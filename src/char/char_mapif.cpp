@@ -314,8 +314,13 @@ int chmapif_parse_askscdata(int fd){
 
 #ifdef Pandas_Cross_Server
 		int cs_id = get_cs_id(aid);
-		aid = get_real_id(aid);
-		cid = get_real_id(cid);
+		int o_aid = aid;
+		int o_cid = cid;
+		if(!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
 #endif
 
 		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT type, tick, val1, val2, val3, val4 from `%s` WHERE `account_id` = '%d' AND `char_id`='%d'",
@@ -336,8 +341,8 @@ int chmapif_parse_askscdata(int fd){
 			WFIFOL(fd,4) = aid;
 			WFIFOL(fd,8) = cid;
 #else
-			WFIFOL(fd, 4) = make_fake_id(aid,cs_id);
-			WFIFOL(fd, 8) = make_fake_id(cid,cs_id);
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
 #endif
 			for( count = 0; count < 50 && SQL_SUCCESS == Sql_NextRow(sql_handle); ++count )
 			{
@@ -365,8 +370,8 @@ int chmapif_parse_askscdata(int fd){
 			WFIFOL(fd, 4) = aid;
 			WFIFOL(fd, 8) = cid;
 #else
-			WFIFOL(fd, 4) = make_fake_id(aid, cs_id);
-			WFIFOL(fd, 8) = make_fake_id(cid, cs_id);
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
 #endif
 			WFIFOW(fd,12) = 0;
 			WFIFOSET(fd,WFIFOW(fd,2));
@@ -416,8 +421,11 @@ int chmapif_parse_regmapuser(int fd, int id){
 			int cid = RFIFOL(fd,6+i*8+4);
 #ifdef Pandas_Cross_Server
 			int cs_id = get_cs_id(aid);
-			aid = get_real_id(aid);
-			cid = get_real_id(cid);
+			if (!is_cross_server)
+			{
+				aid = get_real_id(aid);
+				cid = get_real_id(cid);
+			}
 #endif
 			struct online_char_data* character = (struct online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
 			if( character->server > -1 && character->server != id )
@@ -449,6 +457,8 @@ int chmapif_parse_reqsavechar(int fd, int id){
 		int aid = RFIFOL(fd,4), cid = RFIFOL(fd,8), size = RFIFOW(fd,2);
 #ifdef Pandas_Cross_Server
 		int cs_id = get_cs_id(aid);
+		int o_aid = aid;
+		int o_cid = cid;
 		if(!is_cross_server)
 		{
 			aid = get_real_id(aid);
@@ -486,8 +496,8 @@ int chmapif_parse_reqsavechar(int fd, int id){
 			WFIFOL(fd, 2) = aid;
 			WFIFOL(fd, 6) = cid;
 #else
-			WFIFOL(fd, 2) = make_fake_id(aid, cs_id);
-			WFIFOL(fd, 6) = make_fake_id(cid, cs_id);
+			WFIFOL(fd, 2) = o_aid;
+			WFIFOL(fd, 6) = o_cid;
 #endif
 			WFIFOSET(fd,10);
 		}
@@ -530,7 +540,11 @@ int chmapif_parse_authok(int fd){
 		uint32 ip = RFIFOL(fd,14);
 #ifdef Pandas_Cross_Server
 		int cs_id = get_cs_id(account_id);
-		account_id = get_real_id(account_id);
+		int o_aid = account_id;
+		if (!is_cross_server)
+		{
+			account_id = get_real_id(account_id);
+		}
 #endif
 #ifndef Pandas_Extract_SSOPacket_MacAddress
 		RFIFOSKIP(fd,18);
@@ -547,7 +561,7 @@ int chmapif_parse_authok(int fd){
 #ifndef Pandas_Cross_Server
 			chmapif_charselres(fd, account_id, 0);
 #else
-			chmapif_charselres(fd, make_fake_id(account_id,cs_id), 0);
+			chmapif_charselres(fd, o_aid, 0);
 #endif
 			
 		}else{
@@ -585,7 +599,7 @@ int chmapif_parse_authok(int fd){
 #ifndef Pandas_Cross_Server
 			chmapif_charselres(fd, account_id, 1);
 #else
-			chmapif_charselres(fd, make_fake_id(account_id, cs_id), 1);
+			chmapif_charselres(fd, o_aid, 1);
 #endif
 			
 		}
@@ -603,8 +617,11 @@ int chmapif_parse_req_saveskillcooldown(int fd){
 		cid = RFIFOL(fd,8);
 		count = RFIFOW(fd,12);
 #ifdef Pandas_Cross_Server
-		aid = get_real_id(aid);
-		cid = get_real_id(cid);
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
 #endif
 		if( count > 0 )
 		{
@@ -640,8 +657,11 @@ int chmapif_parse_req_skillcooldown(int fd){
 		cid = RFIFOL(fd,6);
 #ifdef Pandas_Cross_Server
 		int cs_id = get_cs_id(aid);
-		aid = get_real_id(aid);
-		cid = get_real_id(cid);
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
 #endif
 		RFIFOSKIP(fd, 10);
 		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT skill, tick FROM `%s` WHERE `account_id` = '%d' AND `char_id`='%d'",
@@ -727,15 +747,21 @@ int chmapif_parse_reqchangemapserv(int fd){
 		int aid = RFIFOL(fd, 2);
 		int cid = RFIFOL(fd, 14);
 #ifdef Pandas_Cross_Server
-		aid = get_real_id(aid);
-		cid = get_real_id(cid);
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
 #endif
 		//Char should just had been saved before this packet, so this should be safe. [Skotlex]
 		char_data = (struct mmo_charstatus*)uidb_get(char_db_, cid);
 #ifdef Pandas_Cross_Server
 		//这里也有可能是fake id
-		char_data->account_id = get_real_id(char_data->account_id);
-		char_data->char_id = get_real_id(char_data->char_id);
+		if (!is_cross_server)
+		{
+			char_data->account_id = get_real_id(char_data->account_id);
+			char_data->char_id = get_real_id(char_data->char_id);
+		}
 #endif
 		if (char_data == NULL) {	//Really shouldn't happen.
 			char_mmo_char_fromsql(cid, &char_dat, true);
@@ -809,15 +835,9 @@ int chmapif_parse_askrmfriend(int fd){
 		return 0;
 	else {
 		uint32 char_id, friend_id;
-		//跨服的时候,好友不应该在这里处理
 		char_id = RFIFOL(fd,2);
 		friend_id = RFIFOL(fd,6);
-#ifdef Pandas_Cross_Server
-		if (get_cs_id(char_id))
-		{
-			ShowWarning("" CL_BLUE "[Cross Server]" CL_RESET "chmapif_parse_askrmfriend: Should not run here!\n");
-		}else 
-#endif
+
 		if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `char_id`='%d' AND `friend_id`='%d' LIMIT 1",
 			schema_config.friend_db, char_id, friend_id) ) {
 			Sql_ShowDebug(sql_handle);
@@ -838,10 +858,16 @@ int chmapif_parse_reqcharname(int fd){
 	if (RFIFOREST(fd) < 6)
 		return 0;
 
+	int cid = RFIFOL(fd, 2);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+		cid = get_real_id(cid);
+#endif
+
 	WFIFOHEAD(fd,30);
 	WFIFOW(fd,0) = 0x2b09;
-	WFIFOL(fd,2) = RFIFOL(fd,2);
-	char_loadName((int)RFIFOL(fd,2), WFIFOCP(fd,6));
+	WFIFOL(fd,2) = cid;
+	char_loadName(cid, WFIFOCP(fd,6));
 	WFIFOSET(fd,30);
 
 	RFIFOSKIP(fd,6);
@@ -1042,8 +1068,11 @@ int chmapif_parse_setcharoffline(int fd){
 	int cid = RFIFOL(fd, 2);
 	int aid = RFIFOL(fd, 6);
 #ifdef Pandas_Cross_Server
-	aid = get_real_id(aid);
-	cid = get_real_id(cid);
+	if (!is_cross_server)
+	{
+		aid = get_real_id(aid);
+		cid = get_real_id(cid);
+	}
 #endif
 	char_set_char_offline(cid, aid);
 	RFIFOSKIP(fd,10);
@@ -1081,8 +1110,11 @@ int chmapif_parse_setcharonline(int fd, int id){
 	int cid = RFIFOL(fd, 2);
 	int aid = RFIFOL(fd, 6);
 #ifdef Pandas_Cross_Server
-	aid = get_real_id(aid);
-	cid = get_real_id(cid);
+	if (!is_cross_server)
+	{
+		aid = get_real_id(aid);
+		cid = get_real_id(cid);
+	}
 #endif
 	char_set_char_online(id, cid, aid);
 	RFIFOSKIP(fd,10);
@@ -1122,8 +1154,11 @@ int chmapif_parse_save_scdata(int fd){
 		cid = RFIFOL(fd, 8);
 		count = RFIFOW(fd, 12);
 #ifdef Pandas_Cross_Server
-		aid = get_real_id(aid);
-		cid = get_real_id(cid);
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
 #endif
 		// Whatever comes from the mapserver, now is the time to drop previous entries
 		if( Sql_Query( sql_handle, "DELETE FROM `%s` where `account_id` = %d and `char_id` = %d;", schema_config.scdata_db, aid, cid ) != SQL_SUCCESS ){
@@ -1199,8 +1234,13 @@ int chmapif_parse_reqauth(int fd, int id){
 		RFIFOSKIP(fd,20);
 #ifdef Pandas_Cross_Server
 		int cs_id = get_cs_id(account_id);
-		account_id = get_real_id(account_id);
-		char_id = get_real_id(char_id);
+		int o_aid = account_id;
+		int o_cid = char_id;
+		if (!is_cross_server)
+		{
+			account_id = get_real_id(account_id);
+			char_id = get_real_id(char_id);
+		}
 #endif
 		node = (struct auth_node*)idb_get(auth_db, account_id);
 		cd = (struct mmo_charstatus*)uidb_get(char_db_,char_id);
@@ -1224,7 +1264,7 @@ int chmapif_parse_reqauth(int fd, int id){
 #ifndef Pandas_Cross_Server
 			WFIFOL(fd,4) = account_id;
 #else
-			WFIFOL(fd, 4) = make_fake_id(account_id,cs_id);
+			WFIFOL(fd, 4) = o_aid;
 #endif
 			WFIFOL(fd,8) = 0;
 			WFIFOL(fd,12) = 0;
@@ -1300,8 +1340,8 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOL(fd, 2) = account_id;
 			WFIFOL(fd, 6) = char_id;
 #else
-			WFIFOL(fd, 2) = make_fake_id(account_id, cs_id);
-			WFIFOL(fd, 6) = make_fake_id(char_id, cs_id);
+			WFIFOL(fd, 2) = o_aid;
+			WFIFOL(fd, 6) = o_cid;
 #endif
 			WFIFOL(fd,10) = login_id1;
 			WFIFOB(fd,14) = sex;
@@ -1345,7 +1385,10 @@ int chmapif_parse_updfamelist(int fd){
             int fame_pos;
 
 #ifdef Pandas_Cross_Server
-			cid = get_real_id(cid);
+			if (!is_cross_server)
+			{
+				cid = get_real_id(cid);
+			}
 #endif
 
             switch(type)
@@ -1530,7 +1573,11 @@ int chmapif_bonus_script_get(int fd) {
 		SqlStmt* stmt = SqlStmt_Malloc(sql_handle);
 #ifdef Pandas_Cross_Server
 		int cs_id = get_cs_id(cid);
-		cid = get_real_id(cid);
+		int o_cid = cid;
+		if (!is_cross_server)
+		{
+			cid = get_real_id(cid);
+		}
 #endif
 		RFIFOSKIP(fd,6);
 
@@ -1579,7 +1626,7 @@ int chmapif_bonus_script_get(int fd) {
 #ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = cid;
 #else
-			WFIFOL(fd, 4) = make_fake_id(cid, cs_id);
+			WFIFOL(fd, 4) = o_cid;
 #endif
 			WFIFOB(fd, 8) = num_rows;
 
@@ -1626,7 +1673,10 @@ int chmapif_bonus_script_save(int fd) {
 		uint32 cid = RFIFOL(fd,4);
 		uint8 count = RFIFOB(fd,8);
 #ifdef Pandas_Cross_Server
-		cid = get_real_id(cid);
+		if (!is_cross_server)
+		{
+			cid = get_real_id(cid);
+		}
 #endif
 		if (SQL_ERROR == Sql_Query(sql_handle,"DELETE FROM `%s` WHERE `char_id` = '%d'", schema_config.bonus_script_db, cid))
 			Sql_ShowDebug(sql_handle);

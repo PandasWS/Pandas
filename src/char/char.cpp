@@ -444,6 +444,11 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			strcat(save_status, " status2");
 	}
 
+#ifdef Pandas_Cross_Server
+	//中立服根据inherit_source_server_chara_status来确定佣兵是否跟随角色
+	//非中立服 || (中立 && 不继承源数据时)
+	if(!is_cross_server || !inherit_source_server_chara_status)
+#endif
 	/* Mercenary Owner */
 	if( (p->mer_id != cp->mer_id) ||
 		(p->arch_calls != cp->arch_calls) || (p->arch_faith != cp->arch_faith) ||
@@ -625,7 +630,8 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 			tablename = schema_config.inventory_db;
 			selectoption = "char_id";
 #ifdef Pandas_Cross_Server
-			id = get_real_id(id);
+			if (!is_cross_server)
+				id = get_real_id(id);
 #endif
 			break;
 		case TABLE_CART:
@@ -633,7 +639,8 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 			tablename = schema_config.cart_db;
 			selectoption = "char_id";
 #ifdef Pandas_Cross_Server
-			id = get_real_id(id);
+			if (!is_cross_server)
+				id = get_real_id(id);
 #endif
 			break;
 		case TABLE_STORAGE:
@@ -641,7 +648,8 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 			tablename = inter_premiumStorage_getTableName(stor_id);
 			selectoption = "account_id";
 #ifdef Pandas_Cross_Server
-			id = get_real_id(id);
+			if (!is_cross_server)
+				id = get_real_id(id);
 #endif
 			break;
 		case TABLE_GUILD_STORAGE:
@@ -850,7 +858,8 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			storage = p->u.items_inventory;
 			max2 = MAX_INVENTORY;
 #ifdef Pandas_Cross_Server
-			id = get_real_id(id);
+			if (!is_cross_server)
+				id = get_real_id(id);
 #endif
 			break;
 		case TABLE_CART:
@@ -860,7 +869,8 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			storage = p->u.items_cart;
 			max2 = MAX_CART;
 #ifdef Pandas_Cross_Server
-			id = get_real_id(id);
+			if (!is_cross_server)
+				id = get_real_id(id);
 #endif
 			break;
 		case TABLE_STORAGE:
@@ -870,7 +880,8 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			storage = p->u.items_storage;
 			max2 = inter_premiumStorage_getMax(p->stor_id);
 #ifdef Pandas_Cross_Server
-			id = get_real_id(id);
+			if (!is_cross_server)
+				id = get_real_id(id);
 #endif
 			break;
 		case TABLE_GUILD_STORAGE:
@@ -2440,10 +2451,6 @@ int char_loadName(uint32 char_id, char* name){
 	char* data;
 	size_t len;
 
-#ifdef Pandas_Cross_Server
-	int cs_id = get_cs_id(char_id);
-	char_id = get_real_id(char_id);
-#endif
 
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `name` FROM `%s` WHERE `char_id`='%d'", schema_config.char_db, char_id) )
 		Sql_ShowDebug(sql_handle);

@@ -16466,6 +16466,9 @@ void clif_account_name(int fd, uint32 account_id, const char* accname)
 	WFIFOHEAD(fd,packet_len(0x1e0));
 	WFIFOW(fd,0) = 0x1e0;
 	WFIFOL(fd,2) = account_id;
+#ifdef Pandas_Cross_Server
+	WFIFOL(fd, 2) = get_real_id(account_id);
+#endif
 	safestrncpy(WFIFOCP(fd,6), accname, NAME_LENGTH);
 	WFIFOSET(fd,packet_len(0x1e0));
 }

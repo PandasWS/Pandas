@@ -101,7 +101,11 @@ int intif_quest_save(struct map_session_data * sd);
 // MERCENARY SYSTEM
 int intif_mercenary_create(struct s_mercenary *merc);
 int intif_mercenary_request(int merc_id, uint32 char_id);
+#ifndef Pandas_Cross_Server
 int intif_mercenary_delete(int merc_id);
+#else
+int intif_mercenary_delete(struct map_session_data* sd,int merc_id);
+#endif
 int intif_mercenary_save(struct s_mercenary *merc);
 
 // MAIL SYSTEM
@@ -121,7 +125,11 @@ int intif_Auction_bid(uint32 char_id, const char* name, unsigned int auction_id,
 // ELEMENTAL SYSTEM
 int intif_elemental_create(struct s_elemental *ele);
 int intif_elemental_request(int ele_id, uint32 char_id);
+#ifndef Pandas_Cross_Server
 int intif_elemental_delete(int ele_id);
+#else
+int intif_elemental_delete(struct map_session_data* sd, int ele_id);
+#endif
 int intif_elemental_save(struct s_elemental *ele);
 // CLAN SYSTEM
 int intif_clan_requestclans();

@@ -605,6 +605,14 @@ int logchrif_parse_req_global_accreg(int fd){
 		uint32 char_id = RFIFOL(fd,6);
 		RFIFOSKIP(fd,10);
 
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(account_id);
+		if (!is_cross_server)
+		{
+			account_id = get_real_id(account_id);
+			char_id = get_real_id(char_id);
+		}
+#endif
 		mmo_send_global_accreg(accounts,fd,account_id,char_id);
 	}
 	return 1;

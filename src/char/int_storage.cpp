@@ -13,10 +13,12 @@
 #include "../common/socket.hpp"
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp" // StringBuf
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "inter.hpp"
 #include "int_guild.hpp"
+
 
 /**
  * Get max storage amount

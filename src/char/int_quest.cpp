@@ -14,6 +14,7 @@
 
 #include "char.hpp"
 #include "inter.hpp"
+#include "../common/crossserver.hpp"
 
 /**
  * Loads the entire questlog for a character.
@@ -141,6 +142,16 @@ int mapif_parse_quest_save(int fd) {
 	struct quest *old_qd = NULL, *new_qd = NULL;
 	bool success = true;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(char_id);
+	int o_cid = char_id;
+	if(!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+	
+#endif
+
 	if( new_n > 0 )
 		new_qd = (struct quest*)RFIFOP(fd,8);
 
@@ -171,7 +182,11 @@ int mapif_parse_quest_save(int fd) {
 	//Send ack
 	WFIFOHEAD(fd,7);
 	WFIFOW(fd,0) = 0x3861;
+#ifndef Pandas_Cross_Server
 	WFIFOL(fd,2) = char_id;
+#else
+	WFIFOL(fd, 2) = o_cid;
+#endif
 	WFIFOB(fd,6) = success ? 1 : 0;
 	WFIFOSET(fd,7);
 
