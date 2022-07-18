@@ -2034,7 +2034,7 @@ void pc_reg_received(struct map_session_data *sd)
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
 #else
-	//为了刷新画面而强制查询
+	//为了刷新客户端残留数据而强制查询
 	party_member_joined(sd);
 	//guild_member_joined(sd);
 	//clan_member_joined(sd);
@@ -2129,7 +2129,11 @@ void pc_reg_received(struct map_session_data *sd)
 	sd->vip.enabled = 0;
 	chrif_req_login_operation(sd->status.account_id, sd->status.name, CHRIF_OP_LOGIN_VIP, 0, 1|8, 0);  // request VIP information
 #endif
+#ifndef Pandas_Cross_Server
 	intif_Mail_requestinbox(sd->status.char_id, 0, MAIL_INBOX_NORMAL); // MAIL SYSTEM - Request Mail Inbox
+#else
+	intif_Mail_requestinbox(sd->status.char_id, 1, MAIL_INBOX_NORMAL); // MAIL SYSTEM - Request Mail Inbox
+#endif
 	intif_request_questlog(sd);
 
 	if (battle_config.feature_achievement) {

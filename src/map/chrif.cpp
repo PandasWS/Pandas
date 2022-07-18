@@ -836,7 +836,7 @@ int chrif_scdata_request(uint32 account_id, uint32 char_id) {
 int chrif_skillcooldown_request(uint32 account_id, uint32 char_id) {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd(account_id, char_fd, chrif_state);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	chrif_check(-1);
 	WFIFOHEAD(char_fd, 10);
@@ -2006,7 +2006,7 @@ void chrif_parse_ack_vipActive(int fd) {
 int chrif_bsdata_request(uint32 char_id) {
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd(char_id, char_fd, chrif_state);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(char_id) : 0, char_fd);
 #endif
 	chrif_check(-1);
 	WFIFOHEAD(char_fd,6);
@@ -2028,7 +2028,7 @@ int chrif_bsdata_save(struct map_session_data *sd, bool quit) {
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(sd->status.account_id) : 0, char_fd);
 #endif
 	chrif_check(-1);
 
