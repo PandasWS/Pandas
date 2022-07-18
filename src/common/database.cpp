@@ -12,11 +12,6 @@
 
 using namespace rathena;
 
-#ifdef Pandas_YamlBlastCache_Serialize
-#include "configparser.hpp"
-#include "cryptopp.hpp"
-#endif // Pandas_YamlBlastCache_Serialize
-
 #ifdef Pandas_Database_Yaml_BeQuiet
 	#define ShowError if (!this->p || (((YamlDatabase*)this->p)->quietLevel & 4) != 4) ::ShowError
 	#define ShowWarning if (!this->p || (((YamlDatabase*)this->p)->quietLevel & 2) != 2) ::ShowWarning
@@ -24,7 +19,30 @@ using namespace rathena;
 #endif // Pandas_Database_Yaml_BeQuiet
 
 bool YamlDatabase::nodeExists( const ryml::NodeRef& node, const std::string& name ){
+#ifndef Pandas_UserExperience_Yaml_Error
 	return (node.num_children() > 0 && node.has_child(c4::to_csubstr(name)));
+#else
+	// - 将技能数据库中某个 Requires 节点的 SpCost 删掉, 但别进行缩进对齐
+	// - 加载的时候就会之别抛出错误崩溃掉
+	
+	bool bResult = false;
+	
+	try {
+		bResult = (node.num_children() > 0 && node.has_child(c4::to_csubstr(name)));
+	}
+	catch (std::runtime_error const& err) {
+		ShowError("Error while looking for the '%s' node: %s\n", name.c_str(), err.what());
+		ShowError("Occurred in file '" CL_WHITE "%s" CL_RESET "' on line %d and column %d.\n", this->currentFile.c_str(), this->getLineNumber(node), this->getColumnNumber(node));
+
+#ifdef DEBUG
+		std::cout << node;
+#endif // DEBUG
+
+		return false;
+	}
+
+	return bResult;
+#endif // Pandas_UserExperience_Yaml_Error
 }
 
 bool YamlDatabase::nodesExist( const ryml::NodeRef& node, std::initializer_list<const std::string> names ){
@@ -87,43 +105,11 @@ bool YamlDatabase::verifyCompatibility( const ryml::Tree& tree ){
 }
 
 bool YamlDatabase::load() {
-#ifndef Pandas_YamlBlastCache_Serialize
 	bool ret = this->load(this->getDefaultLocation());
 
 	this->loadingFinished();
 
 	return ret;
-#else
-	// 清空关联文件记录
-	this->includeFiles.clear();
-
-	// 如果已经从缓存加载, 那么执行 loadingFinished 后直接返回
-	if (this->loadFromCache()) {
-		this->loadingFinished();
-		return true;
-	}
-
-	// 重制用来记录加载过程中是否存在错误和警告的相关变量
-	yaml_load_completely_success = true;
-
-	// 如果缓存失效, 那么下面执行全新加载
-	bool ret = this->load(this->getDefaultLocation());
-
-	// 失败的话直接把之前的缓存文件也干掉
-	if (!yaml_load_completely_success) {
-		this->removeCache();
-	}
-
-	// 如果加载成功且过程中没有出现任何错误和警告, 那么将加载成功后的数据进行缓存
-	if (ret && yaml_load_completely_success) {
-		this->saveToCache();
-	}
-
-	// 并执行 loadingFinished 进行一些数据初始化工作
-	this->loadingFinished();
-
-	return ret;
-#endif // Pandas_YamlBlastCache_Serialize
 }
 
 bool YamlDatabase::reload(){
@@ -141,11 +127,6 @@ bool YamlDatabase::load(const std::string& path) {
 	}
 #endif // Pandas_Console_Translate
 
-#ifdef Pandas_YamlBlastCache_Serialize
-	// 这个文件与当前数据库相关, 插入到关联文件记录中
-	this->includeFiles.insert(path);
-#endif // Pandas_YamlBlastCache_Serialize
-
 #ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 		performance_create_and_start("yamldatabase_load");
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
@@ -158,15 +139,39 @@ bool YamlDatabase::load(const std::string& path) {
 	}
 	fseek(f, 0, SEEK_END);
 	size_t size = ftell(f);
+#ifndef Pandas_Support_Read_UTF8BOM_Configure
 	char* buf = (char *)aMalloc(size+1);
 	rewind(f);
 	size_t real_size = fread(buf, sizeof(char), size, f);
+#else
+	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
+	char* buf = (char *)aMalloc(size*3+1);
+	rewind(f);
+	size_t real_size = fread(buf, sizeof(char), size*3, f);
+#endif // Pandas_Support_Read_UTF8BOM_Configure
 	// Zero terminate
 	buf[real_size] = '\0';
 	fclose(f);
 
 	parser = {};
+#ifndef Pandas_UserExperience_Yaml_Error
 	ryml::Tree tree = parser.parse_in_arena(c4::to_csubstr(path), c4::to_csubstr(buf));
+#else
+	// - 在 item_db_equip.yml 随便找个道具的 Name 字段, 把它的值换成三个小数点: ...
+	// - 然后启动地图服务器, 当加载到 item_db_equip.yml 文件就会直接崩溃
+	
+	ryml::Tree tree;
+	try {
+		tree = parser.parse_in_arena(c4::to_csubstr(path), c4::to_csubstr(buf));
+	}
+	catch (std::runtime_error const& err) {
+		ShowWarning("The following error occurred while loading the '%s': \n", path.c_str());
+		ShowWarning("Press any key to continue reading other files, but it usually means a lot of errors.\n");
+		ShowError("%s\n", err.what());
+		systemPause();
+		return false;
+	}
+#endif // Pandas_UserExperience_Yaml_Error
 
 	// Required here already for header error reporting
 	this->currentFile = path;
@@ -189,17 +194,10 @@ bool YamlDatabase::load(const std::string& path) {
 
 	this->parse( tree );
 
-#ifndef Pandas_YamlBlastCache_Serialize
 	this->parseImports( tree );
 
 	aFree(buf);
 	return true;
-#else
-	bool ret = this->parseImports( tree );
-	
-	aFree(buf);
-	return ret;
-#endif // Pandas_YamlBlastCache_Serialize
 }
 
 void YamlDatabase::loadingFinished(){
@@ -230,12 +228,7 @@ void YamlDatabase::parse( const ryml::Tree& tree ){
 	}
 }
 
-#ifndef Pandas_YamlBlastCache_Serialize
 void YamlDatabase::parseImports( const ryml::Tree& rootNode ){
-#else
-bool YamlDatabase::parseImports( const ryml::Tree& rootNode ){
-	bool bSuccess = true;
-#endif // Pandas_YamlBlastCache_Serialize
 	if( this->nodeExists( rootNode.rootref(), "Footer" ) ){
 		const ryml::NodeRef& footerNode = rootNode["Footer"];
 
@@ -268,17 +261,10 @@ bool YamlDatabase::parseImports( const ryml::Tree& rootNode ){
 					}
 				}				
 
-#ifndef Pandas_YamlBlastCache_Serialize
 				this->load( importFile );
-#else
-				bSuccess = bSuccess && this->load( importFile );
-#endif // Pandas_YamlBlastCache_Serialize
 			}
 		}
 	}
-#ifdef Pandas_YamlBlastCache_Serialize
-	return bSuccess;
-#endif // Pandas_YamlBlastCache_Serialize
 }
 
 template <typename R> bool YamlDatabase::asType( const ryml::NodeRef& node, const std::string& name, R& out ){
@@ -403,7 +389,12 @@ bool YamlDatabase::asUInt32Rate( const ryml::NodeRef& node, const std::string& n
 }
 
 int32 YamlDatabase::getLineNumber(const ryml::NodeRef& node) {
+#ifndef Pandas_UserExperience_Yaml_Error
 	return parser.source().has_str() ? (int32)parser.location(node).line : 0;
+#else
+	// 读取到的行号应该 + 1 才是正确的行号
+	return parser.source().has_str() ? (int32)parser.location(node).line + 1 : 0;
+#endif // Pandas_UserExperience_Yaml_Error
 }
 
 int32 YamlDatabase::getColumnNumber(const ryml::NodeRef& node) {
@@ -434,176 +425,17 @@ std::string YamlDatabase::getCurrentFile(){
 }
 
 void on_yaml_error( const char* msg, size_t len, ryml::Location loc, void *user_data ){
+#ifndef Pandas_UserExperience_Yaml_Error
 	throw std::runtime_error( msg );
+#else
+	std::shared_ptr<char> mes(new char[len + 1], std::default_delete<char[]>());
+	memset(mes.get(), 0, len + 1);
+	memcpy(mes.get(), msg, len);
+	std::string text = strTrim(mes.get());
+	throw std::runtime_error(text.c_str());
+#endif // Pandas_UserExperience_Yaml_Error
 }
 
 void do_init_database(){
 	ryml::set_callbacks( ryml::Callbacks( nullptr, nullptr, nullptr, on_yaml_error ) );
 }
-
-#ifdef Pandas_YamlBlastCache_Serialize
-bool BlastCache::saveToCache() {
-	if (!this->bEnabledCache) {
-		return false;
-	}
-
-	try
-	{
-		uint32 i = 0;
-		IniParser rocketConfig("db/cache/rocket.ini");
-
-		// 遍历所有关联的文件, 写入他们的路径和 Hash
-		for (const auto& f : this->includeFiles) {
-			std::string hash = crypto_GetFileMD5(f);
-			rocketConfig.Set(this->type + ".RelatedFile" + std::to_string(i) + "_Path", f.c_str());
-			rocketConfig.Set(this->type + ".RelatedFile" + std::to_string(i) + "_Hash", hash.c_str());
-			i++;
-		}
-
-		// 记录关联文件的总数
-		rocketConfig.Set(this->type + ".RelatedFileCount", std::to_string(i));
-
-		// 记录序列化缓存文件的所在路径
-		std::string blashPath = this->getCachePath();
-		rocketConfig.Set(this->type + ".BlastCachePath", blashPath);
-
-		// 执行序列化 (保存缓存数据)
-		bool fireResult = false;
-		{
-			std::ofstream file(blashPath, SERIALIZE_SAVE_STREAM_FLAG);
-			SERIALIZE_SAVE_ARCHIVE saveArchive(file);
-			fireResult = this->fireSerialize<SERIALIZE_SAVE_ARCHIVE>(saveArchive);
-		}
-
-		// 如果缓存成功, 那么记录缓存的 Hash 和版本号
-		if (fireResult) {
-			std::string blashHash = this->getCacheHash(blashPath);
-			rocketConfig.Set(this->type + ".BlastCacheHash", blashHash);
-		}
-
-		return fireResult;
-	}
-	catch (const std::exception& e)
-	{
-		ShowError("%s: %s\n", __func__, e.what());
-		return false;
-	}
-}
-
-bool BlastCache::loadFromCache() {
-	if (!this->bEnabledCache) {
-		return false;
-	}
-
-	try
-	{
-		std::string blashPath = this->getCachePath();
-		if (this->isCacheEffective() && isFileExists(blashPath)) {
-			performance_create_and_start("blastcache");
-			ShowStatus("Loading " CL_WHITE "%s" CL_RESET " from blast cache..." CL_CLL "\r", this->type.c_str());
-
-			std::ifstream file(blashPath, SERIALIZE_LOAD_STREAM_FLAG);
-			SERIALIZE_LOAD_ARCHIVE loadArchive(file);
-			if (this->fireSerialize<SERIALIZE_LOAD_ARCHIVE>(loadArchive)) {
-				performance_stop("blastcache");
-				ShowStatus("Done reading " CL_WHITE "%s" CL_RESET " from blast cache, took %" PRIu64 " milliseconds...\n", this->type.c_str(), performance_get_milliseconds("blastcache"));
-				performance_destory("blastcache");
-
-				this->afterCacheRestore();
-				return true;
-			}
-			else {
-				performance_destory("blastcache");
-			}
-		}
-		return false;
-	}
-	catch (const std::exception& e)
-	{
-		ShowError("%s: %s\n", __func__, e.what());
-		return false;
-	}
-}
-
-bool BlastCache::isCacheEffective() {
-	IniParser rocketConfig("db/cache/rocket.ini");
-	std::string blastCachePath = this->getCachePath();
-	std::string blastCacheHash = this->getCacheHash(blastCachePath);
-	uint32 count = rocketConfig.Get<uint32>(this->type + ".RelatedFileCount", 0);
-
-	if (rocketConfig.Get<std::string>(this->type + ".BlastCachePath", "") != blastCachePath) {
-		return false;
-	}
-
-	if (blastCacheHash.length() == 0 ||
-		rocketConfig.Get<std::string>(this->type + ".BlastCacheHash", "") != blastCacheHash) {
-		return false;
-	}
-
-	for (uint32 cur = 0; cur < count; cur++) {
-		std::string cfg_path = rocketConfig.Get<std::string>(this->type + ".RelatedFile" + std::to_string(cur) + "_Path", "");
-		std::string cfg_hash = rocketConfig.Get<std::string>(this->type + ".RelatedFile" + std::to_string(cur) + "_Hash", "");
-
-		if (!isFileExists(cfg_path) || cfg_hash.length() == 0) {
-			return false;
-		}
-
-		std::string current_hash = crypto_GetFileMD5(cfg_path);
-		if (current_hash != cfg_hash) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool BlastCache::removeCache() {
-	std::string blashCachePath = this->getCachePath();
-	if (isFileExists(blashCachePath)) {
-		return deleteFile(blashCachePath);
-	}
-	return false;
-}
-
-const std::string BlastCache::getCacheHash(const std::string& path) {
-	if (!isFileExists(path))
-		return "";
-
-	std::string filehash = crypto_GetFileMD5(path);
-	if (filehash.length() == 0)
-		return "";
-
-	std::string depends = this->getDependsHash();
-
-	std::string content = boost::str(
-		boost::format("%1%|%2%|%3%|%4%|%5%|%6%|%7%|%8%") %
-		getPandasVersion() %
-		BLASTCACHE_VERSION %
-		typeid(SERIALIZE_LOAD_ARCHIVE).name() %
-		typeid(SERIALIZE_SAVE_ARCHIVE).name() %
-		this->version %
-		filehash % depends %
-		this->datatypeSize
-	);
-
-	return crypto_GetStringMD5(content);
-}
-
-const std::string BlastCache::getCacheHashByName(const std::string& db_name) {
- 	IniParser rocketConfig("db/cache/rocket.ini");
- 	return rocketConfig.Get<std::string>(db_name + ".BlastCacheHash", "");
-}
-
-const std::string BlastCache::getCachePath() {
-#if defined(PRERE) || !defined(RENEWAL)
-	std::string mode("pre");
-#else
-	std::string mode("re");
-#endif // defined(PRERE) || !defined(RENEWAL)
-	return std::string(
-		"db/cache/" +
-		boost::algorithm::to_lower_copy(this->type) + "_" +
-		mode + ".blast"
-	);
-}
-#endif // Pandas_YamlBlastCache_Serialize

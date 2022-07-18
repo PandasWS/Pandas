@@ -1021,11 +1021,11 @@
 		例子:
 		----------------
 		if ((@attack_damage_flag & BF_MAGIC) == BF_MAGIC) {
-			dispbottom "这是一次魔法攻击";
+			dispbottom "我发起了一次魔法攻击";
 		}
 		
 		if ((@attack_damage_flag & (BF_MAGIC|BF_LONG)) == (BF_MAGIC|BF_LONG)) {
-			dispbottom "这是一次远距离魔法攻击";
+			dispbottom "我发起了一次远距离魔法攻击";
 		}
 		
 	@attack_damage_skillid		本次攻击使用的技能编号 (若为 0 则表示普通攻击)
@@ -1035,6 +1035,69 @@
 
 注意事项:
 	只有即将发生伤害时才会触发此事件, 若为 MISS 则不触发此事件.
+	
+	假如攻击者和被攻击者都是玩家, 并且在服务器中除了使用 OnPCHarmedExpress 之外
+	还使用到了 OnPCAttackExpress 事件, 两个事件都对伤害进行调整的情况下,
+	原始伤害会先经过被攻击者的 OnPCHarmedExpress 事件处理,
+	再将 OnPCHarmedExpress 修改后的伤害, 发给攻击者的 OnPCAttackExpress 事件处理.
+
+性能警告:
+	全服建议最多只有一个 NPC 负责处理此事件.
+	全服在线玩家的任意一次实际造成伤害的攻击都将触发此事件,
+	因此请不要在事件中进行耗时操作.
+
+--------------------------------------------------------------
+
+*OnPCHarmedExpress:
+
+当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+
+事件关联:
+	关联到受到伤害的玩家
+	如果是宠物/生命体/佣兵/元素则直接关联到其主人
+
+携带参数:
+	@harmed_target_type			被攻击者的类型
+	@harmed_target_gid			被攻击者的游戏单位编号 (若是玩家则返回账号编号)
+	
+	@harmed_src_type			攻击者的类型
+	@harmed_src_gid				攻击者的游戏单位编号 (若是玩家则返回账号编号)
+	@harmed_src_mobid			攻击者的魔物编号 (若是不是魔物则返回 0)
+
+	@harmed_damage_flag			本次攻击的伤害类型 (位运算)
+		按攻击范围:
+			BF_SHORT:			近距离攻击
+			BF_LONG:			远距离攻击
+		按攻击类型:
+			BF_WEAPON:			武器攻击
+			BF_MAGIC:			魔法攻击
+			BF_MISC:			混合攻击
+		按技能类型:
+			BF_NORMAL:			普通攻击
+			BF_SKILL:			技能攻击
+		
+		例子:
+		----------------
+		if ((@harmed_damage_flag & BF_MAGIC) == BF_MAGIC) {
+			dispbottom "我受到了一次魔法攻击";
+		}
+		
+		if ((@harmed_damage_flag & (BF_MAGIC|BF_LONG)) == (BF_MAGIC|BF_LONG)) {
+			dispbottom "我受到了一次远距离魔法攻击";
+		}
+		
+	@harmed_damage_skillid		本次攻击使用的技能编号 (若为 0 则表示普通攻击)
+	@harmed_damage_skilllv		本次攻击使用的技能等级
+	@harmed_damage_right		本次攻击右手武器造成的伤害值 (该值可被修改)
+	@harmed_damage_left			本次攻击左手武器造成的伤害值 (该值可被修改)
+
+注意事项:
+	只有即将发生伤害时才会触发此事件, 若为 MISS 则不触发此事件.
+	
+	假如攻击者和被攻击者都是玩家, 并且在服务器中除了使用 OnPCHarmedExpress 之外
+	还使用到了 OnPCAttackExpress 事件, 两个事件都对伤害进行调整的情况下,
+	原始伤害会先经过被攻击者的 OnPCHarmedExpress 事件处理,
+	再将 OnPCHarmedExpress 修改后的伤害, 发给攻击者的 OnPCAttackExpress 事件处理.
 
 性能警告:
 	全服建议最多只有一个 NPC 负责处理此事件.

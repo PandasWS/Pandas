@@ -861,7 +861,7 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
 	// 避免后续进行 fgets 的时候读取到前 3 个字节, 同时将当前位置记录到 curpos
 	long curpos = ftell(_Stream);
-	if (curpos <= 3) fseek(_Stream, 3, SEEK_SET);
+	if (curpos < 3) fseek(_Stream, 3, SEEK_SET);
 
 	// 读取 _MaxCount 长度的内容并保存到 buffer 中
 	char* buffer = new char[_MaxCount];
@@ -873,23 +873,22 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	}
 	
 	std::string line(buffer);
-	delete[] buffer;
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
 	std::string ansi = utf8ToAnsi(line);
 	memset(_Buffer, 0, _MaxCount);
 
-	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
-	// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
-	// 不过就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
 	if (ansi.size() > (size_t)_MaxCount) {
+		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
 		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
-		fseek(_Stream, curpos, SEEK_SET);
-		return ::fgets(_Buffer, _MaxCount, _Stream);
+		memcpy(_Buffer, buffer, _MaxCount);
+	}
+	else {
+		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
+		memcpy(_Buffer, ansi.c_str(), ansi.size());
 	}
 
-	// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-	memcpy(_Buffer, ansi.c_str(), ansi.size());
+	delete[] buffer;
 	return _Buffer;
 }
 
@@ -906,7 +905,7 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 
 	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节后面,
 	// 避免后续进行 fread 的时候读取到前 3 个字节
-	if (curpos <= 3) {
+	if (curpos < 3) {
 		fseek(_Stream, 3, SEEK_SET);
 
 		// 需要重新分配缓冲区大小, 以及调整 _ElementCount 的大小
@@ -921,7 +920,6 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 
 	// 读取特定长度的内容并保存到 buffer 中
 	extracted = ::fread(buffer, _ElementSize, _ElementCount, _Stream);
-
 	if (!extracted) {
 		delete[] buffer;
 		return extracted;
@@ -930,21 +928,18 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
 	std::string ansi = utf8ToAnsi(std::string(buffer));
 	memset(_Buffer, 0, _ElementSize * _ElementCount);
-	delete[] buffer;
 
-	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
-	// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
-	// 不过就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
 	if (ansi.size() > elementlen) {
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
-		fseek(_Stream, curpos, SEEK_SET);
-		// 之前修正过 _ElementCount 的大小, 现在这里需要改回去
-		if (curpos <= 3) _ElementCount += 3;
-		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, _ElementCount, ansi.size());
+		memcpy(_Buffer, buffer, elementlen);
+	}
+	else {
+		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
+		memcpy(_Buffer, ansi.c_str(), ansi.size());
 	}
 
-	// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-	memcpy(_Buffer, ansi.c_str(), ansi.size());
+	delete[] buffer;
 	return extracted;
 }
 

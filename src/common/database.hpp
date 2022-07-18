@@ -16,96 +16,9 @@
 #include "core.hpp"
 #include "utilities.hpp"
 
-#ifdef Pandas_YamlBlastCache_Serialize
-#include <set>
-#include <string>
-
-#include "cbasetypes.hpp"
-#include "serialize.hpp"
-
-class BlastCache {
-private:
-	void* p = nullptr;
-protected:
-	friend class BlastCacheEnabled;
-	friend class boost::serialization::access;
-
-	std::string type;
-	uint16 version;
-	bool bEnabledCache = false;
-	std::set<std::string> includeFiles;
-	size_t datatypeSize = 0;
-
-	template <typename Archive>
-	inline void serialize(Archive& ar, const unsigned int version) {
-		ar& includeFiles;
-	}
-
-	template <typename Archive>
-	inline bool fireSerialize(Archive& ar) {
-		return this->doSerialize(typeid(ar).name(), static_cast<void*>(&ar));
-	}
-
-	bool saveToCache();
-	bool loadFromCache();
-	bool isCacheEffective();
-	bool removeCache();
-
-	const std::string getCacheHash(const std::string& path);
-	const std::string getCachePath();
-public:
-	BlastCache(void* p_, const std::string& type_, uint16 version_) {
-		this->p = p_;
-		this->type = type_;
-		this->version = version_;
-	}
-
-	const std::string getCacheHashByName(const std::string& db_name);
-
-	virtual void afterCacheRestore() {
-
-	};
-
-	virtual const std::string getDependsHash() {
-		return "";
-	};
-
-	virtual bool doSerialize(const std::string& type, void* archive) {
-		return false;
-	};
-};
-
-class BlastCacheEnabled {
-private:
-	void* p = nullptr;
-public:
-	BlastCacheEnabled(void* p_) {
-		this->p = p_;
-		((BlastCache*)p)->bEnabledCache = true;
-	}
-
-	virtual bool doSerialize(const std::string& type, void* archive) = 0;
-};
-#else
-class BlastCache {
-public:
-	BlastCache(void* p_, const std::string& type_, uint16 version_) {
-	}
-};
-
-class BlastCacheEnabled {
-public:
-	BlastCacheEnabled(void* p_) {
-	}
-};
-#endif // Pandas_YamlBlastCache_Serialize
-
-class YamlDatabase : public BlastCache {
+class YamlDatabase {
 // Internal stuff
 private:
-#ifdef Pandas_YamlBlastCache_Serialize
-	friend class BlastCache;
-#endif // Pandas_YamlBlastCache_Serialize
 	std::string type;
 	uint16 version;
 	uint16 minimumVersion;
@@ -114,11 +27,7 @@ private:
 	bool verifyCompatibility( const ryml::Tree& rootNode );
 	bool load( const std::string& path );
 	void parse( const ryml::Tree& rootNode );
-#ifndef Pandas_YamlBlastCache_Serialize
 	void parseImports( const ryml::Tree& rootNode );
-#else
-	bool parseImports( const ryml::Tree& rootNode );
-#endif // Pandas_YamlBlastCache_Serialize
 	template <typename R> bool asType( const ryml::NodeRef& node, const std::string& name, R& out );
 
 // These should be visible/usable by the implementation provider
@@ -154,7 +63,7 @@ protected:
 
 	virtual void loadingFinished();
 public:
-	YamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : BlastCache(this, type_, version_) {
+	YamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) {
 		this->type = type_;
 		this->version = version_;
 		this->minimumVersion = minimumVersion_;
@@ -178,31 +87,14 @@ public:
 };
 
 template <typename keytype, typename datatype> class TypesafeYamlDatabase : public YamlDatabase{
-#ifdef Pandas_YamlBlastCache_Serialize
-private:
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	inline void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<YamlDatabase>(*this);
-		ar& data;
-	}
-#endif // Pandas_YamlBlastCache_Serialize
-
 protected:
 	std::unordered_map<keytype, std::shared_ptr<datatype>> data;
 
 public:
 	TypesafeYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : YamlDatabase( type_, version_, minimumVersion_ ){
-#ifdef Pandas_YamlBlastCache_Serialize
-		this->datatypeSize = sizeof(datatype);
-#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	TypesafeYamlDatabase( const std::string& type_, uint16 version_ ) : YamlDatabase( type_, version_, version_ ){
-#ifdef Pandas_YamlBlastCache_Serialize
-		this->datatypeSize = sizeof(datatype);
-#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	void clear() override{
@@ -258,34 +150,19 @@ public:
 
 template <typename keytype, typename datatype> class TypesafeCachedYamlDatabase : public TypesafeYamlDatabase<keytype, datatype>{
 private:
-#ifdef Pandas_YamlBlastCache_Serialize
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	inline void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeYamlDatabase<keytype, datatype>>(*this);
-		ar& cache;
-	}
-#endif // Pandas_YamlBlastCache_Serialize
-
 	std::vector<std::shared_ptr<datatype>> cache;
 
 public:
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, minimumVersion_ ){
-#ifdef Pandas_YamlBlastCache_Serialize
-		this->datatypeSize = sizeof(datatype);
-#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, version_ ){
-#ifdef Pandas_YamlBlastCache_Serialize
-		this->datatypeSize = sizeof(datatype);
-#endif // Pandas_YamlBlastCache_Serialize
 	}
 
 	void clear() override{
 		TypesafeYamlDatabase<keytype, datatype>::clear();
 		cache.clear();
+		cache.shrink_to_fit();
 	}
 
 	std::shared_ptr<datatype> find( keytype key ) override{
@@ -294,6 +171,10 @@ public:
 		}else{
 			return cache[this->calculateCacheKey( key )];
 		}
+	}
+
+	std::vector<std::shared_ptr<datatype>> getCache() {
+		return this->cache;
 	}
 
 	virtual size_t calculateCacheKey( keytype key ){
@@ -308,8 +189,10 @@ public:
 
 			// Check if the key fits into the current cache size
 			if (this->cache.capacity() <= key) {
+				// Some keys compute to 0, so we allocate a minimum of 500 (250*2) entries
+				const static size_t minimum = 250;
 				// Double the current size, so we do not have to resize that often
-				size_t new_size = key * 2;
+				size_t new_size = std::max( key, minimum ) * 2;
 
 				// Very important => initialize everything to nullptr
 				this->cache.resize(new_size, nullptr);
@@ -325,71 +208,5 @@ public:
 };
 
 void do_init_database();
-
-#ifdef Pandas_YamlBlastCache_Serialize
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// class TypesafeYamlDatabase<keytype, datatype>
-		// ======================================================================
-
-		template<class Archive, typename keytype, typename datatype>
-		inline void save_construct_data(
-			Archive& ar, const TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
-		) {
-			// save data required to construct instance
-			ar << t->type;
-			ar << t->version;
-			ar << t->minimumVersion;
-		}
-
-		template<class Archive, typename keytype, typename datatype>
-		inline void load_construct_data(
-			Archive& ar, TypesafeYamlDatabase<keytype, datatype>* t, const unsigned int version
-		) {
-			// retrieve data from archive required to construct new instance
-			std::string type_;
-			uint16 version_ = 0, minimumVersion_ = 0;
-
-			ar >> type_;
-			ar >> version_;
-			ar >> minimumVersion_;
-
-			// invoke inplace constructor to initialize instance of my_class
-			::new(t)TypesafeYamlDatabase<keytype, datatype>(type_, version_, minimumVersion_);
-		}
-
-		// ======================================================================
-		// class TypesafeCachedYamlDatabase<keytype, datatype>
-		// ======================================================================
-
-		template<class Archive, typename keytype, typename datatype>
-		inline void save_construct_data(
-			Archive& ar, const TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
-		) {
-			// save data required to construct instance
-			ar << t->type;
-			ar << t->version;
-			ar << t->minimumVersion;
-		}
-
-		template<class Archive, typename keytype, typename datatype>
-		inline void load_construct_data(
-			Archive& ar, TypesafeCachedYamlDatabase<keytype, datatype>* t, const unsigned int version
-		) {
-			// retrieve data from archive required to construct new instance
-			std::string type_;
-			uint16 version_ = 0, minimumVersion_ = 0;
-
-			ar >> type_;
-			ar >> version_;
-			ar >> minimumVersion_;
-
-			// invoke inplace constructor to initialize instance of my_class
-			::new(t)TypesafeCachedYamlDatabase<keytype, datatype>(type_, version_, minimumVersion_);
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_Serialize
 
 #endif /* DATABASE_HPP */
