@@ -394,9 +394,7 @@ void mapif_party_noinfo(int fd, int party_id, uint32 char_id)
 	WFIFOL(fd,4) = char_id;
 	WFIFOL(fd,8) = party_id;
 	WFIFOSET(fd, 12);
-#ifdef Pandas_Cross_Server
-	if(party_id > 0)
-#endif
+
 	ShowWarning("int_party: info not found (party_id=%d char_id=%d)\n", party_id, char_id);
 
 }

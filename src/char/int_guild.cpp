@@ -997,34 +997,16 @@ int mapif_guild_created(int fd,uint32 account_id,struct guild *g)
 }
 
 // Guild not found
-#ifndef Pandas_Cross_Server
-int mapif_guild_noinfo(int fd,int guild_id)
-#else
-int mapif_guild_noinfo(int fd, int guild_id, int char_id = 0)
-#endif
+int mapif_guild_noinfo(int fd, int guild_id)
 {
-	int offset = 0;
-#ifndef Pandas_Cross_Server
 #ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12];
 #else
 	unsigned char buf[12] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
-#else
-#ifndef Pandas_Crashfix_Variable_Init
-	unsigned char buf[16];
-#else
-	unsigned char buf[16] = { 0 };
-#endif // Pandas_Crashfix_Variable_Init
-	offset += 4;
-#endif
 	WBUFW(buf,0)=0x3831;
-	WBUFW(buf,2)=8+offset;
+	WBUFW(buf,2)=8;
 	WBUFL(buf,4)=guild_id;
-#ifdef Pandas_Cross_Server
-	WBUFL(buf,8)=char_id;
-	if(guild_id != 0)
-#endif
 	ShowWarning("int_guild: info not found %d\n",guild_id);
 	if(fd<0)
 		chmapif_sendall(buf, WBUFW(buf, 2));
