@@ -43,11 +43,7 @@ int mapif_guild_broken(int guild_id,int flag);
 bool guild_check_empty(struct guild *g);
 int guild_calcinfo(struct guild *g);
 int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len);
-#ifndef Pandas_Cross_Server
-int mapif_guild_info(int fd,struct guild *g);
-#else
-int mapif_guild_info(int fd, struct guild* g, int char_id = 0);
-#endif
+int mapif_guild_info(int fd, struct guild* g);
 int guild_break_sub(int key,void *data,va_list ap);
 int inter_guild_tosql(struct guild *g,int flag);
 int guild_checkskill(struct guild *g, int id);
@@ -1038,33 +1034,16 @@ int mapif_guild_noinfo(int fd, int guild_id, int char_id = 0)
 }
 
 // Send guild info
-#ifndef Pandas_Cross_Server
-int mapif_guild_info(int fd,struct guild *g)
-#else
-int mapif_guild_info(int fd, struct guild* g,int char_id)
-#endif
+int mapif_guild_info(int fd, struct guild* g)
 {
-	int offset = 0;
-#ifndef Pandas_Cross_Server
 #ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8 + sizeof(struct guild)];
 #else
 	unsigned char buf[8 + sizeof(struct guild)] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
-#else
-#ifndef Pandas_Crashfix_Variable_Init
-	unsigned char buf[12 + sizeof(struct guild)];
-#else
-	unsigned char buf[12 + sizeof(struct guild)] = { 0 };
-#endif // Pandas_Crashfix_Variable_Init
-	offset += 4;
-#endif
 	WBUFW(buf,0)=0x3831;
-	WBUFW(buf,2)=4+offset+sizeof(struct guild);
-#ifdef Pandas_Cross_Server
-	WBUFL(buf, 4)=char_id;
-#endif
-	memcpy(buf+4+offset,g,sizeof(struct guild));
+	WBUFW(buf,2)=4+sizeof(struct guild);
+	memcpy(buf+4,g,sizeof(struct guild));
 	if(fd<0)
 		chmapif_sendall(buf,WBUFW(buf,2));
 	else
@@ -1444,22 +1423,6 @@ int mapif_parse_GuildInfo(int fd,int guild_id)
 	return 0;
 }
 
-int mapif_parse_GuildInfoCS(int fd, int char_id);
-// Return guild info to client
-#ifdef Pandas_Cross_Server
-int mapif_parse_GuildInfoCS(int fd, int char_id)
-{
-	struct guild* g = inter_guild_id_fromsql(char_id); //We use this because on start-up the info of castle-owned guilds is requied. [Skotlex]
-	if (g)
-	{
-		if (!guild_calcinfo(g))
-			mapif_guild_info(fd, g, char_id);
-	}
-	else
-		mapif_guild_noinfo(fd, 0,char_id); // Failed to load info
-	return 0;
-}
-#endif
 
 // Add member to guild
 int mapif_parse_GuildAddMember(int fd,int guild_id,struct guild_member *m)
@@ -2130,9 +2093,6 @@ int inter_guild_parse_frommap(int fd)
 	case 0x3040: mapif_parse_GuildCastleDataLoad(fd,RFIFOW(fd,2),(int *)RFIFOP(fd,4)); break;
 	case 0x3041: mapif_parse_GuildCastleDataSave(fd,RFIFOW(fd,2),RFIFOB(fd,4),RFIFOL(fd,5)); break;
 	case 0x3042: mapif_parse_GuildEmblemVersion(fd, RFIFOL(fd, 2), RFIFOL(fd, 6)); break;
-#ifdef Pandas_Cross_Server
-	case 0x3043: mapif_parse_GuildInfoCS(fd, RFIFOL(fd, 2)); break;
-#endif
 	default:
 		return 0;
 	}

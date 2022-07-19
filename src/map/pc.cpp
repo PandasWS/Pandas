@@ -2039,39 +2039,26 @@ void pc_reg_received(struct map_session_data *sd)
 #if PACKETVER_MAIN_NUM < 20190403 || PACKETVER_RE_NUM < 20190320 || PACKETVER_ZERO_NUM < 20190410
 	if (sd->instance_id > 0)
 		instance_reqinfo(sd, sd->instance_id);
-#ifndef Pandas_Cross_Server
+
 	if (sd->status.party_id > 0)
 		party_member_joined(sd);
 	if (sd->status.guild_id > 0)
 		guild_member_joined(sd);
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
-#else
-	//为了刷新客户端残留数据而强制查询
-	party_member_joined(sd);
-	//guild_member_joined(sd);
-	//clan_member_joined(sd);
-	intif_guild_request_info_cs(sd->status.char_id);
-	intif_clan_member_joined_cs(sd->status.char_id);
-	//此场合发生的情景有:
-	//①:角色在中立服切换到源服时
-	//②:角色在源服登陆时
-	//造成的结果:
-	//①: 角色在中立服持有公会或队伍,源服未持有公会或队伍,通过发送公会解散或队伍退出的封包,可使得客户端缓存的数据正确去掉
-	//②: 角色只要未持有队伍或公会,就依然会收到退出通知
-	//原因: 因为此刻无法判断是源服还是中立服切换的登陆,因为数据没有缓存协助追踪上一行为
+#ifdef Pandas_Cross_Server
 	//由于了切换数据,所以要更新客户端数据
-	clif_updatestatus(sd, SP_SPEED);
-	clif_updatestatus(sd, SP_BASELEVEL);
-	clif_updatestatus(sd, SP_BASEEXP);
+	clif_updatestatus(sd, SP_SPEED);//解决@speed的问题
+	clif_updatestatus(sd, SP_BASELEVEL);//解决中立服inherit_source_server_chara_status:no的问题,虽然会有升级特效
+	clif_updatestatus(sd, SP_BASEEXP);//下同
 	clif_updatestatus(sd, SP_NEXTBASEEXP);
 	clif_updatestatus(sd, SP_STATUSPOINT);
 	clif_updatestatus(sd, SP_JOBLEVEL);
 	clif_updatestatus(sd, SP_JOBEXP);
 	clif_updatestatus(sd, SP_NEXTJOBEXP);
 	clif_updatestatus(sd, SP_SKILLPOINT);
-	clif_updatestatus(sd, SP_CARTINFO);
-	clif_updatestatus(sd, SP_ZENY);
+	clif_updatestatus(sd, SP_CARTINFO);//解决中立服inherit_source_server_chara_status:no,客户端手推车数据
+	clif_updatestatus(sd, SP_ZENY);//解决中立服inherit_source_server_chara_status:no,客户端zeny数据
 	//Change look, if disguised, you need to undisguise
 	//to correctly calculate new job sprite without
 	if (sd->disguise)
@@ -2084,10 +2071,6 @@ void pc_reg_received(struct map_session_data *sd)
 #endif
 	if (sd->vd.cloth_color)
 		clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
-	/*
-	if(sd->vd.body_style)
-		clif_changelook(&sd->bl,LOOK_BODY2,sd->vd.body_style);
-	*/
 	//Update skill tree.
 	pc_calc_skilltree(sd);
 	clif_skillinfoblock(sd);
@@ -2113,7 +2096,6 @@ void pc_reg_received(struct map_session_data *sd)
 		clif_changestatus(sd, SP_MANNER, sd->status.manner);
 
 	pc_equiplookall(sd);
-	pc_show_questinfo(sd);
 	
 #endif
 #endif
@@ -7168,6 +7150,27 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		pc_clean_skilltree(sd);
 		chrif_save(sd, CSAVE_CHANGE_MAPSERV|CSAVE_INVENTORY|CSAVE_CART);
 		chrif_changemapserver(sd, ip, (short)port);
+
+#ifdef Pandas_Cross_Server
+		//清空部分客户端内容
+		clif_party_withdraw(sd, sd->status.account_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE, SELF);
+		clif_guild_broken(sd, 0);
+		{
+			//复制一份来操作
+			struct map_session_data* ssd;
+			CREATE(ssd, struct map_session_data, 1);
+			memcpy(ssd, sd, sizeof(sd));
+			for (int i = 0; i < MAX_SKILL; i++) {
+				if(ssd->status.skill[i].id && ssd->status.skill[i].lv > 0)
+				{
+					ssd->status.skill[i].lv = 0;
+					ssd->status.skill[i].flag = SKILL_FLAG_PERMANENT;
+				}
+			}
+			clif_skillinfoblock(ssd);
+			aFree(ssd);
+		}
+#endif
 
 		//Free session data from this map server [Kevin]
 		unit_free_pc(sd);

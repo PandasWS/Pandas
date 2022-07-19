@@ -648,11 +648,7 @@ int guild_recv_noinfo(int guild_id) {
 }
 
 //Get and display information for all member
-#ifndef Pandas_Cross_Server
 int guild_recv_info(struct guild* sg) {
-#else
-int guild_recv_info(struct guild* sg, int char_id) {
-#endif
 	struct guild *g,before;
 	int i,bm,m;
 	DBData data;
@@ -692,25 +688,12 @@ int guild_recv_info(struct guild* sg, int char_id) {
 		g->max_member = MAX_GUILD;
 	}
 
-#ifdef Pandas_Cross_Server
-	//覆写sd->guild_id
-	if (char_id != 0) { // requester
-		sd = map_charid2sd(char_id);
-		if (sd && guild_getindex(g,sd->status.account_id,sd->status.char_id) > -1)
-		{
-			sd->status.guild_id = g->guild_id;
-			sd->guild = g;
-			auto master_sd = map_nick2sd(g->master, false);
-			if(master_sd && sd->status.char_id == master_sd->status.char_id)
-				sd->state.gmaster_flag = 1;
-		}
-	}
-#endif
 	for(i=bm=m=0;i<g->max_member;i++){
 		if(g->member[i].account_id>0){
 			sd = g->member[i].sd = guild_sd_check(g->guild_id, g->member[i].account_id, g->member[i].char_id);
 			if (sd) clif_name_area(&sd->bl); // [LuzZza]
 #ifdef Pandas_Cross_Server
+			//中立服->源服时在这里替换掉guild
 			if (sd && guild_getindex(g, sd->status.account_id, sd->status.char_id) > -1)
 			{
 				sd->status.guild_id = g->guild_id;

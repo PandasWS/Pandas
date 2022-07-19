@@ -170,57 +170,6 @@ static void mapif_parse_clan_member_left( int fd ){
 	}
 }
 
-static void mapif_parse_clan_member_joined_cs(int fd) {
-
-	int char_id = RFIFOL(fd, 2);
-	int clan_id = 0;
-	struct mmo_charstatus* cd;
-	char* data;
-
-	if (char_id <= 0)
-		return;
-
-	//Load from memory
-	cd = static_cast<mmo_charstatus*>(idb_get(char_get_chardb(), char_id));
-	if (cd == nullptr)
-	{
-		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `clan_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, char_id)) {
-			Sql_ShowDebug(sql_handle);
-			Sql_FreeResult(sql_handle);
-			return;
-		}
-		else {
-			if (SQL_SUCCESS == Sql_NextRow(sql_handle))
-			{
-				Sql_GetData(sql_handle, 0, &data, NULL); clan_id = atoi(data);
-			}
-			Sql_FreeResult(sql_handle);
-		}
-	}
-	else
-		clan_id = cd->clan_id;
-
-	struct clan* clan = (struct clan*)idb_get(clan_db, clan_id);
-
-	if (clan == NULL) { // Unknown clan
-		return;
-	}
-
-	clan->connect_member++;
-
-#ifndef Pandas_Crashfix_Variable_Init
-	unsigned char buf[10];
-#else
-	unsigned char buf[10] = { 0 };
-#endif // Pandas_Crashfix_Variable_Init
-
-	WBUFW(buf, 0) = 0x38A3;
-	WBUFL(buf, 2) = char_id;
-	WBUFL(buf, 6) = clan->id;
-
-	chmapif_send(fd, buf, 10);
-}
-
 static void mapif_parse_clan_member_joined( int fd ){
 	struct clan* clan = (struct clan*)idb_get(clan_db, RFIFOL(fd,2) );
 
@@ -256,9 +205,6 @@ int inter_clan_parse_frommap( int fd ){
 			return 1;
 		case 0x30A3:
 			mapif_parse_clan_member_joined( fd );
-			return 1;
-		case 0x30A4:
-			mapif_parse_clan_member_joined_cs(fd);
 			return 1;
 		default:
 			return 0;

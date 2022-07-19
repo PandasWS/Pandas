@@ -47,7 +47,7 @@ static const int packet_len_table[] = {
 	-1, 3, 3, 0,  0, 0, 0, 0,  0, 0, 0, 0, -1, 3,  3, 0, //0x3870  Mercenaries [Zephyrus] / Elemental [pakpil]
 	12,-1, 7, 3,  0, 0, 0, 0,  0, 0,-1, 9, -1, 0,  0, 0, //0x3880  Pet System,  Storages
 	-1,-1, 7, 3,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x3890  Homunculus [albator]
-	-1,-1, 8,10,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38A0  Clans
+	-1,-1, 8, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, //0x38A0  Clans
 };
 
 extern int char_fd; // inter server Fd used for char_fd
@@ -1952,34 +1952,14 @@ int intif_parse_GuildCreated(int fd)
  */
 int intif_parse_GuildInfo(int fd)
 {
-#ifndef Pandas_Cross_Server
-	if(RFIFOW(fd,2) == 8) {
-		ShowWarning("intif: guild noinfo %d\n",RFIFOL(fd,4));
-		guild_recv_noinfo(RFIFOL(fd,4));
-		return 0;
-	}
-	if( RFIFOW(fd,2)!=sizeof(struct guild)+4 )
-		ShowError("intif: guild info : data size error Gid: %d recv size: %d Expected size: %" PRIuPTR "\n",RFIFOL(fd,4),RFIFOW(fd,2),sizeof(struct guild)+4);
-	guild_recv_info((struct guild *)RFIFOP(fd,4));
-#else
-	int len = RFIFOW(fd, 2);
-	if (len == 12) {
-		if (RFIFOL(fd, 4) == 0)
-		{
-			auto sd = map_charid2sd(RFIFOL(fd, 8));
-			//刷新掉公会框里的内容
-			if (sd)
-				clif_guild_broken(sd, 0);
-		}
-		else
-			ShowWarning("intif: guild noinfo %d\n", RFIFOL(fd, 4));
+	if (RFIFOW(fd, 2) == 8) {
+		ShowWarning("intif: guild noinfo %d\n", RFIFOL(fd, 4));
 		guild_recv_noinfo(RFIFOL(fd, 4));
 		return 0;
 	}
-	if (len != sizeof(struct guild) + 8)
-		ShowError("intif: guild info : data size error Gid: %d recv size: %d Expected size: %" PRIuPTR "\n", RFIFOL(fd, 4), RFIFOW(fd, 2), sizeof(struct guild) + 8);
-	guild_recv_info((struct guild*)RFIFOP(fd, 8), RFIFOL(fd, 4));
-#endif
+	if (RFIFOW(fd, 2) != sizeof(struct guild) + 4)
+		ShowError("intif: guild info : data size error Gid: %d recv size: %d Expected size: %" PRIuPTR "\n", RFIFOL(fd, 4), RFIFOW(fd, 2), sizeof(struct guild) + 4);
+	guild_recv_info((struct guild*)RFIFOP(fd, 4));
 	return 1;
 }
 
@@ -4379,25 +4359,6 @@ int intif_clan_member_joined( int clan_id ){
 	return 1;
 }
 
-int intif_clan_member_joined_cs(int char_id) {
-#ifdef Pandas_Cross_Server
-	if (is_cross_server)
-		switch_char_fd_cs_id(0, char_fd);
-#endif
-	if (CheckForCharServer())
-		return 0;
-
-	if (other_mapserver_count < 1)
-		return 0; //No need to send.
-
-	WFIFOHEAD(inter_fd, 6);
-	WFIFOW(inter_fd, 0) = 0x30A4;
-	WFIFOL(inter_fd, 2) = char_id;
-	WFIFOSET(inter_fd, 6);
-
-	return 1;
-}
-
 int intif_parse_clan_onlinecount( int fd ){
 	struct clan* clan = clan_search(RFIFOL(fd,2));
 
@@ -4411,25 +4372,6 @@ int intif_parse_clan_onlinecount( int fd ){
 
 	return 1;
 }
-
-int intif_parse_clan_joined_cs(int fd) {
-
-	const int char_id = RFIFOL(fd, 2);
-	const int clan_id = RFIFOL(fd, 6);
-
-	struct clan* clan = clan_search(clan_id);
-	TBL_PC* sd = map_charid2sd(char_id);
-
-	nullpo_retr(0, sd);
-	nullpo_retr(0, clan);
-
-	sd->status.clan_id = clan->id;
-
-	clan_member_joined(sd);
-
-	return 1;
-}
-
 
 //-----------------------------------------------------------------
 uint32 packet_trace_id = 0;
@@ -4582,7 +4524,6 @@ int intif_parse(int fd)
 	case 0x38A0:	intif_parse_clans(fd); break;
 	case 0x38A1:	intif_parse_clan_message(fd); break;
 	case 0x38A2:	intif_parse_clan_onlinecount(fd); break;
-	case 0x38A3:	intif_parse_clan_joined_cs(fd); break;
 
 	default:
 		ShowError("intif_parse : unknown packet %d %x\n",fd,RFIFOW(fd,0));

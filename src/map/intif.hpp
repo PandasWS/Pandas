@@ -52,7 +52,6 @@ int intif_party_sharelvlupdate(unsigned int share_lvl);
 
 int intif_guild_create(const char *name, const struct guild_member *master);
 int intif_guild_request_info(int guild_id);
-int intif_guild_request_info_cs(int char_id);
 int intif_guild_addmember(int guild_id, struct guild_member *m);
 int intif_guild_leave(int guild_id, uint32 account_id, uint32 char_id, int flag, const char *mes);
 int intif_guild_memberinfoshort(int guild_id, uint32 account_id, uint32 char_id, int online, int lv, int class_);
@@ -135,7 +134,6 @@ int intif_elemental_save(struct s_elemental *ele);
 int intif_clan_requestclans();
 int intif_clan_message(int clan_id,uint32 account_id,const char *mes,int len);
 int intif_clan_member_joined( int clan_id );
-int intif_clan_member_joined_cs(int char_id);
 int intif_clan_member_left( int clan_id );
 // ACHIEVEMENT SYSTEM
 void intif_request_achievements(uint32 char_id);
