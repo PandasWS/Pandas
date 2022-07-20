@@ -373,6 +373,7 @@ void storage_storageadd(struct map_session_data* sd, struct s_storage *stor, int
 	else if (result == STORAGE_ADD_OK) {
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 		if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_INVENTORY)) {
+			clif_storageitemremoved(sd, index, 0);
 			clif_dropitem(sd, index, 0);
 			return;
 		}
@@ -414,6 +415,7 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
+		clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
@@ -449,6 +451,8 @@ void storage_storageaddfromcart(struct map_session_data *sd, struct s_storage *s
 	else if (result == STORAGE_ADD_OK) {
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 		if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_CART)) {
+			clif_storageitemremoved(sd, index, 0);
+			clif_cart_delitem(sd, index, 0);
 			return;
 		}
 #endif // Pandas_NpcFilter_STORAGE_ADD
@@ -494,6 +498,7 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
+		clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
@@ -977,6 +982,7 @@ void storage_guild_storageadd(struct map_session_data* sd, int index, int amount
 
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 	if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_INVENTORY)) {
+		clif_storageitemremoved(sd, index, 0);
 		clif_dropitem(sd, index, 0);
 		return;
 	}
@@ -1024,6 +1030,7 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
+		clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
@@ -1063,6 +1070,8 @@ void storage_guild_storageaddfromcart(struct map_session_data* sd, int index, in
 
 #ifdef Pandas_NpcFilter_STORAGE_ADD
 	if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_CART)) {
+		clif_storageitemremoved(sd, index, 0);
+		clif_cart_delitem(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_ADD
@@ -1104,6 +1113,7 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
+		clif_storageitemremoved(sd, index, 0);
 		return;
 	}
 #endif // Pandas_NpcFilter_STORAGE_DEL
