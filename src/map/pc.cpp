@@ -365,6 +365,8 @@ void PenaltyDatabase::loadingFinished(){
 			}
 		}
 	}
+
+	TypesafeYamlDatabase::loadingFinished();
 }
 
 PenaltyDatabase penalty_db;
@@ -1034,6 +1036,17 @@ bool pc_can_trade_item(map_session_data *sd, int index) {
 
 	return false;
 }
+
+#ifdef Pandas_ScriptCommand_GetInventoryList
+bool pc_can_trade_item(map_session_data *sd, struct item& item) {
+	return (sd && item.expire_time == 0 &&
+		(item.bound == 0 || pc_can_give_bounded_items(sd)) &&
+		itemdb_cantrade(&item, pc_get_group_level(sd), pc_get_group_level(sd))
+		);
+
+	return false;
+}
+#endif // Pandas_ScriptCommand_GetInventoryList
 
 /*==========================================
  * Prepares character for saving.
@@ -2724,19 +2737,19 @@ static void pc_bonus_autospell(std::vector<s_autospell> &spell, uint16 id, uint1
 		if ((it.card_id == card_id || it.rate < 0 || rate < 0) && it.id == id && it.lv == lv && it.battle_flag == battle_flag && it.flag == flag) {
 			if (!battle_config.autospell_stacking && it.rate > 0 && rate > 0) // Stacking disabled
 				return;
-			it.rate = util::safe_addition_cap(it.rate, rate, (short)10000);
+			it.rate = util::safe_addition_cap(it.rate, rate, (short)1000);
 			return;
 		}
 	}
 
 	struct s_autospell entry = {};
 
-	if (rate < -10000 || rate > 10000)
-		ShowWarning("pc_bonus_autospell: Item bonus rate %d exceeds -10000~10000 range, capping.\n", rate);
+	if (rate < -1000 || rate > 1000)
+		ShowWarning("pc_bonus_autospell: Item bonus rate %d exceeds -1000~1000 range, capping.\n", rate);
 
 	entry.id = id;
 	entry.lv = lv;
-	entry.rate = cap_value(rate, -10000, 10000);
+	entry.rate = cap_value(rate, -1000, 1000);
 	entry.battle_flag = battle_flag;
 	entry.card_id = card_id;
 	entry.flag = flag;
@@ -2768,13 +2781,13 @@ static void pc_bonus_autospell_onskill(std::vector<s_autospell> &spell, uint16 s
 
 	struct s_autospell entry = {};
 
-	if (rate < -10000 || rate > 10000)
-		ShowWarning("pc_bonus_onskill: Item bonus rate %d exceeds -10000~10000 range, capping.\n", rate);
+	if (rate < -1000 || rate > 1000)
+		ShowWarning("pc_bonus_onskill: Item bonus rate %d exceeds -1000~1000 range, capping.\n", rate);
 
 	entry.trigger_skill = src_skill;
 	entry.id = id;
 	entry.lv = lv;
-	entry.rate = cap_value(rate, -10000, 10000);
+	entry.rate = cap_value(rate, -1000, 1000);
 	entry.card_id = card_id;
 	entry.flag = flag;
 
@@ -5262,15 +5275,13 @@ bool pc_skill(struct map_session_data* sd, uint16 skill_id, int level, enum e_ad
 
 		case ADDSKILL_TEMP: //Item bonus skill.
 			if (sd->status.skill[idx].id != 0) {
-				if (sd->status.skill[idx].lv >= level)
-					return true;
 				if (sd->status.skill[idx].flag == SKILL_FLAG_PERMANENT) //Non-granted skill, store it's level.
 					sd->status.skill[idx].flag = SKILL_FLAG_REPLACED_LV_0 + sd->status.skill[idx].lv;
 			} else {
 				sd->status.skill[idx].id   = skill_id;
 				sd->status.skill[idx].flag = SKILL_FLAG_TEMPORARY;
 			}
-			sd->status.skill[idx].lv = level;
+			sd->status.skill[idx].lv = max(sd->status.skill[idx].lv, level);
 			break;
 
 		case ADDSKILL_TEMP_ADDLEVEL: //Add skill bonus on top of what you had.
@@ -5526,7 +5537,7 @@ uint16 pc_inventoryblank(struct map_session_data *sd)
 
 	nullpo_ret(sd);
 
-	for(i = 0, b = 0; i < MAX_INVENTORY; i++){
+	for(i = 0, b = 0; i < sd->status.inventory_slots; i++){
 		if(sd->inventory.u.items_inventory[i].nameid == 0)
 			b++;
 	}
@@ -7301,6 +7312,31 @@ uint8 pc_checkskill(struct map_session_data *sd, uint16 skill_id)
 		return 0;
 	}
 	return (sd->status.skill[idx].id == skill_id) ? sd->status.skill[idx].lv : 0;
+}
+
+/**
+ * Returns the flag of the given skill (when learned).
+ * @param sd: Player data
+ * @param skill_id: Skill to lookup
+ * @return Skill flag type
+ */
+e_skill_flag pc_checkskill_flag(map_session_data &sd, uint16 skill_id) {
+	uint16 idx;
+
+#ifdef RENEWAL
+	if ((idx = skill_get_index(skill_id)) == 0) {
+#else
+	if ((idx = skill_db.get_index(skill_id, skill_id >= RK_ENCHANTBLADE, __FUNCTION__, __FILE__, __LINE__)) == 0) {
+		if (skill_id >= RK_ENCHANTBLADE) {
+			// Silently fail for now -> future update planned
+			return SKILL_FLAG_NONE;
+		}
+#endif
+		ShowError("pc_checkskill_flag: Invalid skill id %d (char_id=%d).\n", skill_id, sd.status.char_id);
+		return SKILL_FLAG_NONE;
+	}
+
+	return (sd.status.skill[idx].id == skill_id && sd.status.skill[idx].lv > 0) ? static_cast<e_skill_flag>(sd.status.skill[idx].flag) : SKILL_FLAG_NONE;
 }
 
 /**
@@ -13805,26 +13841,9 @@ void SkillTreeDatabase::loadingFinished() {
 			}
 		}
 	}
-}
 
-#ifdef Pandas_YamlBlastCache_SkillTreeDatabase
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 21:05
-//************************************ 
-const std::string SkillTreeDatabase::getDependsHash() {
-	// 在 SkillTreeDatabase 中使用到了 SKILL_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%") %
-		this->getCacheHashByName("SKILL_DB")
-	);
-	return depends;
+	TypesafeYamlDatabase::loadingFinished();
 }
-#endif // Pandas_YamlBlastCache_SkillTreeDatabase
 
 /**
  * Calculates base hp of player. Reference: http://irowiki.org/wiki/Max_HP
@@ -14387,27 +14406,9 @@ void JobDatabase::loadingFinished() {
 			}
 		}
 	}
-}
 
-#ifdef Pandas_YamlBlastCache_JobDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 JobDatabase 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/12/25 15:06
-//************************************ 
-void JobDatabase::afterCacheRestore() {
-	for (const auto& it : *this) {
-		auto job = it.second;
-
-		// ==================================================================
-		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
-		// ==================================================================
-		SERIALIZE_SET_MEMORY_ZERO(job->noenter_map);
-	}
+	TypesafeCachedYamlDatabase::loadingFinished();
 }
-#endif // Pandas_YamlBlastCache_JobDatabase
 
 /**
  * Read job_noenter_map.txt
@@ -14569,6 +14570,8 @@ void PlayerStatPointDatabase::loadingFinished(){
 		// Store it for next iteration
 		last_level = entry;
 	}
+
+	TypesafeCachedYamlDatabase::loadingFinished();
 }
 
 /*==========================================

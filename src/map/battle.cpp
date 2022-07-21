@@ -1176,6 +1176,14 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 			status_change_end(target, SC_GUARDIAN_S, INVALID_TIMER);
 	}
 
+	// Weapon Blocking can be triggered while the above statuses are active.
+	if ((sce = sc->data[SC_WEAPONBLOCKING]) && flag & (BF_SHORT | BF_WEAPON) && rnd() % 100 < sce->val2) {
+		clif_skill_nodamage(target, src, GC_WEAPONBLOCKING, sce->val1, 1);
+		sc_start(src, target, SC_WEAPONBLOCK_ON, 100, src->id, skill_get_time2(GC_WEAPONBLOCKING, sce->val1));
+		d->dmg_lv = ATK_BLOCK;
+		return false;
+	}
+
 	if (damage == 0)
 		return false;
 
@@ -1247,13 +1255,6 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 			d->dmg_lv = ATK_BLOCK;
 			return false;
 		}
-	}
-
-	if ((sce = sc->data[SC_WEAPONBLOCKING]) && flag&(BF_SHORT | BF_WEAPON) && rnd() % 100 < sce->val2) {
-		clif_skill_nodamage(target, src, GC_WEAPONBLOCKING, sce->val1, 1);
-		sc_start(src, target, SC_WEAPONBLOCK_ON, 100, src->id, skill_get_time2(GC_WEAPONBLOCKING, sce->val1));
-		d->dmg_lv = ATK_BLOCK;
-		return false;
 	}
 
 	if ((sce = sc->data[SC_MILLENNIUMSHIELD]) && sce->val2 > 0 && damage > 0) {
@@ -3835,6 +3836,7 @@ static void battle_calc_multi_attack(struct Damage* wd, struct block_list *src,s
 	if( sd && !skill_id ) {	// if no skill_id passed, check for double attack [helvetica]
 		short i;
 		if( ( ( skill_lv = pc_checkskill(sd,TF_DOUBLE) ) > 0 && sd->weapontype1 == W_DAGGER )
+			|| ( pc_checkskill_flag(*sd, TF_DOUBLE) > SKILL_FLAG_PERMANENT && sd->weapontype1 != W_FIST )
 			|| ( sd->bonus.double_rate > 0 && sd->weapontype1 != W_FIST ) // Will fail bare-handed
 			|| ( sc && sc->data[SC_KAGEMUSYA] && sd->weapontype1 != W_FIST )) // Will fail bare-handed
 		{	//Success chance is not added, the higher one is used [Skotlex]
@@ -8310,6 +8312,18 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 		if (d.dmg_lv == ATK_DEF /*&& attack_type&(BF_MAGIC|BF_MISC)*/) // Isn't it that additional effects don't apply if miss?
 			d.dmg_lv = ATK_MISS;
 		d.dmotion = 0;
+
+		status_change *tsc = status_get_sc(target);
+
+		// Weapon Blocking has the ability to trigger on ATK_MISS as well.
+		if (tsc != nullptr && tsc->data[SC_WEAPONBLOCKING]) {
+			status_change_entry *tsce = tsc->data[SC_WEAPONBLOCKING];
+
+			if (attack_type == BF_WEAPON && rnd() % 100 < tsce->val2) {
+				clif_skill_nodamage(target, bl, GC_WEAPONBLOCKING, tsce->val1, 1);
+				sc_start(bl, target, SC_WEAPONBLOCK_ON, 100, bl->id, skill_get_time2(GC_WEAPONBLOCKING, tsce->val1));
+			}
+		}
 	}
 	else // Some skills like Weaponry Research will cause damage even if attack is dodged
 		d.dmg_lv = ATK_DEF;
@@ -9039,6 +9053,48 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		damage = wd.damage + wd.damage2;
 	}
 #endif // Pandas_Bonus3_bFinalAddClass
+
+#ifdef Pandas_NpcExpress_PCHARMED
+	if (src && target && damage > 0) {
+		// 负责执行事件的玩家对象 (事件执行者)
+		struct map_session_data* esd = nullptr;
+
+		// 若受伤害者不是玩家单位, 那么试图获取受伤害者的主人
+		if (target->type != BL_PC) {
+			struct block_list* mbl = nullptr;
+			mbl = battle_get_master(target);
+			if (mbl != nullptr && mbl->type == BL_PC) {
+				esd = BL_CAST(BL_PC, mbl);
+			}
+		}
+		
+		// 若负责执行事件的玩家对象依然没被指定
+		// 且受伤害者是一个玩家单位, 那么将受伤害者直接指定成负责执行事件的玩家
+		if (!esd && target->type == BL_PC) {
+			esd = (TBL_PC*)target;
+		}
+
+		// 若到这里还没有一个合适的事件执行者则不需要触发事件
+		if (esd) {
+			pc_setreg(esd, add_str("@harmed_target_type"), target->type);
+			pc_setreg(esd, add_str("@harmed_target_gid"), target->id);
+			
+			pc_setreg(esd, add_str("@harmed_src_type"), src->type);
+			pc_setreg(esd, add_str("@harmed_src_gid"), src->id);
+			pc_setreg(esd, add_str("@harmed_src_mobid"), (src->type == BL_MOB ? ((TBL_MOB*)src)->mob_id : 0));
+			
+			pc_setreg(esd, add_str("@harmed_damage_flag"), wd.flag);
+			pc_setreg(esd, add_str("@harmed_damage_skillid"), 0);
+			pc_setreg(esd, add_str("@harmed_damage_skilllv"), 0);
+			pc_setreg(esd, add_str("@harmed_damage_right"), wd.damage);
+			pc_setreg(esd, add_str("@harmed_damage_left"), wd.damage2);
+			npc_script_event(esd, NPCX_PCHARMED);
+			wd.damage = (int)cap_value(pc_readreg(esd, add_str("@harmed_damage_right")), INT_MIN, INT_MAX);
+			wd.damage2 = (int)cap_value(pc_readreg(esd, add_str("@harmed_damage_left")), INT_MIN, INT_MAX);
+			damage = wd.damage + wd.damage2;
+		}
+	}
+#endif // Pandas_NpcExpress_PCHARMED
 
 #ifdef Pandas_NpcExpress_PCATTACK
 	if (src && target && damage > 0) {

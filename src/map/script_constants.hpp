@@ -201,6 +201,10 @@
 #ifdef Pandas_NpcExpress_PC_TALK
 	export_constant(NPCX_PC_TALK);	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+	export_constant(NPCX_PCHARMED);	// pcharmed_express_name	// OnPCHarmedExpress		// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 18>
 #endif // Pandas_ScriptCommands
 
@@ -218,6 +222,26 @@
 	export_constant(SELFDEL_NOW);
 	export_constant(SELFDEL_WAITFREE);
 #endif // Pandas_ScriptCommand_SelfDeletion
+
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	export_constant(INV_ID);
+	export_constant(INV_IDX);
+	export_constant(INV_AMOUNT);
+	export_constant(INV_EQUIP);
+	export_constant(INV_REFINE);
+	export_constant(INV_IDENTIFY);
+	export_constant(INV_ATTRIBUTE);
+	export_constant(INV_CARD);
+	export_constant(INV_EXPIRE);
+	export_constant(INV_BOUND);
+	export_constant(INV_ENCHANTGRADE);
+	export_constant(INV_OPTION);
+	export_constant(INV_TRADABLE);
+	export_constant(INV_FAVORITE);
+	export_constant(INV_UID);
+	export_constant(INV_EQUIPSWITCH);
+	export_constant(INV_ALL);
+#endif // Pandas_ScriptCommand_GetInventoryList
 
 	/* min and maximum variable value */
 	export_constant(INT_MIN);
@@ -6179,6 +6203,29 @@
 	export_constant(IG_SHADOW_CUBE_SHIELD);
 	export_constant(IG_SHADOW_CUBE_SHOES);
 	export_constant(IG_SHADOW_CUBE_WEAPON);
+	export_constant(IG_AUTOMATIC_MODULE_MIX);
+	export_constant(IG_EPIC_MODULE_MIX);
+	export_constant(IG_AUTO_M_I_BOX_A);
+	export_constant(IG_AUTO_M_I_BOX_B);
+	export_constant(IG_ILLUSION_MODULE_MIX);
+	export_constant(IG_ENCHANT_STONE_BOX22);
+	export_constant(IG_ENCHANT_STONE_BOX23);
+	export_constant(IG_ENCHANT_STONE_BOX24);
+	export_constant(IG_ENCHANT_STONE_BOX25);
+	export_constant(IG_ENCHANT_STONE_BOX27);
+	export_constant(IG_ANCIENT_HERO_BOX_1);
+	export_constant(IG_3LV_9REFINE_WEAPON_7GU);
+	export_constant(IG_3LV_10REFINE_WEAPON_8GU);
+	export_constant(IG_3LV_11REFINE_WEAPON_9GU);
+	export_constant(IG_3LV_12REFINE_WEAPON_10G);
+	export_constant(IG_4LV_9REFINE_WEAPON_8GU);
+	export_constant(IG_4LV_10REFINE_WEAPON_9GU);
+	export_constant(IG_4LV_11REFINE_WEAPON_10G);
+	export_constant(IG_BS_ITEM_M_S_52);
+	export_constant(IG_Bs_Item_M_S_53);
+	export_constant(IG_Bs_Item_M_S_54);
+	export_constant(IG_Bs_Item_M_S_55);
+	export_constant(IG_Bs_Item_M_S_56);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);

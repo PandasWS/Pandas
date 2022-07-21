@@ -27,7 +27,6 @@
 	#define Pandas_ScriptEngine
 	#define Pandas_Redeclaration
 	#define Pandas_UserExperience
-	#define Pandas_YamlBlastCache
 	#define Pandas_Cleanup
 	#define Pandas_NpcEvent
 	#define Pandas_Mapflags
@@ -68,7 +67,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.13.0"
+	#define Pandas_Version "1.1.14.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -987,6 +986,10 @@
 
 	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
 	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
+
+	// 修正 inter_server.yml 中的 Max 超大时没有妥善处理的问题 [Sola丶小克]
+	// 启用后 Max 字段的值最多不能超过 MAX_STORAGE 的值
+	#define Pandas_Fix_INTER_SERVER_DB_Field_Verify
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1232,61 +1235,10 @@
 
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
+
+	// 优化加载与解析 YAML 文件时出现的一些报错体验 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml_Error
 #endif // Pandas_UserExperience
-
-// ============================================================================
-// YAML 缓存组 - Pandas_YamlBlastCache
-// ============================================================================
-
-#ifdef Pandas_YamlBlastCache
-	// 能够对 YAML 类型的数据库进行序列化缓存 [Sola丶小克]
-	#ifndef MINICORE
-		#define Pandas_YamlBlastCache_Serialize
-	#endif // MINICORE
-
-	// 以下选项开关需要依赖 Pandas_YamlBlastCache_Serialize 的拓展
-	#ifdef Pandas_YamlBlastCache_Serialize
-		// 是否启用对 ItemDatabase 的序列化支持 [Sola丶小克]
-		// 此选项需要依赖 Pandas_Struct_Item_Data_Script_Plaintext 的拓展
-		#ifdef Pandas_Struct_Item_Data_Script_Plaintext
-			#define Pandas_YamlBlastCache_ItemDatabase
-		#endif // Pandas_Struct_Item_Data_Script_Plaintext
-
-		// 是否启用对 QuestDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_QuestDatabase
-
-		// 是否启用对 SkillDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_SkillDatabase
-
-		// 是否启用对 MobDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_MobDatabase
-
-		// 是否启用对 ItemGroupDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_ItemGroupDatabase
-
-		// 是否启用对 RandomOptionDatabase 的序列化支持 [Sola]
-		// 此选项需要依赖 Pandas_Struct_S_Random_Opt_Data_With_Plaintext 的拓展
-		#ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-			#define Pandas_YamlBlastCache_RandomOptionDatabase
-		#endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-
-		// 是否启用对 RandomOptionGroupDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_RandomOptionGroupDatabase
-
-		// 是否启用对 JobDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_JobDatabase
-
-		// 是否启用对 SkillTreeDatabase 的序列化支持 [Sola丶小克]
-		#define Pandas_YamlBlastCache_SkillTreeDatabase
-
-		// 是否启用对 ComboDatabase 的序列化支持 [Sola丶小克]
-		// 此选项需要依赖 Pandas_Struct_S_Item_Combo_With_Plaintext 的拓展
-		#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
-			#define Pandas_YamlBlastCache_ComboDatabase
-		#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
-	#endif // Pandas_YamlBlastCache_Serialize
-#endif // Pandas_YamlBlastCache
-
 
 // ============================================================================
 // 无用代码清理组 - Pandas_Cleanup
@@ -1538,6 +1490,11 @@
 		// 事件类型: Express / 事件名称: OnPCTalkExpress
 		// 常量名称: NPCX_PC_TALK / 变量名称: pc_talk_express_name
 		#define Pandas_NpcExpress_PC_TALK
+
+		// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+		// 事件类型: Express / 事件名称: OnPCHarmedExpress
+		// 常量名称: NPCX_PCHARMED / 变量名称: pcharmed_express_name
+		#define Pandas_NpcExpress_PCHARMED
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
 	#endif // Pandas_ScriptEngine_Express
 	
@@ -2145,6 +2102,24 @@
 	// 是否启用 whodropitem 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定道具会从哪些魔物身上掉落以及掉落的机率信息
 	#define Pandas_ScriptCommand_WhoDropItem
+
+	// 是否扩充 getinventorylist 脚本指令 [Sola丶小克]
+	// 主要包括了查询返回值的信息扩充, 衍生查询仓库和手推车的变体指令, 可控制每次需要被赋值的具体数组
+	// 
+	// - 查询返回值的信息扩充相比 rAthena 多返回以下内容
+	//	 - @inventorylist_uid$[]
+	//   - @inventorylist_equipswitch[]
+	// 
+	// - 衍生查询仓库和手推车的变体指令
+	//   - getstoragelist;
+	//   - getguildstoragelist;
+	//   - getcartlist;
+	// 
+	// - 可控制每次想查询的数据类型
+	//   - 用于解决仓库和背包容量超大时候填充大量不使用的数据带来的性能问题
+	//
+	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
+	#define Pandas_ScriptCommand_GetInventoryList
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
@@ -2165,9 +2140,6 @@
 // ============================================================================
 
 #ifdef Pandas_ScriptResults
-	// 是否拓展 getinventorylist 脚本指令的返回数组 [Sola丶小克]
-	#define Pandas_ScriptResults_GetInventoryList
-
 	// 使 OnSellItem 标签可以返回被出售道具的背包序号 [Sola丶小克]
 	#define Pandas_ScriptResults_OnSellItem
 #endif // Pandas_ScriptResults

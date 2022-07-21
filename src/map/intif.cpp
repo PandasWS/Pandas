@@ -3619,6 +3619,34 @@ static bool intif_parse_StorageReceived(int fd)
 	return true;
 }
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+//************************************
+// Method:      intif_parse_StorageReceived_hook
+// Description: 在 intif_parse_StorageReceived 之后进行后续处理的劫持函数
+// Parameter:   int fd
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/07/16 09:45
+//************************************
+static bool intif_parse_StorageReceived_hook(int fd) {
+	bool bReturn = intif_parse_StorageReceived(fd);
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
+	uint32 account_id = RFIFOL(fd, 5);
+#else
+	uint32 account_id = RFIFOL(fd, 5 + 2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
+	struct map_session_data* sd = map_id2sd(account_id);
+
+	if (!sd || !sd->st || !sd->npc_id) {
+		return bReturn;
+	}
+
+	if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
+		npc_scriptcont(sd, sd->npc_id, false);
+	}
+	return bReturn;
+}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 /**
  * Save inventory/cart/storage data for a player
  * IZ 0x388b <account_id>.L <result>.B <type>.B <storage_id>.B
@@ -4000,7 +4028,11 @@ int intif_parse(int fd)
 	case 0x3883:	intif_parse_DeletePetOk(fd); break;
 
 	// Storage
+#ifndef Pandas_ScriptCommand_GetInventoryList
 	case 0x388a:	intif_parse_StorageReceived(fd); break;
+#else
+	case 0x388a:	intif_parse_StorageReceived_hook(fd); break;
+#endif // Pandas_ScriptCommand_GetInventoryList
 	case 0x388b:	intif_parse_StorageSaved(fd); break;
 	case 0x388c:	intif_parse_StorageInfo_recv(fd); break;
 

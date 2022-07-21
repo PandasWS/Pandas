@@ -330,14 +330,17 @@ std::shared_ptr<s_mob_db> mobdb_search_aegisname( const char* str ){
 /*==========================================
  * Founds up to N matches. Returns number of matches [Skotlex]
  *------------------------------------------*/
-int mobdb_searchname_array_(const char *str, uint16 * out, int size, bool full_cmp)
+uint16 mobdb_searchname_array_(const char *str, uint16 * out, uint16 size, bool full_cmp)
 {
-	unsigned short count = 0;
-	for( auto const &mobdb_pair : mob_db ) {
-		const uint16 mob_id = mobdb_pair.first;
-		if( mobdb_searchname_sub(mob_id, str, full_cmp) ) {
+	uint16 count = 0;
+	const auto &mob_list = mob_db.getCache();
+
+	for( const auto &mob : mob_list ) {
+		if (mob == nullptr)
+			continue;
+		if( mobdb_searchname_sub(mob->id, str, full_cmp) ) {
 			if( count < size )
-				out[count] = mob_id;
+				out[count] = mob->id;
 			count++;
 		}
 	}
@@ -345,7 +348,7 @@ int mobdb_searchname_array_(const char *str, uint16 * out, int size, bool full_c
 	return count;
 }
 
-int mobdb_searchname_array(const char *str, uint16 * out, int size)
+uint16 mobdb_searchname_array(const char *str, uint16 * out, uint16 size)
 {
 	return mobdb_searchname_array_(str, out, size, false);
 }
@@ -4454,44 +4457,6 @@ static void item_dropratio_adjust(t_itemid nameid, int mob_id, int *rate_adjust)
 	}
 }
 
-#ifdef Pandas_YamlBlastCache_MobDatabase
-//************************************
-// Method:      afterCacheRestore
-// Description: 缓存恢复完成之后对 mob_db 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:31
-//************************************ 
-void MobDatabase::afterCacheRestore() {
-	for (const auto& it : *this) {
-		auto mob = it.second;
-
-		// ==================================================================
-		// 初始化未参与序列化的字段, 避免内存中的脏数据对工作造成错误的影响
-		// ==================================================================
-		mob->option = 0;
-		mob->skill.clear();
-	}
-}
-
-//************************************
-// Method:      getDependsHash
-// Description: 此数据库额外依赖的缓存特征
-// Access:      public 
-// Returns:     const std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 21:04
-//************************************ 
-const std::string MobDatabase::getDependsHash() {
-	// 在 MobDatabase 中使用到了 ITEM_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string depends = boost::str(
-		boost::format("%1%") %
-		this->getCacheHashByName("ITEM_DB")
-	);
-	return depends;
-}
-#endif // Pandas_YamlBlastCache_MobDatabase
-
 const std::string MobDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/mob_db.yml";
 }
@@ -4687,14 +4652,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		if (!this->asUInt64(node, "BaseExp", exp))
 			return 0;
 
-#ifndef Pandas_YamlBlastCache_MobDatabase
-		// 按照规范, 不应该在此进行战斗配置选项的应用
-		// 将这部分应用操作挪动到: MobDatabase::loadingFinished 来实现
-		// 避免疾风缓存将这里的值缓存住之后导致 base_exp_rate 战斗配置选项无效
 		mob->base_exp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.base_exp_rate / 100., 0, MAX_EXP));
-#else
-		mob->base_exp = static_cast<t_exp>(cap_value((double)exp, 0, MAX_EXP));
-#endif // Pandas_YamlBlastCache_MobDatabase
 	} else {
 		if (!exists)
 			mob->base_exp = 0;
@@ -4706,14 +4664,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		if (!this->asUInt64(node, "JobExp", exp))
 			return 0;
 
-#ifndef Pandas_YamlBlastCache_MobDatabase
-		// 按照规范, 不应该在此进行战斗配置选项的应用
-		// 将这部分应用操作挪动到: MobDatabase::loadingFinished 来实现
-		// 避免疾风缓存将这里的值缓存住之后导致 job_exp_rate 战斗配置选项无效
 		mob->job_exp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.job_exp_rate / 100., 0, MAX_EXP));
-#else
-		mob->job_exp = static_cast<t_exp>(cap_value((double)exp, 0, MAX_EXP));
-#endif // Pandas_YamlBlastCache_MobDatabase
 	} else {
 		if (!exists)
 			mob->job_exp = 0;
@@ -4725,14 +4676,7 @@ uint64 MobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		if (!this->asUInt64(node, "MvpExp", exp))
 			return 0;
 
-#ifndef Pandas_YamlBlastCache_MobDatabase
-		// 按照规范, 不应该在此进行战斗配置选项的应用
-		// 将这部分应用操作挪动到: MobDatabase::loadingFinished 来实现
-		// 避免疾风缓存将这里的值缓存住之后导致 mvp_exp_rate 战斗配置选项无效
 		mob->mexp = static_cast<t_exp>(cap_value((double)exp * (double)battle_config.mvp_exp_rate / 100., 0, MAX_EXP));
-#else
-		mob->mexp = static_cast<t_exp>(cap_value((double)exp, 0, MAX_EXP));
-#endif // Pandas_YamlBlastCache_MobDatabase
 	} else {
 		if (!exists)
 			mob->mexp = 0;
@@ -5260,14 +5204,6 @@ void MobDatabase::loadingFinished() {
 				break;
 		}
 
-#ifdef Pandas_YamlBlastCache_MobDatabase
-		// 从 parseBodyNode 把代码挪下来, 在此进行具体的战斗配置选项应用
-		// 因为疾风缓存在完成缓存的读取工作之后依然会触发 MobDatabase::loadingFinished
-		mob->base_exp = static_cast<t_exp>(cap_value((double)mob->base_exp * (double)battle_config.base_exp_rate / 100., 0, MAX_EXP));
-		mob->job_exp = static_cast<t_exp>(cap_value((double)mob->job_exp * (double)battle_config.job_exp_rate / 100., 0, MAX_EXP));
-		mob->mexp = static_cast<t_exp>(cap_value((double)mob->mexp * (double)battle_config.mvp_exp_rate / 100., 0, MAX_EXP));
-#endif // Pandas_YamlBlastCache_MobDatabase
-
 		if (battle_config.view_range_rate != 100)
 			mob->range2 = max(1, mob->range2 * battle_config.view_range_rate / 100);
 
@@ -5306,6 +5242,8 @@ void MobDatabase::loadingFinished() {
 		mob->status.hp = mob->status.max_hp;
 		mob->status.sp = mob->status.max_sp;
 	}
+
+	TypesafeCachedYamlDatabase::loadingFinished();
 }
 
 MobDatabase mob_db;
@@ -5821,6 +5759,27 @@ uint64 MobAvailDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		}
 
 		mob->vd.head_bottom = item->look;
+	}
+
+	if (this->nodeExists(node, "Robe")) {
+		if (pcdb_checkid(mob->vd.class_) == 0) {
+			this->invalidWarning(node["Robe"], "Robe is only applicable to Job sprites.\n");
+			return 0;
+		}
+
+		std::string robe;
+
+		if (!this->asString(node, "Robe", robe))
+			return 0;
+
+		std::shared_ptr<item_data> item = item_db.search_aegisname(robe.c_str());
+
+		if (item == nullptr) {
+			this->invalidWarning(node["Robe"], "Robe %s is not a valid item.\n", robe.c_str());
+			return 0;
+		}
+
+		mob->vd.robe = item->look;
 	}
 
 	if (this->nodeExists(node, "PetEquip")) {

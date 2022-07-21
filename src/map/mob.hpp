@@ -13,10 +13,6 @@
 #include "status.hpp" // struct status data, struct status_change
 #include "unit.hpp" // unit_stop_walking(), unit_stop_attack()
 
-#ifdef Pandas_YamlBlastCache_Serialize
-#include "../common/serialize.hpp"
-#endif // Pandas_YamlBlastCache_Serialize
-
 struct guardian_data;
 
 //This is the distance at which @autoloot works,
@@ -255,24 +251,6 @@ struct s_mob_drop {
 	bool steal_protected;
 };
 
-#ifdef Pandas_YamlBlastCache_MobDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_mob_drop
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_mob_drop& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.rate;
-			ar& t.randomopt_group;
-			ar& t.steal_protected;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_MobDatabase
-
 struct s_mob_db {
 	uint32 id;
 	std::string sprite, name, jname;
@@ -292,58 +270,18 @@ struct s_mob_db {
 	e_mob_bosstype get_bosstype();
 };
 
-#ifdef Pandas_YamlBlastCache_MobDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_mob_db
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_mob_db& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.sprite;
-			ar& t.name;
-			ar& t.jname;
-			ar& t.base_exp;
-			ar& t.job_exp;
-			ar& t.mexp;
-			ar& t.range2;
-			ar& t.range3;
-			ar& t.race2;
-			ar& t.lv;
-			ar& t.dropitem;
-			ar& t.mvpitem;
-			ar& t.status;
-			ar& t.vd;
-			//ar& t.option;			// MobDatabase 默认不会为其赋值, 暂时无需处理
-			//ar& t.skill;			// MobDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.damagetaken;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_MobDatabase
-
-class MobDatabase : public TypesafeCachedYamlDatabase <uint32, s_mob_db>, public BlastCacheEnabled {
+class MobDatabase : public TypesafeCachedYamlDatabase <uint32, s_mob_db> {
 private:
 	bool parseDropNode(std::string nodeName, const ryml::NodeRef& node, uint8 max, s_mob_drop *drops);
 
 public:
-	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1), BlastCacheEnabled(this) {
+	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1) {
 
 	}
 
 	const std::string getDefaultLocation() override;
 	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
-
-#ifdef Pandas_YamlBlastCache_MobDatabase
-	void afterCacheRestore();
-	const std::string getDependsHash();
-	bool doSerialize(const std::string& type, void* archive) {
-		DOSERIALIZE_HANDLE(MobDatabase);
-	}
-#endif // Pandas_YamlBlastCache_MobDatabase
 };
 
 extern MobDatabase mob_db;
@@ -528,7 +466,7 @@ struct item_drop_list {
 
 uint16 mobdb_searchname(const char * const str);
 std::shared_ptr<s_mob_db> mobdb_search_aegisname( const char* str );
-int mobdb_searchname_array(const char *str, uint16 * out, int size);
+uint16 mobdb_searchname_array(const char *str, uint16 * out, uint16 size);
 int mobdb_checkid(const int id);
 struct view_data* mob_get_viewdata(int mob_id);
 void mob_set_dynamic_viewdata( struct mob_data* md );

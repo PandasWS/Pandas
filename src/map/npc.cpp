@@ -148,8 +148,12 @@ std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 // Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
 //************************************ 
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
-	nullpo_retv(sd);
 	nullpo_retv(md);
+
+	// 此处不再使用 nullpo_retv 对 sd 进行判断
+	// 因为被系统杀死的魔物 sd 将永远为 0, 而使用 nullpo_retv 会导致终端抛出空指针错误
+	// 在这个场景下, 空指针是可预期
+	if (!sd) return;
 
 	struct status_data* status;
 	status = &md->status;
@@ -1147,6 +1151,8 @@ void BarterDatabase::loadingFinished(){
 			}
 		}
 	}
+
+	TypesafeYamlDatabase::loadingFinished();
 }
 
 #ifdef Pandas_AtCommand_ReloadBarterDB
@@ -1172,6 +1178,7 @@ static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
 
 void BarterDatabase::clear() {
 	map_foreachnpc(npc_reload_barters_sub);
+	TypesafeYamlDatabase::clear();
 }
 #endif // Pandas_AtCommand_ReloadBarterDB
 
@@ -5509,7 +5516,7 @@ int npc_do_atcmd_event(struct map_session_data* sd, const char* command, const c
 
 	for( i = 0; i < ( strlen( message ) + 1 ) && k < 127; i ++ ) {
 		if( message[i] == ' ' || message[i] == '\0' ) {
-			if( message[ ( i - 1 ) ] == ' ' ) {
+			if (i > 0 && message[i - 1] == ' ') {
 				continue; // To prevent "@atcmd [space][space]" and .@atcmd_numparameters return 1 without any parameter.
 			}
 			temp[k] = '\0';
@@ -6113,9 +6120,16 @@ int npc_parsesrcfile(const char* filepath)
 	}
 	fseek(fp, 0, SEEK_END);
 	len = ftell(fp);
+#ifndef Pandas_Support_Read_UTF8BOM_Configure
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
 	len = fread(buffer, 1, len, fp);
+#else
+	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
+	buffer = (char*)aMalloc(len*3+1);
+	fseek(fp, 0, SEEK_SET);
+	len = fread(buffer, 1, len*3, fp);
+#endif // Pandas_Support_Read_UTF8BOM_Configure
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{
@@ -6331,6 +6345,10 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_PC_TALK
 		NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+		NPCX_PCHARMED,	// pcharmed_express_name	// OnPCHarmedExpress		// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -6765,6 +6783,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_PC_TALK:
 		return script_config.pc_talk_express_name;	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
 #endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+	case NPCX_PCHARMED:
+		return script_config.pcharmed_express_name;	// OnPCHarmedExpress		// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

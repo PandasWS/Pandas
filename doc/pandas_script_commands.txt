@@ -145,12 +145,63 @@
 
 --------------------------------------------------------------
 
-*getinventorylist {<角色编号>};
+*getinventorylist {<角色编号>{,<想查询的数据类型>}};
 
-在 rAthena 原来返回的数组基础上, 熊猫模拟器新增了以下返回数组:
+用于查询玩家背包中的物品列表以及物品的全部详情信息, 该指令在 rAthena 的基础上得到了改进.
 
-- @inventorylist_idx[] 返回每个道具的背包序号.
-- @inventorylist_uid$[] 返回每个道具的唯一编号 (字符串类型的数组, 末尾记得要带 $ 符号).
+想查询的数据类型:
+	有的用户会把玩家的背包扩充到一个比较大的值, 这时候如果还有一个脚本频繁调用 getinventorylist 的话,
+	会导致程序默认填充几乎所有物品信息回来, 而往往很多信息我们用不到, 这就会出现多余的性能开销.
+
+	你可以通过该掩码参数来控制指令内部给你填充指定的一个或多个数组, 降低程序填充数据的工作量来降低卡顿.
+
+	INV_ID              = 填充 @inventorylist_id[]                  - 道具编号
+	INV_IDX             = 填充 @inventorylist_idx[]                 - 道具的背包序号
+	INV_AMOUNT          = 填充 @inventorylist_amount[]              - 道具的数量
+	INV_EQUIP           = 填充 @inventorylist_equip[]               - 道具当前的装备位置
+	INV_REFINE          = 填充 @inventorylist_refine[]              - 道具的精炼值
+	INV_IDENTIFY        = 填充 @inventorylist_identify[]            - 道具是否已鉴定 (0: 未鉴定; 1: 已鉴定)
+	INV_ATTRIBUTE       = 填充 @inventorylist_attribute[]           - 道具的属性
+
+	INV_CARD            = 填充物品的插卡信息数组:
+	                      @inventorylist_card1[]                   - 道具一号卡槽的卡片编号
+	                      @inventorylist_card2[]                   - 道具二号卡槽的卡片编号
+	                      @inventorylist_card3[]                   - 道具三号卡槽的卡片编号
+	                      @inventorylist_card4[]                   - 道具四号卡槽的卡片编号
+
+	INV_EXPIRE          = 填充 @inventorylist_expire[]              - 道具的过期时间戳 (0: 永不过期; 其他非零正整数表示 Unix 时间戳)
+	INV_BOUND           = 填充 @inventorylist_bound[]               - 道具的绑定状态
+	INV_ENCHANTGRADE    = 填充 @inventorylist_enchantgrade[]        - 道具的附魔评级
+
+	INV_OPTION          = 填充物品随机属性(Random Option)的信息数组:
+	                      @inventorylist_option_id1[]
+	                      @inventorylist_option_value1[]
+	                      @inventorylist_option_parameter1[]
+	                      @inventorylist_option_id2[]
+	                      @inventorylist_option_value2[]
+	                      @inventorylist_option_parameter2[]
+	                      @inventorylist_option_id3[]
+	                      @inventorylist_option_value3[]
+	                      @inventorylist_option_parameter3[]
+	                      @inventorylist_option_id4[]
+	                      @inventorylist_option_value4[]
+	                      @inventorylist_option_parameter4[]
+	                      @inventorylist_option_id5[]
+	                      @inventorylist_option_value5[]
+	                      @inventorylist_option_parameter5[]
+
+	INV_TRADABLE        = 填充 @inventorylist_tradable[]           - 道具是否可交易
+	INV_FAVORITE        = 填充 @inventorylist_favorite[]           - 道具是否被标记为最喜欢的道具 (0: 未标记; 1: 已标记)
+	INV_UID             = 填充 @inventorylist_uid$[]               - 道具的唯一编号 (字符串类型的数组, 末尾记得要带 $ 符号)
+	INV_EQUIPSWITCH     = 填充 @inventorylist_equipswitch[]        - 道具作为第二套快速切换装备时的装备位置
+	INV_ALL             = 填充以上全部数组(默认值)
+
+举例说明:
+	想查询背包中所有道具的信息, 但只希望获取背包序号和数量:
+	getinventorylist(getcharid(0), INV_IDX | INV_AMOUNT);
+
+注意事项:
+	若你指定了需要查询的数据类型, 那么未被查询的数据数组将不会被填充.
 
 背包序号:
 	背包序号每一次登录、每一次玩家在自己的背包中增删物品 (包括但不限: 
@@ -158,6 +209,69 @@
 	所以请注意在一段连续、玩家不可能会停下来做其他动作的脚本中去使用“背包序号”.
 	否则, 只要在 getinventorylist 之后, 还给玩家或脚本去进行道具的增删,
 	那么 @inventorylist_idx[] 中的数据将立刻变得不再可靠.
+
+--------------------------------------------------------------
+
+*getcartlist {<角色编号>{,<想查询的数据>}};
+
+该指令与 getinventorylist 类似, 但是查询的是玩家的手推车中的物品信息.
+它的返回数组与 getinventorylist 的返回数组完全一致, 只是部分数组的意义会发生变化:
+
+- @inventorylist_favorite[]   - 该数组无意义, 因为手推车中的道具不能被标记为最喜欢的道具.
+- @inventorylist_idx[]        - 道具的手推车序号
+
+特别注意:
+	这里 @inventorylist_idx[] 读取到的序号不再是道具的背包序号,
+	不能再用 getinventoryinfo 来获取物品的详细信息.
+	
+	玩家必须拥有手推车才能调用该指令, 否则会抛出错误.
+	
+	若想规避终端提示无手推车错误, 
+	可以在调用该指令之前使用 checkcart() 来确保玩家有手推车.
+
+--------------------------------------------------------------
+
+*getguildstoragelist {<角色编号>{,<想查询的数据>}};
+
+该指令与 getinventorylist 类似, 但是查询的是公会仓库中的物品信息.
+它的返回数组与 getinventorylist 的返回数组完全一致, 只是部分数组的意义会发生变化:
+
+- @inventorylist_favorite[]   - 该数组无意义, 因为公会仓库中的道具不能被标记为最喜欢的道具.
+- @inventorylist_idx[]        - 道具的公会仓库序号
+
+特别注意:
+	这里 @inventorylist_idx[] 读取到的序号不再是道具的背包序号,
+	不能再用 getinventoryinfo 来获取物品的详细信息.
+	
+	玩家必须加入拥有公会仓库的公会才能调用该指令, 否则会抛出错误.
+	
+	若想规避终端提示未加入公会以及没有公会仓库的错误,
+	可以在调用该指令之前使用 getgdskilllv(getcharid(2), "GD_GUILD_STORAGE") > 0
+	来确保玩家已加入有公会仓库的公会.
+
+--------------------------------------------------------------
+
+*getstoragelist {<角色编号>{,<想查询的数据>{,<仓库编号>}}};
+
+该指令与 getinventorylist 类似, 但是查询的是个人或扩充仓库中的物品信息.
+它的返回数组与 getinventorylist 的返回数组完全一致, 只是部分数组的意义会发生变化:
+
+- @inventorylist_favorite[]   - 该数组无意义, 因为个人或扩充仓库中的道具不能被标记为最喜欢的道具.
+- @inventorylist_idx[]        - 道具的个人或扩充仓库序号
+
+特别注意:
+	这里 @inventorylist_idx[] 读取到的序号不再是道具的背包序号,
+	不能再用 getinventoryinfo 来获取物品的详细信息.
+
+仓库编号:
+	该指令支持获取扩充仓库的内容, 因此你需要在查询时指定仓库编号.
+
+	0 - 个人仓库 (每个玩家都会有的默认仓库)
+	X - 扩充仓库 (其他非 0 的定义在 conf/inter_athena.yml 中的有效仓库编号)
+
+注意事项:
+	该指令的参数顺序和 getinventorylist、getcartlist、getguildstoragelist 有所差异,
+	使用的时候注意不要被坑了.
 
 --------------------------------------------------------------
 
@@ -2004,10 +2118,10 @@ NPC名称:
 							若为空字符串则表示没有指定魔物死亡时触发的事件标签
 	@spawn_mapid[]		魔物所在的地图编号 (通常没啥作用) - 数值型数组
 	@spawn_mapname$[]	魔物所在的地图名称 - 字符型数组
-	@spawn_map_x[]		魔物刷新点在地图上的 x 坐标 - 数值型数组
-	@spawn_map_y[]		魔物刷新点在地图上的 y 坐标 - 数值型数组
-	@spawn_map_xs[]		魔物刷新点在地图上的 xs 坐标 (若为 -1 则表示没有指定) - 数值型数组
-	@spawn_map_ys[]		魔物刷新点在地图上的 ys 坐标 (若为 -1 则表示没有指定) - 数值型数组
+	@spawn_x[]			魔物刷新点在地图上的 x 坐标 - 数值型数组
+	@spawn_y[]			魔物刷新点在地图上的 y 坐标 - 数值型数组
+	@spawn_xs[]			魔物刷新点在地图上的 xs 坐标 (若为 -1 则表示没有指定) - 数值型数组
+	@spawn_ys[]			魔物刷新点在地图上的 ys 坐标 (若为 -1 则表示没有指定) - 数值型数组
 
 
 	返回值及 @spawn_count 变量都会赋予查询到的魔物刷怪点数量.
@@ -2084,10 +2198,10 @@ NPC名称:
 							若为空字符串则表示没有指定魔物死亡时触发的事件标签
 	@spawn_mapid[]		魔物所在的地图编号 (通常没啥作用) - 数值型数组
 	@spawn_mapname$[]	魔物所在的地图名称 - 字符型数组
-	@spawn_map_x[]		魔物刷新点在地图上的 x 坐标 - 数值型数组
-	@spawn_map_y[]		魔物刷新点在地图上的 y 坐标 - 数值型数组
-	@spawn_map_xs[]		魔物刷新点在地图上的 xs 坐标 (若为 -1 则表示没有指定) - 数值型数组
-	@spawn_map_ys[]		魔物刷新点在地图上的 ys 坐标 (若为 -1 则表示没有指定) - 数值型数组
+	@spawn_x[]			魔物刷新点在地图上的 x 坐标 - 数值型数组
+	@spawn_y[]			魔物刷新点在地图上的 y 坐标 - 数值型数组
+	@spawn_xs[]			魔物刷新点在地图上的 xs 坐标 (若为 -1 则表示没有指定) - 数值型数组
+	@spawn_ys[]			魔物刷新点在地图上的 ys 坐标 (若为 -1 则表示没有指定) - 数值型数组
 
 
 	返回值及 @spawn_count 变量都会赋予查询到的魔物刷怪点数量.
