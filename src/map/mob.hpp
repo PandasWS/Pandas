@@ -139,9 +139,9 @@ enum e_random_monster_flags {
 };
 
 enum e_mob_bosstype : uint8{
-	BOSSTYPE_NONE = 0x00,
-	BOSSTYPE_MINIBOSS = 0x01,
-	BOSSTYPE_MVP = 0x02,
+	BOSSTYPE_NONE,
+	BOSSTYPE_MINIBOSS,
+	BOSSTYPE_MVP,
 };
 
 /// Monster Aegis AI types
