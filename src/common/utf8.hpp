@@ -74,8 +74,10 @@ void clearModeMapping(FILE* _fp);
 enum e_file_charsetmode fmode(FILE* _Stream);
 enum e_file_charsetmode fmode(std::ifstream& ifs);
 FILE* fopen(const char* _FileName, const char* _Mode);
-char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
-size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);
+char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag = 0);
+char* _fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag = 0);
+size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag = 0);
+size_t _fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag = 0);
 int fclose(FILE* _fp);
 
 } // namespace PandasUtf8

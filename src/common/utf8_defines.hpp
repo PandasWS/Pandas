@@ -12,4 +12,7 @@
 	#define fgets(BUFFER, MAXCOUNT, STREAM) PandasUtf8::fgets(BUFFER, MAXCOUNT, STREAM)
 	#define fread(BUFFER, ELESIZE, ELECOUNT, STREAM) PandasUtf8::fread(BUFFER, ELESIZE, ELECOUNT, STREAM)
 	#define fclose(FPOINTER) PandasUtf8::fclose(FPOINTER)
+
+	#define _fgets(BUFFER, MAXCOUNT, STREAM, FLAG) PandasUtf8::_fgets(BUFFER, MAXCOUNT, STREAM, FLAG)
+	#define _fread(BUFFER, ELESIZE, ELECOUNT, STREAM, FLAG) PandasUtf8::_fread(BUFFER, ELESIZE, ELECOUNT, STREAM, FLAG)
 #endif // Pandas_Support_Read_UTF8BOM_Configure

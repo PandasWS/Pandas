@@ -147,7 +147,7 @@ bool YamlDatabase::load(const std::string& path) {
 	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
 	char* buf = (char *)aMalloc(size*3+1);
 	rewind(f);
-	size_t real_size = fread(buf, sizeof(char), size*3, f);
+	size_t real_size = _fread(buf, sizeof(char), size*3, f, (this->type == "CONSOLE_TRANSLATE_DB" ? 0x2 : 0));
 #endif // Pandas_Support_Read_UTF8BOM_Configure
 	// Zero terminate
 	buf[real_size] = '\0';

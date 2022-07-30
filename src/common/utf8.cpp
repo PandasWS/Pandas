@@ -11,7 +11,9 @@
 
 #undef fopen
 #undef fgets
+#undef _fgets
 #undef fread
+#undef _fread
 #undef fclose
 
 #ifdef _WIN32
@@ -569,7 +571,8 @@ std::string utf8ToAnsi(const std::string& strUtf8, int flag) {
 // Parameter:   const std::string & strUtf8
 // Parameter:   const std::string & toEncoding
 // Parameter:   int flag
-//				0x1	若携带此标记则表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+//				0x1	表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+// 				0x2 表示需要在转换成 BIG5 编码的时候为低位为 0x5C 的字符追加反斜杠
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
 //************************************ 
@@ -587,9 +590,11 @@ std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding,
 			strUnicode = UnicodeEncode(strUnsplashUtf8, PANDAS_ENCODING_UTF8);
 		}
 
-		// 若指定的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
-		return splashUnicodeToBIG5(strUnicode);
+		if (flag & 0x2) {
+			// 若指定的目标 Codepage 是繁体中文 (BIG5),
+			// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
+			return splashUnicodeToBIG5(strUnicode);
+		}
 	}
 
 	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
@@ -842,7 +847,7 @@ FILE* fopen(const char* _FileName, const char* _Mode) {
 
 //************************************
 // Method:      fclose
-// Description: 进行了一些清理工作的 fclose 方法
+// Description: 进行了一些清理工作的 fclose 函数
 // Parameter:   FILE * _fp
 // Returns:     int
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:05
@@ -852,7 +857,17 @@ int fclose(FILE* _fp) {
 	return ::fclose(_fp);
 }
 
-char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
+//************************************
+// Method:      fgets
+// Description: 能够将 utf8 内容转换成普通 ansi 编码的 fgets 函数
+// Parameter:   char * _Buffer
+// Parameter:   int _MaxCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     char*
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
+//************************************
+char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
 	// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
 	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM) {
 		return ::fgets(_Buffer, _MaxCount, _Stream);
@@ -875,7 +890,7 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	std::string line(buffer);
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(line);
+	std::string ansi = utf8ToAnsi(line, flag);
 	memset(_Buffer, 0, _MaxCount);
 
 	if (ansi.size() > (size_t)_MaxCount) {
@@ -892,7 +907,32 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	return _Buffer;
 }
 
-size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream) {
+//************************************
+// Method:      _fgets
+// Description: 防止 utf8_defines.hpp 中宏定义重复的 fgets 透传函数
+// Parameter:   char * _Buffer
+// Parameter:   int _MaxCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     char*
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:06
+//************************************
+char* _fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
+	return fgets(_Buffer, _MaxCount, _Stream, flag);
+}
+
+//************************************
+// Method:      fread
+// Description: 能够将 utf8 内容转换成普通 ansi 编码的 fread 函数
+// Parameter:   void * _Buffer
+// Parameter:   size_t _ElementSize
+// Parameter:   size_t _ElementCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     size_t
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
+//************************************
+size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
 	// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
 	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM || _ElementSize != 1) {
 		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
@@ -926,7 +966,7 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	}
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(std::string(buffer));
+	std::string ansi = utf8ToAnsi(std::string(buffer), flag);
 	memset(_Buffer, 0, _ElementSize * _ElementCount);
 
 	if (ansi.size() > elementlen) {
@@ -941,6 +981,21 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 
 	delete[] buffer;
 	return extracted;
+}
+
+//************************************
+// Method:      _fread
+// Description: 防止 utf8_defines.hpp 中宏定义重复的 fread 透传函数
+// Parameter:   void * _Buffer
+// Parameter:   size_t _ElementSize
+// Parameter:   size_t _ElementCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     size_t
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:06
+//************************************
+size_t _fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
+	return fread(_Buffer, _ElementSize, _ElementCount, _Stream, flag);
 }
 
 } // namespace PandasUtf8
