@@ -9,13 +9,12 @@
 #include <iostream>
 #include <sstream>
 
-#ifndef Pandas_Support_Read_UTF8BOM_Configure
+#ifndef Pandas_Support_UTF8BOM_Files
 int conf_read_file(config_t *config, const char *config_filename)
 #else
-// 若启用了 Pandas_Support_Read_UTF8BOM_Configure 则重命名该函数
-// 以便重载一个签名完全一致的函数接管其处理逻辑
+// 重命名该函数以便重载一个签名完全一致的函数接管其处理逻辑
 int conf_read_file_internal(config_t* config, const char* config_filename)
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+#endif // Pandas_Support_UTF8BOM_Files
 {
 	config_init(config);
 	if (!config_read_file(config, config_filename)) {
@@ -27,7 +26,7 @@ int conf_read_file_internal(config_t* config, const char* config_filename)
 	return 0;
 }
 
-#ifdef Pandas_Support_Read_UTF8BOM_Configure
+#ifdef Pandas_Support_UTF8BOM_Files
 //************************************
 // Method:      conf_read_file
 // Description: 能够对 UTF8-BOM 自动转码的 libconfig 读取函数
@@ -71,7 +70,7 @@ int conf_read_file(config_t* config, const char* config_filename)
 	}
 	return 0;
 }
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+#endif // Pandas_Support_UTF8BOM_Files
 
 //
 // Functions to copy settings from libconfig/contrib

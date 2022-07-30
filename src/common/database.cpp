@@ -139,7 +139,7 @@ bool YamlDatabase::load(const std::string& path) {
 	}
 	fseek(f, 0, SEEK_END);
 	size_t size = ftell(f);
-#ifndef Pandas_Support_Read_UTF8BOM_Configure
+#ifndef Pandas_Support_UTF8BOM_Files
 	char* buf = (char *)aMalloc(size+1);
 	rewind(f);
 	size_t real_size = fread(buf, sizeof(char), size, f);
@@ -148,7 +148,7 @@ bool YamlDatabase::load(const std::string& path) {
 	char* buf = (char *)aMalloc(size*3+1);
 	rewind(f);
 	size_t real_size = _fread(buf, sizeof(char), size*3, f, (this->type == "CONSOLE_TRANSLATE_DB" ? 0x2 : 0));
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+#endif // Pandas_Support_UTF8BOM_Files
 	// Zero terminate
 	buf[real_size] = '\0';
 	fclose(f);
