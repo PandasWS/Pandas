@@ -53,7 +53,7 @@ void systemPause() {
 #ifdef _WIN32
 	system("pause");
 #else
-	system("read");
+	int _unused = system("read");
 #endif // _WIN32
 }
 

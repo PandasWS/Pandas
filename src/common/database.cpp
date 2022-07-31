@@ -174,6 +174,7 @@ bool YamlDatabase::load(const std::string& path) {
 		ShowWarning("Press any key to continue reading other files, but it usually means a lot of errors.\n");
 		ShowError("%s\n", err.what());
 		systemPause();
+		aFree(buf);
 		return false;
 	}
 #endif // Pandas_UserExperience_Yaml_Error
