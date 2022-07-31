@@ -402,7 +402,7 @@ int32 YamlDatabase::getLineNumber(const ryml::NodeRef& node) {
 		// 读取到的行号应该 + 1 才是正确的行号
 		return parser.source().has_str() ? (int32)parser.location(node).line + 1 : 0;
 	}
-	catch (std::runtime_error const& err) {
+	catch (std::runtime_error) {
 #ifdef DEBUG
 		std::cout << node;
 #endif // DEBUG
@@ -418,7 +418,7 @@ int32 YamlDatabase::getColumnNumber(const ryml::NodeRef& node) {
 	try {
 		return parser.source().has_str() ? (int32)parser.location(node).col : 0;
 	}
-	catch (std::runtime_error const& err) {
+	catch (std::runtime_error) {
 #ifdef DEBUG
 		std::cout << node;
 #endif // DEBUG
