@@ -31058,6 +31058,9 @@ BUILDIN_FUNC(getmapspawns) {
 	for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
 		if (!mapdata || mapdata->moblist[i] == nullptr) continue;
 		struct spawn_data* data = mapdata->moblist[i];
+		if (!data) continue;
+		std::shared_ptr<s_mob_db> mob = mob_db.find(data->id);
+		if (!mob) continue;
 
 		script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
 		script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
@@ -31066,7 +31069,7 @@ BUILDIN_FUNC(getmapspawns) {
 		script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
 		script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
 		script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
-		script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+		script_both_setreg(st, "spawn_level", (data->level > 0 ? data->level : mob->lv), true, j, char_id);
 		script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
 		script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
 		script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
@@ -31143,8 +31146,11 @@ BUILDIN_FUNC(getmobspawns) {
 		for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
 			if (!mapdata || mapdata->moblist[i] == nullptr) continue;
 			struct spawn_data* data = mapdata->moblist[i];
+			if (!data) continue;
 			if (data->id != mob_id) continue;
-
+			std::shared_ptr<s_mob_db> mob = mob_db.find(data->id);
+			if (!mob) continue;
+			
 			script_both_setreg(st, "spawn_mobid", data->id, true, j, char_id);
 			script_both_setregstr(st, "spawn_name$", data->name, true, j, char_id);
 			script_both_setreg(st, "spawn_num", data->num, true, j, char_id);
@@ -31152,7 +31158,7 @@ BUILDIN_FUNC(getmobspawns) {
 			script_both_setreg(st, "spawn_size", data->state.size, true, j, char_id);
 			script_both_setreg(st, "spawn_isboss", data->state.boss, true, j, char_id);
 			script_both_setreg(st, "spawn_ai", data->state.ai, true, j, char_id);
-			script_both_setreg(st, "spawn_level", data->level, true, j, char_id);
+			script_both_setreg(st, "spawn_level", (data->level > 0 ? data->level : mob->lv), true, j, char_id);
 			script_both_setreg(st, "spawn_delay1", data->delay1, true, j, char_id);
 			script_both_setreg(st, "spawn_delay2", data->delay2, true, j, char_id);
 			script_both_setregstr(st, "spawn_eventname$", data->eventname, true, j, char_id);
