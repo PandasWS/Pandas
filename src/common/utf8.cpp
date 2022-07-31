@@ -295,7 +295,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	return std::move(encoded);
 #else
 	std::string encoding = convertEncodingToCodepage(strEncoding);
-	iconv_t descr_in = iconv_open("WCHAR_T", encoding.c_str());
+	iconv_t descr_in = iconv_open("WCHAR_T//IGNORE", encoding.c_str());
 
 	if ((iconv_t)-1 == descr_in) {
 		return L"";
@@ -307,6 +307,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
 	wchar_t* result_buf_out = result_buf;
 	size_t result_buf_len = instr_len * sizeof(wchar_t);
+	memset(result_buf, 0, result_buf_len);
 
 	size_t iconv_result = iconv(descr_in,
 		(char**)&instr, &instr_len,
@@ -342,6 +343,7 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	return std::move(decoded);
 #else
 	std::string encoding = convertEncodingToCodepage(strEncoding);
+	encoding += "//IGNORE";
 	iconv_t descr_out = iconv_open(encoding.c_str(), "WCHAR_T");
 
 	if ((iconv_t)-1 == descr_out) {
@@ -354,6 +356,7 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	char* result_buf = new char[instr_len];
 	char* result_buf_out = result_buf;
 	size_t result_buf_len = instr_len;
+	memset(result_buf, 0, result_buf_len);
 
 	size_t iconv_result = iconv(descr_out,
 		(char**)&instr, &instr_len,
@@ -890,17 +893,17 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
 	std::string line(buffer);
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(line, flag);
+	std::string strAnsi = utf8ToAnsi(line, flag);
 	memset(_Buffer, 0, _MaxCount);
 
-	if (ansi.size() > (size_t)_MaxCount) {
+	if (strAnsi.size() > (size_t)_MaxCount) {
 		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), strAnsi.size());
 		memcpy(_Buffer, buffer, _MaxCount);
 	}
 	else {
 		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-		memcpy(_Buffer, ansi.c_str(), ansi.size());
+		memcpy(_Buffer, strAnsi.c_str(), strAnsi.size());
 	}
 
 	delete[] buffer;
@@ -960,23 +963,33 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 
 	// 读取特定长度的内容并保存到 buffer 中
 	extracted = ::fread(buffer, _ElementSize, _ElementCount, _Stream);
+
+	// 这里需要手动处理一下确保零结尾
+	// 在 Linux 系统上虽然前面已经将缓冲区填充为 0
+	// 但最终返回的内容依然会有一些内存中的残留数据跟着回来
+	buffer[extracted] = '\0';
+	
 	if (!extracted) {
 		delete[] buffer;
 		return extracted;
 	}
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(std::string(buffer), flag);
+	std::string strAnsi = utf8ToAnsi(std::string(buffer), flag);
 	memset(_Buffer, 0, _ElementSize * _ElementCount);
 
-	if (ansi.size() > elementlen) {
+	if (strAnsi.size() > elementlen) {
 		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, _ElementCount, ansi.size());
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, _ElementCount, strAnsi.size());
 		memcpy(_Buffer, buffer, elementlen);
 	}
 	else {
 		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-		memcpy(_Buffer, ansi.c_str(), ansi.size());
+		memcpy(_Buffer, strAnsi.c_str(), strAnsi.size());
+
+		// 转换成功后 extracted 应该更新为 strAnsi 字符串的大小
+		// 因为外部调用者可能会依赖返回值对字符串进行截断
+		extracted = strAnsi.size();
 	}
 
 	delete[] buffer;
