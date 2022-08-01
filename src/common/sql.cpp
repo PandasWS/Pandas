@@ -254,32 +254,6 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 			break;
 		}
 
-		// 如果使用的编码是 utf8 或 utf8mb4 中的任何一个, 则给予警告 (WEB 接口服务器除外)
-		if (SERVER_TYPE != ATHENA_SERVER_WEB) {
-			size_t i = 0;
-			const char* non_ansi[] = { "utf8", "utf8mb4" };
-			ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
-			if (ARRAYLENGTH(non_ansi) > i) {
-	#ifndef BUILDBOT
-				if (connect_name != nullptr) {
-					ShowWarning("Server and client is not support Non-ANSI character set very well.\n");
-					ShowWarning("Please use ANSI character set as database encoding instead of " CL_WHITE "'%s'" CL_RESET " for " CL_WHITE "'%s'" CL_RESET " connection. The ANSI character set like: latin1, gbk, big5.\n", current_codepage, connect_name);
-				}
-	#endif // BUILDBOT
-
-				// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
-				// 为了兼容性考虑, 会根据操作系统语言来选择使用 gbk 或 big5 编码,
-				// 若不是简体中文也不是繁体中文, 则直接使用当前数据库的 `character_set_database` 编码
-				switch (PandasUtf8::systemLanguage) {
-				case PandasUtf8::PANDAS_LANGUAGE_CHS: encoding = "gbk"; break;
-				case PandasUtf8::PANDAS_LANGUAGE_CHT: encoding = "big5"; break;
-				default: encoding = current_codepage; break;
-				}
-
-				break;
-			}
-		}
-
 		// 将连接编码设置为与数据库的 server character set 完全一致
 		encoding = current_codepage;
 	} while (false);
