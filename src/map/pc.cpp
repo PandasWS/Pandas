@@ -2047,7 +2047,8 @@ void pc_reg_received(struct map_session_data *sd)
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
 #ifdef Pandas_Cross_Server
-	//由于了切换数据,所以要更新客户端数据
+	//由于切换数据,这里需要刷新客户端残留内容
+	//与@refresh有一定交集，但重复的部分更多，于是手动添加
 	clif_updatestatus(sd, SP_SPEED);//解决@speed的问题
 	clif_updatestatus(sd, SP_BASELEVEL);//解决中立服inherit_source_server_chara_status:no的问题,虽然会有升级特效
 	clif_updatestatus(sd, SP_BASEEXP);//下同
@@ -2096,7 +2097,12 @@ void pc_reg_received(struct map_session_data *sd)
 		clif_changestatus(sd, SP_MANNER, sd->status.manner);
 
 	pc_equiplookall(sd);
-	
+	if (pc_isdead(sd)) // When you refresh, resend the death packet.
+		clif_clearunit_single(sd->bl.id, CLR_DEAD, sd->fd);
+	else
+		clif_changed_dir(&sd->bl, SELF);
+	pc_show_questinfo_reinit(sd);
+	pc_show_questinfo(sd);
 #endif
 #endif
 

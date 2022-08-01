@@ -334,6 +334,22 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		}
 		Sql_FreeResult(sql_handle);
 	}
+	//中立服的last_map不应该是非中立服
+	//否则当: 源服指向中立服时,中立服又指向源服,就会无法登陆了
+	if (is_cross_server)
+	{
+		bool local_map = false;
+		if (session_isValid(map_server[0].fd))
+		{
+			for (int j = 0; map_server[0].map[j]; j++)
+				if (map_server[0].map[j] == p->last_point.map)
+					local_map = true;
+		}
+		if (!local_map)
+		{
+			p->last_point = cp->last_point;
+		}
+	}
 	//当这份数据从中立服传到非中立服进行保存时
 	//p的特定数据应当被替换为原来CP的数据
 	//否则最后的memcpy会出现覆盖问题
