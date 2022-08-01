@@ -18787,6 +18787,10 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		req.eqItem.clear();
 		req.eqItem.shrink_to_fit();
 	}
+	if (noreq_opt & SKILL_REQ_APCOST)
+		req.ap = 0;
+	if (noreq_opt & SKILL_REQ_APRATECOST)
+		req.ap_rate = 0;
 
 	// 接下来是熊猫自定义的特殊选项
 	if (noreq_opt & SKILL_REQ_AMMO_COUNT) {

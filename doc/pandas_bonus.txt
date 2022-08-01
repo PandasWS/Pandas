@@ -116,6 +116,12 @@ bonus2 bSkillNoRequire,sk,n;
 				SKILL_REQ_EQUIPMENT			0x1000
 				移除施法时需要的装备条件
 
+				SKILL_REQ_APCOST			0x2000
+				移除施法时需要的 AP 条件
+
+				SKILL_REQ_APRATECOST		0x4000
+				移除施法时需要的 AP 百分比条件
+				
 				SKILL_REQ_AMMO_COUNT		0x10000
 				移除施法时需要的子弹数量条件 (但至少需要持有 1 颗要求的子弹, 不会消耗)
 
