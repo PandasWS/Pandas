@@ -11,7 +11,9 @@
 
 #undef fopen
 #undef fgets
+#undef _fgets
 #undef fread
+#undef _fread
 #undef fclose
 
 #ifdef _WIN32
@@ -293,7 +295,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	return std::move(encoded);
 #else
 	std::string encoding = convertEncodingToCodepage(strEncoding);
-	iconv_t descr_in = iconv_open("WCHAR_T", encoding.c_str());
+	iconv_t descr_in = iconv_open("WCHAR_T//IGNORE", encoding.c_str());
 
 	if ((iconv_t)-1 == descr_in) {
 		return L"";
@@ -305,6 +307,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
 	wchar_t* result_buf_out = result_buf;
 	size_t result_buf_len = instr_len * sizeof(wchar_t);
+	memset(result_buf, 0, result_buf_len);
 
 	size_t iconv_result = iconv(descr_in,
 		(char**)&instr, &instr_len,
@@ -340,6 +343,7 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	return std::move(decoded);
 #else
 	std::string encoding = convertEncodingToCodepage(strEncoding);
+	encoding += "//IGNORE";
 	iconv_t descr_out = iconv_open(encoding.c_str(), "WCHAR_T");
 
 	if ((iconv_t)-1 == descr_out) {
@@ -352,6 +356,7 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	char* result_buf = new char[instr_len];
 	char* result_buf_out = result_buf;
 	size_t result_buf_len = instr_len;
+	memset(result_buf, 0, result_buf_len);
 
 	size_t iconv_result = iconv(descr_out,
 		(char**)&instr, &instr_len,
@@ -569,7 +574,8 @@ std::string utf8ToAnsi(const std::string& strUtf8, int flag) {
 // Parameter:   const std::string & strUtf8
 // Parameter:   const std::string & toEncoding
 // Parameter:   int flag
-//				0x1	若携带此标记则表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+//				0x1	表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+// 				0x2 表示需要在转换成 BIG5 编码的时候为低位为 0x5C 的字符追加反斜杠
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
 //************************************ 
@@ -587,9 +593,11 @@ std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding,
 			strUnicode = UnicodeEncode(strUnsplashUtf8, PANDAS_ENCODING_UTF8);
 		}
 
-		// 若指定的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
-		return splashUnicodeToBIG5(strUnicode);
+		if (flag & 0x2) {
+			// 若指定的目标 Codepage 是繁体中文 (BIG5),
+			// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
+			return splashUnicodeToBIG5(strUnicode);
+		}
 	}
 
 	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
@@ -842,7 +850,7 @@ FILE* fopen(const char* _FileName, const char* _Mode) {
 
 //************************************
 // Method:      fclose
-// Description: 进行了一些清理工作的 fclose 方法
+// Description: 进行了一些清理工作的 fclose 函数
 // Parameter:   FILE * _fp
 // Returns:     int
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:05
@@ -852,7 +860,17 @@ int fclose(FILE* _fp) {
 	return ::fclose(_fp);
 }
 
-char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
+//************************************
+// Method:      fgets
+// Description: 能够将 utf8 内容转换成普通 ansi 编码的 fgets 函数
+// Parameter:   char * _Buffer
+// Parameter:   int _MaxCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     char*
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
+//************************************
+char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
 	// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
 	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM) {
 		return ::fgets(_Buffer, _MaxCount, _Stream);
@@ -875,24 +893,49 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	std::string line(buffer);
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(line);
+	std::string strAnsi = utf8ToAnsi(line, flag);
 	memset(_Buffer, 0, _MaxCount);
 
-	if (ansi.size() > (size_t)_MaxCount) {
+	if (strAnsi.size() > (size_t)_MaxCount) {
 		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), strAnsi.size());
 		memcpy(_Buffer, buffer, _MaxCount);
 	}
 	else {
 		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-		memcpy(_Buffer, ansi.c_str(), ansi.size());
+		memcpy(_Buffer, strAnsi.c_str(), strAnsi.size());
 	}
 
 	delete[] buffer;
 	return _Buffer;
 }
 
-size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream) {
+//************************************
+// Method:      _fgets
+// Description: 防止 utf8_defines.hpp 中宏定义重复的 fgets 透传函数
+// Parameter:   char * _Buffer
+// Parameter:   int _MaxCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     char*
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:06
+//************************************
+char* _fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
+	return fgets(_Buffer, _MaxCount, _Stream, flag);
+}
+
+//************************************
+// Method:      fread
+// Description: 能够将 utf8 内容转换成普通 ansi 编码的 fread 函数
+// Parameter:   void * _Buffer
+// Parameter:   size_t _ElementSize
+// Parameter:   size_t _ElementCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     size_t
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
+//************************************
+size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
 	// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
 	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM || _ElementSize != 1) {
 		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
@@ -920,27 +963,52 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 
 	// 读取特定长度的内容并保存到 buffer 中
 	extracted = ::fread(buffer, _ElementSize, _ElementCount, _Stream);
+
+	// 这里需要手动处理一下确保零结尾
+	// 在 Linux 系统上虽然前面已经将缓冲区填充为 0
+	// 但最终返回的内容依然会有一些内存中的残留数据跟着回来
+	buffer[extracted] = '\0';
+	
 	if (!extracted) {
 		delete[] buffer;
 		return extracted;
 	}
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(std::string(buffer));
+	std::string strAnsi = utf8ToAnsi(std::string(buffer), flag);
 	memset(_Buffer, 0, _ElementSize * _ElementCount);
 
-	if (ansi.size() > elementlen) {
+	if (strAnsi.size() > elementlen) {
 		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, _ElementCount, ansi.size());
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, _ElementCount, strAnsi.size());
 		memcpy(_Buffer, buffer, elementlen);
 	}
 	else {
 		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-		memcpy(_Buffer, ansi.c_str(), ansi.size());
+		memcpy(_Buffer, strAnsi.c_str(), strAnsi.size());
+
+		// 转换成功后 extracted 应该更新为 strAnsi 字符串的大小
+		// 因为外部调用者可能会依赖返回值对字符串进行截断
+		extracted = strAnsi.size();
 	}
 
 	delete[] buffer;
 	return extracted;
+}
+
+//************************************
+// Method:      _fread
+// Description: 防止 utf8_defines.hpp 中宏定义重复的 fread 透传函数
+// Parameter:   void * _Buffer
+// Parameter:   size_t _ElementSize
+// Parameter:   size_t _ElementCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     size_t
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:06
+//************************************
+size_t _fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
+	return fread(_Buffer, _ElementSize, _ElementCount, _Stream, flag);
 }
 
 } // namespace PandasUtf8

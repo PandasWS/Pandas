@@ -6120,16 +6120,17 @@ int npc_parsesrcfile(const char* filepath)
 	}
 	fseek(fp, 0, SEEK_END);
 	len = ftell(fp);
-#ifndef Pandas_Support_Read_UTF8BOM_Configure
+#ifndef Pandas_Support_UTF8BOM_Files
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
 	len = fread(buffer, 1, len, fp);
 #else
-	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
-	buffer = (char*)aMalloc(len*3+1);
+	// 潜在的编码转换需要, 将字节数与 wchar_t 的大小相乘
+	len = len * sizeof(wchar_t) + 1;
+	buffer = (char*)aMalloc(len);
 	fseek(fp, 0, SEEK_SET);
-	len = fread(buffer, 1, len*3, fp);
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+	len = fread(buffer, 1, len, fp);
+#endif // Pandas_Support_UTF8BOM_Files
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{

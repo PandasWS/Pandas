@@ -139,16 +139,21 @@ bool YamlDatabase::load(const std::string& path) {
 	}
 	fseek(f, 0, SEEK_END);
 	size_t size = ftell(f);
-#ifndef Pandas_Support_Read_UTF8BOM_Configure
+#ifndef Pandas_Support_UTF8BOM_Files
 	char* buf = (char *)aMalloc(size+1);
 	rewind(f);
 	size_t real_size = fread(buf, sizeof(char), size, f);
 #else
-	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
-	char* buf = (char *)aMalloc(size*3+1);
+	// 潜在的编码转换需要, 将字节数与 wchar_t 的大小相乘
+	size = size * sizeof(wchar_t) + 1;
+	char* buf = (char *)aMalloc(size);
 	rewind(f);
-	size_t real_size = fread(buf, sizeof(char), size*3, f);
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+	// 加载终端翻译数据库的时候标记位需要传递为 0x2
+	// 表示在将其 UTF8 内容转换成 BIG5 编码的时候需要在低字节位为 0x5C 的字符后追加反斜杠
+	// 这样处理后在终端显示出对应的汉字，比如：連線成功 最末尾的【功】才能正常显示
+	int flag = (this->type == "CONSOLE_TRANSLATE_DB" ? 0x2 : 0);
+	size_t real_size = _fread(buf, sizeof(char), size, f, flag);
+#endif // Pandas_Support_UTF8BOM_Files
 	// Zero terminate
 	buf[real_size] = '\0';
 	fclose(f);
@@ -169,6 +174,7 @@ bool YamlDatabase::load(const std::string& path) {
 		ShowWarning("Press any key to continue reading other files, but it usually means a lot of errors.\n");
 		ShowError("%s\n", err.what());
 		systemPause();
+		aFree(buf);
 		return false;
 	}
 #endif // Pandas_UserExperience_Yaml_Error
@@ -392,13 +398,33 @@ int32 YamlDatabase::getLineNumber(const ryml::NodeRef& node) {
 #ifndef Pandas_UserExperience_Yaml_Error
 	return parser.source().has_str() ? (int32)parser.location(node).line : 0;
 #else
-	// 读取到的行号应该 + 1 才是正确的行号
-	return parser.source().has_str() ? (int32)parser.location(node).line + 1 : 0;
+	try {
+		// 读取到的行号应该 + 1 才是正确的行号
+		return parser.source().has_str() ? (int32)parser.location(node).line + 1 : 0;
+	}
+	catch (std::runtime_error) {
+#ifdef DEBUG
+		std::cout << node;
+#endif // DEBUG
+		return 0;
+	}
 #endif // Pandas_UserExperience_Yaml_Error
 }
 
 int32 YamlDatabase::getColumnNumber(const ryml::NodeRef& node) {
+#ifndef Pandas_UserExperience_Yaml_Error
 	return parser.source().has_str() ? (int32)parser.location(node).col : 0;
+#else
+	try {
+		return parser.source().has_str() ? (int32)parser.location(node).col : 0;
+	}
+	catch (std::runtime_error) {
+#ifdef DEBUG
+		std::cout << node;
+#endif // DEBUG
+		return 0;
+	}
+#endif // Pandas_UserExperience_Yaml_Error
 }
 
 void YamlDatabase::invalidWarning( const ryml::NodeRef& node, const char* fmt, ... ){

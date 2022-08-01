@@ -245,9 +245,6 @@
 	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
 	#define Pandas_Database_Yaml_BeQuiet
 
-	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
-	#define Pandas_Database_Yaml_Support_UTF8BOM
-
 	// 是否支持用于读取 SQL 连接编码的 Sql_GetEncoding 函数 [Sola丶小克]
 	#define Pandas_Database_SQL_GetEncoding
 #endif // Pandas_DatabaseIncrease
@@ -509,8 +506,8 @@
 		#define Pandas_Support_Specify_PacketKeys
 	#endif // PACKET_OBFUSCATION
 
-	// 是否支持读取 UTF8-BOM 编码的 libconfig 配置文件 [Sola丶小克]
-	#define Pandas_Support_Read_UTF8BOM_Configure
+	// 是否支持读取 UTF8-BOM 编码的配置或者数据文件 [Sola丶小克]
+	#define Pandas_Support_UTF8BOM_Files
 
 	// 在使用 _M/_F 注册的时候, 能够限制使用中文等字符作为游戏账号 [Sola丶小克]
 	// 这里的 PCRE_SUPPORT 在"项目属性 -> C/C++ -> 预处理器"中定义
@@ -685,7 +682,10 @@
 	#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
-	#define Pandas_Adaptive_Importing_Message_Database
+	// 此选项依赖 Pandas_Support_UTF8BOM_Files 的拓展
+	#ifdef Pandas_Support_UTF8BOM_Files
+		#define Pandas_Adaptive_Importing_Message_Database
+	#endif // Pandas_Support_UTF8BOM_Files
 
 	// 是否支持处理 Windows 10 编码选项带来的中文乱码问题 [Sola丶小克]
 	// Beta: Use Unicode UTF-8 for worldwide language support
