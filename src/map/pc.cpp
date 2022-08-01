@@ -2065,13 +2065,19 @@ void pc_reg_received(struct map_session_data *sd)
 	if (sd->disguise)
 		pc_disguise(sd, 0);
 
+	clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, 0, SELF);
 	status_set_viewdata(&sd->bl, sd->status.class_);
 	clif_changelook(&sd->bl, LOOK_BASE, sd->vd.class_); // move sprite update to prevent client crashes with incompatible equipment [Valaris]
 #if PACKETVER >= 20151001
 	clif_changelook(&sd->bl, LOOK_HAIR, sd->vd.hair_style); // Update player's head (only matters when switching to or from Doram)
 #endif
-	if (sd->vd.cloth_color)
-		clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
+	clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
+	clif_spiritball(&sd->bl, &sd->bl, SELF);
+	clif_soulball(sd, &sd->bl, SELF);
+	clif_servantball(*sd, &sd->bl, SELF);
+	clif_abyssball(*sd, &sd->bl, SELF);
+	if (sd->vd.body_style)
+		clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, sd->vd.body_style, SELF);
 	//Update skill tree.
 	pc_calc_skilltree(sd);
 	clif_skillinfoblock(sd);
