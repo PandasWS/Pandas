@@ -72,6 +72,11 @@
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rdparty\uchardet\uchardet.vcxproj">
+      <Project>{1dc4f10c-8c26-4e92-be51-d7f246bb9111}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{352B45B3-FE88-4431-9D89-48CF811446DB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -156,7 +161,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\uchardet\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -173,7 +178,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\uchardet\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -192,7 +197,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\uchardet\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -213,7 +218,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\uchardet\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
