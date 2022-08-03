@@ -899,16 +899,28 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 // Author:      Sola丶小克(CairoLee)  2020/01/24 01:27
 //************************************
 FILE* fopen(const char* _FileName, const char* _Mode) {
-	// 若当前打开文件的模式已经是二进制, 那么直接调用 fopen 并返回
-	// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也直接调用 fopen 并返回
+	std::string strMode(_Mode);
+	std::string strFilename(_FileName);
+	
 	if (strchr(_Mode, 'b') || strchr(_Mode, 'w') || strchr(_Mode, 'a')) {
-		return ::fopen(_FileName, _Mode);
+		// 若当前打开文件的模式已经是二进制, 那么无需修改打开模式
+		// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也无需修改打开模式
+		strMode = _Mode;
+	}
+	else {
+		// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
+		strMode += "b";
 	}
 
-	// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
-	std::string sMode(_Mode);
-	sMode += "b";
-	return ::fopen(_FileName, sMode.c_str());
+#ifndef _WIN32
+	// 在 Linux 环境下并且终端编码为 UTF8 的情况下,
+	// 将需要打开的文件路径直接转码成 utf8 编码再进行读取, 否则会找不到文件
+	if (systemEncoding == PANDAS_ENCODING_UTF8) {
+		strFilename = consoleConvert(_FileName).c_str();
+	}
+#endif // _WIN32
+
+	return ::fopen(strFilename.c_str(), strMode.c_str());
 }
 
 //************************************
