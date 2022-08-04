@@ -232,6 +232,18 @@ void YamlDatabase::parse( const ryml::Tree& tree ){
 		ShowStatus( "Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "' (took %" PRIu64 " milliseconds)" CL_CLL "\n", count, fileName, performance_get_milliseconds("yamldatabase_load"));
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	}
+#ifdef Pandas_UserExperience_Output_Ending_Even_Body_Node_Is_Not_Exists
+	else {
+		// 当数据文件中不存在 Body 节点时也依然输出结尾信息
+		const char* fileName = this->currentFile.c_str();
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+		ShowStatus("Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\n", count, fileName);
+#else
+		performance_stop("yamldatabase_load");
+		ShowStatus("Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "' (took %" PRIu64 " milliseconds)" CL_CLL "\n", count, fileName, performance_get_milliseconds("yamldatabase_load"));
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	}
+#endif // Pandas_UserExperience_Output_Ending_Even_Body_Node_Is_Not_Exists
 }
 
 void YamlDatabase::parseImports( const ryml::Tree& rootNode ){
