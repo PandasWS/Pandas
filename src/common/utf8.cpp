@@ -31,6 +31,8 @@
 
 #include <unordered_map>
 
+#include "../../3rdparty/uchardet/src/uchardet.h"
+
 namespace PandasUtf8 {
 // -------------------------------------------------------------------
 // 概念定义
@@ -480,6 +482,36 @@ std::string splashForUtf8(const std::string& strUtf8) {
 	return strResult;
 }
 
+//************************************
+// Method:      isUtf8Content
+// Description: 判断给定的缓冲区是不是 UTF-8 编码的内容
+// Parameter:   const char * buffer
+// Parameter:   size_t len
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/08/02 22:09
+//************************************
+bool isUtf8Content(const char* buffer, size_t len) {
+	uchardet_t handle = uchardet_new();
+	
+	int retval = uchardet_handle_data(handle, buffer, len);
+	if (retval != 0) {
+		uchardet_data_end(handle);
+		uchardet_delete(handle);
+		return false;
+	}
+	uchardet_data_end(handle);
+
+	bool bIsUtf8Content = false;
+	const char* charset = uchardet_get_charset(handle);
+
+	if (charset && !stricmp(charset, "UTF-8")) {
+		bIsUtf8Content = true;
+	}
+
+	uchardet_delete(handle);
+	return bIsUtf8Content;
+}
+
 #ifndef _WIN32
 //************************************
 // Method:      consoleConvert
@@ -735,23 +767,27 @@ void clearModeMapping(FILE* _fp) {
 // Description: 提供一个缓冲区, 尝试获取其编码模式
 // Access:      public 
 // Parameter:   unsigned char * buf
-// Parameter:   size_t extracted 缓冲区的长度
+// Parameter:   size_t len 缓冲区的长度
 // Returns:     enum e_file_charsetmode
 // Author:      Sola丶小克(CairoLee)  2021/02/06 11:29
 //************************************ 
-enum e_file_charsetmode get_charsetmode(unsigned char* buf, size_t extracted) {
+enum e_file_charsetmode get_charsetmode(unsigned char* buf, size_t len) {
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
-	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
+	if (len >= 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
 		// UTF8-BOM
 		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
 	}
-	else if (extracted >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
+	else if (len >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
 		// UCS-2 LE
 		charset_mode = FILE_CHARSETMODE_UCS2_LE;
 	}
-	else if (extracted >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
+	else if (len >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
 		// UCS-2 BE
 		charset_mode = FILE_CHARSETMODE_UCS2_BE;
+	}
+	else if (len > 0 && isUtf8Content((const char*)buf, len)) {
+		// UTF8 without BOM
+		charset_mode = FILE_CHARSETMODE_UTF8;
 	}
 	else {
 		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
@@ -774,23 +810,35 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 		return cached_charsetmode;
 	}
 
-	size_t extracted = 0;
-	unsigned char buf[3] = { 0 };
-
 	// 若传递的 FILE 指针无效则直接返回编码不可知
 	if (_Stream == nullptr) {
 		return FILE_CHARSETMODE_UNKNOW;
 	}
 
-	// 记录目前指针所在的位置
+	// 记录目前游标所在的位置
 	long curpos = ftell(_Stream);
 
-	// 指针移动到开头, 读取前 3 个字节
-	fseek(_Stream, 0, SEEK_SET);
-	extracted = ::fread(buf, sizeof(unsigned char), 3, _Stream);
+	// 将游标移动到文件末尾
+	fseek(_Stream, 0, SEEK_END);
 
-	// 根据读取到的前几个字节来判断文本的编码类型
+	// 读取文件的大小
+	size_t size = ftell(_Stream);
+
+	// 申请容量足够的缓冲区, 用于存放一会儿要读取的内容
+	unsigned char* buf = (unsigned char*)aMalloc(size + 1);
+
+	// 指针移动到开头, 准备读取整个文件的内容
+	fseek(_Stream, 0, SEEK_SET);
+
+	// 读取整个文件的内容
+	size_t extracted = 0;
+	extracted = ::fread(buf, sizeof(unsigned char), size, _Stream);
+
+	// 根据读取到的数据来判断文本的编码类型
 	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
+
+	// 释放掉缓冲区
+	if (buf) aFree(buf);
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	fseek(_Stream, curpos, SEEK_SET);
@@ -809,21 +857,36 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 // Author:      Sola丶小克(CairoLee)  2020/01/27 21:38
 //************************************
 enum e_file_charsetmode fmode(std::ifstream& ifs) {
-	unsigned char buf[3] = { 0 };
-
-	// 记录目前指针所在的位置
+	// 记录目前游标所在的位置
 	long curpos = (long)ifs.tellg();
+
+	// 将游标移动到文件末尾
+	ifs.seekg(0, std::ios::end);
+
+	// 读取文件的大小
+	long size = (long)ifs.tellg();
 
 	// 指针移动到开头, 读取前 3 个字节
 	ifs.seekg(0, std::ios::beg);
-	ifs.read((char*)buf, 3);
+
+	// 申请容量足够的缓冲区, 用于存放一会儿要读取的内容
+	unsigned char* buf = (unsigned char*)aMalloc(size + 1);
+
+	// 读取整个文件的内容
+	ifs.read((char*)buf, size);
+
+	// 获取读取成功的字节个数
 	long extracted = (long)ifs.gcount();
 
-	// 根据读取到的前几个字节来判断文本的编码类型
+	// 根据读取到的数据来判断文本的编码类型
 	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
+
+	// 释放掉缓冲区
+	if (buf) aFree(buf);
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	ifs.seekg(curpos, std::ios::beg);
+
 	return charset_mode;
 }
 
@@ -836,16 +899,28 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 // Author:      Sola丶小克(CairoLee)  2020/01/24 01:27
 //************************************
 FILE* fopen(const char* _FileName, const char* _Mode) {
-	// 若当前打开文件的模式已经是二进制, 那么直接调用 fopen 并返回
-	// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也直接调用 fopen 并返回
+	std::string strMode(_Mode);
+	std::string strFilename(_FileName);
+	
 	if (strchr(_Mode, 'b') || strchr(_Mode, 'w') || strchr(_Mode, 'a')) {
-		return ::fopen(_FileName, _Mode);
+		// 若当前打开文件的模式已经是二进制, 那么无需修改打开模式
+		// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也无需修改打开模式
+		strMode = _Mode;
+	}
+	else {
+		// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
+		strMode += "b";
 	}
 
-	// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
-	std::string sMode(_Mode);
-	sMode += "b";
-	return ::fopen(_FileName, sMode.c_str());
+#ifndef _WIN32
+	// 在 Linux 环境下并且终端编码为 UTF8 的情况下,
+	// 将需要打开的文件路径直接转码成 utf8 编码再进行读取, 否则会找不到文件
+	if (systemEncoding == PANDAS_ENCODING_UTF8) {
+		strFilename = consoleConvert(_FileName).c_str();
+	}
+#endif // _WIN32
+
+	return ::fopen(strFilename.c_str(), strMode.c_str());
 }
 
 //************************************
@@ -871,15 +946,17 @@ int fclose(FILE* _fp) {
 // Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
 //************************************
 char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
-	// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
-	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM) {
+	e_file_charsetmode mode = PandasUtf8::fmode(_Stream);
+
+	// 若不是 UTF8-BOM 或者 UTF8, 那么直接透传 fgets 调用
+	if (mode != FILE_CHARSETMODE_UTF8_BOM && mode != FILE_CHARSETMODE_UTF8) {
 		return ::fgets(_Buffer, _MaxCount, _Stream);
 	}
 
-	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
+	// 使用 UTF8-BOM 编码时, 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
 	// 避免后续进行 fgets 的时候读取到前 3 个字节, 同时将当前位置记录到 curpos
 	long curpos = ftell(_Stream);
-	if (curpos < 3) fseek(_Stream, 3, SEEK_SET);
+	if (mode == FILE_CHARSETMODE_UTF8_BOM && curpos < 3) fseek(_Stream, 3, SEEK_SET);
 
 	// 读取 _MaxCount 长度的内容并保存到 buffer 中
 	char* buffer = new char[_MaxCount];
@@ -936,8 +1013,15 @@ char* _fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
 // Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
 //************************************
 size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
-	// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
-	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM || _ElementSize != 1) {
+	e_file_charsetmode mode = PandasUtf8::fmode(_Stream);
+
+	// 若不是 UTF8-BOM 或者 UTF8, 那么直接透传 fread 调用
+	if (mode != FILE_CHARSETMODE_UTF8_BOM && mode != FILE_CHARSETMODE_UTF8) {
+		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+	}
+
+	// 若 _ElementSize 不等于 1, 那么直接透传 fread 调用
+	if (_ElementSize != 1) {
 		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
 	}
 
@@ -946,9 +1030,9 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	size_t elementlen = (_ElementSize * _ElementCount) + 1;
 	char* buffer = new char[elementlen];
 
-	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节后面,
-	// 避免后续进行 fread 的时候读取到前 3 个字节
-	if (curpos < 3) {
+	// 使用 UTF8-BOM 编码时, 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节后面,
+	// 避免后续进行 fread 的时候读取到前 3 个字节的 BOM
+	if (mode == FILE_CHARSETMODE_UTF8_BOM && curpos < 3) {
 		fseek(_Stream, 3, SEEK_SET);
 
 		// 需要重新分配缓冲区大小, 以及调整 _ElementCount 的大小

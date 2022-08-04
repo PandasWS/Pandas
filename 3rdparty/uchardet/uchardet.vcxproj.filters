@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{0c78c925-4cfe-4304-b824-5fcb2a345ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LangModels">
+      <UniqueIdentifier>{1ef66157-6558-4695-9e8f-9ca4c215579e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4812d49d-2ce0-432f-9c87-f0a8e28c68ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\LangModels\LangArabicModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangBulgarianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangCroatianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangCzechModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangDanishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangEsperantoModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangEstonianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangFinnishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangFrenchModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangGermanModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangGreekModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangHebrewModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangHungarianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangIrishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangItalianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangLatvianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangLithuanianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangMalteseModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangPolishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangPortugueseModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangRomanianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangRussianModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangSlovakModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangSloveneModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangSpanishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangSwedishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangThaiModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangTurkishModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LangModels\LangVietnameseModel.cpp">
+      <Filter>LangModels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CharDistribution.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\JpCntx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsHebrewProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsCharSetProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsBig5Prober.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsEscCharsetProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsEscSM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsEUCJPProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsEUCKRProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsEUCTWProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsGB2312Prober.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsLatin1Prober.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsMBCSGroupProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsMBCSSM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsSBCharSetProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsSBCSGroupProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsSJISProber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsUniversalDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nsUTF8Prober.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\uchardet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\uchardet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
