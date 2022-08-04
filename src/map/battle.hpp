@@ -804,6 +804,9 @@ struct Battle_Config
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 #ifdef Pandas_Cross_Server
 	int sync_every_char; //是否以同步阻塞的方式检查所有char的存活
+#ifdef Pandas_CS_Item_Drop
+	int cross_server_item_drop; //是否允许任意玩家在任何地图上抛弃道具到地面
+#endif
 #ifdef Pandas_CS_Diff_Server_Trade
 	int diff_server_trade;	//是否允许来自不同服务器的玩家在中立服相互交易
 #endif

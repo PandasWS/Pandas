@@ -6036,6 +6036,14 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 		return false; //Can't drop items in nodrop mapflag maps.
 	}
 
+#ifdef Pandas_CS_Item_Drop
+	if (is_cross_server && !battle_config.cross_server_item_drop)
+	{
+		clif_displaymessage(sd->fd, msg_txt(sd, 271));
+		return false; //Can't drop items in any map
+	}
+#endif
+
 	if( !pc_candrop(sd,&sd->inventory.u.items_inventory[n]) )
 	{
 		clif_displaymessage (sd->fd, msg_txt(sd,263));

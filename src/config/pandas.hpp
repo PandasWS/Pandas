@@ -798,6 +798,9 @@
 		//自定义事件开关
 		#define Pandas_CS_Event
 
+		//玩家抛弃道具到地面
+		#define Pandas_CS_Item_Drop
+
 		//不同服的玩家的交易
 		#define Pandas_CS_Diff_Server_Trade
 
