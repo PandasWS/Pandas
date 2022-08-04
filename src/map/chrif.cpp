@@ -1795,6 +1795,18 @@ int chrif_bsdata_received(int fd) {
 			if (bs->script_str[0] == '\0' || !bs->tick)
 				continue;
 
+#ifdef Pandas_Fix_Bonus_Script_Effective_Timing_Exception
+			if ((bs->flag & BSF_REM_ON_LOGOUT) == BSF_REM_ON_LOGOUT) {
+				// 若 bonus_script 被打上了 BSF_REM_ON_LOGOUT 标记位, 那么它不应该再被加载.
+				//
+				// 目前看应该只有在玩家进入游戏的时候,
+				// 地图服务器在 intif_parse_Registers 收到角色服务器发来的全部变量数据之后,
+				// 才会触发 pc_reg_received -> chrif_bsdata_request -> 来请求 bonus_script 数据,
+				// 最终落到本函数 chrif_bsdata_received 进行处理.
+				continue;
+			}
+#endif // Pandas_Fix_Bonus_Script_Effective_Timing_Exception
+
 #ifndef Pandas_BonusScript_Unique_ID
 			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_type)bs->icon, bs->flag, bs->type)))
 				continue;
