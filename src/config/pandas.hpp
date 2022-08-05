@@ -986,6 +986,18 @@
 	// 修正 inter_server.yml 中的 Max 超大时没有妥善处理的问题 [Sola丶小克]
 	// 启用后 Max 字段的值最多不能超过 MAX_STORAGE 的值
 	#define Pandas_Fix_INTER_SERVER_DB_Field_Verify
+
+	// 修正特殊情况下 bonus_script 拥有 BSF_REM_ON_LOGOUT 标记位,
+	// 也会在重新进入游戏时生效的问题 [Sola丶小克]
+	// 
+	// 正常情况下角色若正常退出游戏, 标记位包含 BSF_REM_ON_LOGOUT 的 bonus_script 不会被记录,
+	// 那怕由于操作仓库而导致角色数据被提前保存, 也会在角色退出的时候被清除.
+	//
+	// 但如果在包含 BSF_REM_ON_LOGOUT 的 bonus_script 记录在数据库时强制关闭地图服务器,
+	// 那么这条 bonus_script 将会保存到下次服务器启动, 并且玩家进入游戏时还有效.
+	//
+	// 解决方案: 进入游戏加载 bonus_script 的时候抛弃拥有 BSF_REM_ON_LOGOUT 标记位的数据
+	#define Pandas_Fix_Bonus_Script_Effective_Timing_Exception
 #endif // Pandas_Bugfix
 
 // ============================================================================
