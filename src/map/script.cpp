@@ -5464,6 +5464,82 @@ void script_both_setregstr(struct script_state* st, const char* varname_without_
 	}
 }
 
+//************************************
+// Method:      script_getstorage
+// Description: 根据指令名称来获取不同的存储空间
+// Parameter:   struct script_state * st
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * * stor
+// Parameter:   struct item * * inventory
+// Parameter:   int stor_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/08/06 12:11
+//************************************
+bool script_getstorage(struct script_state* st, struct map_session_data* sd, struct s_storage** stor, struct item** inventory, int stor_id = 0) {
+	nullpo_retr(false, st);
+	nullpo_retr(false, sd);
+	nullpo_retr(false, stor);
+	nullpo_retr(false, inventory);
+	
+	const char* command = script_getfuncname(st);
+	
+	if (strstr(command, "cart")) {
+		if (!pc_iscarton(sd)) {
+			ShowError("buildin_%s: player doesn't have cart (CID: %d).\n", command, sd->status.char_id);
+			return false;
+		}
+		*stor = &sd->cart;
+		*inventory = (*stor)->u.items_cart;
+	}
+	else if (strstr(command, "guildstorage")) {
+		if (!sd->status.guild_id) {
+			ShowError("buildin_%s: player doesn't join the guild (CID: %d).\n", command, sd->status.char_id);
+			return false;
+		}
+
+		*stor = guild2storage2(sd->status.guild_id);
+		if (!(*stor)) {
+			ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
+			return false;
+		}
+		*inventory = (*stor)->u.items_guild;
+	}
+	else if (strstr(command, "storage")) {
+		if (stor_id == 0) {
+			*stor = &sd->storage;
+			*inventory = (*stor)->u.items_storage;
+		}
+		else if (!storage_exists(stor_id)) {
+			ShowError("buildin_%s: Invalid storage id '%d'!\n", command, stor_id);
+			return false;
+		}
+		else {
+			if (sd->premiumStorage.stor_id == stor_id || st->wating_premium_storage) {
+				// 如果现有的 premiumStorage 就是我们期望的拓展仓库
+				// 参考 storage_premiumStorage_load 的逻辑, 此时的 premiumStorage 内容可信
+				*stor = &sd->premiumStorage;
+				*inventory = (*stor)->u.items_storage;
+
+				st->wating_premium_storage = 0;
+				st->state = RUN;
+			}
+			else if (!st->wating_premium_storage) {
+				// 否则, 需要先发送请求给角色服务器, 用于加载指定的拓展仓库内容
+				st->state = RERUNLINE;
+				st->wating_premium_storage = 1;
+				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
+				return SCRIPT_CMD_SUCCESS;
+			}
+		}
+	}
+	else {
+		*stor = &sd->inventory;
+		*inventory = (*stor)->u.items_inventory;
+	}
+
+	return true;
+}
+
 #endif // Pandas_ScriptCommands
 
 /*==========================================
@@ -15569,13 +15645,11 @@ BUILDIN_FUNC(getinventorylist) {
 	struct map_session_data* sd = nullptr;
 	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
 	int j = 0, k = 0;
-	struct item* inventory = nullptr;
-	const char* command = script_getfuncname(st);
-	struct s_storage* stor = nullptr;
-	uint32 query_flag = INV_ALL;
 
 	if (!script_charid2sd(2, sd))
 		return SCRIPT_CMD_FAILURE;
+
+	uint32 query_flag = INV_ALL;
 	if (script_hasdata(st, 3))
 		query_flag = script_getnum(st, 3);
 
@@ -15607,68 +15681,17 @@ BUILDIN_FUNC(getinventorylist) {
 	script_cleararray_pc(sd, "@inventorylist_uid$");
 	script_cleararray_pc(sd, "@inventorylist_equipswitch");
 	pc_setreg(sd, add_str("@inventorylist_count"), 0);
+
+	struct s_storage* stor = nullptr;
+	struct item* inventory = nullptr;
+	int stor_id = (script_hasdata(st, 4)? script_getnum(st, 4) : 0);
 	
-	// 根据不同的指令名称来决定读取什么位置的内容
-	if (!strcmp(command, "getcartlist")) {
-		if (!pc_iscarton(sd)) {
-			ShowError("buildin_%s: player doesn't have cart (CID: %d).\n", command, sd->status.char_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		stor = &sd->cart;
-		inventory = stor->u.items_cart;
-	}
-	else if (!strcmp(command, "getguildstoragelist")) {
-		if (!sd->status.guild_id) {
-			ShowError("buildin_%s: player doesn't join the guild (CID: %d).\n", command, sd->status.char_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		
-		stor = guild2storage2(sd->status.guild_id);
-		if (!stor) {
-			ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		inventory = stor->u.items_guild;
-	}
-	else if (!strcmp(command, "getstoragelist")) {
-		int stor_id = 0;
-
-		if (script_hasdata(st, 4))
-			stor_id = script_getnum(st, 4);
-
-		if (stor_id == 0) {
-			stor = &sd->storage;
-			inventory = stor->u.items_storage;
-		}
-		else if (!storage_exists(stor_id)) {
-			ShowError("buildin_%s: Invalid storage id '%d'!\n", command, stor_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		else {
-			if (sd->premiumStorage.stor_id == stor_id || st->wating_premium_storage) {
-				// 如果现有的 premiumStorage 就是我们期望的拓展仓库
-				// 参考 storage_premiumStorage_load 的逻辑, 此时的 premiumStorage 内容可信
-				stor = &sd->premiumStorage;
-				inventory = stor->u.items_storage;
-
-				st->wating_premium_storage = 0;
-				st->state = RUN;
-			}
-			else if (!st->wating_premium_storage) {
-				// 否则, 需要先发送请求给角色服务器, 用于加载指定的拓展仓库内容
-				st->state = RERUNLINE;
-				st->wating_premium_storage = 1;
-				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
-				return SCRIPT_CMD_SUCCESS;
-			}
-		}
-	}
-	else {
-		stor = &sd->inventory;
-		inventory = stor->u.items_inventory;
+	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
+		return SCRIPT_CMD_FAILURE;
 	}
 
 	if (!stor || !inventory) {
+		const char* command = script_getfuncname(st);
 		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
 		return SCRIPT_CMD_FAILURE;
 	}
