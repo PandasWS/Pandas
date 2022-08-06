@@ -28445,10 +28445,9 @@ BUILDIN_FUNC(getinventoryinfo) {
 	struct item_data *id = nullptr;
 	int idx = script_getnum(st, 2);
 	const char* command = script_getfuncname(st);
-	
-	int64 retval = 0;
+	int charid_slot = (!stricmp(command, "getstorageinfo") ? 5 : 4);
 
-	if (!script_charid2sd(4, sd)) {
+	if (!script_charid2sd(charid_slot, sd)) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
