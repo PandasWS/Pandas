@@ -5528,7 +5528,6 @@ bool script_getstorage(struct script_state* st, struct map_session_data* sd, str
 				st->state = RERUNLINE;
 				st->wating_premium_storage = 1;
 				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
-				return SCRIPT_CMD_SUCCESS;
 			}
 		}
 	}
@@ -15688,6 +15687,10 @@ BUILDIN_FUNC(getinventorylist) {
 	
 	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
 		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (st->state == RERUNLINE) {
+		return SCRIPT_CMD_SUCCESS;
 	}
 
 	if (!stor || !inventory) {
@@ -28430,68 +28433,90 @@ BUILDIN_FUNC(getequipexpiretick) {
 /* ===========================================================
  * 指令: getinventoryinfo
  * 描述: 查询指定背包序号的道具的详细信息
- * 用法: getinventoryinfo <背包序号>,<要查看的信息类型>{,<角色编号>};
- * 返回: 查询失败返回 -1, 若查询成功除了类型为 11 的返回值是个字符串, 其他的皆为数值
+ * 用法: getinventoryinfo <道具的背包序号>,<要查看的信息类型>{,<角色编号>};
+ * 用法: getcartinfo <道具的手推车序号>,<要查看的信息类型>{,<角色编号>};
+ * 用法: getguildstorageinfo <道具的公会仓库序号>,<要查看的信息类型>{,<角色编号>};
+ * 用法: getstorageinfo <道具的个人或扩充仓库序号>,<要查看的信息类型>{{,<仓库编号>},<角色编号>};
+ * 返回: 查询失败返回 -1, 若查询成功则返回你所查询的信息
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(getinventoryinfo) {
     struct map_session_data *sd = nullptr;
 	struct item_data *id = nullptr;
 	int idx = script_getnum(st, 2);
+	const char* command = script_getfuncname(st);
+	
 	int64 retval = 0;
-	int type = script_getnum(st, 3);
 
 	if (!script_charid2sd(4, sd)) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (idx < 0 || idx >= sd->inventory.max_amount) {
+	struct s_storage* stor = nullptr;
+	struct item* inventory = nullptr;
+	int stor_id = (script_hasdata(st, 4) ? script_getnum(st, 4) : 0);
+
+	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+	
+	if (st->state == RERUNLINE) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!stor || !inventory) {
+		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (idx < 0 || idx >= stor->max_amount) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (!itemdb_exists(sd->inventory.u.items_inventory[idx].nameid)) {
+	if (!itemdb_exists(inventory[idx].nameid)) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (sd->inventory.u.items_inventory[idx].amount <= 0) {
+	if (inventory[idx].amount <= 0) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
+	int type = script_getnum(st, 3);
 	switch (type)
 	{
-	case 0: retval = sd->inventory.u.items_inventory[idx].nameid; break;
-	case 1: retval = sd->inventory.u.items_inventory[idx].amount; break;
-	case 2: retval = sd->inventory.u.items_inventory[idx].equip; break;
-	case 3: retval = sd->inventory.u.items_inventory[idx].refine; break;
-	case 4: retval = sd->inventory.u.items_inventory[idx].identify; break;
-	case 5: retval = sd->inventory.u.items_inventory[idx].attribute; break;
-	case 6: retval = sd->inventory.u.items_inventory[idx].card[0]; break;
-	case 7: retval = sd->inventory.u.items_inventory[idx].card[1]; break;
-	case 8: retval = sd->inventory.u.items_inventory[idx].card[2]; break;
-	case 9: retval = sd->inventory.u.items_inventory[idx].card[3]; break;
-	case 10: retval = sd->inventory.u.items_inventory[idx].expire_time; break;
-	case 11: retval = sd->inventory.u.items_inventory[idx].unique_id; break;
+	case 0:  script_pushint(st, inventory[idx].nameid); break;
+	case 1:  script_pushint(st, inventory[idx].amount); break;
+	case 2:  script_pushint(st, inventory[idx].equip); break;
+	case 3:  script_pushint(st, inventory[idx].refine); break;
+	case 4:  script_pushint(st, inventory[idx].identify); break;
+	case 5:  script_pushint(st, inventory[idx].attribute); break;
+	case 6:  script_pushint(st, inventory[idx].card[0]); break;
+	case 7:  script_pushint(st, inventory[idx].card[1]); break;
+	case 8:  script_pushint(st, inventory[idx].card[2]); break;
+	case 9:  script_pushint(st, inventory[idx].card[3]); break;
+	case 10: script_pushint(st, inventory[idx].expire_time); break;
+	case 11: script_pushint(st, inventory[idx].unique_id); break;
 	case 12: case 13: case 14: case 15: case 16:
-		retval = sd->inventory.u.items_inventory[idx].option[type - 12].id; break;
+		script_pushint(st, inventory[idx].option[type - 12].id); break;
 	case 17: case 18: case 19: case 20: case 21:
-		retval = sd->inventory.u.items_inventory[idx].option[type - 17].value; break;
+		script_pushint(st, inventory[idx].option[type - 17].value); break;
 	case 22: case 23: case 24: case 25: case 26:
-		retval = sd->inventory.u.items_inventory[idx].option[type - 22].param; break;
-	case 27:
-		retval = (int)sd->inventory.u.items_inventory[idx].bound; break;
-	case 28:
-		retval = (int)sd->inventory.u.items_inventory[idx].enchantgrade; break;
+		script_pushint(st, inventory[idx].option[type - 22].param); break;
+	case 27: script_pushint(st, inventory[idx].bound); break;
+	case 28: script_pushint(st, inventory[idx].enchantgrade); break;
+	case 29: script_pushint(st, inventory[idx].equipSwitch); break;
+	case 30: script_pushint(st, inventory[idx].favorite); break;
 	default:
-		ShowWarning("buildin_getinventoryinfo: The type should be in range 0-%d, currently type is: %d.\n", 28, type);
+		ShowWarning("buildin_%s: The type should be in range 0-%d, currently type is: %d.\n", command, 30, type);
 		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
+		return SCRIPT_CMD_FAILURE;
 	}
 
-	script_pushint(st, retval);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetInventoryInfo
@@ -29995,7 +30020,7 @@ BUILDIN_FUNC(storagegetitem) {
 /* ===========================================================
  * 指令: setinventoryinfo
  * 描述: 设置指定背包序号道具的部分详细信息, 与 getinventoryinfo 对应
- * 用法: setinventoryinfo <背包序号>,<要设置的信息类型>,<值>{{,<标记位>},<角色编号>};
+ * 用法: setinventoryinfo <道具的背包序号>,<要设置的信息类型>,<值>{{,<标记位>},<角色编号>};
  * 返回: 设置成功则返回 1, 设置失败或角色不存在则返回 0, 返回负数也是失败 (值表示不同失败原因)
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -30130,8 +30155,15 @@ BUILDIN_FUNC(setinventoryinfo) {
 		sd->inventory.u.items_inventory[idx].enchantgrade = (uint8)value;
 		need_recalc_status = true;
 		break;
+	case 29:
+		sd->inventory.u.items_inventory[idx].equipSwitch = (unsigned int)value;
+		break;
+	case 30:
+		value = cap_value(value, 0, 1);
+		sd->inventory.u.items_inventory[idx].favorite = (char)value;
+		break;
 	default:
-		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 28, type);
+		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 30, type);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -32741,7 +32773,10 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(getequipexpiretick, "isrental", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
 #endif // Pandas_ScriptCommand_GetEquipExpireTick
 #ifdef Pandas_ScriptCommand_GetInventoryInfo
-	BUILDIN_DEF(getinventoryinfo, "ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
+	BUILDIN_DEF(getinventoryinfo, "ii?"),							// 查询指定背包序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getcartinfo", "ii?"),			// 查询指定手推车序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getguildstorageinfo", "ii?"),	// 查询指定公会仓库序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getstorageinfo", "ii??"),		// 查询指定个人或扩充仓库序号的道具详细信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetInventoryInfo
 #ifdef Pandas_ScriptCommand_StatusCheck
 	BUILDIN_DEF(statuscheck, "i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
