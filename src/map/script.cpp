@@ -18065,14 +18065,22 @@ BUILDIN_FUNC(sprintf)
 		if(data_isstring(data))  // String
 			StringBuf_Printf(&final_buf, buf2, script_getstr(st, arg+3));
 		else if(data_isint(data))  // Number
+#ifndef Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 			StringBuf_Printf(&final_buf, buf2, script_getnum(st, arg+3));
+#else
+			StringBuf_Printf(&final_buf, buf2, script_getnum64(st, arg+3));
+#endif // Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 		else if(data_isreference(data)) {  // Variable
 			char* name = reference_getname(data);
 
 			if(name[strlen(name)-1]=='$')  // var Str
 				StringBuf_Printf(&final_buf, buf2, script_getstr(st, arg+3));
 			else  // var Int
+#ifndef Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 				StringBuf_Printf(&final_buf, buf2, script_getnum(st, arg+3));
+#else
+				StringBuf_Printf(&final_buf, buf2, script_getnum64(st, arg+3));
+#endif // Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 		} else {  // Unsupported type
 			ShowError("buildin_sprintf: Unknown argument type!\n");
 			if(buf) aFree(buf);
