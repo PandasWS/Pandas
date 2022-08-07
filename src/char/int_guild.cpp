@@ -43,7 +43,7 @@ int mapif_guild_broken(int guild_id,int flag);
 bool guild_check_empty(struct guild *g);
 int guild_calcinfo(struct guild *g);
 int mapif_guild_basicinfochanged(int guild_id,int type,const void *data,int len);
-int mapif_guild_info(int fd,struct guild *g);
+int mapif_guild_info(int fd, struct guild* g);
 int guild_break_sub(int key,void *data,va_list ap);
 int inter_guild_tosql(struct guild *g,int flag);
 int guild_checkskill(struct guild *g, int id);
@@ -534,6 +534,39 @@ struct guild * inter_guild_fromsql(int guild_id)
 	return g;
 }
 
+// Read guild from sql
+struct guild* inter_guild_id_fromsql(int char_id)
+{
+	int guild_id = 0;
+	struct mmo_charstatus* cd;
+	char* data;
+
+	if (char_id <= 0)
+		return nullptr;
+
+	//Load from memory
+	cd = static_cast<mmo_charstatus*>(idb_get(char_get_chardb(), char_id));
+	if (cd == nullptr)
+	{
+		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `guild_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, char_id)) {
+			Sql_ShowDebug(sql_handle);
+			Sql_FreeResult(sql_handle);
+			return nullptr;
+		}
+		else {
+			if (SQL_SUCCESS == Sql_NextRow(sql_handle))
+			{
+				Sql_GetData(sql_handle, 0, &data, NULL); guild_id = atoi(data);
+			}
+			Sql_FreeResult(sql_handle);
+		}
+	}
+	else
+		guild_id = cd->guild_id;
+
+	return inter_guild_fromsql(guild_id);
+}
+
 /**
  * Get the max storage size of a guild.
  * @param guild_id: Guild ID to search
@@ -964,7 +997,7 @@ int mapif_guild_created(int fd,uint32 account_id,struct guild *g)
 }
 
 // Guild not found
-int mapif_guild_noinfo(int fd,int guild_id)
+int mapif_guild_noinfo(int fd, int guild_id)
 {
 #ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[12];
@@ -976,17 +1009,17 @@ int mapif_guild_noinfo(int fd,int guild_id)
 	WBUFL(buf,4)=guild_id;
 	ShowWarning("int_guild: info not found %d\n",guild_id);
 	if(fd<0)
-		chmapif_sendall(buf,8);
+		chmapif_sendall(buf, WBUFW(buf, 2));
 	else
-		chmapif_send(fd,buf,8);
+		chmapif_send(fd,buf, WBUFW(buf, 2));
 	return 0;
 }
 
 // Send guild info
-int mapif_guild_info(int fd,struct guild *g)
+int mapif_guild_info(int fd, struct guild* g)
 {
 #ifndef Pandas_Crashfix_Variable_Init
-	unsigned char buf[8+sizeof(struct guild)];
+	unsigned char buf[8 + sizeof(struct guild)];
 #else
 	unsigned char buf[8 + sizeof(struct guild)] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
@@ -1371,6 +1404,7 @@ int mapif_parse_GuildInfo(int fd,int guild_id)
 		mapif_guild_noinfo(fd,guild_id); // Failed to load info
 	return 0;
 }
+
 
 // Add member to guild
 int mapif_parse_GuildAddMember(int fd,int guild_id,struct guild_member *m)
@@ -2041,7 +2075,6 @@ int inter_guild_parse_frommap(int fd)
 	case 0x3040: mapif_parse_GuildCastleDataLoad(fd,RFIFOW(fd,2),(int *)RFIFOP(fd,4)); break;
 	case 0x3041: mapif_parse_GuildCastleDataSave(fd,RFIFOW(fd,2),RFIFOB(fd,4),RFIFOL(fd,5)); break;
 	case 0x3042: mapif_parse_GuildEmblemVersion(fd, RFIFOL(fd, 2), RFIFOL(fd, 6)); break;
-
 	default:
 		return 0;
 	}

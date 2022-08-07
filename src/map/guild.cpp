@@ -16,6 +16,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "battle.hpp"
 #include "channel.hpp"
@@ -26,6 +27,7 @@
 #include "map.hpp"
 #include "mob.hpp"
 #include "npc.hpp"
+#include "party.hpp"
 #include "pc.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
@@ -219,6 +221,11 @@ static TBL_PC* guild_sd_check(int guild_id, uint32 account_id, uint32 char_id) {
 
 	if (!(sd && sd->status.char_id == char_id))
 		return NULL;
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		return sd;
+#endif
 
 	if (sd->status.guild_id != guild_id)
 	{	//If player belongs to a different guild, kick him out.
@@ -554,6 +561,7 @@ int guild_request_info(int guild_id) {
 	return intif_guild_request_info(guild_id);
 }
 
+
 //Information request with event
 int guild_npc_request_info(int guild_id,const char *event) {
 	if( guild_search(guild_id) ) {
@@ -600,6 +608,10 @@ int guild_check_member(struct guild *g) {
 
 	iter = mapit_getallusers();
 	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) ) {
+#ifdef Pandas_Cross_Server
+		if(guild_getindex(g, sd->status.account_id, sd->status.char_id) >= 0)
+			sd->status.guild_id = g->guild_id;
+#endif
 		if( sd->status.guild_id != g->guild_id )
 			continue;
 
@@ -623,7 +635,11 @@ int guild_recv_noinfo(int guild_id) {
 
 	iter = mapit_getallusers();
 	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) ) {
-		if( sd->status.guild_id == guild_id )
+		if( sd->status.guild_id == guild_id
+#ifdef Pandas_Cross_Server
+			|| is_cross_server
+#endif
+			)
 			sd->status.guild_id = 0; // erase guild
 	}
 	mapit_free(iter);
@@ -632,7 +648,7 @@ int guild_recv_noinfo(int guild_id) {
 }
 
 //Get and display information for all member
-int guild_recv_info(struct guild *sg) {
+int guild_recv_info(struct guild* sg) {
 	struct guild *g,before;
 	int i,bm,m;
 	DBData data;
@@ -676,6 +692,20 @@ int guild_recv_info(struct guild *sg) {
 		if(g->member[i].account_id>0){
 			sd = g->member[i].sd = guild_sd_check(g->guild_id, g->member[i].account_id, g->member[i].char_id);
 			if (sd) clif_name_area(&sd->bl); // [LuzZza]
+#ifdef Pandas_Cross_Server
+			//中立服->源服时在这里替换掉guild
+			if (sd && guild_getindex(g, sd->status.account_id, sd->status.char_id) > -1)
+			{
+				sd->status.guild_id = g->guild_id;
+				sd->guild = g;
+				auto master_sd = map_nick2sd(g->master, false);
+				if (master_sd && sd->status.char_id == master_sd->status.char_id)
+				{
+					sd->state.gmaster_flag = 1;
+					clif_name_self(&sd->bl);
+				}
+			} 
+#endif
 			m++;
 		}else
 			g->member[i].sd=NULL;
@@ -749,6 +779,15 @@ int guild_invite(struct map_session_data *sd, struct map_session_data *tsd) {
 
 	if( (i=guild_getposition(sd))<0 || !(g->position[i].mode&GUILD_PERM_INVITE) )
 		return 0; //Invite permission.
+
+#ifdef Pandas_CS_Diff_Server_Party_Join
+//在guild 权限之后检查是否允许不同服的玩家进入对方公会
+	if (is_cross_server && !battle_config.diff_server_guild_join && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))
+	{
+		clif_guild_inviteack(sd, 1);
+		return 0;
+	}
+#endif
 
 	if(!battle_config.invite_request_check) {
 #ifndef Pandas_PacketFunction_PartyJoinRequest

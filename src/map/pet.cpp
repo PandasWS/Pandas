@@ -18,6 +18,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -1405,7 +1406,11 @@ bool pet_get_egg(uint32 account_id, short pet_class, int pet_id ) {
 	sd->catch_target_class = PET_CATCH_FAIL;
 
 	if(!pet) {
+#ifndef Pandas_Cross_Server
 		intif_delete_petdata(pet_id);
+#else
+		intif_delete_petdata(sd,pet_id);
+#endif
 
 		return false;
 	}

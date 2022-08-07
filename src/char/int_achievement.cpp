@@ -14,6 +14,7 @@
 #include "../common/socket.hpp"
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "inter.hpp"
@@ -32,6 +33,13 @@ struct achievement *mapif_achievements_fromsql(uint32 char_id, int *count)
 	SqlStmt *stmt;
 	StringBuf buf;
 	int i;
+
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
 
 	if (!count)
 		return NULL;
@@ -94,6 +102,14 @@ struct achievement *mapif_achievements_fromsql(uint32 char_id, int *count)
  */
 bool mapif_achievement_delete(uint32 char_id, int achievement_id)
 {
+
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `id` = '%d' AND `char_id` = '%u'", schema_config.achievement_table, achievement_id, char_id)) {
 		Sql_ShowDebug(sql_handle);
 		return false;
@@ -112,6 +128,13 @@ bool mapif_achievement_add(uint32 char_id, struct achievement* ad)
 {
 	StringBuf buf;
 	int i;
+
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
 
 	ARR_FIND( 0, MAX_ACHIEVEMENT_OBJECTIVES, i, ad->count[i] != 0 );
 
@@ -161,6 +184,13 @@ bool mapif_achievement_update(uint32 char_id, struct achievement* ad)
 {
 	StringBuf buf;
 	int i;
+
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
 
 	StringBuf_Init(&buf);
 	StringBuf_Printf(&buf, "UPDATE `%s` SET ", schema_config.achievement_table);
@@ -212,6 +242,15 @@ int mapif_parse_achievement_save(int fd)
 	struct achievement *old_ad = NULL, *new_ad = NULL;
 	bool success = true;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(char_id);
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	if (new_n > 0)
 		new_ad = (struct achievement *)RFIFOP(fd, 8);
 
@@ -248,7 +287,11 @@ int mapif_parse_achievement_save(int fd)
 	if (old_ad)
 		aFree(old_ad);
 
+#ifndef Pandas_Cross_Server
 	mapif_achievement_save(fd, char_id, success);
+#else
+	mapif_achievement_save(fd, o_cid, success);
+#endif
 
 	return 0;
 }
@@ -260,12 +303,25 @@ void mapif_achievement_load( int fd, uint32 char_id ){
 	struct achievement *tmp_achievementlog = NULL;
 	int num_achievements = 0;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(char_id);
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	tmp_achievementlog = mapif_achievements_fromsql(char_id, &num_achievements);
 
 	WFIFOHEAD(fd, num_achievements * sizeof(struct achievement) + 8);
 	WFIFOW(fd, 0) = 0x3862;
 	WFIFOW(fd, 2) = num_achievements * sizeof(struct achievement) + 8;
+#ifndef Pandas_Cross_Server
 	WFIFOL(fd, 4) = char_id;
+#else
+	WFIFOL(fd, 4) = o_cid;
+#endif
 
 	if (num_achievements > 0)
 		memcpy(WFIFOP(fd, 8), tmp_achievementlog, sizeof(struct achievement) * num_achievements);
@@ -309,6 +365,15 @@ int mapif_parse_achievement_reward(int fd){
 	uint32 char_id = RFIFOL(fd, 2);
 	int32 achievement_id = RFIFOL(fd, 6);
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_real_id(char_id);
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	if( Sql_Query( sql_handle, "UPDATE `%s` SET `rewarded` = FROM_UNIXTIME('%u') WHERE `char_id`='%u' AND `id` = '%d' AND `completed` IS NOT NULL AND `rewarded` IS NULL", schema_config.achievement_table, (uint32)current, char_id, achievement_id ) == SQL_ERROR ||
 		Sql_NumRowsAffected(sql_handle) <= 0 ){
 		current = 0;
@@ -334,8 +399,11 @@ int mapif_parse_achievement_reward(int fd){
 		}
 	}
 
+#ifndef Pandas_Cross_Server
 	mapif_achievement_reward(fd, char_id, achievement_id, current);
-
+#else
+	mapif_achievement_reward(fd, o_cid, achievement_id, current);
+#endif
 	return 0;
 }
 

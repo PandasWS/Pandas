@@ -468,6 +468,7 @@ static int logclif_parse_reqcharconnec(int fd, struct login_session_data *sd, ch
 
 			session[fd]->func_parse = logchrif_parse;
 			session[fd]->flag.server = 1;
+			session[fd]->flag.type = 1;
 			realloc_fifo(fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 
 			// send connection success

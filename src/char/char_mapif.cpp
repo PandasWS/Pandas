@@ -12,6 +12,7 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_logif.hpp"
@@ -212,11 +213,18 @@ void chmapif_send_maps(int fd, int map_id, int count, unsigned char *mapbuf) {
 	else {
 		unsigned char buf[16384];
 		// Transmitting maps information to the other map-servers
+		int size = count * 4 + 10;
 		WBUFW(buf,0) = 0x2b04;
-		WBUFW(buf,2) = count * 4 + 10;
+		WBUFW(buf,2) = size;
 		WBUFL(buf,4) = htonl(map_server[map_id].ip);
 		WBUFW(buf,8) = htons(map_server[map_id].port);
-		memcpy(WBUFP(buf,10), mapbuf, count * 4);
+#ifndef Pandas_Cross_Server
+		memcpy(WBUFP(buf, 10), mapbuf, count * 4);
+#else
+		WBUFW(buf, 2) = size + 4;
+		WBUFL(buf, 10) = marked_cs_id;
+		memcpy(WBUFP(buf, 14), mapbuf, count * 4);
+#endif
 		chmapif_sendallwos(fd, buf, WBUFW(buf,2));
 	}
 
@@ -228,13 +236,25 @@ void chmapif_send_maps(int fd, int map_id, int count, unsigned char *mapbuf) {
 			WFIFOL(fd,4) = htonl(map_server[x].ip);
 			WFIFOW(fd,8) = htons(map_server[x].port);
 			uint16 j = 0;
-			for(size_t i = 0; i < map_server[x].map.size(); i++)
+#ifndef Pandas_Cross_Server
+			for (size_t i = 0; i < map_server[x].map.size(); i++)
 				if (map_server[x].map[i])
-					WFIFOW(fd,10+(j++)*4) = map_server[x].map[i];
+					WFIFOW(fd, 10 + (j++) * 4) = map_server[x].map[i];
 			if (j > 0) {
-				WFIFOW(fd,2) = j * 4 + 10;
-				WFIFOSET(fd,WFIFOW(fd,2));
+				WFIFOW(fd, 2) = j * 4 + 10;
+				WFIFOSET(fd, WFIFOW(fd, 2));
 			}
+#else
+			WFIFOL(fd, 10) = marked_cs_id;
+			for (size_t i = 0; i < map_server[x].map.size(); i++)
+				if (map_server[x].map[i])
+					WFIFOW(fd, 14 + (j++) * 4) = map_server[x].map[i];
+			if (j > 0) {
+				WFIFOW(fd, 2) = j * 4 + 14;
+				WFIFOSET(fd, WFIFOW(fd, 2));
+			}
+#endif
+			
 		}
 	}
 }
@@ -250,6 +270,7 @@ void chmapif_send_maps(int fd, int map_id, int count, unsigned char *mapbuf) {
 int chmapif_parse_getmapname(int fd, int id){
 	int i = 0;
 	unsigned char *mapbuf;
+
 
 	if (RFIFOREST(fd) < 4 || RFIFOREST(fd) < RFIFOW(fd,2))
 		return 0;
@@ -290,6 +311,18 @@ int chmapif_parse_askscdata(int fd){
 		int aid, cid;
 		aid = RFIFOL(fd,2);
 		cid = RFIFOL(fd,6);
+
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(aid);
+		int o_aid = aid;
+		int o_cid = cid;
+		if(!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
+#endif
+
 		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT type, tick, val1, val2, val3, val4 from `%s` WHERE `account_id` = '%d' AND `char_id`='%d'",
 			schema_config.scdata_db, aid, cid) )
 		{
@@ -304,8 +337,13 @@ int chmapif_parse_askscdata(int fd){
 
 			WFIFOHEAD(fd,14+50*sizeof(struct status_change_data));
 			WFIFOW(fd,0) = 0x2b1d;
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd,4) = aid;
 			WFIFOL(fd,8) = cid;
+#else
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
+#endif
 			for( count = 0; count < 50 && SQL_SUCCESS == Sql_NextRow(sql_handle); ++count )
 			{
 				Sql_GetData(sql_handle, 0, &data, NULL); scdata.type = atoi(data);
@@ -328,8 +366,13 @@ int chmapif_parse_askscdata(int fd){
 			WFIFOHEAD(fd,14);
 			WFIFOW(fd,0) = 0x2b1d;
 			WFIFOW(fd,2) = 14;
-			WFIFOL(fd,4) = aid;
-			WFIFOL(fd,8) = cid;
+#ifndef Pandas_Cross_Server
+			WFIFOL(fd, 4) = aid;
+			WFIFOL(fd, 8) = cid;
+#else
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
+#endif
 			WFIFOW(fd,12) = 0;
 			WFIFOSET(fd,WFIFOW(fd,2));
 		}
@@ -376,6 +419,14 @@ int chmapif_parse_regmapuser(int fd, int id){
 		for(i = 0; i < map_server[id].users; i++) {
 			int aid = RFIFOL(fd,6+i*8);
 			int cid = RFIFOL(fd,6+i*8+4);
+#ifdef Pandas_Cross_Server
+			int cs_id = get_cs_id(aid);
+			if (!is_cross_server)
+			{
+				aid = get_real_id(aid);
+				cid = get_real_id(cid);
+			}
+#endif
 			struct online_char_data* character = (struct online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
 			if( character->server > -1 && character->server != id )
 			{
@@ -404,6 +455,16 @@ int chmapif_parse_reqsavechar(int fd, int id){
 		return 0;
 	else {
 		int aid = RFIFOL(fd,4), cid = RFIFOL(fd,8), size = RFIFOW(fd,2);
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(aid);
+		int o_aid = aid;
+		int o_cid = cid;
+		if(!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
+#endif
 		struct online_char_data* character;
 		DBMap* online_char_db = char_get_onlinedb();
 
@@ -431,8 +492,13 @@ int chmapif_parse_reqsavechar(int fd, int id){
 			char_set_char_offline(cid, aid);
 			WFIFOHEAD(fd,10);
 			WFIFOW(fd,0) = 0x2b21; //Save ack only needed on final save.
-			WFIFOL(fd,2) = aid;
-			WFIFOL(fd,6) = cid;
+#ifndef Pandas_Cross_Server
+			WFIFOL(fd, 2) = aid;
+			WFIFOL(fd, 6) = cid;
+#else
+			WFIFOL(fd, 2) = o_aid;
+			WFIFOL(fd, 6) = o_cid;
+#endif
 			WFIFOSET(fd,10);
 		}
 		RFIFOSKIP(fd,size);
@@ -472,6 +538,14 @@ int chmapif_parse_authok(int fd){
 		uint32 login_id1 = RFIFOL(fd,6);
 		uint32 login_id2 = RFIFOL(fd,10);
 		uint32 ip = RFIFOL(fd,14);
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(account_id);
+		int o_aid = account_id;
+		if (!is_cross_server)
+		{
+			account_id = get_real_id(account_id);
+		}
+#endif
 #ifndef Pandas_Extract_SSOPacket_MacAddress
 		RFIFOSKIP(fd,18);
 #else
@@ -484,7 +558,12 @@ int chmapif_parse_authok(int fd){
 #endif // Pandas_Extract_SSOPacket_MacAddress
 
 		if( runflag != CHARSERVER_ST_RUNNING ){
-			chmapif_charselres(fd,account_id,0);
+#ifndef Pandas_Cross_Server
+			chmapif_charselres(fd, account_id, 0);
+#else
+			chmapif_charselres(fd, o_aid, 0);
+#endif
+			
 		}else{
 			struct auth_node* node;
 			DBMap*  auth_db = char_get_authdb();
@@ -517,7 +596,12 @@ int chmapif_parse_authok(int fd){
 					character->pincode_success = true;
 				}
 			}
-			chmapif_charselres(fd,account_id,1);
+#ifndef Pandas_Cross_Server
+			chmapif_charselres(fd, account_id, 1);
+#else
+			chmapif_charselres(fd, o_aid, 1);
+#endif
+			
 		}
 	}
 	return 1;
@@ -532,6 +616,13 @@ int chmapif_parse_req_saveskillcooldown(int fd){
 		aid = RFIFOL(fd,4);
 		cid = RFIFOL(fd,8);
 		count = RFIFOW(fd,12);
+#ifdef Pandas_Cross_Server
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
+#endif
 		if( count > 0 )
 		{
 			struct skill_cooldown_data data;
@@ -564,6 +655,14 @@ int chmapif_parse_req_skillcooldown(int fd){
 		int aid, cid;
 		aid = RFIFOL(fd,2);
 		cid = RFIFOL(fd,6);
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(aid);
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
+#endif
 		RFIFOSKIP(fd, 10);
 		if( SQL_ERROR == Sql_Query(sql_handle, "SELECT skill, tick FROM `%s` WHERE `account_id` = '%d' AND `char_id`='%d'",
 			schema_config.skillcooldown_db, aid, cid) )
@@ -579,8 +678,13 @@ int chmapif_parse_req_skillcooldown(int fd){
 
 			WFIFOHEAD(fd,14 + MAX_SKILLCOOLDOWN * sizeof(struct skill_cooldown_data));
 			WFIFOW(fd,0) = 0x2b0b;
-			WFIFOL(fd,4) = aid;
-			WFIFOL(fd,8) = cid;
+#ifndef Pandas_Cross_Server
+			WFIFOL(fd, 4) = aid;
+			WFIFOL(fd, 8) = cid;
+#else
+			WFIFOL(fd, 4) = make_fake_id(aid, cs_id);
+			WFIFOL(fd, 8) = make_fake_id(cid, cs_id);
+#endif
 			for( count = 0; count < MAX_SKILLCOOLDOWN && SQL_SUCCESS == Sql_NextRow(sql_handle); ++count )
 			{
 				Sql_GetData(sql_handle, 0, &data, NULL); scd.skill_id = atoi(data);
@@ -640,11 +744,28 @@ int chmapif_parse_reqchangemapserv(int fd){
 		map_id = char_search_mapserver(RFIFOW(fd,18), ntohl(RFIFOL(fd,24)), ntohs(RFIFOW(fd,28))); //Locate mapserver by ip and port.
 		if (map_id >= 0)
 			map_fd = map_server[map_id].fd;
+		int aid = RFIFOL(fd, 2);
+		int cid = RFIFOL(fd, 14);
+#ifdef Pandas_Cross_Server
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
+#endif
 		//Char should just had been saved before this packet, so this should be safe. [Skotlex]
-		char_data = (struct mmo_charstatus*)uidb_get(char_db_,RFIFOL(fd,14));
+		char_data = (struct mmo_charstatus*)uidb_get(char_db_, cid);
+#ifdef Pandas_Cross_Server
+		//这里也有可能是fake id
+		if (!is_cross_server)
+		{
+			char_data->account_id = get_real_id(char_data->account_id);
+			char_data->char_id = get_real_id(char_data->char_id);
+		}
+#endif
 		if (char_data == NULL) {	//Really shouldn't happen.
-			char_mmo_char_fromsql(RFIFOL(fd,14), &char_dat, true);
-			char_data = (struct mmo_charstatus*)uidb_get(char_db_,RFIFOL(fd,14));
+			char_mmo_char_fromsql(cid, &char_dat, true);
+			char_data = (struct mmo_charstatus*)uidb_get(char_db_, cid);
 		}
 
 		if( runflag == CHARSERVER_ST_RUNNING &&
@@ -656,8 +777,6 @@ int chmapif_parse_reqchangemapserv(int fd){
 			DBMap*  auth_db = char_get_authdb();
 			DBMap* online_char_db = char_get_onlinedb();
 
-			int aid = RFIFOL(fd,2);
-
 			//Update the "last map" as this is where the player must be spawned on the new map server.
 			char_data->last_point.map = RFIFOW(fd,18);
 			char_data->last_point.x = RFIFOW(fd,20);
@@ -667,7 +786,7 @@ int chmapif_parse_reqchangemapserv(int fd){
 			// create temporary auth entry
 			CREATE(node, struct auth_node, 1);
 			node->account_id = aid;
-			node->char_id = RFIFOL(fd,14);
+			node->char_id = cid;//RFIFOL(fd,14);//这里很容易看漏
 			node->login_id1 = RFIFOL(fd,6);
 			node->login_id2 = RFIFOL(fd,10);
 			node->sex = RFIFOB(fd,30);
@@ -685,7 +804,10 @@ int chmapif_parse_reqchangemapserv(int fd){
 			data = (struct online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
 			data->char_id = char_data->char_id;
 			data->server = map_id; //Update server where char is.
-
+#ifdef Pandas_Cross_Server
+			if(marked_cs_id)
+				chrif_logintoken_pass(map_fd, aid, cid, node->login_id1, node->login_id2, marked_cs_id, char_data->name);
+#endif
 			//Reply with an ack.
 			chmapif_changemapserv_ack(fd,0);
 		} else { //Reply with nak
@@ -715,6 +837,7 @@ int chmapif_parse_askrmfriend(int fd){
 		uint32 char_id, friend_id;
 		char_id = RFIFOL(fd,2);
 		friend_id = RFIFOL(fd,6);
+
 		if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `char_id`='%d' AND `friend_id`='%d' LIMIT 1",
 			schema_config.friend_db, char_id, friend_id) ) {
 			Sql_ShowDebug(sql_handle);
@@ -735,10 +858,16 @@ int chmapif_parse_reqcharname(int fd){
 	if (RFIFOREST(fd) < 6)
 		return 0;
 
+	int cid = RFIFOL(fd, 2);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+		cid = get_real_id(cid);
+#endif
+
 	WFIFOHEAD(fd,30);
 	WFIFOW(fd,0) = 0x2b09;
-	WFIFOL(fd,2) = RFIFOL(fd,2);
-	char_loadName((int)RFIFOL(fd,2), WFIFOCP(fd,6));
+	WFIFOL(fd,2) = cid;
+	char_loadName(cid, WFIFOCP(fd,6));
 	WFIFOSET(fd,30);
 
 	RFIFOSKIP(fd,6);
@@ -758,6 +887,15 @@ int chmapif_parse_reqnewemail(int fd){
 		WFIFOHEAD(login_fd,86);
 		memcpy(WFIFOP(login_fd,0), RFIFOP(fd,0),86); // 0x2722 <account_id>.L <actual_e-mail>.40B <new_e-mail>.40B
 		WFIFOW(login_fd,0) = 0x2722;
+#ifdef Pandas_Cross_Server
+		int aid = RFIFOL(fd, 2);
+		if (is_fake_id(aid))
+		{
+			ShowWarning("" CL_BLUE "[Cross Server]" CL_RESET "chmapif_parse_reqnewemail: Should not run here!\n");
+			RFIFOSKIP(fd, 86);
+			return 1;
+		}
+#endif
 		WFIFOSET(login_fd,86);
 	}
 	RFIFOSKIP(fd, 86);
@@ -781,7 +919,14 @@ int chmapif_parse_fwlog_changestatus(int fd){
 		int operation = RFIFOW(fd,30); // type of operation @see enum chrif_req_op
 		int32 timediff = 0;
 		int val1 = 0, sex = SEX_MALE;
-
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(aid);
+		if (is_fake_id(aid))
+		{
+			ShowDebug("" CL_BLUE "[Cross Server]" CL_RESET "chmapif_parse_fwlog_changestatus: name = '%s'\n",esc_name);
+			aid = get_real_id(aid);
+		}
+#endif
 		if (operation == CHRIF_OP_LOGIN_BAN || operation == CHRIF_OP_LOGIN_VIP) {
 			timediff = RFIFOL(fd, 32);
 			val1 = RFIFOL(fd, 36);
@@ -865,7 +1010,11 @@ int chmapif_parse_fwlog_changestatus(int fd){
 		if( aid != -1 && answer) { // Don't send answer for changesex/changecharsex
 			WFIFOHEAD(fd,34);
 			WFIFOW(fd, 0) = 0x2b0f;
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd, 2) = aid;
+#else
+			WFIFOL(fd, 2) = make_fake_id(aid, cs_id);
+#endif
 			safestrncpy(WFIFOCP(fd,6), name, NAME_LENGTH);
 			WFIFOW(fd,30) = operation;
 			WFIFOW(fd,32) = result;
@@ -901,6 +1050,7 @@ void chmapif_send_ackdivorce(int partner_id1, int partner_id2){
 int chmapif_parse_reqdivorce(int fd){
 	if( RFIFOREST(fd) < 10 )
 		return 0;
+
 	char_divorce_char_sql(RFIFOL(fd,2), RFIFOL(fd,6));
 	RFIFOSKIP(fd,10);
 	return 1;
@@ -915,7 +1065,16 @@ int chmapif_parse_reqdivorce(int fd){
 int chmapif_parse_setcharoffline(int fd){
 	if (RFIFOREST(fd) < 6)
 		return 0;
-	char_set_char_offline(RFIFOL(fd,2),RFIFOL(fd,6));
+	int cid = RFIFOL(fd, 2);
+	int aid = RFIFOL(fd, 6);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		aid = get_real_id(aid);
+		cid = get_real_id(cid);
+	}
+#endif
+	char_set_char_offline(cid, aid);
 	RFIFOSKIP(fd,10);
 	return 1;
 }
@@ -929,6 +1088,10 @@ int chmapif_parse_setcharoffline(int fd){
  * @return : 0 not enough data received, 1 success
  */
 int chmapif_parse_setalloffline(int fd, int id){
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+		id = -1;
+#endif
 	char_set_all_offline(id);
 	RFIFOSKIP(fd,2);
 	return 1;
@@ -944,7 +1107,16 @@ int chmapif_parse_setalloffline(int fd, int id){
 int chmapif_parse_setcharonline(int fd, int id){
 	if (RFIFOREST(fd) < 10)
 		return 0;
-	char_set_char_online(id, RFIFOL(fd,2),RFIFOL(fd,6));
+	int cid = RFIFOL(fd, 2);
+	int aid = RFIFOL(fd, 6);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		aid = get_real_id(aid);
+		cid = get_real_id(cid);
+	}
+#endif
+	char_set_char_online(id, cid, aid);
 	RFIFOSKIP(fd,10);
 	return 1;
 }
@@ -981,7 +1153,13 @@ int chmapif_parse_save_scdata(int fd){
 		aid = RFIFOL(fd, 4);
 		cid = RFIFOL(fd, 8);
 		count = RFIFOW(fd, 12);
-
+#ifdef Pandas_Cross_Server
+		if (!is_cross_server)
+		{
+			aid = get_real_id(aid);
+			cid = get_real_id(cid);
+		}
+#endif
 		// Whatever comes from the mapserver, now is the time to drop previous entries
 		if( Sql_Query( sql_handle, "DELETE FROM `%s` where `account_id` = %d and `char_id` = %d;", schema_config.scdata_db, aid, cid ) != SQL_SUCCESS ){
 			Sql_ShowDebug( sql_handle );
@@ -1054,9 +1232,19 @@ int chmapif_parse_reqauth(int fd, int id){
 		ip         = ntohl(RFIFOL(fd,15));
 		autotrade  = RFIFOB(fd,19) != 0;
 		RFIFOSKIP(fd,20);
-
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(account_id);
+		int o_aid = account_id;
+		int o_cid = char_id;
+		if (!is_cross_server)
+		{
+			account_id = get_real_id(account_id);
+			char_id = get_real_id(char_id);
+		}
+#endif
 		node = (struct auth_node*)idb_get(auth_db, account_id);
 		cd = (struct mmo_charstatus*)uidb_get(char_db_,char_id);
+		
 		if( cd == NULL )
 		{	//Really shouldn't happen. (or autotrade)
 				char_mmo_char_fromsql(char_id, &char_dat, true);
@@ -1073,7 +1261,11 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOHEAD(fd,mmo_charstatus_len);
 			WFIFOW(fd,0) = 0x2afd;
 			WFIFOW(fd,2) = mmo_charstatus_len;
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd,4) = account_id;
+#else
+			WFIFOL(fd, 4) = o_aid;
+#endif
 			WFIFOL(fd,8) = 0;
 			WFIFOL(fd,12) = 0;
 			WFIFOL(fd,16) = 0;
@@ -1116,7 +1308,12 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOHEAD(fd,mmo_charstatus_len);
 			WFIFOW(fd,0) = 0x2afd;
 			WFIFOW(fd,2) = mmo_charstatus_len;
-			WFIFOL(fd,4) = account_id;
+#ifndef Pandas_Cross_Server
+			WFIFOL(fd, 4) = account_id;
+#else
+			cd->inherit = false;
+			WFIFOL(fd, 4) = make_fake_id(account_id, cs_id);
+#endif
 			WFIFOL(fd,8) = node->login_id1;
 			WFIFOL(fd,12) = node->login_id2;
 			WFIFOL(fd,16) = (uint32)node->expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
@@ -1139,8 +1336,13 @@ int chmapif_parse_reqauth(int fd, int id){
 		} else {// auth failed
 			WFIFOHEAD(fd,19);
 			WFIFOW(fd,0) = 0x2b27;
-			WFIFOL(fd,2) = account_id;
-			WFIFOL(fd,6) = char_id;
+#ifndef Pandas_Cross_Server
+			WFIFOL(fd, 2) = account_id;
+			WFIFOL(fd, 6) = char_id;
+#else
+			WFIFOL(fd, 2) = o_aid;
+			WFIFOL(fd, 6) = o_cid;
+#endif
 			WFIFOL(fd,10) = login_id1;
 			WFIFOB(fd,14) = sex;
 			WFIFOL(fd,15) = htonl(ip);
@@ -1181,6 +1383,13 @@ int chmapif_parse_updfamelist(int fd){
             struct fame_list* list;
             int player_pos;
             int fame_pos;
+
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+			{
+				cid = get_real_id(cid);
+			}
+#endif
 
             switch(type)
             {
@@ -1262,7 +1471,7 @@ int chmapif_parse_reqcharban(int fd){
 			Sql_FreeResult(sql_handle);
 			return 1;
 		} else {
-			int t_cid=0,t_aid=0;
+			int t_cid=0,t_aid=0,offset=0;
 			char* data;
 			time_t unban_time;
 			time_t now = time(NULL);
@@ -1305,7 +1514,21 @@ int chmapif_parse_reqcharban(int fd){
 					WBUFL(buf,2) = t_cid;
 					WBUFB(buf,6) = 2;
 					WBUFL(buf,7) = (unsigned int)unban_time;
-					chmapif_sendall(buf, 11);
+#ifdef Pandas_Cross_Server
+					if(marked_cs_id)
+					{
+						int i;
+						ARR_FIND(0, ARRAYLENGTH(map_server), i, fd == map_server[i].fd);
+						if(i != ARRAYLENGTH(map_server))
+						{
+							int cs_id = map_server[i].server_id;
+							WBUFL(buf, 2) = make_fake_id(t_cid, cs_id);
+							offset += 4;
+							WBUFL(buf, 7) = cs_id;
+						}
+					}
+#endif
+					chmapif_sendall(buf, 11+offset);
 					// disconnect player if online on char-server
 					char_disconnect_player(t_aid);
 			}
@@ -1348,7 +1571,14 @@ int chmapif_bonus_script_get(int fd) {
 		uint32 cid = RFIFOL(fd,2);
 		struct bonus_script_data tmp_bsdata;
 		SqlStmt* stmt = SqlStmt_Malloc(sql_handle);
-
+#ifdef Pandas_Cross_Server
+		int cs_id = get_cs_id(cid);
+		int o_cid = cid;
+		if (!is_cross_server)
+		{
+			cid = get_real_id(cid);
+		}
+#endif
 		RFIFOSKIP(fd,6);
 
 #ifndef Pandas_BonusScript_Unique_ID
@@ -1393,7 +1623,11 @@ int chmapif_bonus_script_get(int fd) {
 			WFIFOHEAD(fd, size);
 			WFIFOW(fd, 0) = 0x2b2f;
 			WFIFOW(fd, 2) = size;
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = cid;
+#else
+			WFIFOL(fd, 4) = o_cid;
+#endif
 			WFIFOB(fd, 8) = num_rows;
 
 			for (i = 0; i < num_rows && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++) {
@@ -1438,7 +1672,12 @@ int chmapif_bonus_script_save(int fd) {
 	else {
 		uint32 cid = RFIFOL(fd,4);
 		uint8 count = RFIFOB(fd,8);
-
+#ifdef Pandas_Cross_Server
+		if (!is_cross_server)
+		{
+			cid = get_real_id(cid);
+		}
+#endif
 		if (SQL_ERROR == Sql_Query(sql_handle,"DELETE FROM `%s` WHERE `char_id` = '%d'", schema_config.bonus_script_db, cid))
 			Sql_ShowDebug(sql_handle);
 
@@ -1488,6 +1727,7 @@ void chmapif_connectack(int fd, uint8 errCode){
 	WFIFOSET(fd,3);
 }
 
+uint32 packet_trace_id = 0;
 /**
  * Entry point from map-server to char-server.
  * Function that checks incoming command, then splits it to the correct handler.
@@ -1515,6 +1755,13 @@ int chmapif_parse(int fd){
 
 	while(RFIFOREST(fd) >= 2){
 		int next=1;
+
+#ifdef Pandas_Print_Trace_Packet
+		int cmd = RFIFOW(fd, 0);
+		int len = RFIFOREST(fd);
+		ShowDebug("R Trace:%d,cmd:%d,p:0x%04x,len:%d,time:%d.\n", packet_trace_id++, cmd, cmd, len, gettick());
+#endif
+
 		switch(RFIFOW(fd,0)){
 			case 0x2afa: next=chmapif_parse_getmapname(fd,id); break;
 			case 0x2afc: next=chmapif_parse_askscdata(fd); break;
@@ -1603,7 +1850,7 @@ void do_init_chmapif(void){
  * @param id: id of map-serv (should be >0, FIXME)
  */
 void chmapif_server_reset(int id){
-	int j = 0;
+	int j = 0,offset = 0;
 	unsigned char buf[16384];
 	int fd = map_server[id].fd;
 	DBMap* online_char_db = char_get_onlinedb();
@@ -1612,11 +1859,15 @@ void chmapif_server_reset(int id){
 	WBUFW(buf,0) = 0x2b20;
 	WBUFL(buf,4) = htonl(map_server[id].ip);
 	WBUFW(buf,8) = htons(map_server[id].port);
+#ifdef Pandas_Cross_Server
+	WBUFL(buf, 10) = marked_cs_id;
+	offset += 4;
+#endif // Pandas_Cross_Server
 	for(size_t i = 0; i < map_server[id].map.size(); i++)
 		if (map_server[id].map[i])
-			WBUFW(buf,10+(j++)*4) = map_server[id].map[i];
+			WBUFW(buf,10+offset+(j++)*4) = map_server[id].map[i];
 	if (j > 0) {
-		WBUFW(buf,2) = j * 4 + 10;
+		WBUFW(buf,2) = j * 4 + 10 + offset;
 		chmapif_sendallwos(fd, buf, WBUFW(buf,2));
 	}
 	online_char_db->foreach(online_char_db,char_db_setoffline,id); //Tag relevant chars as 'in disconnected' server.

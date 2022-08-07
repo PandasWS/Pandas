@@ -22,6 +22,8 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
+
 
 #include "achievement.hpp"
 #include "atcommand.hpp" // get_atcommand_level()
@@ -56,6 +58,8 @@
 #include "storage.hpp"
 #include "unit.hpp" // unit_stop_attack(), unit_stop_walking()
 #include "vending.hpp" // struct s_vending
+#include "asyncchrif.hpp"
+
 
 #ifdef Pandas_Item_Amulet_System
 #include "itemamulet.hpp"
@@ -2035,12 +2039,77 @@ void pc_reg_received(struct map_session_data *sd)
 #if PACKETVER_MAIN_NUM < 20190403 || PACKETVER_RE_NUM < 20190320 || PACKETVER_ZERO_NUM < 20190410
 	if (sd->instance_id > 0)
 		instance_reqinfo(sd, sd->instance_id);
+
 	if (sd->status.party_id > 0)
 		party_member_joined(sd);
 	if (sd->status.guild_id > 0)
 		guild_member_joined(sd);
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
+#ifdef Pandas_Cross_Server
+	//由于切换数据,这里需要刷新客户端残留内容
+	//与@refresh有一定交集，但重复的部分更多，于是手动添加
+	clif_updatestatus(sd, SP_SPEED);//解决@speed的问题
+	clif_updatestatus(sd, SP_BASELEVEL);//解决中立服inherit_source_server_chara_status:no的问题,虽然会有升级特效
+	clif_updatestatus(sd, SP_BASEEXP);//下同
+	clif_updatestatus(sd, SP_NEXTBASEEXP);
+	clif_updatestatus(sd, SP_STATUSPOINT);
+	clif_updatestatus(sd, SP_JOBLEVEL);
+	clif_updatestatus(sd, SP_JOBEXP);
+	clif_updatestatus(sd, SP_NEXTJOBEXP);
+	clif_updatestatus(sd, SP_SKILLPOINT);
+	clif_updatestatus(sd, SP_CARTINFO);//解决中立服inherit_source_server_chara_status:no,客户端手推车数据
+	clif_updatestatus(sd, SP_ZENY);//解决中立服inherit_source_server_chara_status:no,客户端zeny数据
+	//Change look, if disguised, you need to undisguise
+	//to correctly calculate new job sprite without
+	if (sd->disguise)
+		pc_disguise(sd, 0);
+
+	clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, 0, SELF);
+	status_set_viewdata(&sd->bl, sd->status.class_);
+	clif_changelook(&sd->bl, LOOK_BASE, sd->vd.class_); // move sprite update to prevent client crashes with incompatible equipment [Valaris]
+#if PACKETVER >= 20151001
+	clif_changelook(&sd->bl, LOOK_HAIR, sd->vd.hair_style); // Update player's head (only matters when switching to or from Doram)
+#endif
+	clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
+	clif_spiritball(&sd->bl, &sd->bl, SELF);
+	clif_soulball(sd, &sd->bl, SELF);
+	clif_servantball(*sd, &sd->bl, SELF);
+	clif_abyssball(*sd, &sd->bl, SELF);
+	if (sd->vd.body_style)
+		clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, sd->vd.body_style, SELF);
+	//Update skill tree.
+	pc_calc_skilltree(sd);
+	clif_skillinfoblock(sd);
+
+	//Remove peco/cart/falcon
+	i = sd->sc.option;
+	if (i & OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
+		i &= ~OPTION_RIDING;
+	if (i & OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
+		i &= ~OPTION_FALCON;
+	if (i & OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
+		i &= ~OPTION_DRAGON;
+	if (i & OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGMASTERY))
+		i &= ~OPTION_WUGRIDER;
+	if (i & OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
+		i &= ~OPTION_WUG;
+	if (i & OPTION_MADOGEAR) //You do not need a skill for this.
+		i &= ~OPTION_MADOGEAR;
+	if (i != sd->sc.option)
+		pc_setoption(sd, i);
+
+	if (sd->status.manner < 0)
+		clif_changestatus(sd, SP_MANNER, sd->status.manner);
+
+	pc_equiplookall(sd);
+	if (pc_isdead(sd)) // When you refresh, resend the death packet.
+		clif_clearunit_single(sd->bl.id, CLR_DEAD, sd->fd);
+	else
+		clif_changed_dir(&sd->bl, SELF);
+	pc_show_questinfo_reinit(sd);
+	pc_show_questinfo(sd);
+#endif
 #endif
 
 	// pet
@@ -2067,7 +2136,11 @@ void pc_reg_received(struct map_session_data *sd)
 	sd->vip.enabled = 0;
 	chrif_req_login_operation(sd->status.account_id, sd->status.name, CHRIF_OP_LOGIN_VIP, 0, 1|8, 0);  // request VIP information
 #endif
+#ifndef Pandas_Cross_Server
 	intif_Mail_requestinbox(sd->status.char_id, 0, MAIL_INBOX_NORMAL); // MAIL SYSTEM - Request Mail Inbox
+#else
+	intif_Mail_requestinbox(sd->status.char_id, 1, MAIL_INBOX_NORMAL); // MAIL SYSTEM - Request Mail Inbox
+#endif
 	intif_request_questlog(sd);
 
 	if (battle_config.feature_achievement) {
@@ -5963,6 +6036,14 @@ bool pc_dropitem(struct map_session_data *sd,int n,int amount)
 		return false; //Can't drop items in nodrop mapflag maps.
 	}
 
+#ifdef Pandas_CS_Item_Drop
+	if (is_cross_server && !battle_config.cross_server_item_drop)
+	{
+		clif_displaymessage(sd->fd, msg_txt(sd, 271));
+		return false; //Can't drop items in any map
+	}
+#endif
+
 	if( !pc_candrop(sd,&sd->inventory.u.items_inventory[n]) )
 	{
 		clif_displaymessage (sd->fd, msg_txt(sd,263));
@@ -6891,6 +6972,78 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 	struct map_data *mapdata = map_getmapdata(m);
 	status_change *sc = status_get_sc(&sd->bl);
 
+#ifdef Pandas_Cross_Server
+	uint32 ip;
+	uint16 port;
+	int flag = 0;
+	if(m < 0)
+	{
+		int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
+		if (map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
+		{
+#ifdef Pandas_CS_Event
+			pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+			pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+			pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+			pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+			pc_setreg(sd, add_str("@cs_tommap_id"), m);
+			pc_setreg(sd, add_str("@cs_tomap_x"), x);
+			pc_setreg(sd, add_str("@cs_tomap_y"), y);
+			pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+			npc_script_event(sd, NPCE_CS_FAILED);
+#endif
+			return SETPOS_NO_MAPSERVER;
+		}
+
+		if (is_cross_server)
+		{
+			int tfd = chrif_get_char_fd(cs_id);
+			if (tfd <= 0 || !chrif_fd_isconnected(tfd))
+			{
+#ifdef Pandas_CS_Event
+				pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+				pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+				pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+				pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+				pc_setreg(sd, add_str("@cs_tomap_x"), x);
+				pc_setreg(sd, add_str("@cs_tomap_y"), y);
+				pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+				npc_script_event(sd, NPCE_CS_FAILED);
+#endif
+				return SETPOS_NO_MAPSERVER;//这里应该是跨服的char掉了.一般不会发生.发生了map-serv会卡主
+			}
+		}
+		if (ip == 0 || (short)port == 0)
+		{
+#ifdef Pandas_CS_Event
+			pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+			pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+			pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+			pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+			pc_setreg(sd, add_str("@cs_tomap_x"), x);
+			pc_setreg(sd, add_str("@cs_tomap_y"), y);
+			pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+			npc_script_event(sd, NPCE_CS_FAILED);
+#endif
+			return SETPOS_NO_MAPSERVER;
+		}
+#ifdef Pandas_CS_Event
+		pc_setreg(sd, add_str("@cs_frommap_id"), sd->bl.m);
+		pc_setreg(sd, add_str("@cs_frommap_x"), sd->bl.x);
+		pc_setreg(sd, add_str("@cs_frommap_y"), sd->bl.y);
+		pc_setregstr(sd, add_str("@cs_frommap_name$"), map[sd->bl.m].name);
+		pc_setreg(sd, add_str("@cs_tomap_x"), x);
+		pc_setreg(sd, add_str("@cs_tomap_y"), y);
+		pc_setregstr(sd, add_str("@cs_tomap_name$"), mapindex_id2name(mapindex));
+#endif
+		if (npc_script_filter(sd, NPCF_CS))
+			return SETPOS_PROCESSHALT;
+
+		flag = 1;
+	}
+
+#endif
+
 	sd->state.changemap = (sd->mapindex != mapindex);
 	sd->state.warping = 1;
 	sd->state.workinprogress = WIP_DISABLE_NONE;
@@ -6975,15 +7128,23 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		}
 	}
 
-	if( m < 0 )
+	if( m < 0
+#ifdef Pandas_Cross_Server
+		|| (flag && m >=0)
+#endif
+		)
 	{
+#ifndef Pandas_Cross_Server
 		uint32 ip;
 		uint16 port;
+#endif
 		struct script_state *st;
 
 		//if can't find any map-servers, just abort setting position.
+#ifndef Pandas_Cross_Server
 		if(!sd->mapindex || map_mapname2ipport(mapindex,&ip,&port))
 			return SETPOS_NO_MAPSERVER;
+#endif
 
 		if (sd->npc_id){
 			npc_event_dequeue(sd,false);
@@ -7009,6 +7170,27 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		pc_clean_skilltree(sd);
 		chrif_save(sd, CSAVE_CHANGE_MAPSERV|CSAVE_INVENTORY|CSAVE_CART);
 		chrif_changemapserver(sd, ip, (short)port);
+
+#ifdef Pandas_Cross_Server
+		//清空部分客户端内容
+		clif_party_withdraw(sd, sd->status.account_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE, SELF);
+		clif_guild_broken(sd, 0);
+		{
+			//复制一份来操作
+			struct map_session_data* ssd;
+			CREATE(ssd, struct map_session_data, 1);
+			memcpy(ssd, sd, sizeof(sd));
+			for (int i = 0; i < MAX_SKILL; i++) {
+				if(ssd->status.skill[i].id && ssd->status.skill[i].lv > 0)
+				{
+					ssd->status.skill[i].lv = 0;
+					ssd->status.skill[i].flag = SKILL_FLAG_PERMANENT;
+				}
+			}
+			clif_skillinfoblock(ssd);
+			aFree(ssd);
+		}
+#endif
 
 		//Free session data from this map server [Kevin]
 		unit_free_pc(sd);

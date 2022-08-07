@@ -1944,7 +1944,11 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 			md->lootitem_count++;
 		} else {	//Destroy first looted item...
 			if (md->lootitems[0].item.card[0] == CARD0_PET)
+#ifndef Pandas_Cross_Server
 				intif_delete_petdata(MakeDWord(md->lootitems[0].item.card[1],md->lootitems[0].item.card[2]));
+#else
+				intif_delete_petdata(nullptr,MakeDWord(md->lootitems[0].item.card[1], md->lootitems[0].item.card[2]));
+#endif
 			memmove(&md->lootitems[0], &md->lootitems[1], (LOOTITEM_SIZE-1)*sizeof(md->lootitems[0]));
 			memcpy (&md->lootitems[LOOTITEM_SIZE-1].item, &fitem->item, sizeof(md->lootitems[0].item));
 			md->lootitems[LOOTITEM_SIZE-1].mob_id = fitem->mob_id;

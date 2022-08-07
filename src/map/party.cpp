@@ -14,6 +14,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "atcommand.hpp"	//msg_txt()
@@ -206,6 +207,7 @@ int party_request_info(int party_id, uint32 char_id)
 	return intif_request_partyinfo(party_id, char_id);
 }
 
+
 /**
  * Close trade window if party member is kicked when trade a party bound item
  * @param sd
@@ -229,8 +231,15 @@ int party_recv_noinfo(int party_id, uint32 char_id)
 
 		sd = map_charid2sd(char_id);
 
-		if( sd && sd->status.party_id == party_id )
+		if( sd && (sd->status.party_id == party_id
+#ifdef Pandas_Cross_Server
+			|| is_cross_server
+#endif
+			))
+		{
 			sd->status.party_id = 0;
+		}
+			
 	}
 
 	return 0;
@@ -276,7 +285,11 @@ static void party_check_state(struct party_data *p)
 	}
 }
 
+#ifndef Pandas_Cross_Server
 int party_recv_info(struct party* sp, uint32 char_id)
+#else
+int party_recv_info(struct party* sp, uint32 char_id, int is_create)
+#endif
 {
 	struct party_data* p;
 	struct party_member* member;
@@ -347,6 +360,21 @@ int party_recv_info(struct party* sp, uint32 char_id)
 	memset(&p->state, 0, sizeof(p->state));
 	memset(&p->data, 0, sizeof(p->data));
 
+#ifdef Pandas_Cross_Server
+	//覆写sp->party_id
+	if (char_id != 0) { // requester
+		sd = map_charid2sd(char_id);
+		if (sd && party_getmemberid(p, sd) > -1)
+		{
+			if(sd->status.party_id != sp->party_id && sd->status.party_id > 0)
+				intif_party_leave(sd->status.party_id, sd->status.account_id, char_id, sd->status.name, PARTY_MEMBER_WITHDRAW_LEAVE);
+			sd->status.party_id = sp->party_id;
+		}
+			
+	}
+#endif
+	
+
 	for( member_id = 0; member_id < MAX_PARTY; member_id++ ) {
 		member = &p->party.member[member_id];
 		if ( member->char_id == 0 )
@@ -369,7 +397,14 @@ int party_recv_info(struct party* sp, uint32 char_id)
 		if( sd->party_creating ){
 			clif_party_option(p,sd,0x100);
 		}
-		clif_party_info(p,NULL);
+		//创建新队伍的时候,也会走这里且added_count == 1
+#ifdef Pandas_Cross_Server
+		if(is_cross_server && is_create)
+		{
+			clif_party_info(p, sd);
+		}else
+#endif
+			clif_party_info(p,NULL);
 
 		if (p->instance_id > 0)
 			instance_reqinfo(sd, p->instance_id);
@@ -382,8 +417,16 @@ int party_recv_info(struct party* sp, uint32 char_id)
 
 	if( char_id != 0 ) { // requester
 		sd = map_charid2sd(char_id);
+#ifdef Pandas_Cross_Server
+		if(is_cross_server && party_getmemberid(p, sd) > -1)
+		{
+			sd->status.party_id = sp->party_id;
+		}
+#endif
 		if( sd && sd->status.party_id == sp->party_id && party_getmemberid(p,sd) == -1 )
+		{
 			sd->status.party_id = 0;// was not in the party
+		}
 	}
 
 	return 0;
@@ -429,6 +472,15 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 		clif_displaymessage(sd->fd, msg_txt(sd,81)); // "Your GM level doesn't authorize you to preform this action on the specified player."
 		return 0;
 	}
+
+#ifdef Pandas_CS_Diff_Server_Party_Join
+	//在party 权限之后检查是否允许不同服的玩家组队
+	if (is_cross_server && !battle_config.diff_server_party_join && get_cs_id(sd->status.account_id) != get_cs_id(tsd->status.account_id))
+	{
+		clif_displaymessage(sd->fd, msg_txt(sd, 81)); // "Your GM level doesn't authorize you to preform this action on the specified player."
+		return 0;
+	}
+#endif
 
 	if( tsd == NULL) {
 		clif_party_invite_reply(sd, "", PARTY_REPLY_OFFLINE);
@@ -682,6 +734,15 @@ void party_join_approval(struct map_session_data* leader_sd, uint8 approval)
 		return;
 	}
 
+#ifdef Pandas_CS_Diff_Server_Party_Join
+	//在party 权限之后检查是否允许不同服的玩家组队
+	if (is_cross_server && !battle_config.diff_server_party_join && get_cs_id(leader_sd->status.account_id) != get_cs_id(sd->status.account_id))
+	{
+		clif_displaymessage(sd->fd, msg_txt(sd, 81)); // "Your GM level doesn't authorize you to preform this action on the specified player."
+		return;
+	}
+#endif
+
 #ifdef Pandas_NpcFilter_PARTYJOIN
 	if (sd && leader_sd) {
 		pc_setreg(sd, add_str("@join_party_id"), sd->party_invite);
@@ -722,6 +783,7 @@ void party_member_joined(struct map_session_data *sd)
 		return;
 	}
 
+
 	ARR_FIND( 0, MAX_PARTY, i, p->party.member[i].account_id == sd->status.account_id && p->party.member[i].char_id == sd->status.char_id );
 
 	if (i < MAX_PARTY) {
@@ -730,7 +792,10 @@ void party_member_joined(struct map_session_data *sd)
 		if (p->instance_id > 0)
 			instance_reqinfo(sd, p->instance_id);
 	} else
+	{
 		sd->status.party_id = 0; //He does not belongs to the party really?
+	}
+		
 }
 
 /// Invoked (from char-server) when a new member is added to the party.
@@ -935,6 +1000,7 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 #endif
 
 		sd->status.party_id = 0;
+
 		clif_name_area(&sd->bl); //Update name display [Skotlex]
 		//TODO: hp bars should be cleared too
 

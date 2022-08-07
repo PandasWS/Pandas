@@ -13,9 +13,11 @@
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "inter.hpp"
+
 
 struct s_pet *pet_pt;
 int mapif_load_pet(int fd, uint32 account_id, uint32 char_id, int pet_id);
@@ -188,6 +190,15 @@ int mapif_create_pet(int fd, uint32 account_id, uint32 char_id, short pet_class,
 {
 	memset(pet_pt, 0, sizeof(struct s_pet));
 	safestrncpy(pet_pt->name, pet_name, NAME_LENGTH);
+#ifdef Pandas_Cross_Server
+	int o_aid = account_id;
+	int o_cid = char_id;
+	if(!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
 	if(incubate == 1)
 		pet_pt->account_id = pet_pt->char_id = 0;
 	else {
@@ -216,12 +227,21 @@ int mapif_create_pet(int fd, uint32 account_id, uint32 char_id, short pet_class,
 	pet_pt->pet_id = -1; //Signal NEW pet.
 	if (inter_pet_tosql(pet_pt->pet_id,pet_pt)){
 		if( pet_pt->incubate ){
+#ifndef Pandas_Cross_Server
 			mapif_pet_created(fd, account_id, pet_pt);
+#else
+			mapif_pet_created(fd, o_aid, pet_pt);
+#endif
 		}else{
 			mapif_load_pet(fd, account_id, char_id, pet_pt->pet_id);
 		}
 	}else	//Failed...
+#ifndef Pandas_Cross_Server
 		mapif_pet_created(fd, account_id, NULL);
+#else
+		mapif_pet_created(fd, o_aid, NULL);
+#endif
+		
 
 	return 0;
 }
@@ -231,18 +251,47 @@ int mapif_load_pet(int fd, uint32 account_id, uint32 char_id, int pet_id){
 
 	inter_pet_fromsql(pet_id, pet_pt);
 
+#ifdef Pandas_Cross_Server
+	int o_aid = account_id;
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	if(pet_pt!=NULL) {
 		if(pet_pt->incubate == 1) {
 			pet_pt->account_id = pet_pt->char_id = 0;
+#ifndef Pandas_Cross_Server
 			mapif_pet_info(fd, account_id, pet_pt);
+#else
+			mapif_pet_info(fd, o_aid, pet_pt);
+#endif
 		}
-		else if(account_id == pet_pt->account_id && char_id == pet_pt->char_id)
+		else if (account_id == pet_pt->account_id && char_id == pet_pt->char_id) {
+#ifndef Pandas_Cross_Server
 			mapif_pet_info(fd, account_id, pet_pt);
+#else
+			pet_pt->account_id = o_aid;
+			pet_pt->char_id = o_cid;
+			mapif_pet_info(fd, o_aid, pet_pt);
+#endif
+		}
 		else
+#ifndef Pandas_Cross_Server
 			mapif_pet_noinfo(fd, account_id);
+#else
+			mapif_pet_noinfo(fd, o_aid);
+#endif
 	}
 	else
+#ifndef Pandas_Cross_Server
 		mapif_pet_noinfo(fd, account_id);
+#else
+		mapif_pet_noinfo(fd, o_aid);
+#endif
 
 	return 0;
 }
@@ -265,6 +314,13 @@ int mapif_save_pet(int fd, uint32 account_id, struct s_pet *data) {
 			data->intimate = 0;
 		else if(data->intimate > 1000)
 			data->intimate = 1000;
+#ifdef Pandas_Cross_Server
+		if(!is_cross_server)
+		{
+			data->account_id = get_real_id(data->account_id);
+			data->char_id = get_real_id(data->char_id);
+		}
+#endif
 		inter_pet_tosql(data->pet_id,data);
 		mapif_save_pet_ack(fd, account_id, 0);
 	}

@@ -8,6 +8,7 @@
 
 #include "../common/nullpo.hpp"
 #include "../common/socket.hpp"
+#include "../common/crossserver.hpp"
 
 #include "atcommand.hpp"
 #include "battle.hpp"
@@ -47,6 +48,7 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 		return;
 	}
 
+
 	if (!battle_config.invite_request_check) {
 #ifndef Pandas_PacketFunction_PartyJoinRequest
 		if (target_sd->guild_invite > 0 || target_sd->party_invite > 0 || target_sd->adopt_invite) {
@@ -80,12 +82,22 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 		return;
 	}
 
+#ifdef Pandas_CS_Diff_Server_Trade
+	//在trade 权限之后检查是否允许交易
+	if(is_cross_server && !battle_config.diff_server_trade && get_cs_id(sd->status.account_id) != get_cs_id(target_sd->status.account_id))
+	{
+		clif_tradestart(sd, 2);
+		return;
+	}
+#endif
+
 	// Players can not request trade from far away, unless they are allowed to use @trade.
 	if (!pc_can_use_command(sd, "trade", COMMAND_ATCOMMAND) &&
 	    (sd->bl.m != target_sd->bl.m || !check_distance_bl(&sd->bl, &target_sd->bl, TRADE_DISTANCE))) {
 		clif_tradestart(sd, 0); // too far
 		return ;
 	}
+
 
 	target_sd->trade_partner = sd->status.account_id;
 	sd->trade_partner = target_sd->status.account_id;

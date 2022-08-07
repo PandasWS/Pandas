@@ -16,6 +16,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_logif.hpp"
@@ -33,6 +34,7 @@
 #include "int_pet.hpp"
 #include "int_quest.hpp"
 #include "int_storage.hpp"
+
 
 std::string cfgFile = "inter_athena.yml"; ///< Inter-Config file
 InterServerDatabase interServerDb;
@@ -61,7 +63,7 @@ unsigned int party_share_level = 10;
 
 /// Received packet Lengths from map-server
 int inter_recv_packet_length[] = {
-	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  0,-1, 0, 0,  0, 0,  0, 0,	// 3000-
+	-1,-1, 7,-1, -1,13,36, (2+4+4+4+1+NAME_LENGTH),  0,-1,-1, 0,  0, 0,  0, 0,	// 3000-
 	 6,-1, 0, 0,  0, 0, 0, 0, 10,-1, 0, 0,  0, 0,  0, 0,	// 3010-
 	-1,10,-1,14, 15+NAME_LENGTH,19, 6,-1, 14,14, 6, 0,  0, 0,  0, 0,	// 3020- Party
 	-1, 6,-1,-1, 55,19, 6,-1, 14,-1,-1,-1, 18,19,186,-1,	// 3030-
@@ -516,6 +518,9 @@ void mapif_parse_accinfo(int fd) {
 				Sql_FreeResult(sql_handle);
 			} else {// more than one, listing... [Dekamaster/Nightroad]
 				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(214),(int)Sql_NumRows(sql_handle));
+#ifdef Pandas_Cross_Server
+				int cs_id = get_cs_id(u_aid);
+#endif
 				while ( SQL_SUCCESS == Sql_NextRow(sql_handle) ) {
 					int class_;
 					short base_level, job_level, online;
@@ -528,7 +533,11 @@ void mapif_parse_accinfo(int fd) {
 					Sql_GetData(sql_handle, 4, &data, NULL); job_level = atoi(data);
 					Sql_GetData(sql_handle, 5, &data, NULL); online = atoi(data);
 
-					inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(215), account_id, name, job_name(class_), base_level, job_level, online?"Online":"Offline");
+#ifdef Pandas_Cross_Server
+					account_id = make_fake_id(account_id, cs_id);
+#endif
+					inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(215), account_id, name, job_name(class_), base_level, job_level, online ? "Online" : "Offline");
+					
 				}
 				Sql_FreeResult(sql_handle);
 				return;
@@ -536,11 +545,160 @@ void mapif_parse_accinfo(int fd) {
 		}
 	}
 
+#ifdef Pandas_Cross_Server
+	u_aid = get_cs_id(u_aid);
+#endif
+	//TODO: 这里传过来的account_id或许是手动输入的?所以不必计较,只要保证u_aid是real就行
+
 	/* it will only get here if we have a single match then ask login-server to fetch the `login` record */
 	if (!account_id || chlogif_req_accinfo(fd, u_fd, u_aid, account_id, type) != 1) {
 		inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(213));
 	}
 	return;
+}
+
+
+void mapif_parse_inherit_cs_chara(int fd)
+{
+	struct auth_node* node;
+	DBMap* auth_db = char_get_authdb();
+
+	uint32 account_id, group_id, char_id;
+	uint32 login_id1, login_id2;
+	time_t expiration_time;
+	struct mmo_charstatus* status;
+	bool changing_mapservers;
+
+	//Check if both servers agree on the struct's size
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+	if (RFIFOW(fd, 2) - 25 != sizeof(struct mmo_charstatus)) {
+#else
+	// 由于多接收了两个字段, 因此这里的长度也需要适当加长, 否则会被当成无效封包
+	if (RFIFOW(fd, 2) - (25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH) != sizeof(struct mmo_charstatus)) {
+#endif // Pandas_Extract_SSOPacket_MacAddress
+		ShowError("chrif_authok: Data size mismatch! %d != %" PRIuPTR "\n", RFIFOW(fd, 2) - 25, sizeof(struct mmo_charstatus));
+		return;
+	}
+
+	account_id = RFIFOL(fd, 4);
+	login_id1 = RFIFOL(fd, 8);
+	login_id2 = RFIFOL(fd, 12);
+	expiration_time = (time_t)(int32)RFIFOL(fd, 16);
+	group_id = RFIFOL(fd, 20);
+	changing_mapservers = (RFIFOB(fd, 24)) > 0;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+	status = (struct mmo_charstatus*)RFIFOP(fd, 25);
+#else
+	// 接收两个新的额外字段, 保存到局部的 char 数组中, 后面需要用到
+	char macaddress[MACADDRESS_LENGTH] = { 0 };
+	char lanaddress[IP4ADDRESS_LENGTH] = { 0 };
+	safestrncpy(macaddress, RFIFOCP(fd, 25), MACADDRESS_LENGTH);
+	safestrncpy(lanaddress, RFIFOCP(fd, 25 + MACADDRESS_LENGTH), IP4ADDRESS_LENGTH);
+	// 读取完成额外字段后, 再从封包的最末尾读取 struct mmo_charstatus 的内容
+	status = (struct mmo_charstatus*)RFIFOP(fd, 25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH);
+#endif // Pandas_Extract_SSOPacket_MacAddress
+	char_id = status->char_id;
+	// create temporary auth entry
+	int group_except_i;
+	if(!inherit_source_server_chara_group)
+	{
+		int g_len = ARRAYLENGTH(inherit_source_server_chara_group_except);
+		ARR_FIND(0, g_len, group_except_i, inherit_source_server_chara_group_except[group_except_i] > 0);
+		if(group_except_i != g_len)
+		{
+			ARR_FIND(0, g_len, group_except_i, inherit_source_server_chara_group_except[group_except_i] == group_id);
+			if(group_except_i == g_len)
+			{
+				//不在例外时,重置group_id为0
+				group_id = 0;
+			}
+		}
+	}
+	CREATE(node, struct auth_node, 1);
+	node->account_id = account_id;
+	node->char_id = char_id;
+	node->login_id1 = login_id1;
+	node->login_id2 = login_id2;
+	node->sex = status->sex;
+	node->group_id = group_id;
+	node->changing_mapservers = changing_mapservers;
+	safestrncpy(node->mac_address, macaddress, MACADDRESS_LENGTH);
+	safestrncpy(node->lan_address, macaddress, IP4ADDRESS_LENGTH);
+	idb_put(auth_db, account_id, node);
+
+	char_make_new_char_cs(status);
+
+	//再这里替换掉源服的数据
+	struct mmo_charstatus char_dat;
+	struct mmo_charstatus* char_data;
+	char_data = (struct mmo_charstatus*)uidb_get(char_get_chardb(), char_id);
+	if (char_data == nullptr)
+	{
+		char_mmo_char_fromsql(char_id, &char_dat, true);
+		char_data = (struct mmo_charstatus*)uidb_get(char_get_chardb(), char_id);
+	}
+
+	struct point* last_point;
+	CREATE(last_point, struct point, 1);
+	memcpy(last_point, &status->last_point, sizeof(struct point));
+
+	//以中立服角色代替整个源服角色数据
+	if(char_data)
+	{
+		if (!inherit_source_server_chara_status)
+		{
+			memset(status, 0, sizeof(struct mmo_charstatus));
+			memcpy(status, char_data, sizeof(struct mmo_charstatus));
+		}
+		else {
+			//即使不继承,也会替换特定的id
+			status->party_id = char_data->party_id;
+			status->guild_id = char_data->guild_id;
+			status->clan_id = char_data->clan_id;
+			status->partner_id = char_data->partner_id;
+			status->child = char_data->child;
+		}
+	}
+
+	if (changing_mapservers)
+	{
+		memcpy(&status->last_point, last_point, sizeof(struct point));
+	}
+	
+
+	
+	aFree(last_point);
+
+	status->inherit = true;
+
+	//发回去再次验证
+	uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+	// 需要发送的内容除了 struct mmo_charstatus 和原先 25 字节的头之外,
+	// 还需要额外追加两个定长的字段长度
+	mmo_charstatus_len += MACADDRESS_LENGTH + IP4ADDRESS_LENGTH;
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
+	WFIFOHEAD(fd, mmo_charstatus_len);
+	WFIFOW(fd, 0) = 0x2afd;
+	WFIFOW(fd, 2) = mmo_charstatus_len;
+	WFIFOL(fd, 4) = account_id;
+	WFIFOL(fd, 8) = login_id1;
+	WFIFOL(fd, 12) = login_id2;
+	WFIFOL(fd, 16) = (uint32)expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
+	WFIFOL(fd, 20) = group_id;
+	WFIFOB(fd, 24) = changing_mapservers;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+	memcpy(WFIFOP(fd, 25), status, sizeof(struct mmo_charstatus));
+#else
+	// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
+	// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
+	safestrncpy(WFIFOCP(fd, 25), node->mac_address, MACADDRESS_LENGTH);
+	safestrncpy(WFIFOCP(fd, 25 + MACADDRESS_LENGTH), node->lan_address, IP4ADDRESS_LENGTH);
+	memcpy(WFIFOP(fd, 25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), status, sizeof(struct mmo_charstatus));
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
+	WFIFOSET(fd, WFIFOW(fd, 2));
 }
 
 /**
@@ -550,7 +708,7 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
 	int group_id, int logincount, int state, const char *email, const char *last_ip, const char *lastlogin,
 	const char *birthdate, const char *userid)
 {
-	
+
 	if (map_fd <= 0 || !session_isActive(map_fd))
 		return; // check if we have a valid fd
 
@@ -668,6 +826,17 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 	size_t len;
 	unsigned int plen = 0;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(account_id);
+	int o_aid = account_id;
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	switch( type ) {
 		case 3: //char reg
 			if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `key`, `index`, `value` FROM `%s` WHERE `char_id`='%" PRIu32 "'", schema_config.char_reg_str_table, char_id) )
@@ -688,8 +857,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 	WFIFOHEAD(fd, 60000 + 300);
 	WFIFOW(fd, 0) = 0x3804;
 	// 0x2 = length, set prior to being sent
+#ifndef Pandas_Cross_Server
 	WFIFOL(fd, 4) = account_id;
 	WFIFOL(fd, 8) = char_id;
+#else
+	WFIFOL(fd, 4) = o_aid;
+	WFIFOL(fd, 8) = o_cid;
+#endif
 	WFIFOB(fd, 12) = 0; // var type (only set when all vars have been sent, regardless of type)
 	WFIFOB(fd, 13) = 1; // is string type
 	WFIFOW(fd, 14) = 0; // count
@@ -735,8 +909,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 			WFIFOHEAD(fd, 60000 + 300);
 			WFIFOW(fd, 0) = 0x3804;
 			// 0x2 = length, set prior to being sent
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = account_id;
 			WFIFOL(fd, 8) = char_id;
+#else
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
+#endif
 			WFIFOB(fd, 12) = 0; // var type (only set when all vars have been sent, regardless of type)
 			WFIFOB(fd, 13) = 1; // is string type
 			WFIFOW(fd, 14) = 0; // count
@@ -768,8 +947,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 	WFIFOHEAD(fd, 60000 + 300);
 	WFIFOW(fd, 0) = 0x3804;
 	// 0x2 = length, set prior to being sent
+#ifndef Pandas_Cross_Server
 	WFIFOL(fd, 4) = account_id;
 	WFIFOL(fd, 8) = char_id;
+#else
+	WFIFOL(fd, 4) = o_aid;
+	WFIFOL(fd, 8) = o_cid;
+#endif
 	WFIFOB(fd, 12) = 0; // var type (only set when all vars have been sent, regardless of type)
 	WFIFOB(fd, 13) = 0; // is int type
 	WFIFOW(fd, 14) = 0; // count
@@ -811,8 +995,13 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 			WFIFOHEAD(fd, 60000 + 300);
 			WFIFOW(fd, 0) = 0x3804;
 			/* 0x2 = length, set prior to being sent */
+#ifndef Pandas_Cross_Server
 			WFIFOL(fd, 4) = account_id;
 			WFIFOL(fd, 8) = char_id;
+#else
+			WFIFOL(fd, 4) = o_aid;
+			WFIFOL(fd, 8) = o_cid;
+#endif
 			WFIFOB(fd, 12) = 0;/* var type (only set when all vars have been sent, regardless of type) */
 			WFIFOB(fd, 13) = 0;/* is int type */
 			WFIFOW(fd, 14) = 0;/* count */
@@ -844,17 +1033,53 @@ int inter_config_read(const char* cfgName)
 
 	while(fgets(line, sizeof(line), fp)) {
 #ifndef Pandas_Crashfix_Variable_Init
-		char w1[24], w2[1024];
+		char w1[1024], w2[1024];
 #else
-		char w1[24] = { 0 }, w2[1024] = { 0 };
+		char w1[1024] = { 0 }, w2[1024] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
 
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 
-		if (sscanf(line, "%23[^:]: %1023[^\r\n]", w1, w2) != 2)
+		if (sscanf(line, "%1023[^:]: %1023[^\r\n]", w1, w2) != 2)
 			continue;
 
+#ifdef Pandas_Cross_Server
+		if (strcmpi(w1, "cross_server") == 0) {
+			is_cross_server = config_switch(w2);
+			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server Set: %s\n", w2);
+		}
+		else if (strcmpi(w1, "cs_userid") == 0) {
+			safestrncpy(charserv_config.cs_userid, w2, sizeof(charserv_config.cs_userid));
+		}
+		else if (strcmpi(w1, "cs_passwd") == 0) {
+			safestrncpy(charserv_config.cs_passwd, w2, sizeof(charserv_config.cs_passwd));
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_status") == 0) {
+			inherit_source_server_chara_status = config_switch(w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_group") == 0) {
+			inherit_source_server_chara_group = config_switch(w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_group_except") == 0) {
+			int i,j;
+			int len = ARRAYLENGTH(inherit_source_server_chara_group_except);
+			//先找0
+			ARR_FIND(0, len, i, inherit_source_server_chara_group_except[i] == 0);
+			if(i != len)
+			{
+				//有位置则找重复
+				ARR_FIND(0, len, j, inherit_source_server_chara_group_except[j] == atoi(w2));
+				if(j == len)
+				{
+					//没找到重复时
+					inherit_source_server_chara_group_except[i] = atoi(w2);
+				}
+			}
+			
+		}
+		else
+#endif
 		if(!strcmpi(w1,"char_server_ip"))
 			char_server_ip = w2;
 		else if(!strcmpi(w1,"char_server_port"))
@@ -1000,7 +1225,7 @@ int inter_init_sql(const char *file)
 	//DB connection initialized
 	sql_handle = Sql_Malloc();
 	ShowInfo("Connect Character DB server.... (Character Server)\n");
-	if( SQL_ERROR == Sql_Connect(sql_handle, char_server_id.c_str(), char_server_pw.c_str(), char_server_ip.c_str(), (uint16)char_server_port, char_server_db.c_str()))
+	if (SQL_ERROR == Sql_Connect(sql_handle, char_server_id.c_str(), char_server_pw.c_str(), char_server_ip.c_str(), (uint16)char_server_port, char_server_db.c_str()))
 	{
 		ShowError("Couldn't connect with username = '%s', host = '%s', port = '%d', database = '%s'\n",
 			char_server_id.c_str(), char_server_ip.c_str(), char_server_port, char_server_db.c_str());
@@ -1092,6 +1317,7 @@ void inter_Storage_sendInfo(int fd) {
 	}
 	WFIFOSET(fd, len);
 }
+
 
 int inter_mapif_init(int fd)
 {
@@ -1356,6 +1582,15 @@ int mapif_parse_Registry(int fd)
 	uint32 account_id = RFIFOL(fd, 4), char_id = RFIFOL(fd, 8);
 	uint16 count = RFIFOW(fd, 12);
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(account_id);
+	if (!is_cross_server)
+	{
+		account_id = get_real_id(account_id);
+		char_id = get_real_id(char_id);
+	}
+#endif
+
 	if( count ) {
 		int cursor = 14, i;
 		bool isLoginActive = session_isActive(login_fd);
@@ -1443,6 +1678,10 @@ int mapif_parse_NameChangeRequest(int fd)
 	type = RFIFOB(fd,10);
 	name = RFIFOCP(fd,11);
 
+#ifdef Pandas_Cross_Server
+	//这里无须处理aid,cid
+#endif
+
 	// Check Authorised letters/symbols in the name
 	if (charserv_config.char_config.char_name_option == 1) { // only letters/symbols in char_name_letters are authorised
 		for (i = 0; i < NAME_LENGTH && name[i]; i++)
@@ -1462,6 +1701,7 @@ int mapif_parse_NameChangeRequest(int fd)
 	//updated here, because changing it on the map won't make it be saved [Skotlex]
 
 	//name allowed.
+
 	mapif_namechange_ack(fd, account_id, char_id, type, 1, name);
 	return 0;
 }
@@ -1518,6 +1758,7 @@ int inter_parse_frommap(int fd)
 	case 0x3007: mapif_parse_accinfo(fd); break;
 	/* 0x3008 unused */
 	case 0x3009: mapif_parse_broadcast_item(fd); break;
+	case 0x300A: mapif_parse_inherit_cs_chara(fd); break;
 	default:
 		if(  inter_party_parse_frommap(fd)
 		  || inter_guild_parse_frommap(fd)

@@ -116,6 +116,12 @@
     <ClInclude Include="configparser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="crossserver.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cli.cpp">
@@ -208,5 +214,11 @@
     <ClCompile Include="processmutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="crossserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="common.rc" />
   </ItemGroup>
 </Project>

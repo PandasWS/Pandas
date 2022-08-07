@@ -37,6 +37,7 @@
 	#define Pandas_ScriptResults
 	#define Pandas_ScriptParams
 	#define Pandas_WebServer
+	#define Pandas_InterestingFeatures
 #endif // Pandas
 
 #ifndef GIT_BRANCH
@@ -773,6 +774,53 @@
 	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
 	#define Pandas_Update_NPC_Identity_Information
 #endif // Pandas_CreativeWork
+
+#ifdef Pandas_InterestingFeatures
+
+	// 是否启用跨服服务
+    // 所有参与跨服的都服务器都必须打开此开关
+    // 相关设定与说明请看doc
+	#define Pandas_Cross_Server
+	
+	#ifdef Pandas_Cross_Server
+		//方便debug输入的AID/CID是否fake_id
+		#define Pandas_Fake_Id_Check_Debug
+		#undef Pandas_Fake_Id_Check_Debug
+
+		//输出login - char -map之间封包的交互,方便测试实际耗时和追踪封包
+		#define Pandas_Print_Trace_Packet
+		#undef Pandas_Print_Trace_Packet
+
+		//自定义事件开关
+		#define Pandas_CS_Event
+
+		//玩家抛弃道具到地面
+		#define Pandas_CS_Item_Drop
+
+		//不同服的玩家的交易
+		#define Pandas_CS_Diff_Server_Trade
+
+		//不同服的玩家的互发邮件
+		#define Pandas_CS_Diff_Server_Mail
+
+		//不同服的玩家的进入对方摆摊
+		#define Pandas_CS_Diff_Server_Vending
+
+		//不同服的玩家的交易
+		#define Pandas_CS_Diff_Server_Party_Join
+
+		//不同服的玩家的交易
+		#define Pandas_CS_Diff_Server_Guild_Join
+
+		//继承源服的个人storage/inventory/cart等
+		#define Pandas_CS_Inherit_All_Storage
+
+		//继承源服的个人所有属性状态(包括职业,加点,等级,zeny,group等)
+		#define Pandas_CS_Inherit_Chara_Status
+
+	#endif
+
+#endif
 
 // ============================================================================
 // 官方缺陷修正组 - Pandas_Bugfix

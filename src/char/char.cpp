@@ -22,6 +22,7 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char_clif.hpp"
 #include "char_cnslif.hpp"
@@ -119,6 +120,7 @@ void char_set_charselect(uint32 account_id) {
 void char_set_char_online(int map_id, uint32 char_id, uint32 account_id) {
 	struct online_char_data* character;
 	struct mmo_charstatus *cp;
+
 
 	//Update DB
 	if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `online`='1', `last_login`=NOW() WHERE `char_id`='%d' LIMIT 1", schema_config.char_db, char_id) )
@@ -231,7 +233,19 @@ int char_db_kickoffline(DBKey key, DBData *data, va_list ap){
 
 	//Kick out any connected characters, and set them offline as appropriate.
 	if (character->server > -1)
-		mapif_disconnectplayer(map_server[character->server].fd, character->account_id, character->char_id, 1);
+	{
+		uint32 aid = character->account_id;
+		uint32 cid = character->char_id;
+#ifdef Pandas_Cross_Server
+		if(!is_cross_server)
+		{
+			int cs_id = map_server[character->server].server_id;
+			aid = make_fake_id(aid, cs_id);
+			cid = make_fake_id(cid, cs_id);
+		}
+#endif
+		mapif_disconnectplayer(map_server[character->server].fd, aid, cid, 1);
+	}
 	else if (character->waiting_disconnect == INVALID_TIMER)
 		char_set_char_offline(character->char_id, character->account_id);
 	else
@@ -280,6 +294,15 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 	int errors = 0; //If there are any errors while saving, "cp" will not be updated at the end.
 	StringBuf buf;
 
+#ifdef Pandas_Cross_Server
+	int cs_id = get_cs_id(p->char_id);
+	if(!is_cross_server)
+	{
+		p->char_id = get_real_id(p->char_id);
+		p->account_id = get_real_id(p->account_id);
+	}
+#endif
+
 	if (char_id!=p->char_id) return 0;
 
 	cp = (struct mmo_charstatus *)idb_ensure(char_db_, char_id, char_create_charstatus);
@@ -287,8 +310,64 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 	StringBuf_Init(&buf);
 	memset(save_status, 0, sizeof(save_status));
 
+
+#ifdef Pandas_Cross_Server
+	bool inserted = false;
+	if(is_cross_server)
+	{
+		//中立char时很可能出现的问题
+		//在缓存中但不在表里,update会失败(但返回值不是SQL_ERROR)
+		//replace into考虑到实际操作量和情况，不予采用
+		//on duplcate update 考虑到逻辑清晰的问题，不予采用
+		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, p->char_id)
+			|| Sql_NumRows(sql_handle) == 0) {
+			if (Sql_NumRows(sql_handle) == 0) {
+				if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`account_id`, `name`, `party_id`, `guild_id`, `partner_id`, `clan_id`) VALUES ('%d', '%d', '%s', '%d', '%d', '%d', '%d')",schema_config.char_db, p->char_id, p->account_id,p->name, p->party_id, p->guild_id,p->partner_id,p->clan_id)) {
+					Sql_ShowDebug(sql_handle);
+				}else {
+					inserted = true;
+				}
+			}
+			else {
+				Sql_ShowDebug(sql_handle);
+			}
+		}
+		Sql_FreeResult(sql_handle);
+	}
+	//中立服的last_map不应该是非中立服
+	//否则当: 源服指向中立服时,中立服又指向源服,就会无法登陆了
+	if (is_cross_server)
+	{
+		bool local_map = false;
+		if (session_isValid(map_server[0].fd))
+		{
+			for (int j = 0; map_server[0].map[j]; j++)
+				if (map_server[0].map[j] == p->last_point.map)
+					local_map = true;
+		}
+		if (!local_map)
+		{
+			p->last_point = cp->last_point;
+		}
+	}
+	//当这份数据从中立服传到非中立服进行保存时
+	//p的特定数据应当被替换为原来CP的数据
+	//否则最后的memcpy会出现覆盖问题
+	if(!is_cross_server && cs_id)
+	{
+		p->party_id = cp->party_id;
+		p->guild_id = cp->guild_id;
+		p->clan_id = cp->clan_id;
+		p->partner_id = cp->partner_id;
+		memset(&p->friends, 0, sizeof(struct s_friend));
+		memcpy(p->friends,cp->friends, sizeof(struct s_friend));
+	}
+#endif
 	if (
-		(p->base_exp != cp->base_exp) || (p->base_level != cp->base_level) ||
+#ifdef Pandas_Cross_Server
+		inserted || 
+#endif
+		((p->base_exp != cp->base_exp) || (p->base_level != cp->base_level) ||
 		(p->job_level != cp->job_level) || (p->job_exp != cp->job_exp) ||
 		(p->zeny != cp->zeny) ||
 		(p->last_point.map != cp->last_point.map) ||
@@ -309,10 +388,9 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		(p->show_equip != cp->show_equip) || (p->hotkey_rowshift2 != cp->hotkey_rowshift2) ||
 		(p->max_ap != cp->max_ap) || (p->ap != cp->ap) || (p->trait_point != cp->trait_point) ||
 		(p->pow != cp->pow) || (p->sta != cp->sta) || (p->wis != cp->wis) ||
-		(p->spl != cp->spl) || (p->con != cp->con) || (p->crt != cp->crt)
+		(p->spl != cp->spl) || (p->con != cp->con) || (p->crt != cp->crt))
 	)
 	{	//Save status
-
 		if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `base_level`='%d', `job_level`='%d',"
 			"`base_exp`='%" PRIu64 "', `job_exp`='%" PRIu64 "', `zeny`='%d',"
 			"`max_hp`='%u',`hp`='%u',`max_sp`='%u',`sp`='%u',`status_point`='%d',`skill_point`='%d',"
@@ -337,7 +415,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			p->base_exp, p->job_exp, p->zeny,
 			p->max_hp, p->hp, p->max_sp, p->sp, p->status_point, p->skill_point,
 			p->str, p->agi, p->vit, p->int_, p->dex, p->luk,
-			p->option, p->party_id, p->guild_id, p->pet_id, p->hom_id, p->ele_id,
+			p->option,p->party_id,p->guild_id, p->pet_id, p->hom_id, p->ele_id,
 			p->weapon, p->shield, p->head_top, p->head_mid, p->head_bottom,
 			mapindex_id2name(p->last_point.map), p->last_point.x, p->last_point.y,
 			mapindex_id2name(p->save_point.map), p->save_point.x, p->save_point.y, p->rename,
@@ -353,6 +431,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 		} else
 			strcat(save_status, " status");
 	}
+
 
 	//Values that will seldom change (to speed up saving)
 	if (
@@ -381,6 +460,11 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			strcat(save_status, " status2");
 	}
 
+#ifdef Pandas_Cross_Server
+	//中立服根据inherit_source_server_chara_status来确定佣兵是否跟随角色
+	//非中立服 || (中立 && 不继承源数据时)
+	if(!is_cross_server || !inherit_source_server_chara_status)
+#endif
 	/* Mercenary Owner */
 	if( (p->mer_id != cp->mer_id) ||
 		(p->arch_calls != cp->arch_calls) || (p->arch_faith != cp->arch_faith) ||
@@ -477,8 +561,8 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 
 	diff = 0;
 	for(i = 0; i < MAX_FRIENDS; i++){
-		if(p->friends[i].char_id != cp->friends[i].char_id ||
-			p->friends[i].account_id != cp->friends[i].account_id){
+		if (p->friends[i].char_id != cp->friends[i].char_id ||
+			p->friends[i].account_id != cp->friends[i].account_id) {
 			diff = 1;
 			break;
 		}
@@ -561,16 +645,28 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 			printname = "Inventory";
 			tablename = schema_config.inventory_db;
 			selectoption = "char_id";
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+				id = get_real_id(id);
+#endif
 			break;
 		case TABLE_CART:
 			printname = "Cart";
 			tablename = schema_config.cart_db;
 			selectoption = "char_id";
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+				id = get_real_id(id);
+#endif
 			break;
 		case TABLE_STORAGE:
 			printname = inter_premiumStorage_getPrintableName(stor_id);
 			tablename = inter_premiumStorage_getTableName(stor_id);
 			selectoption = "account_id";
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+				id = get_real_id(id);
+#endif
 			break;
 		case TABLE_GUILD_STORAGE:
 			printname = "Guild Storage";
@@ -777,6 +873,10 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			selectoption = "char_id";
 			storage = p->u.items_inventory;
 			max2 = MAX_INVENTORY;
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+				id = get_real_id(id);
+#endif
 			break;
 		case TABLE_CART:
 			printname = "Cart";
@@ -784,6 +884,10 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			selectoption = "char_id";
 			storage = p->u.items_cart;
 			max2 = MAX_CART;
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+				id = get_real_id(id);
+#endif
 			break;
 		case TABLE_STORAGE:
 			printname = "Storage";
@@ -791,6 +895,10 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 			selectoption = "account_id";
 			storage = p->u.items_storage;
 			max2 = inter_premiumStorage_getMax(p->stor_id);
+#ifdef Pandas_Cross_Server
+			if (!is_cross_server)
+				id = get_real_id(id);
+#endif
 			break;
 		case TABLE_GUILD_STORAGE:
 			printname = "Guild Storage";
@@ -1627,6 +1735,201 @@ int char_make_new_char( struct char_session_data* sd, char* name_, int str, int 
 	return char_id;
 }
 
+int char_make_new_char_cs(struct mmo_charstatus* status)
+{
+	int str, agi, vit, int_, dex, luk;
+	short start_job = JOB_NOVICE;
+	int sex = 0;
+
+#if PACKETVER >= 20151001
+
+	// Default values
+	str = 1;
+	agi = 1;
+	vit = 1;
+	int_ = 1;
+	dex = 1;
+	luk = 1;
+
+#elif PACKETVER >= 20120307
+	// Sent values
+	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
+	slot = RFIFOB(fd, 26);
+	hair_color = RFIFOW(fd, 27);
+	hair_style = RFIFOW(fd, 29);
+
+	// Default values
+	str = 1;
+	agi = 1;
+	vit = 1;
+	int_ = 1;
+	dex = 1;
+	luk = 1;
+	start_job = JOB_NOVICE;
+	sex = sd->sex;
+
+#else
+	// Sent values
+	safestrncpy(name, RFIFOCP(fd, 2), NAME_LENGTH);
+	str = RFIFOB(fd, 26);
+	agi = RFIFOB(fd, 27);
+	vit = RFIFOB(fd, 28);
+	int_ = RFIFOB(fd, 29);
+	dex = RFIFOB(fd, 30);
+	luk = RFIFOB(fd, 31);
+	slot = RFIFOB(fd, 32);
+	hair_color = RFIFOW(fd, 33);
+	hair_style = RFIFOW(fd, 35);
+
+	// Default values
+	start_job = JOB_NOVICE;
+	sex = sd->sex;
+
+#endif
+
+	if (SQL_ERROR != Sql_Query(sql_handle, "SELECT 1 FROM `%s` WHERE `account_id` = '%d' AND `char_id` = '%d' LIMIT 1", schema_config.char_db, status->account_id, status->char_id))
+	{
+		if (Sql_NumRows(sql_handle) > 0)
+		{
+			Sql_FreeResult(sql_handle);
+			return -1;
+		}
+	}
+		
+
+	char name[NAME_LENGTH];
+	char esc_name[NAME_LENGTH * 2 + 1];
+	struct point tmp_start_point[MAX_STARTPOINT];
+	struct startitem tmp_start_items[MAX_STARTITEM];
+	int k, start_point_idx = rnd() % charserv_config.start_point_count;
+	int status_points;
+
+	safestrncpy(name, status->name, NAME_LENGTH);
+	normalize_name(name, TRIM_CHARS);
+	Sql_EscapeStringLen(sql_handle, esc_name, name, strnlen(name, NAME_LENGTH));
+
+	memset(tmp_start_point, 0, MAX_STARTPOINT * sizeof(struct point));
+	memset(tmp_start_items, 0, MAX_STARTITEM * sizeof(struct startitem));
+	memcpy(tmp_start_point, charserv_config.start_point, MAX_STARTPOINT * sizeof(struct point));
+	memcpy(tmp_start_items, charserv_config.start_items, MAX_STARTITEM * sizeof(struct startitem));
+
+	//flag = char_check_char_name(name, esc_name);
+	//if (flag < 0)
+	//	return flag;
+
+	// Check inputs from the client - never trust it!
+
+	// Check the slot
+	//if (slot < 0 || slot >= sd->char_slots) {
+	//	return -4; // invalid slot
+	//}
+
+	// Check gender
+	switch (status->sex) {
+	case SEX_FEMALE:
+		sex = 'F';
+		break;
+	case SEX_MALE:
+		sex = 'M';
+		break;
+	default:
+		ShowWarning("Received unsupported gender '%d'...\n", status->sex);
+		return -2; // invalid input
+	}
+
+	// Check status values
+#if PACKETVER < 20120307
+	// All stats together always have to add up to a total of 30 points
+	if ((str + agi + vit + int_ + dex + luk) != 30) {
+		return -2; // invalid input
+	}
+
+	// No status can be below 1
+	if (str < 1 || agi < 1 || vit < 1 || int_ < 1 || dex < 1 || luk < 1) {
+		return -2; // invalid input
+	}
+
+	// No status can be higher than 9
+	if (str > 9 || agi > 9 || vit > 9 || int_ > 9 || dex > 9 || luk > 9) {
+		return -2; // invalid input
+	}
+
+	// The status pairs always have to add up to a total of 10 points
+	if ((str + int_) != 10 || (agi + luk) != 10 || (vit + dex) != 10) {
+		return -2; // invalid input
+	}
+
+	status_points = 0;
+#else
+	status_points = charserv_config.start_status_points;
+#endif
+
+	// check the number of already existing chars in this account
+	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT 1 FROM `%s` WHERE `account_id` = '%d'", schema_config.char_db, status->account_id))
+		Sql_ShowDebug(sql_handle);
+#ifdef VIP_ENABLE
+	if (Sql_NumRows(sql_handle) >= MAX_CHARS)
+		return -2; // character account limit exceeded
+#else
+	//if (Sql_NumRows(sql_handle) >= sd->char_slots)
+	//	return -2; // character account limit exceeded
+#endif
+
+	// check char slot
+	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT 1 FROM `%s` WHERE `account_id` = '%d' AND `char_num` = '%d' LIMIT 1", schema_config.char_db, status->account_id, status->slot))
+		Sql_ShowDebug(sql_handle);
+	if (Sql_NumRows(sql_handle) > 0)
+		return -2; // slot already in use
+	
+
+
+	// validation success, log result
+	if (charserv_config.log_char) {
+		if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`time`, `char_msg`,`account_id`,`char_num`,`name`,`str`,`agi`,`vit`,`int`,`dex`,`luk`,`hair`,`hair_color`)"
+			"VALUES (NOW(), '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')",
+			schema_config.charlog_db, "make new char", status->account_id, status->slot, esc_name, str, agi, vit, int_, dex, luk, status->hair, status->hair_color))
+			Sql_ShowDebug(sql_handle);
+	}
+
+#if PACKETVER >= 20151001
+	if (!(start_job == JOB_NOVICE && (charserv_config.allowed_job_flag & 1)) &&
+		!(start_job == JOB_SUMMONER && (charserv_config.allowed_job_flag & 2)))
+		return -2; // Invalid job
+
+	// Check for Doram based information.
+	if (start_job == JOB_SUMMONER) { // Check for just this job for now.
+		memset(tmp_start_point, 0, MAX_STARTPOINT * sizeof(struct point));
+		memset(tmp_start_items, 0, MAX_STARTITEM * sizeof(struct startitem));
+		memcpy(tmp_start_point, charserv_config.start_point_doram, MAX_STARTPOINT * sizeof(struct point));
+		memcpy(tmp_start_items, charserv_config.start_items_doram, MAX_STARTITEM * sizeof(struct startitem));
+		start_point_idx = rnd() % charserv_config.start_point_count_doram;
+	}
+#endif
+
+	
+
+	//Insert the new char entry to the database
+	if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `class`, `zeny`, `status_point`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
+		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`, `sex`, `char_id`) VALUES ("
+		"'%d', '%d', '%s', '%d', '%d',  '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%u', '%u', '%u', '%u', '%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%c', '%d')",
+		schema_config.char_db, status->account_id, status->slot, esc_name, start_job, charserv_config.start_zeny, status_points, str, agi, vit, int_, dex, luk,
+		(40 * (100 + vit) / 100), (40 * (100 + vit) / 100), (11 * (100 + int_) / 100), (11 * (100 + int_) / 100), status->hair, status->hair_color,
+		mapindex_id2name(status->last_point.map), status->last_point.x, status->last_point.y, mapindex_id2name(status->save_point.map), status->save_point.x, status->save_point.y, sex, status->char_id))
+	{
+		Sql_ShowDebug(sql_handle);
+		return -2; //No, stop the procedure!
+	}
+
+	//Give the char the default items
+	for (k = 0; k <= MAX_STARTITEM && tmp_start_items[k].nameid != 0; k++) {
+		if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s` (`char_id`,`nameid`, `amount`, `equip`, `identify`) VALUES ('%d', '%u', '%hu', '%u', '%d')", schema_config.inventory_db, status->char_id, tmp_start_items[k].nameid, tmp_start_items[k].amount, tmp_start_items[k].pos, 1))
+			Sql_ShowDebug(sql_handle);
+	}
+
+	ShowInfo("" CL_BLUE "[Cross Server]" CL_RESET "Created char: account: %d, char: %d, slot: %d, name: %s\n", status->account_id, status->char_id, status->slot, name);
+
+	return 1;
+}
 /*----------------------------------------------------------------------------------------------------------*/
 /* Divorce Players */
 /*----------------------------------------------------------------------------------------------------------*/
@@ -2163,6 +2466,7 @@ void char_read_fame_list(void)
 int char_loadName(uint32 char_id, char* name){
 	char* data;
 	size_t len;
+
 
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `name` FROM `%s` WHERE `char_id`='%d'", schema_config.char_db, char_id) )
 		Sql_ShowDebug(sql_handle);
@@ -3240,6 +3544,17 @@ void do_final(void)
 	char_db_->destroy(char_db_, NULL);
 	online_char_db->destroy(online_char_db, NULL);
 	auth_db->destroy(auth_db, NULL);
+
+#ifdef Pandas_Cross_Server
+	auto cs = cs_configs_map.begin();
+	while (cs != cs_configs_map.end())
+	{
+		aFree(cs->second);
+		const auto next = std::next(cs);
+		cs_configs_map.erase(cs);
+		cs = next;
+	}
+#endif
 
 	if( char_fd != -1 )
 	{

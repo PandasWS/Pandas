@@ -160,6 +160,10 @@ struct Char_Config {
 struct CharServ_Config {
 	char userid[24];
 	char passwd[24];
+#ifdef Pandas_Cross_Server
+	char cs_userid[24];
+	char cs_passwd[24];
+#endif
 	char server_name[20];
 	char wisp_server_name[NAME_LENGTH];
 	char login_ip_str[128];
@@ -179,6 +183,7 @@ struct CharServ_Config {
 #if PACKETVER_SUPPORTS_PINCODE
 	struct Pincode_Config pincode_config;
 #endif
+
 
 	int save_log; // show loading/saving messages
 	int log_char;	// loggin char or not [devil]
@@ -217,10 +222,11 @@ struct mmo_map_server {
 	uint16 port;
 	int users;
 	std::vector<uint16> map;
+	uint32 server_id;
 };
 extern struct mmo_map_server map_server[MAX_MAP_SERVERS];
 
-#define AUTH_TIMEOUT 30000
+#define AUTH_TIMEOUT 5000
 struct auth_node {
 	uint32 account_id;
 	uint32 char_id;
@@ -329,6 +335,7 @@ void char_set_charselect(uint32 account_id);
 void char_read_fame_list(void);
 
 int char_make_new_char( struct char_session_data* sd, char* name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style, short start_job, int sex );
+int char_make_new_char_cs(struct mmo_charstatus* status);
 
 void char_set_session_flag_(int account_id, int val, bool set);
 #define char_set_session_flag(account_id, val)   ( char_set_session_flag_((account_id), (val), true)  )

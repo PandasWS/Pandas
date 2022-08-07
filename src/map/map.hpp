@@ -1272,10 +1272,17 @@ bool map_blid_exists( int id );
 const char* map_mapid2mapname(int m);
 int16 map_mapindex2mapid(unsigned short mapindex);
 int16 map_mapname2mapid(const char* name);
+
+#ifndef Pandas_Cross_Server
 int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port);
 int map_setipport(unsigned short map, uint32 ip, uint16 port);
-int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseallipport(void);
+#else
+int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port, uint32 cs_id);
+int map_setipport(unsigned short map, uint32 ip, uint16 port,uint32 cs_id);
+int map_eraseallipport(int fd);
+#endif
+int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
 void map_addiddb(struct block_list *);
 #ifdef Pandas_BattleRecord
 void map_mobiddb(struct block_list* bl, int new_blockid);
@@ -1286,7 +1293,7 @@ void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...);
 void map_foreachregen(int (*func)(struct block_list* bl, va_list args), ...);
 void map_foreachiddb(int (*func)(struct block_list* bl, va_list args), ...);
-struct map_session_data * map_nick2sd(const char* nick, bool allow_partial);
+struct map_session_data* map_nick2sd(const char* nick, bool allow_partial);
 #ifndef Pandas_FuncDefine_Mob_Getmob_Boss
 struct mob_data * map_getmob_boss(int16 m);
 #else

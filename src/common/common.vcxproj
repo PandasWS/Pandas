@@ -25,6 +25,7 @@
     <ClInclude Include="conf.hpp" />
     <ClInclude Include="configparser.hpp" />
     <ClInclude Include="core.hpp" />
+    <ClInclude Include="crossserver.hpp" />
     <ClInclude Include="cryptopp.hpp" />
     <ClInclude Include="database.hpp" />
     <ClInclude Include="db.hpp" />
@@ -43,6 +44,8 @@
     <ClInclude Include="performance.hpp" />
     <ClInclude Include="processmutex.hpp" />
     <ClInclude Include="random.hpp" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="serialize.hpp" />
     <ClInclude Include="showmsg.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="sql.hpp" />
@@ -60,6 +63,7 @@
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="conf.cpp" />
     <ClCompile Include="core.cpp" />
+    <ClCompile Include="crossserver.cpp" />
     <ClCompile Include="cryptopp.cpp" />
     <ClCompile Include="database.cpp" />
     <ClCompile Include="db.cpp" />
@@ -86,6 +90,9 @@
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
     <ClCompile Include="utilities.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="common.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F8FD7B1E-8E1C-4CC3-9CD1-2E28F77B6559}</ProjectGuid>

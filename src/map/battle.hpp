@@ -802,6 +802,30 @@ struct Battle_Config
 	int mob_setunitdata_persistence;		// 是否高优先级持久化保存 setunitdata 对魔物的设置
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
+#ifdef Pandas_Cross_Server
+	int sync_every_char; //是否以同步阻塞的方式检查所有char的存活
+#ifdef Pandas_CS_Item_Drop
+	int cross_server_item_drop; //是否允许任意玩家在任何地图上抛弃道具到地面
+#endif
+#ifdef Pandas_CS_Diff_Server_Trade
+	int diff_server_trade;	//是否允许来自不同服务器的玩家在中立服相互交易
+#endif
+#ifdef Pandas_CS_Diff_Server_Mail
+	int diff_server_mail;	//是否允许来自不同服务器的玩家在中立服互发邮件
+#endif
+#ifdef Pandas_CS_Diff_Server_Vending
+	int diff_server_vending;	//是否允许来自不同服务器的玩家在中立服进入对方的摆摊和收购
+#endif
+#ifdef Pandas_CS_Diff_Server_Party_Join
+	int diff_server_party_join;	//是否允许来自不同服务器的玩家在中立服进入对方的队伍
+#endif
+#ifdef Pandas_CS_Diff_Server_Guild_Join
+	int diff_server_guild_join;	//是否允许来自不同服务器的玩家在中立服进入对方的公会
+#endif
+#ifdef Pandas_CS_Inherit_All_Storage
+	int inherit_source_server_all_storage;
+#endif
+#endif
 
 #include "../custom/battle_config_struct.inc"
 };

@@ -14,6 +14,10 @@
 #include "../common/socket.hpp"
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
+#include "../common/utils.hpp"
+#include "../common/mmo.hpp"
+#include "../common/crossserver.hpp"
+
 
 #include "battle.hpp"
 #include "clan.hpp"
@@ -32,6 +36,9 @@
 #include "pet.hpp"
 #include "script.hpp" // script_config
 #include "storage.hpp"
+#include "asyncchrif.hpp"
+#include "atcommand.hpp"
+
 
 static TIMER_FUNC(check_connect_char_server);
 
@@ -39,7 +46,7 @@ static struct eri *auth_db_ers; //For reutilizing player login structures.
 static DBMap* auth_db; // int id -> struct auth_node*
 static bool char_init_done = false; //server already initialized? Used for InterInitOnce and vending loadings
 
-static const int packet_len_table[0x3d] = { // U - used, F - free
+static const int packet_len_table[0x3e] = { // U - used, F - free
 	60, 3,-1,-1,10,-1, 6,-1,	// 2af8-2aff: U->2af8, U->2af9, U->2afa, U->2afb, U->2afc, U->2afd, U->2afe, U->2aff
 	 6,-1,18, 7,-1,39,30, 10,	// 2b00-2b07: U->2b00, U->2b01, U->2b02, U->2b03, U->2b04, U->2b05, U->2b06, U->2b07
 	 6,30, 10, -1,86, 7,44,34,	// 2b08-2b0f: U->2b08, U->2b09, U->2b0a, U->2b0b, U->2b0c, U->2b0d, U->2b0e, U->2b0f
@@ -47,7 +54,8 @@ static const int packet_len_table[0x3d] = { // U - used, F - free
 	 2,10, 2,-1,-1,-1, 2, 7,	// 2b18-2b1f: U->2b18, U->2b19, U->2b1a, U->2b1b, U->2b1c, U->2b1d, U->2b1e, U->2b1f
 	-1,10, 8, 2, 2,14,19,19,	// 2b20-2b27: U->2b20, U->2b21, U->2b22, U->2b23, U->2b24, U->2b25, U->2b26, U->2b27
 	-1, 0, 6,15, 0, 6,-1,-1,	// 2b28-2b2f: U->2b28, F->2b29, U->2b2a, U->2b2b, F->2b2c, U->2b2d, U->2b2e, U->2b2f
- };
+	24,							// 2b30-:	  U->2b30
+};
 
 //Used Packets:
 //2af8: Outgoing, chrif_connect -> 'connect to charserver / auth @ charserver'
@@ -158,7 +166,6 @@ struct auth_node* chrif_auth_check(uint32 account_id, uint32 char_id, enum sd_st
 
 bool chrif_auth_delete(uint32 account_id, uint32 char_id, enum sd_state state) {
 	struct auth_node *node;
-
 	if ( (node = chrif_auth_check(account_id, char_id, state) ) ) {
 		int fd = node->sd ? node->sd->fd : node->fd;
 
@@ -295,7 +302,11 @@ int chrif_isconnected(void) {
  *  CSAVE_INVENTORY: Character changed inventory data
  *  CSAVE_CART: Character changed cart data
  */
+#ifndef Pandas_Cross_Server
 int chrif_save(struct map_session_data *sd, int flag) {
+#else
+int chrif_save(struct map_session_data* sd, int flag,bool resave) {
+#endif
 	uint16 mmo_charstatus_len = 0;
 
 	nullpo_retr(-1, sd);
@@ -310,7 +321,7 @@ int chrif_save(struct map_session_data *sd, int flag) {
 		if ( !(flag&CSAVE_AUTOTRADE) && !chrif_auth_logout(sd, (flag&CSAVE_QUIT) ? ST_LOGOUT : ST_MAPCHANGE) )
 			ShowError("chrif_save: Failed to set up player %d:%d for proper quitting!\n", sd->status.account_id, sd->status.char_id);
 	}
-
+	
 	chrif_check(-1); //Character is saved on reconnect.
 
 	chrif_bsdata_save(sd, ((flag&CSAVE_QUITTING) && !(flag&CSAVE_AUTOTRADE)));
@@ -335,6 +346,16 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	if (sd->vars_dirty)
 		intif_saveregistry(sd);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server){
+		if (resave) {
+			switch_char_fd_cs_id(0, char_fd);
+		}
+		else {
+			switch_char_fd_cs_id(!inherit_source_server_chara_status ? 0 : get_cs_id(sd->status.account_id), char_fd);
+		}
+	}
+#endif
 	mmo_charstatus_len = sizeof(sd->status) + 13;
 	WFIFOHEAD(char_fd, mmo_charstatus_len);
 	WFIFOW(char_fd,0) = 0x2b01;
@@ -344,6 +365,7 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	WFIFOB(char_fd,12) = (flag&CSAVE_QUIT) ? 1 : 0; //Flag to tell char-server this character is quitting.
 
 	// If the user is on a instance map, we have to fake his current position
+
 	if( map_getmapdata(sd->bl.m)->instance_id ){
 		struct mmo_charstatus status;
 
@@ -352,13 +374,23 @@ int chrif_save(struct map_session_data *sd, int flag) {
 		// Change his current position to his savepoint
 		memcpy( &status.last_point, &status.save_point, sizeof( struct point ) );
 		// Copy the copied status into the packet
+
 		memcpy( WFIFOP( char_fd, 13 ), &status, sizeof( struct mmo_charstatus ) );
 	} else {
 		// Copy the whole status into the packet
 		memcpy( WFIFOP( char_fd, 13 ), &sd->status, sizeof( struct mmo_charstatus ) );
+
 	}
 
 	WFIFOSET(char_fd, WFIFOW(char_fd,2));
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server && inherit_source_server_chara_status && !resave){
+		//这里是为了在即使继承源服数据时，也会独立存一份guild_id,party_id等数据
+		sd->vars_dirty = true;
+		return chrif_save(sd, flag, true);
+	}
+#endif
 
 	if( sd->status.pet_id > 0 && sd->pd )
 		intif_save_petdata(sd->status.account_id,&sd->pd->pet);
@@ -373,6 +405,8 @@ int chrif_save(struct map_session_data *sd, int flag) {
 	if (sd->achievement_data.save)
 		intif_achievement_save(sd);
 
+
+
 	return 0;
 }
 
@@ -382,13 +416,35 @@ int chrif_save(struct map_session_data *sd, int flag) {
  * @param fd : char-serv fd to log into
  * @return 0:request sent
  */
-int chrif_connect(int fd) {
+#ifndef Pandas_Cross_Server
+int chrif_connect(int fd)
+#else
+int chrif_connect(int fd,int cs_id = 0)
+#endif
+{
 	ShowStatus("Logging in to char server...\n", char_fd);
 	WFIFOHEAD(fd,60);
 	WFIFOW(fd,0) = 0x2af8;
+#ifndef Pandas_Cross_Server
 	memcpy(WFIFOP(fd,2), userid, NAME_LENGTH);
 	memcpy(WFIFOP(fd,26), passwd, NAME_LENGTH);
-	WFIFOL(fd,50) = 0;
+	WFIFOL(fd, 50) = 0;
+#else
+	if(cs_id == 0)
+	{
+		memcpy(WFIFOP(fd, 2), userid, NAME_LENGTH);
+		memcpy(WFIFOP(fd, 26), passwd, NAME_LENGTH);
+	}
+	else {
+		const auto it = cs_configs_map.find(cs_id);
+		if(it != cs_configs_map.end())
+		{
+			memcpy(WFIFOP(fd, 2), it->second->userid, NAME_LENGTH);
+			memcpy(WFIFOP(fd, 26), it->second->passwd, NAME_LENGTH);
+		}
+	}
+	WFIFOL(fd, 50) = cs_id;
+#endif
 	WFIFOL(fd,54) = htonl(clif_getip());
 	WFIFOW(fd,58) = htons(clif_getport());
 	WFIFOSET(fd,60);
@@ -416,13 +472,26 @@ int chrif_recvmap(int fd) {
 	int i, j;
 	uint32 ip = ntohl(RFIFOL(fd,4));
 	uint16 port = ntohs(RFIFOW(fd,8));
-
-	for(i = 10, j = 0; i < RFIFOW(fd,2); i += 4, j++) {
-		map_setipport(RFIFOW(fd,i), ip, port);
+#ifndef Pandas_Cross_Server
+	for (i = 10, j = 0; i < RFIFOW(fd, 2); i += 4, j++) {
+		map_setipport(RFIFOW(fd, i), ip, port);
 	}
+#else
+	uint32 cs_id = RFIFOL(fd, 10);
+	for (i = 14, j = 0; i < RFIFOW(fd, 2); i += 4, j++) {
+		map_setipport(RFIFOW(fd, i), ip, port, cs_id);
+	}
+#endif
 
 	if (battle_config.etc_log)
+#ifndef Pandas_Cross_Server
 		ShowStatus("Received maps from %d.%d.%d.%d:%d (%d maps)\n", CONVIP(ip), port, j);
+#else
+		if(!is_cross_server)
+			ShowStatus("Received maps from %d.%d.%d.%d:%d (%d maps)\n", CONVIP(ip), port, j);
+		else
+			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Received maps from %d.%d.%d.%d:%d (%d maps) CS ID:%d\n", CONVIP(ip), port, j,cs_id);
+#endif
 
 	other_mapserver_count++;
 
@@ -432,11 +501,32 @@ int chrif_recvmap(int fd) {
 // remove specified maps (used when some other map-server disconnects)
 int chrif_removemap(int fd) {
 	int i, j;
-	uint32 ip =  RFIFOL(fd,4);
-	uint16 port = RFIFOW(fd,8);
-
-	for(i = 10, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
+#ifndef Pandas_Cross_Server
+	uint32 ip = RFIFOL(fd, 4);
+	uint16 port = RFIFOW(fd, 8);
+	for (i = 10, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
 		map_eraseipport(RFIFOW(fd, i), ip, port);
+#else
+	//ip和port被转过,源代码没逆回来多半是个bug
+	uint32 ip = ntohl(RFIFOL(fd, 4));
+	uint16 port = ntohs(RFIFOW(fd, 8));
+	uint32 cs_id = RFIFOW(fd, 10);
+	if(!is_cross_server)
+	{
+		for (i = 14, j = 0; i < RFIFOW(fd, 2); i += 4, j++)
+			map_eraseipport(RFIFOW(fd, i), ip, port);
+	}
+	else if(cs_id > 0){
+		auto it = map_dbs.find(cs_id);
+		if(it != map_dbs.end())
+		{
+			db_destroy(it->second);
+			it->second = nullptr;
+			map_dbs.erase(it);
+		}
+	}
+	
+#endif
 
 	other_mapserver_count--;
 
@@ -460,7 +550,10 @@ int chrif_changemapserver(struct map_session_data* sd, uint32 ip, uint16 port) {
 		clif_authfail_fd(sd->fd, 0);
 		return -1;
 	}
-
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 #ifndef Pandas_Extract_SSOPacket_MacAddress
@@ -534,14 +627,32 @@ int chrif_connectack(int fd) {
 	chrif_state = 1;
 	chrif_connected = 1;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		chrif_set_cs_fd_state(fd, chrif_state);
+#endif
+
 	chrif_sendmap(fd);
 
+
+#ifndef Pandas_Cross_Server
 	npc_event_runall(script_config.inter_init_event_name);
 	if( !char_init_done ) {
 		npc_event_runall(script_config.inter_init_once_event_name);
 		guild_castle_map_init();
 		intif_clan_requestclans();
 	}
+#else
+
+	if (!is_cross_server || cs_init_done)
+		npc_event_runall(script_config.inter_init_event_name);
+
+	if (!char_init_done) {
+		npc_event_runall(script_config.inter_init_once_event_name);
+		guild_castle_map_init();
+		intif_clan_requestclans();
+	}
+#endif
 
 	return 0;
 }
@@ -569,7 +680,11 @@ static int chrif_reconnect(DBKey key, DBData *data, va_list ap) {
 			uint32 ip;
 			uint16 port;
 
+#ifndef Pandas_Cross_Server
 			if( map_mapname2ipport(sd->mapindex,&ip,&port) == 0 )
+#else
+			if (map_mapname2ipport(sd->mapindex, &ip, &port,get_cs_id(sd->status.account_id)) == 0)
+#endif
 				chrif_changemapserver(sd, ip, port);
 			else //too much lag/timeout is the closest explanation for this error.
 				clif_authfail_fd(sd->fd, 3);
@@ -615,6 +730,38 @@ void chrif_on_ready(void) {
 	}
 }
 
+/// Called when all the connection steps are completed.
+void chrif_on_ready_cs(void) {
+	
+
+	chrif_check_shutdown();
+
+	//If there are players online, send them to the char-server. [Skotlex]
+	send_users_tochar();
+
+	//Auth db reconnect handling
+	auth_db->foreach(auth_db, chrif_reconnect);
+
+	//Re-save any storages that were modified in the disconnection time. [Skotlex]
+	do_reconnect_storage();
+
+	//Re-save any guild castles that were modified in the disconnection time.
+	guild_castle_reconnect(-1, CD_NONE, 0);
+
+	// Charserver is ready for loading autotrader
+	if (!char_init_done)
+	{
+		do_init_buyingstore_autotrade();
+		do_init_vending_autotrade();
+#ifdef Pandas_Player_Suspend_System
+		// 将处于离线挂机和离开模式的玩家召回自动上线
+		suspend_recall_all();
+#endif // Pandas_Player_Suspend_System
+		char_init_done = true;
+		ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "CS Map Server is now online.\n");
+	}
+}
+
 
 /**
  * Maps are sent, then received misc info from char-server
@@ -646,7 +793,18 @@ int chrif_sendmapack(int fd) {
 	if (battle_config.etc_log)
 		ShowInfo("Received default map from char-server '" CL_WHITE "%s %d,%d" CL_RESET "'.\n", map_default.mapname, map_default.x, map_default.y);
 
-	chrif_on_ready();
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+#endif
+		chrif_on_ready();
+#ifdef Pandas_Cross_Server
+	else {
+		cs_init_done = check_all_char_fd_health();
+		if (cs_init_done) {
+			chrif_on_ready_cs();
+		}
+	}
+#endif
 
 	return 0;
 }
@@ -657,6 +815,10 @@ int chrif_sendmapack(int fd) {
 int chrif_scdata_request(uint32 account_id, uint32 char_id) {
 
 #ifdef ENABLE_SC_SAVING
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+		switch_char_fd(account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -672,6 +834,10 @@ int chrif_scdata_request(uint32 account_id, uint32 char_id) {
  * Request skillcooldown from charserver
  *------------------------------------------*/
 int chrif_skillcooldown_request(uint32 account_id, uint32 char_id) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
+#endif
 	chrif_check(-1);
 	WFIFOHEAD(char_fd, 10);
 	WFIFOW(char_fd, 0) = 0x2b0a;
@@ -691,6 +857,14 @@ void chrif_authreq(struct map_session_data *sd, bool autotrade) {
 		set_eof(sd->fd);
 		return;
 	}
+
+	#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+	{
+		//从这里决定读取加载的chara数据
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+	}
+#endif
 
 	WFIFOHEAD(char_fd,20);
 	WFIFOW(char_fd,0) = 0x2b26;
@@ -746,6 +920,17 @@ void chrif_authok(int fd) {
 #endif // Pandas_Extract_SSOPacket_MacAddress
 	char_id = status->char_id;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+	{
+		int cs_id = !is_fake_id(account_id) ? chrif_get_cs_id(fd) : get_cs_id(account_id);
+		account_id = make_fake_id(account_id, cs_id);
+		char_id = make_fake_id(char_id, cs_id);
+		status->account_id = account_id;
+		status->char_id = char_id;
+	}
+#endif
+
 	//Check if we don't already have player data in our server
 	//Causes problems if the currently connected player tries to quit or this data belongs to an already connected player which is trying to re-auth.
 	if ( ( sd = map_id2sd(account_id) ) != NULL )
@@ -782,7 +967,42 @@ void chrif_authok(int fd) {
 		node->char_id == char_id &&
 		node->login_id1 == login_id1 )
 	{ //Auth Ok
-		if (pc_authok(sd, login_id2, expiration_time, group_id, status, changing_mapservers))
+		//这里以源服的sd创建一个基础角色信息后再饶回来pc_authok
+		//把该传的信息都传了~
+		if(is_cross_server && !status->inherit){
+			int tfd = char_fd;
+			switch_char_fd_cs_id(0, char_fd);
+
+			uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+#ifdef Pandas_Extract_SSOPacket_MacAddress
+			// 需要发送的内容除了 struct mmo_charstatus 和原先 25 字节的头之外,
+			// 还需要额外追加两个定长的字段长度
+			mmo_charstatus_len += MACADDRESS_LENGTH + IP4ADDRESS_LENGTH;
+#endif // Pandas_Extract_SSOPacket_MacAddress
+
+			WFIFOHEAD(char_fd, mmo_charstatus_len);
+			WFIFOW(char_fd, 0) = 0x300A;
+			WFIFOW(char_fd, 2) = mmo_charstatus_len;
+			WFIFOL(char_fd, 4) = account_id;
+			WFIFOL(char_fd, 8) = node->login_id1;
+			WFIFOL(char_fd, 12) = login_id2;
+			WFIFOL(char_fd, 16) = (uint32)node->expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
+			WFIFOL(char_fd, 20) = group_id;
+			WFIFOB(char_fd, 24) = changing_mapservers;
+#ifndef Pandas_Extract_SSOPacket_MacAddress
+			memcpy(WFIFOP(char_fd, 25), status, sizeof(struct mmo_charstatus));
+#else
+			// 在发送 struct mmo_charstatus 内容之前, 插入两个定长字段的值
+			// 此处将 char-server 记录的当前玩家的 mac 和 lan 地址发送给 map-server 中 0x2afd 封包的处理函数
+			safestrncpy(WFIFOCP(char_fd, 25), macaddress, MACADDRESS_LENGTH);
+			safestrncpy(WFIFOCP(char_fd, 25 + MACADDRESS_LENGTH), lanaddress, IP4ADDRESS_LENGTH);
+			memcpy(WFIFOP(char_fd, 25 + MACADDRESS_LENGTH + IP4ADDRESS_LENGTH), status, sizeof(struct mmo_charstatus));
+#endif // Pandas_Extract_SSOPacket_MacAddress
+			WFIFOSET(char_fd, WFIFOW(char_fd, 2));
+			char_fd = tfd;
+			return;
+		}
+		else if (pc_authok(sd, login_id2, expiration_time, group_id, status, changing_mapservers))
 			return;
 	} else { //Auth Failed
 		pc_authfail(sd);
@@ -861,6 +1081,10 @@ int chrif_charselectreq(struct map_session_data* sd, uint32 s_ip) {
 	if( !sd || !sd->bl.id || !sd->login_id1 )
 		return -1;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 #ifndef Pandas_Extract_SSOPacket_MacAddress
@@ -894,7 +1118,10 @@ int chrif_searchcharid(uint32 char_id) {
 
 	if( !char_id )
 		return -1;
-
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(char_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,6);
@@ -913,6 +1140,10 @@ int chrif_changeemail(int id, const char *actual_email, const char *new_email) {
 	if (battle_config.etc_log)
 		ShowInfo("chrif_changeemail: account: %d, actual_email: '%s', new_email: '%s'.\n", id, actual_email, new_email);
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,86);
@@ -940,6 +1171,11 @@ int chrif_changeemail(int id, const char *actual_email, const char *new_email) {
  * @val2 : extra data value to transfer for operation
  */
 int chrif_req_login_operation(int aid, const char* character_name, enum chrif_req_op operation_type, int32 timediff, int val1, int val2) {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(aid, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,44);
@@ -962,6 +1198,10 @@ int chrif_req_login_operation(int aid, const char* character_name, enum chrif_re
  * @sd : Player requesting operation
  */
 int chrif_changesex(struct map_session_data *sd, bool change_account) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,44);
@@ -1110,6 +1350,13 @@ int chrif_changedsex(int fd) {
  * Request Char Server to Divorce Players
  *------------------------------------------*/
 int chrif_divorce(int partner_id1, int partner_id2) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server) {
+		switch_char_fd(partner_id1, char_fd, chrif_state);
+	}
+#endif
+	
+
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -1220,6 +1467,10 @@ int chrif_ban(int fd) {
 }
 
 int chrif_req_charban(int aid, const char* character_name, int32 timediff){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(aid, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 	
 	WFIFOHEAD(char_fd,10+NAME_LENGTH);
@@ -1232,6 +1483,10 @@ int chrif_req_charban(int aid, const char* character_name, int32 timediff){
 }
 
 int chrif_req_charunban(int aid, const char* character_name){
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(aid, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 	
 	WFIFOHEAD(char_fd,6+NAME_LENGTH);
@@ -1280,6 +1535,10 @@ int chrif_disconnectplayer(int fd) {
  * Request/Receive top 10 Fame character list
  *------------------------------------------*/
 int chrif_updatefamelist(map_session_data &sd, e_rank ranktype) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd.status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd, 11);
@@ -1293,6 +1552,11 @@ int chrif_updatefamelist(map_session_data &sd, e_rank ranktype) {
 }
 
 int chrif_buildfamelist(void) {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,2);
@@ -1373,6 +1637,10 @@ int chrif_save_scdata(struct map_session_data *sd) { //parses the sc_data of the
 	struct status_change *sc = &sd->sc;
 	const struct TimerData *timer;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 	tick = gettick();
 
@@ -1417,6 +1685,10 @@ int chrif_skillcooldown_save(struct map_session_data *sd) {
 	t_tick tick;
 	const struct TimerData *timer;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 	tick = gettick();
 
@@ -1517,6 +1789,10 @@ int chrif_skillcooldown_load(int fd) {
  * Tell char-server charcter disconnected [Wizputer]
  *-----------------------------------------*/
 int chrif_char_offline(struct map_session_data *sd) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -1528,6 +1804,10 @@ int chrif_char_offline(struct map_session_data *sd) {
 	return 0;
 }
 int chrif_char_offline_nsd(uint32 account_id, uint32 char_id) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -1543,6 +1823,12 @@ int chrif_char_offline_nsd(uint32 account_id, uint32 char_id) {
  * Tell char-server to reset all chars offline [Wizputer]
  *-----------------------------------------*/
 int chrif_flush_fifo(void) {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	chrif_check(-1);
 
 	set_nonblocking(char_fd, 0);
@@ -1556,6 +1842,12 @@ int chrif_flush_fifo(void) {
  * Tell char-server to reset all chars offline [Wizputer]
  *-----------------------------------------*/
 int chrif_char_reset_offline(void) {
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
+
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,2);
@@ -1570,6 +1862,10 @@ int chrif_char_reset_offline(void) {
  *-----------------------------------------*/
 
 int chrif_char_online(struct map_session_data *sd) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -1583,16 +1879,36 @@ int chrif_char_online(struct map_session_data *sd) {
 
 
 /// Called when the connection to Char Server is disconnected.
+#ifndef Pandas_Cross_Server
 void chrif_on_disconnect(void) {
-	if( chrif_connected != 1 )
-		ShowWarning("Connection to Char Server lost.\n\n");
-	chrif_connected = 0;
+#else
+void chrif_on_disconnect(int fd) {
+	if (!is_cross_server) {
+#endif
+		if (chrif_connected != 1)
+			ShowWarning("Connection to Char Server lost.\n\n");
+		chrif_connected = 0;
 
-	other_mapserver_count = 0; //Reset counter. We receive ALL maps from all map-servers on reconnect.
-	map_eraseallipport();
+		other_mapserver_count = 0; //Reset counter. We receive ALL maps from all map-servers on reconnect.
+#ifndef Pandas_Cross_Server
+		map_eraseallipport();
+#else
+		map_eraseallipport(fd);
+#endif
 
-	//Attempt to reconnect in a second. [Skotlex]
-	add_timer(gettick() + 1000, check_connect_char_server, 0, 0);
+		//Attempt to reconnect in a second. [Skotlex]
+		add_timer(gettick() + 1000, check_connect_char_server, 0, 0);
+#ifdef Pandas_Cross_Server
+	} else {
+		const auto cf = cfs.findByFd(fd);
+		if (cf == nullptr) return;
+		other_mapserver_count = 0;
+		cf->set_connected(0);
+		cf->set_state(0);
+		if(battle_config.sync_every_char)
+			add_timer(gettick() + 1000, chrif_runtime, 0, 0);
+	}
+#endif
 }
 
 /**
@@ -1688,6 +2004,10 @@ void chrif_parse_ack_vipActive(int fd) {
  * @author [Cydh]
  **/
 int chrif_bsdata_request(uint32 char_id) {
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(char_id) : 0, char_fd);
+#endif
 	chrif_check(-1);
 	WFIFOHEAD(char_fd,6);
 	WFIFOW(char_fd,0) = 0x2b2d;
@@ -1706,6 +2026,10 @@ int chrif_bsdata_request(uint32 char_id) {
 int chrif_bsdata_save(struct map_session_data *sd, bool quit) {
 	uint8 i = 0;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(sd->status.account_id) : 0, char_fd);
+#endif
 	chrif_check(-1);
 
 	if (!sd)
@@ -1831,6 +2155,11 @@ int chrif_bsdata_received(int fd) {
 int chrif_parse(int fd) {
 	int packet_len;
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		chrif_set_global_fd_state(fd,char_fd,chrif_state,chrif_connected);
+#endif
+
 	// only process data from the char-server
 	if ( fd != char_fd ) {
 		ShowDebug("chrif_parse: Disconnecting invalid session #%d (is not the char-server)\n", fd);
@@ -1841,7 +2170,11 @@ int chrif_parse(int fd) {
 	if ( session[fd]->flag.eof ) {
 		do_close(fd);
 		char_fd = -1;
+#ifndef Pandas_Cross_Server
 		chrif_on_disconnect();
+#else
+		chrif_on_disconnect(fd);
+#endif
 		return 0;
 	} else if ( session[fd]->flag.ping ) {/* we've reached stall time */
 		if( DIFF_TICK(last_tick, session[fd]->rdata_tick) > (stall_time * 2) ) {/* we can't wait any longer */
@@ -1903,6 +2236,7 @@ int chrif_parse(int fd) {
 			case 0x2b27: chrif_authfail(fd); break;
 			case 0x2b2b: chrif_parse_ack_vipActive(fd); break;
 			case 0x2b2f: chrif_bsdata_received(fd); break;
+			case 0x2b30: chrif_logintoken_received(fd); break;
 			default:
 				ShowError("chrif_parse : unknown packet (session #%d): 0x%x. Disconnecting.\n", fd, cmd);
 				set_eof(fd);
@@ -1910,6 +2244,12 @@ int chrif_parse(int fd) {
 		}
 		if ( fd == char_fd ) //There's the slight chance we lost the connection during parse, in which case this would segfault if not checked [Skotlex]
 			RFIFOSKIP(fd, packet_len);
+#ifdef Pandas_Cross_Server
+		else if (is_cross_server) {
+			//仅有中立服可能会在上述处理过程中切换char_fd导致后续fd != char_fd
+			RFIFOSKIP(fd, packet_len);
+		}
+#endif
 	}
 
 	return 0;
@@ -1917,12 +2257,60 @@ int chrif_parse(int fd) {
 
 // unused
 TIMER_FUNC(send_usercount_tochar){
-	chrif_check(-1);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server) {
+#endif
+		chrif_check(-1);
 
-	WFIFOHEAD(char_fd,4);
-	WFIFOW(char_fd,0) = 0x2afe;
-	WFIFOW(char_fd,2) = map_usercount();
-	WFIFOSET(char_fd,4);
+		WFIFOHEAD(char_fd, 4);
+		WFIFOW(char_fd, 0) = 0x2afe;
+		WFIFOW(char_fd, 2) = map_usercount();
+		WFIFOSET(char_fd, 4);
+#ifdef Pandas_Cross_Server
+	}
+	else {
+		struct map_session_data* sd;
+		struct s_mapiterator* iter;
+
+		iter = mapit_getallusers();
+
+		std::map<int, int> store;
+
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			int cs_id = get_cs_id(sd->status.account_id);
+			if (store.find(cs_id) == store.end()) {
+				store.insert(std::make_pair(cs_id, 0));
+			}
+			store.find(cs_id)->second++;
+		}
+
+		mapit_free(iter);
+
+		int fds[MAX_CHAR_SERVERS] = { 0 };
+		cfs.get_valid_fds(fds);
+		int len = ARRAYLENGTH(fds);
+		for (int j = 0; j < len; j++) {
+			if (fds[j] <= 0) continue;
+			const auto cf = cfs.findByFd(fds[j]);
+			if (cf == nullptr)
+				continue;
+			const int cs_id = cf->get_csid();
+			const auto total = store.find(cs_id) == store.end() ? 0 : store.find(cs_id)->second;
+			int users = cs_id == 0 ? map_usercount() : total;
+
+			switch_char_fd_cs_id(cs_id, char_fd);
+			if (!chrif_isconnected())
+				continue;
+
+			WFIFOHEAD(char_fd, 4);
+			WFIFOW(char_fd, 0) = 0x2afe;
+			WFIFOW(char_fd, 2) = users;
+			WFIFOSET(char_fd, 4);
+		}
+
+		store.clear();
+	}
+#endif
 	return 0;
 }
 
@@ -1935,26 +2323,102 @@ int send_users_tochar(void) {
 	struct map_session_data* sd;
 	struct s_mapiterator* iter;
 
-	chrif_check(-1);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server) {
+#endif
+		chrif_check(-1);
 
-	users = map_usercount();
+		users = map_usercount();
 
-	WFIFOHEAD(char_fd, 6+8*users);
-	WFIFOW(char_fd,0) = 0x2aff;
+		WFIFOHEAD(char_fd, 6 + 8 * users);
+		WFIFOW(char_fd, 0) = 0x2aff;
 
-	iter = mapit_getallusers();
+		iter = mapit_getallusers();
 
-	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) ) {
-		WFIFOL(char_fd,6+8*i) = sd->status.account_id;
-		WFIFOL(char_fd,6+8*i+4) = sd->status.char_id;
-		i++;
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			WFIFOL(char_fd, 6 + 8 * i) = sd->status.account_id;
+			WFIFOL(char_fd, 6 + 8 * i + 4) = sd->status.char_id;
+			i++;
+		}
+
+		mapit_free(iter);
+
+		WFIFOW(char_fd, 2) = 6 + 8 * users;
+		WFIFOW(char_fd, 4) = users;
+		WFIFOSET(char_fd, 6 + 8 * users);
+
+#ifdef Pandas_Cross_Server
 	}
+	else {
+		users = map_usercount();
 
-	mapit_free(iter);
+		iter = mapit_getallusers();
 
-	WFIFOW(char_fd,2) = 6 + 8*users;
-	WFIFOW(char_fd,4) = users;
-	WFIFOSET(char_fd, 6+8*users);
+		std::map<int, std::set<map_session_data*>> store;
+
+		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
+			int cs_id = get_cs_id(sd->status.account_id);
+			if (store.find(cs_id) == store.end()) {
+				store.insert(std::make_pair(cs_id, std::set< map_session_data*>()));
+			}
+			if (store.find(0) == store.end()) {
+				store.insert(std::make_pair(0, std::set< map_session_data*>()));
+			}
+			store.find(cs_id)->second.insert(sd);
+			store.find(0)->second.insert(sd);
+		}
+
+		mapit_free(iter);
+
+		int fds[MAX_CHAR_SERVERS] = { 0 };
+		cfs.get_valid_fds(fds);
+		int len = ARRAYLENGTH(fds);
+
+		for (int j = 0; j < len; j++) {
+			if (fds[j] <= 0) continue;
+			const auto cf = cfs.findByFd(fds[j]);
+			if (cf == nullptr)
+				continue;
+			const int cs_id = cf->get_csid();
+			if (store.find(cs_id) == store.end())
+				continue;
+			const auto st = store.find(cs_id)->second;
+			const int t_users = store.find(cs_id)->second.size();
+			const int len = 6 + 8 * t_users;
+
+			switch_char_fd_cs_id(cs_id,char_fd);
+			if (!chrif_isconnected())
+				continue;
+
+			WFIFOHEAD(char_fd, len);
+			WFIFOW(char_fd, 0) = 0x2aff;
+			WFIFOW(char_fd, 2) = len;
+			WFIFOW(char_fd, 4) = t_users;
+
+			auto it = st.begin();
+			while (it != st.end())
+			{
+				sd = *it;
+				WFIFOL(char_fd, 6 + 8 * i) = sd->status.account_id;
+				WFIFOL(char_fd, 6 + 8 * i + 4) = sd->status.char_id;
+				it = std::next(it);
+				i++;
+			}
+
+			WFIFOSET(char_fd, len);
+			i = 0;
+		}
+
+		const auto it = store.begin();
+		while (it != store.end())
+		{
+			auto empty = std::set< map_session_data*>();
+			it->second.swap(empty);
+		}
+		store.clear();
+		
+	}
+#endif
 
 	return 0;
 }
@@ -1965,26 +2429,27 @@ int send_users_tochar(void) {
  *------------------------------------------*/
 static TIMER_FUNC(check_connect_char_server){
 	static int displayed = 0;
-	if ( char_fd <= 0 || session[char_fd] == NULL ) {
-		if ( !displayed ) {
+	if (char_fd <= 0 || session[char_fd] == NULL) {
+		if (!displayed) {
 			ShowStatus("Attempting to connect to Char Server. Please wait.\n");
 			displayed = 1;
 		}
 
 		chrif_state = 0;
-		char_fd = make_connection(char_ip, char_port,false,10);
+		char_fd = make_connection(char_ip, char_port, false, 10);
 
 		if (char_fd == -1)//Attempt to connect later. [Skotlex]
 			return 0;
 
 		session[char_fd]->func_parse = chrif_parse;
 		session[char_fd]->flag.server = 1;
+		session[char_fd]->flag.type = 1;
 		realloc_fifo(char_fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 
 		chrif_connect(char_fd);
 		chrif_connected = (chrif_state == 2);
 	}
-	if ( chrif_isconnected() )
+	if (chrif_isconnected())
 		displayed = 0;
 	return 0;
 }
@@ -1994,6 +2459,10 @@ static TIMER_FUNC(check_connect_char_server){
  *------------------------------------------*/
 int chrif_removefriend(uint32 char_id, int friend_id) {
 
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		switch_char_fd_cs_id(0, char_fd);
+#endif
 	chrif_check(-1);
 
 	WFIFOHEAD(char_fd,10);
@@ -2075,9 +2544,29 @@ void do_init_chrif(void) {
 	auth_db = idb_alloc(DB_OPT_BASE);
 	auth_db_ers = ers_new(sizeof(struct auth_node),"chrif.cpp::auth_db_ers",ERS_OPT_NONE);
 
+#ifdef Pandas_Cross_Server
+	if(is_cross_server) {
+		char ip_str[16];
+		cross_server_data* csd;
+		CREATE(csd, struct cross_server_data, 1);
+		csd->server_id = 0;
+		safestrncpy(csd->server_name, "[CS]", sizeof(csd->server_name));
+		safestrncpy(csd->userid, userid, sizeof(csd->userid));
+		safestrncpy(csd->passwd, passwd, sizeof(csd->passwd));
+		ip2str(char_ip, ip_str);
+		csd->char_server_ip.assign(ip_str,16);
+		csd->char_server_port = char_port;
+		cs_configs_map.insert(std::make_pair(0, csd));
+		asyncchrif_init();
+	} else
+#endif
 	add_timer_func_list(check_connect_char_server, "check_connect_char_server");
+
 	add_timer_func_list(auth_db_cleanup, "auth_db_cleanup");
 
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+#endif
 	// establish map-char connection if not present
 	add_timer_interval(gettick() + 1000, check_connect_char_server, 0, 0, 10 * 1000);
 

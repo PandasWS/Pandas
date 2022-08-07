@@ -12,6 +12,7 @@
 #include "../common/socket.hpp"  // RBUF*
 #include "../common/strlib.hpp"  // safestrncpy
 #include "../common/timer.hpp"  // gettick
+#include "../common/crossserver.hpp"
 
 #include "atcommand.hpp"  // msg_txt
 #include "battle.hpp"  // battle_config.*
@@ -84,6 +85,17 @@ int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots){
 		return 3;
 	}
 
+#ifdef Pandas_CS_Diff_Server_Vending
+	if (is_cross_server)
+	{
+		if (!battle_config.diff_server_vending)
+		{
+			clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
+			return 3;
+		}
+	}
+#endif
+
 	if( map_getcell(sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOBUYINGSTORE) )
 	{// custom: no buyingstore cells
 		clif_displaymessage(sd->fd, msg_txt(sd,204)); // "You can't open a shop on this cell."
@@ -150,6 +162,17 @@ int8 buyingstore_create( struct map_session_data* sd, int zenylimit, unsigned ch
 		clif_displaymessage(sd->fd, msg_txt(sd,276)); // "You can't open a shop on this map"
 		return 3;
 	}
+
+#ifdef Pandas_CS_Diff_Server_Vending
+	if (is_cross_server)
+	{
+		if (!battle_config.diff_server_vending)
+		{
+			clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
+			return 3;
+		}
+	}
+#endif
 
 	if( map_getcell(sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOBUYINGSTORE) )
 	{// custom: no buyingstore cells
@@ -307,6 +330,16 @@ void buyingstore_open(struct map_session_data* sd, uint32 account_id)
 		return;
 	}
 
+#ifdef Pandas_CS_Diff_Server_Vending
+	if (is_cross_server)
+	{
+		if (!battle_config.diff_server_vending)
+		{
+			return ;
+		}
+	}
+#endif
+
 	if( ( pl_sd = map_id2sd(account_id) ) == NULL || !pl_sd->state.buyingstore )
 	{// not online or not buying
 		return;
@@ -345,6 +378,17 @@ void buyingstore_trade( struct map_session_data* sd, uint32 account_id, unsigned
 		clif_buyingstore_trade_failed_seller(sd, BUYINGSTORE_TRADE_SELLER_FAILED, 0);
 		return;
 	}
+
+#ifdef Pandas_CS_Diff_Server_Vending
+	if (is_cross_server)
+	{
+		if (!battle_config.diff_server_vending)
+		{
+			clif_buyingstore_trade_failed_seller(sd, BUYINGSTORE_TRADE_SELLER_FAILED, 0);
+			return;
+		}
+	}
+#endif
 
 	if( !pc_can_give_items(sd) )
 	{// custom: GM is not allowed to sell

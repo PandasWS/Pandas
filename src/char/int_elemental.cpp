@@ -11,9 +11,11 @@
 #include "../common/socket.hpp"
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "inter.hpp"
+
 
 bool mapif_elemental_save(struct s_elemental* ele) {
 	bool flag = true;
@@ -104,13 +106,39 @@ void mapif_elemental_send(int fd, struct s_elemental *ele, unsigned char flag) {
 }
 
 void mapif_parse_elemental_create(int fd, struct s_elemental* ele) {
+#ifdef Pandas_Cross_Server
+	int o_cid = ele->char_id;
+	if (!is_cross_server)
+	{
+		ele->char_id = get_real_id(ele->char_id);
+	}
+#endif
 	bool result = mapif_elemental_save(ele);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		ele->char_id = o_cid;
+	}
+#endif
 	mapif_elemental_send(fd, ele, result);
 }
 
 void mapif_parse_elemental_load(int fd, int ele_id, uint32 char_id) {
 	struct s_elemental ele;
+#ifdef Pandas_Cross_Server
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
 	bool result = mapif_elemental_load(ele_id, char_id, &ele);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		ele.char_id = o_cid;
+	}
+#endif
 	mapif_elemental_send(fd, &ele, result);
 }
 
@@ -134,7 +162,20 @@ void mapif_elemental_saved(int fd, unsigned char flag) {
 }
 
 void mapif_parse_elemental_save(int fd, struct s_elemental* ele) {
+#ifdef Pandas_Cross_Server
+	int o_cid = ele->char_id;
+	if (!is_cross_server)
+	{
+		ele->char_id = get_real_id(ele->char_id);
+	}
+#endif
 	bool result = mapif_elemental_save(ele);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		ele->char_id = o_cid;
+	}
+#endif
 	mapif_elemental_saved(fd, result);
 }
 

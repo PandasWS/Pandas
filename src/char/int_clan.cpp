@@ -182,6 +182,8 @@ static void mapif_parse_clan_member_joined( int fd ){
 	mapif_clan_refresh_onlinecount( fd, clan );
 }
 
+
+
 // Communication from the map server
 // - Can analyzed only one by one packet
 // Data packet length that you set to inter.cpp

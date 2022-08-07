@@ -158,7 +158,7 @@ struct online_login_data {
 };
 
 /// Auth database
-#define AUTH_TIMEOUT 30000
+#define AUTH_TIMEOUT 5000
 struct auth_node {
 	uint32 account_id;
 	uint32 login_id1;

@@ -1430,7 +1430,8 @@ enum e_setpos{
 	SETPOS_OK = 0,
 	SETPOS_MAPINDEX = 1,
 	SETPOS_NO_MAPSERVER = 2,
-	SETPOS_AUTOTRADE = 3
+	SETPOS_AUTOTRADE = 3,
+	SETPOS_PROCESSHALT = 9,
 };
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player

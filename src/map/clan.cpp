@@ -118,7 +118,7 @@ void clan_member_joined( struct map_session_data* sd ){
 
 	clan = clan_search(sd->status.clan_id);
 
-	nullpo_retv(clan);
+	//nullpo_retv(clan);
 
 	if( ( index = clan_getNextFreeMemberIndex(clan) ) >= 0 ){
 		sd->clan = clan;

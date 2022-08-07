@@ -388,6 +388,10 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
+#ifdef Pandas_CS_Event
+	"OnPCCSFilter", 	// NPCF_CS		// cs_filter_name	// 当玩家准备跨服时触发过滤器
+#endif
+
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
@@ -420,6 +424,10 @@ struct Script_Config script_config = {
 	"OnPCUnequipEvent",	// NPCE_UNEQUIP		// unequip_event_name	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
+
+#ifdef Pandas_CS_Event
+	"OnPCCSFailedEvent", // NPCE_CS_FAILED		// cs_failed_event_name	// 当玩家跨服失败时触发事件
+#endif
 
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */
@@ -6346,6 +6354,10 @@ BUILDIN_FUNC(warp)
 		ret = pc_setpos(sd,mapindex_name2id(str),x,y,CLR_OUTSIGHT);
 
 	if( ret ) {
+#ifdef Pandas_CS_Event
+		if (ret == SETPOS_PROCESSHALT)
+			return SCRIPT_CMD_SUCCESS;
+#endif
 		ShowError("buildin_warp: moving player '%s' to \"%s\",%d,%d failed.\n", sd->status.name, str, x, y);
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -9005,7 +9017,11 @@ static void buildin_delitem_delete(struct map_session_data* sd, int idx, int* am
 	{
 		if( itemdb_type(itm->nameid) == IT_PETEGG && itm->card[0] == CARD0_PET )
 		{// delete associated pet
+#ifndef Pandas_Cross_Server
 			intif_delete_petdata(MakeDWord(itm->card[1], itm->card[2]));
+#else
+			intif_delete_petdata(sd,MakeDWord(itm->card[1], itm->card[2]));
+#endif
 		}
 		switch(loc) {
 			case TABLE_CART:

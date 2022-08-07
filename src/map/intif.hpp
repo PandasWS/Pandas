@@ -75,7 +75,11 @@ void intif_itembound_guild_retrieve(uint32 char_id, uint32 account_id, int guild
 int intif_create_pet(uint32 account_id, uint32 char_id, short pet_type, short pet_lv, t_itemid pet_egg_id, t_itemid pet_equip, short intimate, short hungry, char rename_flag, char incubate, const char *pet_name);
 int intif_request_petdata(uint32 account_id, uint32 char_id, int pet_id);
 int intif_save_petdata(uint32 account_id, struct s_pet *p);
+#ifndef Pandas_Cross_Server
 int intif_delete_petdata(int pet_id);
+#else
+int intif_delete_petdata(struct map_session_data* sd, int pet_id);
+#endif
 int intif_rename(struct map_session_data *sd, int type, char *name);
 #define intif_rename_pc(sd, name) intif_rename(sd, 0, name)
 #define intif_rename_pet(sd, name) intif_rename(sd, 1, name)
@@ -83,7 +87,11 @@ int intif_rename(struct map_session_data *sd, int type, char *name);
 int intif_homunculus_create(uint32 account_id, struct s_homunculus *sh);
 int intif_homunculus_requestload(uint32 account_id, int homun_id);
 int intif_homunculus_requestsave(uint32 account_id, struct s_homunculus* sh);
+#ifndef Pandas_Cross_Server
 int intif_homunculus_requestdelete(int homun_id);
+#else
+int intif_homunculus_requestdelete(struct map_session_data* sd, int homun_id);
+#endif
 
 /******QUEST SYTEM*******/
 void intif_request_questlog(struct map_session_data * sd);
@@ -92,7 +100,11 @@ int intif_quest_save(struct map_session_data * sd);
 // MERCENARY SYSTEM
 int intif_mercenary_create(struct s_mercenary *merc);
 int intif_mercenary_request(int merc_id, uint32 char_id);
+#ifndef Pandas_Cross_Server
 int intif_mercenary_delete(int merc_id);
+#else
+int intif_mercenary_delete(struct map_session_data* sd,int merc_id);
+#endif
 int intif_mercenary_save(struct s_mercenary *merc);
 
 // MAIL SYSTEM
@@ -112,7 +124,11 @@ int intif_Auction_bid(uint32 char_id, const char* name, unsigned int auction_id,
 // ELEMENTAL SYSTEM
 int intif_elemental_create(struct s_elemental *ele);
 int intif_elemental_request(int ele_id, uint32 char_id);
+#ifndef Pandas_Cross_Server
 int intif_elemental_delete(int ele_id);
+#else
+int intif_elemental_delete(struct map_session_data* sd, int ele_id);
+#endif
 int intif_elemental_save(struct s_elemental *ele);
 // CLAN SYSTEM
 int intif_clan_requestclans();

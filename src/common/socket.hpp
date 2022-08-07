@@ -93,6 +93,7 @@ struct socket_data
 		unsigned char eof : 1;
 		unsigned char server : 1;
 		unsigned char ping : 2;
+		unsigned char type : 4;
 	} flag;
 
 	uint32 client_addr; // remote client address

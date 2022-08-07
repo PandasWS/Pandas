@@ -3485,7 +3485,11 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 		{
 			if( pet_db_search(sd->inventory.u.items_inventory[idx].nameid, PET_EGG) )
 			{
+#ifndef Pandas_Cross_Server
 				intif_delete_petdata(MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#else
+				intif_delete_petdata(sd,MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#endif
 			}
 		}
 
@@ -6460,6 +6464,11 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 		NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
+
+#ifdef Pandas_CS_Event
+	NPCF_CS,		// NPCF_CS  // cs_filter_name // 当玩家准备跨服时触发过滤器
+#endif
+
 	};
 
 	std::vector<enum npce_event>::iterator iter;
@@ -6686,6 +6695,11 @@ const char *npc_get_script_event_name(int npce_index)
 #endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
+#ifdef Pandas_CS_Event
+	case NPCF_CS:
+		return script_config.cs_filter_name;	// NPCF_CS		// cs_filter_name	// 当玩家准备跨服时触发过滤器
+#endif
+
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
@@ -6724,6 +6738,13 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_UNEQUIP:
 		return script_config.unequip_event_name;	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_CS_Event
+	case NPCE_CS_FAILED:
+		return script_config.cs_failed_event_name;		// NPCE_CS_FAILED		// cs_failed_event_name	// 当玩家跨服失败时触发事件
+#endif
+
+
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/

@@ -11,6 +11,7 @@
 #include "../common/socket.hpp"
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "inter.hpp"
@@ -150,14 +151,40 @@ void mapif_mercenary_send(int fd, struct s_mercenary *merc, unsigned char flag)
 
 void mapif_parse_mercenary_create(int fd, struct s_mercenary* merc)
 {
+#ifdef Pandas_Cross_Server
+	int o_cid = merc->char_id;
+	if (!is_cross_server)
+	{
+		merc->char_id = get_real_id(merc->char_id);
+	}
+#endif
 	bool result = mapif_mercenary_save(merc);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		merc->char_id = o_cid;
+	}
+#endif
 	mapif_mercenary_send(fd, merc, result);
 }
 
 void mapif_parse_mercenary_load(int fd, int merc_id, uint32 char_id)
 {
 	struct s_mercenary merc;
+#ifdef Pandas_Cross_Server
+	int o_cid = char_id;
+	if (!is_cross_server)
+	{
+		char_id = get_real_id(char_id);
+	}
+#endif
 	bool result = mapif_mercenary_load(merc_id, char_id, &merc);
+#ifdef Pandas_Cross_Server
+	if (!is_cross_server)
+	{
+		merc.char_id = o_cid;
+	}
+#endif
 	mapif_mercenary_send(fd, &merc, result);
 }
 
@@ -185,6 +212,13 @@ void mapif_mercenary_saved(int fd, unsigned char flag)
 
 void mapif_parse_mercenary_save(int fd, struct s_mercenary* merc)
 {
+#ifdef Pandas_Cross_Server
+	int o_cid = merc->char_id;
+	if (!is_cross_server)
+	{
+		merc->char_id = get_real_id(merc->char_id);
+	}
+#endif
 	bool result = mapif_mercenary_save(merc);
 	mapif_mercenary_saved(fd, result);
 }

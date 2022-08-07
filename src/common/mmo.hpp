@@ -623,6 +623,10 @@ struct mmo_charstatus {
 	uint32 mother;
 	uint32 child;
 
+#ifdef Pandas_Cross_Server
+	bool inherit = false;
+#endif
+
 	t_exp base_exp,job_exp;
 	int zeny;
 

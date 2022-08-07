@@ -12,6 +12,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_clif.hpp"
@@ -237,6 +238,7 @@ void chlogif_send_global_accreg(const char *key, unsigned int index, int64 int_v
 void chlogif_request_accreg2(uint32 account_id, uint32 char_id){
 	if (!chlogif_isconnected())
 		return;
+
 	WFIFOHEAD(login_fd,10);
 	WFIFOW(login_fd,0) = 0x272e;
 	WFIFOL(login_fd,2) = account_id;
@@ -808,6 +810,7 @@ TIMER_FUNC(chlogif_check_connect_logserver){
 	}
 	session[login_fd]->func_parse = chlogif_parse;
 	session[login_fd]->flag.server = 1;
+	session[login_fd]->flag.type = 0;
 	realloc_fifo(login_fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 
 	WFIFOHEAD(login_fd,86);
@@ -833,6 +836,9 @@ int chlogif_isconnected(){
 }
 
 void do_init_chlogif(void) {
+#ifdef Pandas_Cross_Server
+	//if (is_cross_server) return;
+#endif
 	// establish char-login connection if not present
 	add_timer_func_list(chlogif_check_connect_logserver, "check_connect_login_server");
 	add_timer_interval(gettick() + 1000, chlogif_check_connect_logserver, 0, 0, 10 * 1000);

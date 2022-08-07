@@ -10,6 +10,7 @@
 #include "../common/showmsg.hpp" // ShowInfo
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"  // DIFF_TICK
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -98,6 +99,15 @@ void vending_vendinglistreq(struct map_session_data* sd, int id)
 		clif_displaymessage(sd->fd, msg_txt(sd,246));
 		return;
 	}
+
+#ifdef Pandas_CS_Diff_Server_Mail
+	//在trade 权限之后检查是否允许不同服的玩家进入对方露天或收购
+	if (is_cross_server)
+	{
+		if (!battle_config.diff_server_mail && get_cs_id(sd->status.account_id) != get_cs_id(vsd->status.account_id))
+			return;
+	}
+#endif
 
 	sd->vended_id = vsd->vender_id;  // register vending uid
 

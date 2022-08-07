@@ -61,7 +61,11 @@ int chrif_skillcooldown_request(uint32 account_id, uint32 char_id);
 int chrif_skillcooldown_save(struct map_session_data *sd);
 int chrif_skillcooldown_load(int fd);
 
+#ifndef Pandas_Cross_Server
 int chrif_save(struct map_session_data* sd, int flag);
+#else
+int chrif_save(struct map_session_data* sd, int flag, bool resave = false);
+#endif
 int chrif_charselectreq(struct map_session_data* sd, uint32 s_ip);
 int chrif_changemapserver(struct map_session_data* sd, uint32 ip, uint16 port);
 

@@ -848,7 +848,7 @@ void clif_movetoattack(struct map_session_data *sd,struct block_list *bl);
 // party
 void clif_party_created(struct map_session_data *sd,int result);
 void clif_party_member_info(struct party_data *p, struct map_session_data *sd);
-void clif_party_info(struct party_data* p, struct map_session_data *sd);
+void clif_party_info(struct party_data* p, struct map_session_data* sd);
 void clif_party_invite(struct map_session_data *sd,struct map_session_data *tsd);
 void clif_party_invite_reply(struct map_session_data* sd, const char* nick, enum e_party_invite_reply reply);
 void clif_party_option(struct party_data *p,struct map_session_data *sd,int flag);
@@ -1002,6 +1002,9 @@ void clif_quest_show_event(struct map_session_data *sd, struct block_list *bl, e
 void clif_displayexp(struct map_session_data *sd, t_exp exp, char type, bool quest, bool lost);
 
 int clif_send(const void* buf, int len, struct block_list* bl, enum send_target type);
+//special clif_send
+bool sp_clif_send(uint32& aid, const void* buf, int len, block_list* bl, enum send_target type);
+
 void do_init_clif(void);
 void do_final_clif(void);
 

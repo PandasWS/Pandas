@@ -16,6 +16,7 @@
 #include "../common/strlib.hpp"
 #include "../common/timer.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_logif.hpp"
@@ -676,13 +677,29 @@ int chclif_parse_maplogin(int fd){
 		ARR_FIND( 0, ARRAYLENGTH(map_server), i, map_server[i].fd <= 0 );
 		if( runflag != CHARSERVER_ST_RUNNING ||
 			i == ARRAYLENGTH(map_server) ||
+#ifndef Pandas_Cross_Server
 			strcmp(l_user, charserv_config.userid) != 0 ||
-			strcmp(l_pass, charserv_config.passwd) != 0 )
+			strcmp(l_pass, charserv_config.passwd) != 0
+#else
+			((strcmp(l_user, charserv_config.userid) != 0 ||
+			strcmp(l_pass, charserv_config.passwd) != 0) &&
+			(strcmp(l_user, charserv_config.cs_userid) != 0 ||
+			strcmp(l_pass, charserv_config.cs_passwd) != 0))
+#endif
+		)
 		{
 			chmapif_connectack(fd, 3); //fail
 		} else {
 			chmapif_connectack(fd, 0); //success
-
+#ifdef Pandas_Cross_Server
+			const int tcs_id = RFIFOL(fd, 50);
+			if (tcs_id != 0)
+			{
+				marked_cs_id = tcs_id;
+				ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "This Char Server [Cross Server Marked ID] is %d from Main Cross Server.\n", marked_cs_id);
+			}
+			map_server[i].server_id = tcs_id;
+#endif
 			map_server[i].fd = fd;
 			map_server[i].ip = ntohl(RFIFOL(fd,54));
 			map_server[i].port = ntohs(RFIFOW(fd,58));
@@ -690,6 +707,7 @@ int chclif_parse_maplogin(int fd){
 			map_server[i].map = {};
 			session[fd]->func_parse = chmapif_parse;
 			session[fd]->flag.server = 1;
+			session[fd]->flag.type = 2;
 			realloc_fifo(fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 			chmapif_init(fd);
 		}
@@ -959,6 +977,10 @@ int chclif_parse_charselect(int fd, struct char_session_data* sd,uint32 ipl){
 		safestrncpy(node->lan_address, session[fd]->lan_address, IP4ADDRESS_LENGTH);
 #endif // Pandas_Extract_SSOPacket_MacAddress
 		idb_put(auth_db, sd->account_id, node);
+#ifdef Pandas_Cross_Server
+		if (marked_cs_id > 0)
+			chrif_logintoken_pass(map_fd, sd->account_id, cd->char_id, sd->login_id1, sd->login_id2, marked_cs_id, cd->name);
+#endif
 
 	}
 	return 1;

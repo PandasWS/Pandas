@@ -20,8 +20,10 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
+#include "asyncchrif.hpp"
 #include "atcommand.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
@@ -1699,7 +1701,11 @@ TIMER_FUNC(map_clearflooritem_timer){
 
 
 	if (pet_db_search(fitem->item.nameid, PET_EGG))
+#ifndef Pandas_Cross_Server
 		intif_delete_petdata(MakeDWord(fitem->item.card[1], fitem->item.card[2]));
+#else
+		intif_delete_petdata(nullptr,MakeDWord(fitem->item.card[1], fitem->item.card[2]));
+#endif
 
 	clif_clearflooritem(fitem, 0);
 	map_deliddb(&fitem->bl);
@@ -2428,7 +2434,7 @@ struct map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
+struct map_session_data* map_nick2sd(const char* nick, bool allow_partial)
 {
 	struct map_session_data* sd;
 	struct map_session_data* found_sd;
@@ -2438,20 +2444,29 @@ struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 
 	if( nick == NULL )
 		return NULL;
+	found_sd = NULL;
 
+#ifndef Pandas_Cross_Server
 	nicklen = strlen(nick);
 	iter = mapit_getallusers();
 
-	found_sd = NULL;
-	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
+	for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter))
 	{
-		if( allow_partial && battle_config.partial_name_scan )
+#ifdef Pandas_Cross_Server
+		if (cs_id > 0)
+		{
+			if (get_cs_id(sd->status.account_id) != cs_id)
+				continue;
+		}
+#endif
+		if (allow_partial && battle_config.partial_name_scan)
 		{// partial name search
-			if( strnicmp(sd->status.name, nick, nicklen) == 0 )
+			if (strnicmp(sd->status.name, nick, nicklen) == 0)
 			{
+
 				found_sd = sd;
 
-				if( strcmp(sd->status.name, nick) == 0 )
+				if (strcmp(sd->status.name, nick) == 0)
 				{// Perfect Match
 					qty = 1;
 					break;
@@ -2460,16 +2475,60 @@ struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 				qty++;
 			}
 		}
-		else if( strcasecmp(sd->status.name, nick) == 0 )
+		else if (strcasecmp(sd->status.name, nick) == 0)
 		{// exact search only
 			found_sd = sd;
 			qty = 1;
 			break;
 		}
 	}
+	
+#else
+	char nick_[NAME_LENGTH];
+	safestrncpy(nick_, nick, NAME_LENGTH);
+	int cs_id = 0;
+	if (is_cross_server)
+	{
+		cs_id = get_cs_id_by_fake_name(nick_);
+		get_real_name(nick_);
+	}
+	nicklen = strlen(nick_);
+	iter = mapit_getallusers();
+	
+	for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter))
+	{
+		if (cs_id > 0)
+			if (get_cs_id(sd->status.account_id) != cs_id)
+				continue;
+
+		if (allow_partial && battle_config.partial_name_scan)
+		{// partial name search
+			if (strnicmp(sd->status.name, nick_, nicklen) == 0)
+			{
+
+				found_sd = sd;
+
+				if (strcmp(sd->status.name, nick_) == 0)
+				{// Perfect Match
+					qty = 1;
+					break;
+				}
+
+				qty++;
+			}
+		}
+		else if (strcasecmp(sd->status.name, nick_) == 0)
+		{// exact search only
+			found_sd = sd;
+			qty = 1;
+			break;
+		}
+	}
+#endif
+
 	mapit_free(iter);
 
-	if( battle_config.partial_name_scan && qty != 1 )
+	if (battle_config.partial_name_scan && qty != 1)
 		found_sd = NULL;
 
 	return found_sd;
@@ -3224,11 +3283,19 @@ int16 map_mapindex2mapid(unsigned short mapindex)
 /*==========================================
  * Switching Ip, port ? (like changing map_server) get ip/port from map_name
  *------------------------------------------*/
+#ifndef Pandas_Cross_Server
 int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port)
+#else
+int map_mapname2ipport(unsigned short name, uint32* ip, uint16* port,uint32 cs_id)
+#endif
 {
 	struct map_data_other_server *mdos;
 
 	mdos = (struct map_data_other_server*)uidb_get(map_db,(unsigned int)name);
+#ifdef Pandas_Cross_Server
+	if (is_cross_server && (mdos == NULL || !mdos->cell))
+		mdos = findmap(cs_id, (unsigned int)name);
+#endif
 	if(mdos==NULL || mdos->cell) //If gat isn't null, this is a local map.
 		return -1;
 	*ip=mdos->ip;
@@ -3643,14 +3710,43 @@ static DBData create_map_data_other_server(DBKey key, va_list args)
 	return db_ptr2data(mdos);
 }
 
+/**
+ * \brief 根据cs_id,mapindex返回ip,port的结构体
+ * \param cs_id
+ * \param mapindex
+ * \return
+ */
+map_data_other_server* findmap(int cs_id, uint32 mapindex)
+{
+	auto it = map_dbs.find(cs_id);
+	if (it == map_dbs.end()) {
+		auto mdb = uidb_alloc(DB_OPT_BASE);
+		const auto ta = map_dbs.insert(std::make_pair(cs_id, mdb));
+		it = map_dbs.find(cs_id);
+	}
+	auto mdb = it->second;
+	return (struct map_data_other_server*)uidb_ensure(mdb, (unsigned int)mapindex, create_map_data_other_server);
+}
+
+
+
+
 /*==========================================
  * Add mapindex to db of another map server
  *------------------------------------------*/
+#ifndef Pandas_Cross_Server
 int map_setipport(unsigned short mapindex, uint32 ip, uint16 port)
+#else
+int map_setipport(unsigned short mapindex, uint32 ip, uint16 port,uint32 cs_id)
+#endif
 {
 	struct map_data_other_server *mdos;
-
-	mdos= (struct map_data_other_server *)uidb_ensure(map_db,(unsigned int)mapindex, create_map_data_other_server);
+	mdos = (struct map_data_other_server*)uidb_ensure(map_db, (unsigned int)mapindex, create_map_data_other_server);
+#ifdef Pandas_Cross_Server
+	if (is_cross_server && !mdos->cell)
+		mdos = findmap(cs_id, mapindex);
+#endif
+	
 
 	if(mdos->cell) //Local map,Do nothing. Give priority to our own local maps over ones from another server. [Skotlex]
 		return 0;
@@ -3678,9 +3774,28 @@ int map_eraseallipport_sub(DBKey key, DBData *data, va_list va)
 	return 0;
 }
 
+#ifndef Pandas_Cross_Server
 int map_eraseallipport(void)
 {
-	map_db->foreach(map_db,map_eraseallipport_sub);
+#else
+int map_eraseallipport(int fd)
+{
+	if(!is_cross_server)
+#endif
+	map_db->foreach(map_db, map_eraseallipport_sub);
+#ifdef Pandas_Cross_Server
+	else
+	{
+		const auto cf = cfs.findByFd(fd);
+		if (cf == nullptr) return 1;
+		auto it = map_dbs.find(cf->get_csid());
+		if (it != map_dbs.end())
+		{
+			auto mdb = it->second;
+			mdb->foreach(mdb, map_eraseallipport_sub);
+		}
+	}
+#endif
 	return 1;
 }
 
@@ -4436,7 +4551,19 @@ int inter_config_read(const char *cfgName)
 #endif
 		}
 #undef RENEWALPREFIX
-
+#ifdef Pandas_Cross_Server
+		if (strcmpi(w1, "cross_server") == 0) {
+			is_cross_server = config_switch(w2);
+			ShowStatus("" CL_BLUE "[Cross Server]" CL_RESET "Cross Server Set: %s\n", w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_status") == 0) {
+			inherit_source_server_chara_status = config_switch(w2);
+		}
+		else if (strcmpi(w1, "inherit_source_server_chara_group") == 0) {
+			inherit_source_server_chara_group = config_switch(w2);
+		}
+		else
+#endif
 		if( strcmpi( w1, "barter_table" ) == 0 )
 			safestrncpy( barter_table, w2, sizeof(barter_table) );
 		else if( strcmpi( w1, "buyingstore_db" ) == 0 )
@@ -4578,6 +4705,7 @@ int map_sql_init(void)
 		Sql_ShowDebug(qsmysql_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
+
 	return 0;
 }
 
@@ -4622,6 +4750,7 @@ int log_sql_init(void)
 	if (SQL_ERROR == Sql_SetEncoding(logmysql_handle, log_codepage, default_codepage.c_str(), "Log"))
 		Sql_ShowDebug(logmysql_handle);
 #endif // Pandas_SQL_Configure_Optimization
+
 
 	return 0;
 }
@@ -5721,6 +5850,29 @@ void do_final(void){
 #endif // Pandas_Player_Suspend_System
 
 	map_db->destroy(map_db, map_db_final);
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		auto cs = cs_configs_map.begin();
+		while (cs != cs_configs_map.end())
+		{
+			aFree(cs->second);
+			const auto next = std::next(cs);
+			cs_configs_map.erase(cs);
+			cs = next;
+		}
+		cs_configs_map.clear();
+		auto mdb = map_dbs.begin();
+		if (mdb != map_dbs.begin())
+		{
+			auto next = std::next(mdb);
+			mdb->second->destroy(mdb->second, NULL);
+			map_dbs.erase(mdb);
+			mdb = next;
+		}
+		map_dbs.clear();
+	}
+#endif
 
 	for (int i = 0; i < map_num; i++) {
 		struct map_data *mapdata = map_getmapdata(i);
@@ -5940,6 +6092,10 @@ void do_shutdown(void)
 			mapit_free(iter);
 			flush_fifos();
 		}
+#ifdef Pandas_Cross_Server
+		if (!is_cross_server)
+			chrif_char_reset_offline();
+#endif
 		chrif_check_shutdown();
 	}
 }
@@ -5957,6 +6113,7 @@ int do_init(int argc, char *argv[])
 	BATTLE_CONF_FILENAME = "conf/battle_athena.conf";
 	SCRIPT_CONF_NAME = "conf/script_athena.conf";
 	GRF_PATH_FILENAME = "conf/grf-files.txt";
+	CS_CONF_NAME = "conf/cross_server/base.conf";
 	safestrncpy(console_log_filepath, "./log/map-msg_log.log", sizeof(console_log_filepath));
 
 #ifndef Pandas_Message_Reorganize
@@ -5991,7 +6148,7 @@ int do_init(int argc, char *argv[])
 	map_config_read(MAP_CONF_NAME);
 
 	if (save_settings == CHARSAVE_NONE)
-		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval/1000);
+		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval / 1000);
 
 	// loads npcs
 	map_reloadnpc(false);
@@ -6025,6 +6182,7 @@ int do_init(int argc, char *argv[])
 	inter_config_read(INTER_CONF_NAME);
 	log_config_read(LOG_CONF_NAME);
 
+
 	id_db = idb_alloc(DB_OPT_BASE);
 	pc_db = idb_alloc(DB_OPT_BASE);	//Added for reliable map_id2sd() use. [Skotlex]
 	mobid_db = idb_alloc(DB_OPT_BASE);	//Added to lower the load of the lazy mob ai. [Skotlex]
@@ -6034,6 +6192,14 @@ int do_init(int argc, char *argv[])
 	charid_db = uidb_alloc(DB_OPT_BASE);
 	regen_db = idb_alloc(DB_OPT_BASE); // efficient status_natural_heal processing
 	iwall_db = strdb_alloc(DB_OPT_RELEASE_DATA,2*NAME_LENGTH+2+1); // [Zephyrus] Invisible Walls
+
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+	{
+		cs_config_read(CS_CONF_NAME);
+		map_dbs.insert(std::make_pair(0, map_db));
+	}
+#endif
 
 	map_sql_init();
 	if (log_config.sql_logs)
@@ -6063,6 +6229,22 @@ int do_init(int argc, char *argv[])
 	do_init_battle();
 	do_init_instance();
 	do_init_chrif();
+#ifdef Pandas_Cross_Server
+	if (is_cross_server)
+		if (battle_config.sync_every_char) {
+			while (!cfs.all_fd_valid()) {
+				chrif_runtime_sub();
+				std::this_thread::yield();
+			}
+		}
+		else {
+			while (!cfs.fd_valid_by_cs_id(0)) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+				std::this_thread::yield();
+			}
+		}
+
+#endif
 	do_init_clan();
 	do_init_clif();
 	do_init_script();

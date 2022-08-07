@@ -1111,7 +1111,11 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 	if(i < 0) {
 		ShowError("hom_alloc: unknown class [%d] for homunculus '%s', requesting deletion.\n", hom->class_, hom->name);
 		sd->status.hom_id = 0;
+#ifndef Pandas_Cross_Server
 		intif_homunculus_requestdelete(hom->hom_id);
+#else
+		intif_homunculus_requestdelete(sd,hom->hom_id);
+#endif
 		return;
 	}
 	sd->hd = hd = (struct homun_data*)aCalloc(1,sizeof(struct homun_data));

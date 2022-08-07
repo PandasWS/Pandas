@@ -264,6 +264,10 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_STORAGE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
+#ifdef Pandas_CS_Event
+	const char* cs_filter_name;		// NPCF_CS		// cs_filter_name	// 当玩家准备跨服时触发过滤器
+#endif
+
 	/************************************************************************/
 	/* Event  类型的标准事件，这些事件不能被 processhalt 打断                    */
 	/************************************************************************/
@@ -296,6 +300,10 @@ struct Script_Config {
 	const char* unequip_event_name;	// NPCE_UNEQUIP	// OnPCUnequipEvent	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
+
+#ifdef Pandas_CS_Event
+	const char* cs_failed_event_name;	// NPCE_CS_FAILED		// cs_failed_event_name	// 当玩家跨服失败时触发事件
+#endif
 
 	/************************************************************************/
 	/* Express 类型的快速事件，这些事件将会被立刻执行, 不进事件队列                */

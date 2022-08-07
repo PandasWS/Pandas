@@ -11,6 +11,7 @@
 #include "../common/socket.hpp"
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_mapif.hpp"

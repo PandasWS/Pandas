@@ -14,6 +14,7 @@
 #include "../common/socket.hpp"
 #include "../common/sql.hpp"
 #include "../common/strlib.hpp"
+#include "../common/crossserver.hpp"
 
 #include "char.hpp"
 #include "char_mapif.hpp"
@@ -392,22 +393,42 @@ void mapif_party_noinfo(int fd, int party_id, uint32 char_id)
 	WFIFOW(fd,2) = 12;
 	WFIFOL(fd,4) = char_id;
 	WFIFOL(fd,8) = party_id;
-	WFIFOSET(fd,12);
+	WFIFOSET(fd, 12);
+
 	ShowWarning("int_party: info not found (party_id=%d char_id=%d)\n", party_id, char_id);
+
 }
 
 //Digest party information
+#ifndef Pandas_Cross_Server
 void mapif_party_info(int fd, struct party* p, uint32 char_id)
+#else
+void mapif_party_info(int fd, struct party* p, uint32 char_id,bool is_create = false)
+#endif
 {
+	int offset = 0;
+#ifndef Pandas_Cross_Server
 #ifndef Pandas_Crashfix_Variable_Init
 	unsigned char buf[8 + sizeof(struct party)];
 #else
 	unsigned char buf[8 + sizeof(struct party)] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
+#else
+#ifndef Pandas_Crashfix_Variable_Init
+	unsigned char buf[12 + sizeof(struct party)];
+#else
+	unsigned char buf[12 + sizeof(struct party)] = { 0 };
+#endif // Pandas_Crashfix_Variable_Init
+	offset += 4;
+#endif
 	WBUFW(buf,0) = 0x3821;
-	WBUFW(buf,2) = 8 + sizeof(struct party);
+	WBUFW(buf,2) = 8 + offset + sizeof(struct party);
 	WBUFL(buf,4) = char_id;
-	memcpy(WBUFP(buf,8), p, sizeof(struct party));
+#ifdef Pandas_Cross_Server
+	//表明本次是否创建队伍后发送消息的请求
+	WBUFL(buf,8) = is_create?1:0;
+#endif
+	memcpy(WBUFP(buf,8+offset), p, sizeof(struct party));
 
 	if(fd<0)
 		chmapif_sendall(buf,WBUFW(buf,2));
@@ -568,7 +589,11 @@ int mapif_parse_CreateParty(int fd, char *name, int item, int item2, struct part
 		//Add party to db
 		int_party_calc_state(p);
 		idb_put(party_db_, p->party.party_id, p);
+#ifndef Pandas_Cross_Server
 		mapif_party_info(fd, &p->party, 0);
+#else
+		mapif_party_info(fd, &p->party, 0, true);
+#endif
 		mapif_party_created(fd,leader->account_id,leader->char_id,&p->party);
 	} else { //Failed to create party.
 		aFree(p);
@@ -581,6 +606,33 @@ int mapif_parse_CreateParty(int fd, char *name, int item, int item2, struct part
 // Party information request
 void mapif_parse_PartyInfo(int fd, int party_id, uint32 char_id)
 {
+#ifdef Pandas_Cross_Server
+	if(is_cross_server)
+	{
+		struct mmo_charstatus* cd;
+		char* data;
+
+		//Load from memory
+		cd = static_cast<mmo_charstatus*>(idb_get(char_get_chardb(), char_id));
+		if (cd == nullptr)
+		{
+			if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `party_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, char_id)) {
+				Sql_ShowDebug(sql_handle);
+				Sql_FreeResult(sql_handle);
+			}
+			else {
+				if (SQL_SUCCESS == Sql_NextRow(sql_handle))
+				{
+					Sql_GetData(sql_handle, 0, &data, NULL); party_id = atoi(data);
+				}
+				Sql_FreeResult(sql_handle);
+			}
+		}
+		else
+			party_id = cd->party_id;
+	}
+#endif
+
 	struct party_data *p;
 	p = inter_party_fromsql(party_id);
 	if (p)
@@ -588,6 +640,7 @@ void mapif_parse_PartyInfo(int fd, int party_id, uint32 char_id)
 	else
 		mapif_party_noinfo(fd, party_id, char_id);
 }
+
 
 // Add a player to party request
 int mapif_parse_PartyAddMember(int fd, int party_id, struct party_member *member)

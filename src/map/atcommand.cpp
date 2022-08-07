@@ -22,6 +22,7 @@
 #include "../common/timer.hpp"
 #include "../common/utilities.hpp"
 #include "../common/utils.hpp"
+#include "../common/crossserver.hpp"
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -62,6 +63,8 @@
 #ifdef Pandas_Aura_Mechanism
 #include "aura.hpp"
 #endif // Pandas_Aura_Mechanism
+
+#include "asyncchrif.hpp"
 
 #ifdef Pandas_Google_Breakpad
 // 此全局变量定义在 crashdump.cpp 文件中
@@ -631,12 +634,44 @@ ACMD_FUNC(mapmove)
 		m = map_mapindex2mapid(mapindex);
 
 	if (m < 0) { // m < 0 means on different server! [Kevin]
-		clif_displaymessage(fd, msg_txt(sd,1)); // Map not found.
+#ifdef Pandas_Cross_Server
+		uint32 ip;
+		uint16 port;
+		bool found = true;
+		int cs_id = is_cross_server ? get_cs_id(sd->status.account_id) : 0;
+		if (!sd->mapindex || map_mapname2ipport(mapindex, &ip, &port, get_cs_id(sd->status.account_id)))
+			found = false;
+		if (is_cross_server)
+		{
+			int tfd = chrif_get_char_fd(cs_id);
+			if (tfd <= 0 || !chrif_fd_isconnected(tfd))
+				found = false;
+		}
+		if (ip == 0 || (short)port == 0)
+			found = false;
+		if (!found) {
+#endif
 
-		if (battle_config.warp_suggestions_enabled)
-			warp_get_suggestions(sd, map_name);
+			clif_displaymessage(fd, msg_txt(sd, 1)); // Map not found.
 
-		return -1;
+			if (battle_config.warp_suggestions_enabled)
+				warp_get_suggestions(sd, map_name);
+
+				return -1;
+#ifdef Pandas_Cross_Server
+		}
+		else
+		{
+			int ret = pc_setpos(sd,mapindex,x,y, CLR_TELEPORT);
+			if(ret != SETPOS_OK)
+			{
+				clif_displaymessage(fd, msg_txt(sd, 1)); // Map not found.
+				return -1;
+			}
+			clif_displaymessage(fd, msg_txt(sd, 0)); // Warped.
+			return 0;
+		}
+#endif
 	}
 
 	if ((x || y) && map_getcell(m, x, y, CELL_CHKNOPASS))
@@ -9766,7 +9801,11 @@ ACMD_FUNC(delitem)
 
 		if( sd->inventory_data[idx]->type == IT_PETEGG && sd->inventory.u.items_inventory[idx].card[0] == CARD0_PET )
 		{// delete pet
+#ifndef Pandas_Cross_Server
 			intif_delete_petdata(MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#else
+			intif_delete_petdata(sd,MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
+#endif
 		}
 		pc_delitem(sd, idx, delamount, 0, 0, LOG_TYPE_COMMAND);
 

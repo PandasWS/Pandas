@@ -3520,7 +3520,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( pd->pet.intimate > PET_INTIMATE_NONE )
 				intif_save_petdata(pd->pet.account_id,&pd->pet);
 			else { // Remove pet.
+#ifndef Pandas_Cross_Server
 				intif_delete_petdata(pd->pet.pet_id);
+#else
+				intif_delete_petdata(sd,pd->pet.pet_id);
+#endif
 
 				if (sd)
 					sd->status.pet_id = 0;
@@ -3615,7 +3619,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( hd->homunculus.intimacy > 0 )
 				hom_save(hd);
 			else {
+#ifndef Pandas_Cross_Server
 				intif_homunculus_requestdelete(hd->homunculus.hom_id);
+#else
+				intif_homunculus_requestdelete(sd,hd->homunculus.hom_id);
+#endif
 
 				if( sd )
 					sd->status.hom_id = 0;
@@ -3640,7 +3648,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( mercenary_get_lifetime(md) > 0 )
 				mercenary_save(md);
 			else {
+#ifndef Pandas_Cross_Server
 				intif_mercenary_delete(md->mercenary.mercenary_id);
+#else
+				intif_mercenary_delete(sd,md->mercenary.mercenary_id);
+#endif
 
 				if( sd )
 					sd->status.mer_id = 0;
@@ -3663,7 +3675,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			if( elemental_get_lifetime(ed) > 0 )
 				elemental_save(ed);
 			else {
+#ifndef Pandas_Cross_Server
 				intif_elemental_delete(ed->elemental.elemental_id);
+#else
+				intif_elemental_delete(sd,ed->elemental.elemental_id);
+#endif
 
 				if( sd )
 					sd->status.ele_id = 0;
