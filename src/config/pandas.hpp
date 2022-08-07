@@ -1190,6 +1190,15 @@
 	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
 	#define Pandas_ScriptEngine_Express
 
+	// 调整脚本引擎在 add_str 中分配内存的步进空间 [Sola丶小克]
+	// 避免过于频繁的 RECREATE 申请并移动内存中的数据, 减少内存分配开销
+	//
+	// 性能表现参考信息
+	// --------------------------------------------------------------
+	// - 调整前 str_buf  需要被重新分配 1174 次, 调整后为 37 次
+	// - 调整前 str_data 需要被重新分配 185  次, 调整后为 47 次
+	#define Pandas_ScriptEngine_AddStr_Realloc_Memory
+
 	// 使脚本引擎能够支持备份无数个脚本堆栈 [Sola丶小克]
 	// 以此避免嵌套调用超过两层的脚本会导致程序崩溃的问题 (如: script4each -> getitem -> 成就系统)
 	#define Pandas_ScriptEngine_MutliStackBackup

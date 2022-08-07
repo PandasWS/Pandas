@@ -251,6 +251,13 @@ static char *str_buf;
 static int str_size = 0; // size of the buffer
 static int str_pos = 0; // next position to be assigned
 
+#ifdef Pandas_ScriptEngine_AddStr_Realloc_Memory
+// str_data 每次被重新分配时, 增加多少个字节的容量
+#define STR_DATA_INCREASING_SIZE 128 * 4
+
+// str_buf  每次被重新分配时, 增加多少个字节的容量
+#define STR_BUF_INCREASING_SIZE 256 * 32
+#endif // Pandas_ScriptEngine_AddStr_Realloc_Memory
 
 // Using a prime number for SCRIPT_HASH_SIZE should give better distributions
 #define SCRIPT_HASH_SIZE 1021
@@ -933,9 +940,15 @@ int add_str(const char* p)
 	// grow list if neccessary
 	if( str_num >= str_data_size )
 	{
+#ifndef Pandas_ScriptEngine_AddStr_Realloc_Memory
 		str_data_size += 128;
 		RECREATE(str_data,struct str_data_struct,str_data_size);
 		memset(str_data + (str_data_size - 128), '\0', 128);
+#else
+		str_data_size += STR_DATA_INCREASING_SIZE;
+		RECREATE(str_data,struct str_data_struct,str_data_size);
+		memset(str_data + (str_data_size - STR_DATA_INCREASING_SIZE), '\0', STR_DATA_INCREASING_SIZE);
+#endif // Pandas_ScriptEngine_AddStr_Realloc_Memory
 	}
 
 	len=(int)strlen(p);
@@ -943,9 +956,15 @@ int add_str(const char* p)
 	// grow string buffer if neccessary
 	while( str_pos+len+1 >= str_size )
 	{
+#ifndef Pandas_ScriptEngine_AddStr_Realloc_Memory
 		str_size += 256;
 		RECREATE(str_buf,char,str_size);
 		memset(str_buf + (str_size - 256), '\0', 256);
+#else
+		str_size += STR_BUF_INCREASING_SIZE;
+		RECREATE(str_buf,char,str_size);
+		memset(str_buf + (str_size - STR_BUF_INCREASING_SIZE), '\0', STR_BUF_INCREASING_SIZE);
+#endif // Pandas_ScriptEngine_AddStr_Realloc_Memory
 	}
 
 	safestrncpy(str_buf+str_pos, p, len+1);
