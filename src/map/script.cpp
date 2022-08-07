@@ -28454,7 +28454,7 @@ BUILDIN_FUNC(getequipexpiretick) {
  * 用法: getinventoryinfo <道具的背包序号>,<要查看的信息类型>{,<角色编号>};
  * 用法: getcartinfo <道具的手推车序号>,<要查看的信息类型>{,<角色编号>};
  * 用法: getguildstorageinfo <道具的公会仓库序号>,<要查看的信息类型>{,<角色编号>};
- * 用法: getstorageinfo <道具的个人或扩充仓库序号>,<要查看的信息类型>{{,<仓库编号>},<角色编号>};
+ * 用法: getstorageinfo <道具的个人仓库/扩充仓库序号>,<要查看的信息类型>{{,<仓库编号>},<角色编号>};
  * 返回: 查询失败返回 -1, 若查询成功则返回你所查询的信息
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -32793,7 +32793,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getinventoryinfo, "ii?"),							// 查询指定背包序号的道具详细信息 [Sola丶小克]
 	BUILDIN_DEF2(getinventoryinfo, "getcartinfo", "ii?"),			// 查询指定手推车序号的道具详细信息 [Sola丶小克]
 	BUILDIN_DEF2(getinventoryinfo, "getguildstorageinfo", "ii?"),	// 查询指定公会仓库序号的道具详细信息 [Sola丶小克]
-	BUILDIN_DEF2(getinventoryinfo, "getstorageinfo", "ii??"),		// 查询指定个人或扩充仓库序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getstorageinfo", "ii??"),		// 查询指定个人仓库/扩充仓库序号的道具详细信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetInventoryInfo
 #ifdef Pandas_ScriptCommand_StatusCheck
 	BUILDIN_DEF(statuscheck, "i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]
