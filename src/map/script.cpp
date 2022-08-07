@@ -3876,7 +3876,8 @@ struct script_state* script_alloc_state(struct script_code* rootscript, int pos,
 #endif // Pandas_ScriptCommand_UnlockCmd
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
-	st->wating_premium_storage = 0;
+	st->waiting_premium_storage = 0;
+	st->waiting_guild_storage = 0;
 #endif // Pandas_ScriptCommand_GetInventoryList
 
 	if( st->script->instances != USHRT_MAX )
@@ -5497,12 +5498,28 @@ bool script_getstorage(struct script_state* st, struct map_session_data* sd, str
 			return false;
 		}
 
-		*stor = guild2storage2(sd->status.guild_id);
-		if (!(*stor)) {
+		if (guild2storage2(sd->status.guild_id) || st->waiting_guild_storage) {
+			// 如果该公会的仓库数据已经在地图服务器内存中, 则直接使用
+			*stor = guild2storage2(sd->status.guild_id);
+			if (!(*stor)) {
+				ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
+				return false;
+			}
+			*inventory = (*stor)->u.items_guild;
+
+			st->waiting_guild_storage = 0;
+			st->state = RUN;
+		}
+		else if (!st->waiting_guild_storage) {
+			// 否则, 需要先发送请求给角色服务器, 用于加载指定的公会仓库内容
+			st->state = RERUNLINE;
+			st->waiting_guild_storage = 1;
+			intif_request_guild_storage(sd->status.account_id, sd->status.guild_id);
+		}
+		else if (!guild2storage2(sd->status.guild_id)) {
 			ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
 			return false;
 		}
-		*inventory = (*stor)->u.items_guild;
 	}
 	else if (strstr(command, "storage")) {
 		if (stor_id == 0) {
@@ -5514,24 +5531,25 @@ bool script_getstorage(struct script_state* st, struct map_session_data* sd, str
 			return false;
 		}
 		else {
-			if (sd->premiumStorage.stor_id == stor_id || st->wating_premium_storage) {
+			if (sd->premiumStorage.stor_id == stor_id || st->waiting_premium_storage) {
 				// 如果现有的 premiumStorage 就是我们期望的拓展仓库
 				// 参考 storage_premiumStorage_load 的逻辑, 此时的 premiumStorage 内容可信
 				*stor = &sd->premiumStorage;
 				*inventory = (*stor)->u.items_storage;
 
-				st->wating_premium_storage = 0;
+				st->waiting_premium_storage = 0;
 				st->state = RUN;
 			}
-			else if (!st->wating_premium_storage) {
+			else if (!st->waiting_premium_storage) {
 				// 否则, 需要先发送请求给角色服务器, 用于加载指定的拓展仓库内容
 				st->state = RERUNLINE;
-				st->wating_premium_storage = 1;
+				st->waiting_premium_storage = 1;
 				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
 			}
 		}
 	}
 	else {
+		//ShowWarning("buildin_%s: unknow function command: '%s', defaulting to inventory.\n", command);
 		*stor = &sd->inventory;
 		*inventory = (*stor)->u.items_inventory;
 	}
