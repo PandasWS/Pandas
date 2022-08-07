@@ -998,6 +998,10 @@
 	//
 	// 解决方案: 进入游戏加载 bonus_script 的时候抛弃拥有 BSF_REM_ON_LOGOUT 标记位的数据
 	#define Pandas_Fix_Bonus_Script_Effective_Timing_Exception
+
+	// 修正 sprintf 脚本指令无法格式化 int64 数值的问题 [Sola丶小克]
+	// 注意: 即使启用此选项, 当你需要格式化 int64 的数值时依然需要使用 %lld 而不是 %d
+	#define Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 #endif // Pandas_Bugfix
 
 // ============================================================================
