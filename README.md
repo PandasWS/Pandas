@@ -69,7 +69,6 @@
 -   [编译说明](#编译说明)
 -   [常见问题](#常见问题)
 -   [加入爱好者社区](#加入爱好者社区)
--   [模拟器相关项目推荐](#模拟器相关项目推荐)
 -   [维护者](#维护者)
 -   [如何作出贡献](#如何作出贡献)
 -   [许可协议](#许可协议)
@@ -89,22 +88,6 @@
 因此我们将站在 rAthena 的巨人肩膀上二次开发了 Pandas 模拟器 ( 熊猫模拟器 ) ，我们的定位
 也非常朴素和简单：对中文用户友好的仙境传说模拟器。
 
-## 熊猫专业版
-
-熊猫专业版已经正式上线了！截止 `2022 年 05 月 27 日` 专业版包含以下功能：
-
-- FEATURE-1000: 实装人工生命体 S 的 250 级支持及其 16 个新技能
-- FEATURE-1001: 实装 6 个次上位拓展职业共计 97 个技能
-- FEATURE-1002: 实装韩服 2021 年第三、第四季度的技能改进
-- FEATURE-1003: 四转职业技能和状态表现错误修正补丁
-- FEATURE-1004: 实装 EnchantGrade UI 附魔评级交互界面 (已免费)
-- FEATURE-1005: 实装 Reputation UI 声望交互界面
-- FEATURE-1006: 实装 Item Reform UI 物品改良交互界面
-- FEATURE-1007: 实装 Enchantment UI 附魔交互界面
-- FEATURE-1008: 实装韩服 2022 年第二季度的技能改进
-
-各功能包售价以及详细介绍, 请移步查阅: https://www.craft.do/s/miY7MUKvn8gQSj
-
 ## 模拟器特色功能
 
 主要是与 rAthena 模拟器相比的差异化功能，这些功能可能其他闭源模拟器已经实现，但在熊猫里面
@@ -117,6 +100,7 @@
 ### 值得一提的功能
 
 -   __终端信息汉化__ —— 汉化绝大部分终端提示的文本信息，兼容简体和繁体中文
+-   __支持 UTF8 数据文件__ —— 支持 UTF8 (with BOM) 文件的读取，并自动转换成适用编码
 -   __变态服拓展包__ —— 解锁角色的素质上限， 可以给角色几百万的 STR 等六维素质值
 -   __疾风缓存__ —— 大幅加速 YAML 数据文件的读取速度 ( 大幅缓解焦虑， 提高调试效率 )
 -   __单位光环系统__ —— 可以为任意游戏单位设置光环特效，可将多个视觉效果组合成光环
@@ -167,7 +151,7 @@
 
 ### 支持的客户端封包版本是哪个？
 
-截止 `2021 年 05 月 27 日 ` 熊猫模拟器 v1.1.2 版本，默认的客户端封包版本是 `20211117`。
+截止 `2022 年 08 月 08 日` 熊猫模拟器 `v1.1.15` 版本默认的客户端封包版本是 `20211117`。
 
 若您希望客户端封包使用其他封包版本，例如：`20200409`，那么只需下载源代码后通过修改 
 `src/config/packet.hpp` 文件中 `PACKETVER` 的定义，随后重新编译即可。
@@ -209,16 +193,6 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 
 此外我们建立了 [Discord] 服务器,  有条件加入的同学欢迎您 [加入 PandasWS 服务器](https://discord.gg/9bEfrPPruj)。
 
-## 模拟器相关项目推荐
-
--   [rAthena] - 熊猫模拟器、BetterRA、99MaxEA 等众多模拟器的共同的「祖先」
--   [Hercules] - 基于 rAthena 构建的 C++ 模拟器，在客户端新功能的封包支持上表现的更为激进
--   [NEMO] - 老牌的仙境传说客户端 DIFF 工具，目前由 Andrei Karas 维护
--   [WARP] - 由 NEMO 的原作者建立的新 DIFF 工具，或许未来有一天会替代 NEMO？
--   [roBrowser] - 网页版的仙境传说客户端，虽然现已停止维护，但非常具有参考价值
--   [roint] - 客户端常见文件格式 ( 如：gat、rsw、rsm、spr、rgz ) 的解析代码，具有参考价值
--   [unityro] - 基于 Unity3D 实现的仙境传说客户端 ( 近期活跃，值得关注 )
-
 ## 维护者
 
 -   [CairoLee] —— 很难被研发忽悠瘸的产品经理 ( AKA: Sola 丶小克 )
@@ -228,16 +202,9 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 
 有关如何为熊猫模拟器做出贡献的详细信息，请参见 [作出贡献] 。
 
-### 主要贡献者
+感谢已经为熊猫模拟器做出贡献的人们！
 
--   [HongShin] —— 积极的发现了很多缺陷和故障，使得项目的稳定性、健壮性得以提升
--   [西瓜] 与 [小纪] —— 无条件捐献了熊猫模拟器若干个月的服务器租赁费用
-
-### 活跃贡献者
-
-特别感谢近期活跃的贡献者，排名不分先后 ( 通常后加入的写最前面 )
-
-[聽風]、[NIFL]、[人鱼姬的思念]、[♬喵了个咪]、[文威]
+<a href="https://github.com/PandasWS/Pandas/graphs/contributors"><img src="https://opencollective.com/pandasws/contributors.svg?width=890" /></a>
 
 ## 许可协议
 
@@ -253,20 +220,6 @@ __此外这套 LeeClient 客户端依然存在很多缺陷：__
 [作出贡献]: https://docs.pandas.ws/contributing
 
 [rAthena]: https://github.com/rathena/rathena
-[Hercules]: https://github.com/HerculesWS/Hercules
-[NEMO]: https://gitlab.com/4144/Nemo
-[WARP]: https://gitlab.com/Neo-Mind/WARP
-[roBrowser]: https://github.com/vthibault/roBrowser
-[roint]: https://github.com/open-ragnarok/roint
-[unityro]: https://github.com/guilhermelhr/unityro
 
 [CairoLee]: https://github.com/CairoLee
-[HongShin]: https://github.com/Hong-Shin
-[人鱼姬的思念]: mailto:327945477@qq.com
 [Renee]: mailto:rne0430@gmail.com
-[♬喵了个咪]: mailto:82558223@qq.com
-[文威]: mailto:gods.cwk@gmail.com
-[小纪]: mailto:a659347@gmail.com
-[西瓜]: mailto:3463273181@qq.com
-[NIFL]: mailto:1640905483@qq.com
-[聽風]: mailto:michaelwooo@qq.com
