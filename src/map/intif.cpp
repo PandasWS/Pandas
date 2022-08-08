@@ -1560,6 +1560,16 @@ int intif_parse_LoadGuildStorage(int fd)
 
 	memcpy(gstor,RFIFOP(fd,13+2),sizeof(struct s_storage));
 #endif // Pandas_Unlock_Storage_Capacity_Limit
+
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd && sd->st && sd->npc_id) {
+		if (sd->st->waiting_guild_storage && sd->st->state == RERUNLINE) {
+			npc_scriptcont(sd, sd->npc_id, false);
+			return 1;
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
+	
 	if( flag )
 		storage_guild_storageopen(sd);
 
@@ -3640,7 +3650,7 @@ static bool intif_parse_StorageReceived_hook(int fd) {
 		return bReturn;
 	}
 
-	if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
+	if (sd->st->waiting_premium_storage && sd->st->state == RERUNLINE) {
 		npc_scriptcont(sd, sd->npc_id, false);
 	}
 	return bReturn;

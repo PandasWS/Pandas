@@ -511,7 +511,8 @@ struct script_state {
 	unsigned unlockcmd : 1;
 #endif // Pandas_ScriptCommand_UnlockCmd
 #ifdef Pandas_ScriptCommand_GetInventoryList
-	unsigned wating_premium_storage : 1;
+	unsigned waiting_premium_storage : 1;
+	unsigned waiting_guild_storage : 1;
 #endif // Pandas_ScriptCommand_GetInventoryList
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;

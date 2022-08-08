@@ -3907,7 +3907,8 @@ struct script_state* script_alloc_state(struct script_code* rootscript, int pos,
 #endif // Pandas_ScriptCommand_UnlockCmd
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
-	st->wating_premium_storage = 0;
+	st->waiting_premium_storage = 0;
+	st->waiting_guild_storage = 0;
 #endif // Pandas_ScriptCommand_GetInventoryList
 
 	if( st->script->instances != USHRT_MAX )
@@ -5493,6 +5494,105 @@ void script_both_setregstr(struct script_state* st, const char* varname_without_
 		varid = (isarray ? reference_uid(add_str(varname.c_str()), index) : add_str(varname.c_str()));
 		pc_setregstr(sd, varid, value);
 	}
+}
+
+//************************************
+// Method:      script_getstorage
+// Description: 根据指令名称来获取不同的存储空间
+// Parameter:   struct script_state * st
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * * stor
+// Parameter:   struct item * * inventory
+// Parameter:   int stor_id
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/08/06 12:11
+//************************************
+bool script_getstorage(struct script_state* st, struct map_session_data* sd, struct s_storage** stor, struct item** inventory, int stor_id = 0) {
+	nullpo_retr(false, st);
+	nullpo_retr(false, sd);
+	nullpo_retr(false, stor);
+	nullpo_retr(false, inventory);
+	
+	const char* command = script_getfuncname(st);
+	
+	if (strstr(command, "cart")) {
+		if (!pc_iscarton(sd)) {
+			ShowError("buildin_%s: player doesn't have cart (CID: %d).\n", command, sd->status.char_id);
+			return false;
+		}
+		*stor = &sd->cart;
+		*inventory = (*stor)->u.items_cart;
+	}
+	else if (strstr(command, "guildstorage")) {
+		if (!sd->status.guild_id || !sd->guild) {
+			ShowError("buildin_%s: player doesn't join the guild (CID: %d).\n", command, sd->status.char_id);
+			return false;
+		}
+
+#ifdef OFFICIAL_GUILD_STORAGE
+		if (!guild_checkskill(sd->guild, GD_GUILD_STORAGE)) {
+			ShowError("buildin_%s: player's guild has not learned the GD_GUILD_STORAGE skill (CID: %d).\n", command, sd->status.char_id);
+			return false;
+		}
+#endif // OFFICIAL_GUILD_STORAGE
+
+		if (guild2storage2(sd->status.guild_id) || st->waiting_guild_storage) {
+			// 如果该公会的仓库数据已经在地图服务器内存中, 则直接使用
+			*stor = guild2storage2(sd->status.guild_id);
+			if (!(*stor)) {
+				ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
+				return false;
+			}
+			*inventory = (*stor)->u.items_guild;
+
+			st->waiting_guild_storage = 0;
+			st->state = RUN;
+		}
+		else if (!st->waiting_guild_storage) {
+			// 否则, 需要先发送请求给角色服务器, 用于加载指定的公会仓库内容
+			st->state = RERUNLINE;
+			st->waiting_guild_storage = 1;
+			intif_request_guild_storage(sd->status.account_id, sd->status.guild_id);
+		}
+		else if (!guild2storage2(sd->status.guild_id)) {
+			ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
+			return false;
+		}
+	}
+	else if (strstr(command, "storage")) {
+		if (stor_id == 0) {
+			*stor = &sd->storage;
+			*inventory = (*stor)->u.items_storage;
+		}
+		else if (!storage_exists(stor_id)) {
+			ShowError("buildin_%s: Invalid storage id '%d'!\n", command, stor_id);
+			return false;
+		}
+		else {
+			if (sd->premiumStorage.stor_id == stor_id || st->waiting_premium_storage) {
+				// 如果现有的 premiumStorage 就是我们期望的拓展仓库
+				// 参考 storage_premiumStorage_load 的逻辑, 此时的 premiumStorage 内容可信
+				*stor = &sd->premiumStorage;
+				*inventory = (*stor)->u.items_storage;
+
+				st->waiting_premium_storage = 0;
+				st->state = RUN;
+			}
+			else if (!st->waiting_premium_storage) {
+				// 否则, 需要先发送请求给角色服务器, 用于加载指定的拓展仓库内容
+				st->state = RERUNLINE;
+				st->waiting_premium_storage = 1;
+				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
+			}
+		}
+	}
+	else {
+		ShowWarning("buildin_%s: unknow function command: '%s', defaulting to inventory.\n", command);
+		*stor = &sd->inventory;
+		*inventory = (*stor)->u.items_inventory;
+	}
+
+	return true;
 }
 
 #endif // Pandas_ScriptCommands
@@ -15596,17 +15696,45 @@ BUILDIN_FUNC(getinventorylist) {
 	struct map_session_data* sd = nullptr;
 	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
 	int j = 0, k = 0;
-	struct item* inventory = nullptr;
-	struct s_storage* stor = nullptr;
-	uint32 query_flag = INV_ALL;
 
-	if (!script_charid2sd(2, sd))
+	if (!script_charid2sd(2, sd)) {
 		return SCRIPT_CMD_FAILURE;
+	}
 
+	uint32 query_flag = INV_ALL;
 	if (script_hasdata(st, 3))
 		query_flag = script_getnum(st, 3);
 
-	// 清空上一次可能残留的查询结果记录数
+	struct s_storage* stor = nullptr;
+	struct item* inventory = nullptr;
+	int stor_id = (script_hasdata(st, 4) ? script_getnum(st, 4) : 0);
+
+	pc_setreg(sd, add_str("@inventorylist_count"), 0);
+	
+	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (st->state == RERUNLINE) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!stor || !inventory) {
+		const char* command = script_getfuncname(st);
+		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+#define setreg(flag, arrayname, value)\
+	{ \
+		if ((query_flag & flag) == flag) \
+			pc_setreg(sd, reference_uid(add_str(arrayname), j), value); \
+	}
+#define setregstr(flag, arrayname, value)\
+	{ \
+		if ((query_flag & flag) == flag) \
+			pc_setregstr(sd, reference_uid(add_str(arrayname), j), value); \
+	}
 
 	script_cleararray_pc(sd, "@inventorylist_id");
 	script_cleararray_pc(sd, "@inventorylist_idx");
@@ -15634,86 +15762,7 @@ BUILDIN_FUNC(getinventorylist) {
 	script_cleararray_pc(sd, "@inventorylist_favorite");
 	script_cleararray_pc(sd, "@inventorylist_uid$");
 	script_cleararray_pc(sd, "@inventorylist_equipswitch");
-	pc_setreg(sd, add_str("@inventorylist_count"), 0);
-	
-	// 根据不同的指令名称来决定读取什么位置的内容
-	const char* command = script_getfuncname(st);
-	if (!strcmp(command, "getcartlist")) {
-		if (!pc_iscarton(sd)) {
-			ShowError("buildin_%s: player doesn't have cart (CID: %d).\n", command, sd->status.char_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		stor = &sd->cart;
-		inventory = stor->u.items_cart;
-	}
-	else if (!strcmp(command, "getguildstoragelist")) {
-		if (!sd->status.guild_id) {
-			ShowError("buildin_%s: player doesn't join the guild (CID: %d).\n", command, sd->status.char_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		
-		stor = guild2storage2(sd->status.guild_id);
-		if (!stor) {
-			ShowError("buildin_%s: player's guild does not have a guild storage (CID: %d | Guild ID: %d).\n", command, sd->status.char_id, sd->status.guild_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		inventory = stor->u.items_guild;
-	}
-	else if (!strcmp(command, "getstoragelist")) {
-		int stor_id = 0;
 
-		if (script_hasdata(st, 4))
-			stor_id = script_getnum(st, 4);
-
-		if (stor_id == 0) {
-			stor = &sd->storage;
-			inventory = stor->u.items_storage;
-		}
-		else if (!storage_exists(stor_id)) {
-			ShowError("buildin_%s: Invalid storage id '%d'!\n", command, stor_id);
-			return SCRIPT_CMD_FAILURE;
-		}
-		else {
-			if (sd->premiumStorage.stor_id == stor_id || st->wating_premium_storage) {
-				// 如果现有的 premiumStorage 就是我们期望的拓展仓库
-				// 参考 storage_premiumStorage_load 的逻辑, 此时的 premiumStorage 内容可信
-				stor = &sd->premiumStorage;
-				inventory = stor->u.items_storage;
-
-				st->wating_premium_storage = 0;
-				st->state = RUN;
-			}
-			else if (!st->wating_premium_storage) {
-				// 否则, 需要先发送请求给角色服务器, 用于加载指定的拓展仓库内容
-				st->state = RERUNLINE;
-				st->wating_premium_storage = 1;
-				intif_storage_request(sd, TABLE_STORAGE, stor_id, STOR_MODE_ALL);
-				return SCRIPT_CMD_SUCCESS;
-			}
-		}
-	}
-	else {
-		ShowWarning("buildin_%s: unknow function command: '%s', defaulting to inventory.\n", command);
-		stor = &sd->inventory;
-		inventory = stor->u.items_inventory;
-	}
-
-	if (!stor || !inventory) {
-		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
-		return SCRIPT_CMD_FAILURE;
-	}
-
-#define setreg(flag, arrayname, value)\
-	{ \
-		if ((query_flag & flag) == flag) \
-			pc_setreg(sd, reference_uid(add_str(arrayname), j), value); \
-	}
-#define setregstr(flag, arrayname, value)\
-	{ \
-		if ((query_flag & flag) == flag) \
-			pc_setregstr(sd, reference_uid(add_str(arrayname), j), value); \
-	}
-	
 	for (int i = 0; i < stor->max_amount; i++) {
 		if (inventory[i].nameid <= 0 || inventory[i].amount <= 0)
 			continue;
@@ -28445,68 +28494,89 @@ BUILDIN_FUNC(getequipexpiretick) {
 /* ===========================================================
  * 指令: getinventoryinfo
  * 描述: 查询指定背包序号的道具的详细信息
- * 用法: getinventoryinfo <背包序号>,<要查看的信息类型>{,<角色编号>};
- * 返回: 查询失败返回 -1, 若查询成功除了类型为 11 的返回值是个字符串, 其他的皆为数值
+ * 用法: getinventoryinfo <道具的背包序号>,<要查看的信息类型>{,<角色编号>};
+ * 用法: getcartinfo <道具的手推车序号>,<要查看的信息类型>{,<角色编号>};
+ * 用法: getguildstorageinfo <道具的公会仓库序号>,<要查看的信息类型>{,<角色编号>};
+ * 用法: getstorageinfo <道具的个人仓库/扩充仓库序号>,<要查看的信息类型>{{,<仓库编号>},<角色编号>};
+ * 返回: 查询失败返回 -1, 若查询成功则返回你所查询的信息
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(getinventoryinfo) {
     struct map_session_data *sd = nullptr;
 	struct item_data *id = nullptr;
 	int idx = script_getnum(st, 2);
-	int64 retval = 0;
+	const char* command = script_getfuncname(st);
+	int charid_slot = (!stricmp(command, "getstorageinfo") ? 5 : 4);
+
+	if (!script_charid2sd(charid_slot, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct s_storage* stor = nullptr;
+	struct item* inventory = nullptr;
+	int stor_id = (script_hasdata(st, 4) ? script_getnum(st, 4) : 0);
+
+	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+	
+	if (st->state == RERUNLINE) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!stor || !inventory) {
+		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (idx < 0 || idx >= stor->max_amount) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!itemdb_exists(inventory[idx].nameid)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (inventory[idx].amount <= 0) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
 	int type = script_getnum(st, 3);
-
-	if (!script_charid2sd(4, sd)) {
-		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (idx < 0 || idx >= sd->inventory.max_amount) {
-		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (!itemdb_exists(sd->inventory.u.items_inventory[idx].nameid)) {
-		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (sd->inventory.u.items_inventory[idx].amount <= 0) {
-		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
-	}
-
 	switch (type)
 	{
-	case 0: retval = sd->inventory.u.items_inventory[idx].nameid; break;
-	case 1: retval = sd->inventory.u.items_inventory[idx].amount; break;
-	case 2: retval = sd->inventory.u.items_inventory[idx].equip; break;
-	case 3: retval = sd->inventory.u.items_inventory[idx].refine; break;
-	case 4: retval = sd->inventory.u.items_inventory[idx].identify; break;
-	case 5: retval = sd->inventory.u.items_inventory[idx].attribute; break;
-	case 6: retval = sd->inventory.u.items_inventory[idx].card[0]; break;
-	case 7: retval = sd->inventory.u.items_inventory[idx].card[1]; break;
-	case 8: retval = sd->inventory.u.items_inventory[idx].card[2]; break;
-	case 9: retval = sd->inventory.u.items_inventory[idx].card[3]; break;
-	case 10: retval = sd->inventory.u.items_inventory[idx].expire_time; break;
-	case 11: retval = sd->inventory.u.items_inventory[idx].unique_id; break;
+	case 0:  script_pushint(st, inventory[idx].nameid); break;
+	case 1:  script_pushint(st, inventory[idx].amount); break;
+	case 2:  script_pushint(st, inventory[idx].equip); break;
+	case 3:  script_pushint(st, inventory[idx].refine); break;
+	case 4:  script_pushint(st, inventory[idx].identify); break;
+	case 5:  script_pushint(st, inventory[idx].attribute); break;
+	case 6:  script_pushint(st, inventory[idx].card[0]); break;
+	case 7:  script_pushint(st, inventory[idx].card[1]); break;
+	case 8:  script_pushint(st, inventory[idx].card[2]); break;
+	case 9:  script_pushint(st, inventory[idx].card[3]); break;
+	case 10: script_pushint(st, inventory[idx].expire_time); break;
+	case 11: script_pushint(st, inventory[idx].unique_id); break;
 	case 12: case 13: case 14: case 15: case 16:
-		retval = sd->inventory.u.items_inventory[idx].option[type - 12].id; break;
+		script_pushint(st, inventory[idx].option[type - 12].id); break;
 	case 17: case 18: case 19: case 20: case 21:
-		retval = sd->inventory.u.items_inventory[idx].option[type - 17].value; break;
+		script_pushint(st, inventory[idx].option[type - 17].value); break;
 	case 22: case 23: case 24: case 25: case 26:
-		retval = sd->inventory.u.items_inventory[idx].option[type - 22].param; break;
-	case 27:
-		retval = (int)sd->inventory.u.items_inventory[idx].bound; break;
-	case 28:
-		retval = (int)sd->inventory.u.items_inventory[idx].enchantgrade; break;
+		script_pushint(st, inventory[idx].option[type - 22].param); break;
+	case 27: script_pushint(st, inventory[idx].bound); break;
+	case 28: script_pushint(st, inventory[idx].enchantgrade); break;
+	case 29: script_pushint(st, inventory[idx].equipSwitch); break;
+	case 30: script_pushint(st, inventory[idx].favorite); break;
 	default:
-		ShowWarning("buildin_getinventoryinfo: The type should be in range 0-%d, currently type is: %d.\n", 28, type);
+		ShowWarning("buildin_%s: The type should be in range 0-%d, currently type is: %d.\n", command, 30, type);
 		script_pushint(st, -1);
-		return SCRIPT_CMD_SUCCESS;
+		return SCRIPT_CMD_FAILURE;
 	}
 
-	script_pushint(st, retval);
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_GetInventoryInfo
@@ -30004,7 +30074,7 @@ BUILDIN_FUNC(storagegetitem) {
 /* ===========================================================
  * 指令: setinventoryinfo
  * 描述: 设置指定背包序号道具的部分详细信息, 与 getinventoryinfo 对应
- * 用法: setinventoryinfo <背包序号>,<要设置的信息类型>,<值>{{,<标记位>},<角色编号>};
+ * 用法: setinventoryinfo <道具的背包序号>,<要设置的信息类型>,<值>{{,<标记位>},<角色编号>};
  * 返回: 设置成功则返回 1, 设置失败或角色不存在则返回 0, 返回负数也是失败 (值表示不同失败原因)
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
@@ -30139,8 +30209,15 @@ BUILDIN_FUNC(setinventoryinfo) {
 		sd->inventory.u.items_inventory[idx].enchantgrade = (uint8)value;
 		need_recalc_status = true;
 		break;
+	case 29:
+		sd->inventory.u.items_inventory[idx].equipSwitch = (unsigned int)value;
+		break;
+	case 30:
+		value = cap_value(value, 0, 1);
+		sd->inventory.u.items_inventory[idx].favorite = (char)value;
+		break;
 	default:
-		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 28, type);
+		ShowWarning("buildin_setinventoryinfo: The type should be in range 3-%d, currently type is: %d.\n", 30, type);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -32750,7 +32827,10 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(getequipexpiretick, "isrental", "i?"),	// 指定一个别名, 以便兼容的老版本或其他服务端
 #endif // Pandas_ScriptCommand_GetEquipExpireTick
 #ifdef Pandas_ScriptCommand_GetInventoryInfo
-	BUILDIN_DEF(getinventoryinfo, "ii?"),				// 查询指定背包序号的道具的详细信息 [Sola丶小克]
+	BUILDIN_DEF(getinventoryinfo, "ii?"),							// 查询指定背包序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getcartinfo", "ii?"),			// 查询指定手推车序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getguildstorageinfo", "ii?"),	// 查询指定公会仓库序号的道具详细信息 [Sola丶小克]
+	BUILDIN_DEF2(getinventoryinfo, "getstorageinfo", "ii??"),		// 查询指定个人仓库/扩充仓库序号的道具详细信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_GetInventoryInfo
 #ifdef Pandas_ScriptCommand_StatusCheck
 	BUILDIN_DEF(statuscheck, "i?"),						// 判断状态是否存在, 并取得相关的状态参数 [Sola丶小克]

@@ -864,8 +864,20 @@ bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storag
 		SqlStmt_BindColumn(stmt, 13+offset+MAX_SLOTS+i*3, SQLDT_CHAR, &item.option[i].param, 0, NULL, NULL);
  	}
 
+#ifndef Pandas_ScriptCommand_GetInventoryInfo
 	for( i = 0; i < max && SQL_SUCCESS == SqlStmt_NextRow(stmt); ++i )
 		memcpy(&storage[i], &item, sizeof(item));
+#else
+	for (i = 0; i < max && SQL_SUCCESS == SqlStmt_NextRow(stmt); ++i) {
+		// 由于非背包的时候上面没有进行绑定, 导致值为随机数
+		// 出于 getinventoryinfo 系列指令的需要, 让这两个值在非背包的时候默认为 0
+		if (tableswitch != TABLE_INVENTORY) {
+			item.favorite = 0;
+			item.equipSwitch = 0;
+		}
+		memcpy(&storage[i], &item, sizeof(item));
+	}
+#endif // Pandas_ScriptCommand_GetInventoryInfo
 
 	p->amount = i;
 	ShowInfo("Loaded %s data from table %s for %s: %d (total: %d)\n", printname, tablename, selectoption, id, p->amount);

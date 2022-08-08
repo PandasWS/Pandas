@@ -1862,8 +1862,13 @@
 	// 获取指定位置装备的租赁到期剩余秒数 (该指令有一个用于兼容的别名: isrental)
 	#define Pandas_ScriptCommand_GetEquipExpireTick
 
-	// 是否启用 getinventoryinfo 脚本指令 [Sola丶小克]
-	// 查询指定背包序号的道具的详细信息
+	// 是否启用 getinventoryinfo 系列脚本指令 [Sola丶小克]
+	// 查询指定背包、公会仓库、手推车、个人仓库/扩充仓库序号的道具详细信息
+	// 包含以下几个指令变体:
+	// getinventoryinfo <道具的背包序号>,<要查看的信息类型>{,<角色编号>};
+	// getcartinfo <道具的手推车序号>,<要查看的信息类型>{,<角色编号>};
+	// getguildstorageinfo <道具的公会仓库序号>,<要查看的信息类型>{,<角色编号>};
+	// getstorageinfo <道具的个人仓库/扩充仓库序号>,<要查看的信息类型>{{,<仓库编号>},<角色编号>};
 	#define Pandas_ScriptCommand_GetInventoryInfo
 
 	// 是否启用 statuscheck 脚本指令 [Sola丶小克]

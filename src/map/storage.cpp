@@ -1235,7 +1235,7 @@ void storage_premiumStorage_open(struct map_session_data *sd) {
 		// 都会调用 storage_premiumStorage_open 来打开客户端的仓库界面
 		//
 		// 但如果本次查询是为了响应 getstoragelist 的请求, 那么就没必要打开客户端的仓库界面
-		if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
+		if (sd->st->waiting_premium_storage && sd->st->state == RERUNLINE) {
 			return;
 		}
 	}
