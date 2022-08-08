@@ -1227,6 +1227,10 @@
 	// 原计划输出的 "中文" 输出将变成: "中文
 	// 而最末末尾的 " 将被作为一个新的字符串起点, 导致语法检测双引号无法闭合而报错
 	#define Pandas_ScriptEngine_DoubleByte_UnEscape_Detection
+
+	// 修正 add_str 触发 str_buf 的扩容分配后 st->funcname 的所指向的指令名称无效的问题,
+	// 因为 st->funcname 指针指向的内存已在扩容分配时被释放 [Sola丶小克]
+	#define Pandas_ScriptEngine_Relocation_Funcname_After_StrBuf_Realloc
 #endif // Pandas_ScriptEngine
 
 // ============================================================================
