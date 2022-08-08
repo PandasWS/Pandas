@@ -1,4 +1,4 @@
-# This file is a part of rAthena.
+﻿# This file is a part of rAthena.
 #   Copyright(C) 2022 rAthena Development Team
 #   https://rathena.org - https://github.com/rathena
 #
@@ -49,4 +49,15 @@ Footer:
     Mode: Prerenewal
   - Path: db/re/status.yml
     Mode: Renewal
+
+  # -----------------------------------------------------------------------
+  # 熊猫模拟器修正 rAthena 现有数据错误的补丁
+  # -----------------------------------------------------------------------
+  - Path: db/pandas/pre-re/status.yml
+    Mode: Prerenewal
+
+  # -----------------------------------------------------------------------
+  # 请确保你对物品数据库的改动或者新道具的物品数据, 都在上面那个补丁之后
+  # 被加载, 以确保你的数据拥有最高优先级.
+  # -----------------------------------------------------------------------
   - Path: db/import/status.yml
