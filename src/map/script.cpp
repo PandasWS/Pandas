@@ -5524,10 +5524,17 @@ bool script_getstorage(struct script_state* st, struct map_session_data* sd, str
 		*inventory = (*stor)->u.items_cart;
 	}
 	else if (strstr(command, "guildstorage")) {
-		if (!sd->status.guild_id) {
+		if (!sd->status.guild_id || !sd->guild) {
 			ShowError("buildin_%s: player doesn't join the guild (CID: %d).\n", command, sd->status.char_id);
 			return false;
 		}
+
+#ifdef OFFICIAL_GUILD_STORAGE
+		if (!guild_checkskill(sd->guild, GD_GUILD_STORAGE)) {
+			ShowError("buildin_%s: player's guild has not learned the GD_GUILD_STORAGE skill (CID: %d).\n", command, sd->status.char_id);
+			return false;
+		}
+#endif // OFFICIAL_GUILD_STORAGE
 
 		if (guild2storage2(sd->status.guild_id) || st->waiting_guild_storage) {
 			// 如果该公会的仓库数据已经在地图服务器内存中, 则直接使用
@@ -15697,6 +15704,35 @@ BUILDIN_FUNC(getinventorylist) {
 	if (script_hasdata(st, 3))
 		query_flag = script_getnum(st, 3);
 
+	struct s_storage* stor = nullptr;
+	struct item* inventory = nullptr;
+	int stor_id = (script_hasdata(st, 4) ? script_getnum(st, 4) : 0);
+	
+	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (st->state == RERUNLINE) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	if (!stor || !inventory) {
+		const char* command = script_getfuncname(st);
+		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+#define setreg(flag, arrayname, value)\
+	{ \
+		if ((query_flag & flag) == flag) \
+			pc_setreg(sd, reference_uid(add_str(arrayname), j), value); \
+	}
+#define setregstr(flag, arrayname, value)\
+	{ \
+		if ((query_flag & flag) == flag) \
+			pc_setregstr(sd, reference_uid(add_str(arrayname), j), value); \
+	}
+
 	script_cleararray_pc(sd, "@inventorylist_id");
 	script_cleararray_pc(sd, "@inventorylist_idx");
 	script_cleararray_pc(sd, "@inventorylist_amount");
@@ -15725,35 +15761,6 @@ BUILDIN_FUNC(getinventorylist) {
 	script_cleararray_pc(sd, "@inventorylist_equipswitch");
 	pc_setreg(sd, add_str("@inventorylist_count"), 0);
 
-	struct s_storage* stor = nullptr;
-	struct item* inventory = nullptr;
-	int stor_id = (script_hasdata(st, 4)? script_getnum(st, 4) : 0);
-	
-	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	if (st->state == RERUNLINE) {
-		return SCRIPT_CMD_SUCCESS;
-	}
-
-	if (!stor || !inventory) {
-		const char* command = script_getfuncname(st);
-		ShowError("buildin_%s: cannot read inventory or storage data.\n", command);
-		return SCRIPT_CMD_FAILURE;
-	}
-
-#define setreg(flag, arrayname, value)\
-	{ \
-		if ((query_flag & flag) == flag) \
-			pc_setreg(sd, reference_uid(add_str(arrayname), j), value); \
-	}
-#define setregstr(flag, arrayname, value)\
-	{ \
-		if ((query_flag & flag) == flag) \
-			pc_setregstr(sd, reference_uid(add_str(arrayname), j), value); \
-	}
-	
 	for (int i = 0; i < stor->max_amount; i++) {
 		if (inventory[i].nameid <= 0 || inventory[i].amount <= 0)
 			continue;
