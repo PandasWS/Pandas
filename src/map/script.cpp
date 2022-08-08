@@ -251,6 +251,13 @@ static char *str_buf;
 static int str_size = 0; // size of the buffer
 static int str_pos = 0; // next position to be assigned
 
+#ifdef Pandas_ScriptEngine_AddStr_Realloc_Memory
+// str_data 每次被重新分配时, 增加多少个字节的容量
+#define STR_DATA_INCREASING_SIZE 128 * 4
+
+// str_buf  每次被重新分配时, 增加多少个字节的容量
+#define STR_BUF_INCREASING_SIZE 256 * 32
+#endif // Pandas_ScriptEngine_AddStr_Realloc_Memory
 
 // Using a prime number for SCRIPT_HASH_SIZE should give better distributions
 #define SCRIPT_HASH_SIZE 1021
@@ -933,9 +940,15 @@ int add_str(const char* p)
 	// grow list if neccessary
 	if( str_num >= str_data_size )
 	{
+#ifndef Pandas_ScriptEngine_AddStr_Realloc_Memory
 		str_data_size += 128;
 		RECREATE(str_data,struct str_data_struct,str_data_size);
 		memset(str_data + (str_data_size - 128), '\0', 128);
+#else
+		str_data_size += STR_DATA_INCREASING_SIZE;
+		RECREATE(str_data,struct str_data_struct,str_data_size);
+		memset(str_data + (str_data_size - STR_DATA_INCREASING_SIZE), '\0', STR_DATA_INCREASING_SIZE);
+#endif // Pandas_ScriptEngine_AddStr_Realloc_Memory
 	}
 
 	len=(int)strlen(p);
@@ -943,9 +956,27 @@ int add_str(const char* p)
 	// grow string buffer if neccessary
 	while( str_pos+len+1 >= str_size )
 	{
+#ifndef Pandas_ScriptEngine_AddStr_Realloc_Memory
 		str_size += 256;
 		RECREATE(str_buf,char,str_size);
 		memset(str_buf + (str_size - 256), '\0', 256);
+#else
+		str_size += STR_BUF_INCREASING_SIZE;
+		RECREATE(str_buf,char,str_size);
+		memset(str_buf + (str_size - STR_BUF_INCREASING_SIZE), '\0', STR_BUF_INCREASING_SIZE);
+#endif // Pandas_ScriptEngine_AddStr_Realloc_Memory
+
+#ifdef Pandas_ScriptEngine_Relocation_Funcname_After_StrBuf_Realloc
+		DBIterator* iter = db_iterator(st_db);
+		struct script_state* st = nullptr;
+
+		for (st = static_cast<script_state*>(dbi_first(iter)); dbi_exists(iter); st = static_cast<script_state*>(dbi_next(iter))) {
+			struct script_data* data = script_getdata(st, 0);
+			st->funcname = reference_getname(data);
+		}
+
+		dbi_destroy(iter);
+#endif // Pandas_ScriptEngine_Relocation_Funcname_After_StrBuf_Realloc
 	}
 
 	safestrncpy(str_buf+str_pos, p, len+1);
@@ -5549,7 +5580,7 @@ bool script_getstorage(struct script_state* st, struct map_session_data* sd, str
 		}
 	}
 	else {
-		//ShowWarning("buildin_%s: unknow function command: '%s', defaulting to inventory.\n", command);
+		ShowWarning("buildin_%s: unknow function command: '%s', defaulting to inventory.\n", command);
 		*stor = &sd->inventory;
 		*inventory = (*stor)->u.items_inventory;
 	}
@@ -11783,10 +11814,6 @@ BUILDIN_FUNC(monster)
 	int16 m;
 	int i;
 
-#ifdef Pandas_ScriptCommand_BossMonster
-	const char* command = script_getfuncname(st);
-#endif // Pandas_ScriptCommand_BossMonster
-
 	if (script_hasdata(st, 8)) {
 		event = script_getstr(st, 8);
 		check_event(st, event);
@@ -11798,7 +11825,7 @@ BUILDIN_FUNC(monster)
 #ifndef Pandas_ScriptCommand_BossMonster
 			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
 #else
-			ShowWarning("buildin_%s: Attempted to spawn non-existing size %d for monster class %d\n", command, size, class_);
+			ShowWarning("buildin_%s: Attempted to spawn non-existing size %d for monster class %d\n", script_getfuncname(st), size, class_);
 #endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -11810,7 +11837,7 @@ BUILDIN_FUNC(monster)
 #ifndef Pandas_ScriptCommand_BossMonster
 			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
 #else
-			ShowWarning("buildin_%s: Attempted to spawn non-existing ai %d for monster class %d\n", command, ai, class_);
+			ShowWarning("buildin_%s: Attempted to spawn non-existing ai %d for monster class %d\n", script_getfuncname(st), ai, class_);
 #endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -11820,7 +11847,7 @@ BUILDIN_FUNC(monster)
 #ifndef Pandas_ScriptCommand_BossMonster
 		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
 #else
-		ShowWarning("buildin_%s: Attempted to spawn non-existing monster class %d\n", command, class_);
+		ShowWarning("buildin_%s: Attempted to spawn non-existing monster class %d\n", script_getfuncname(st), class_);
 #endif // Pandas_ScriptCommand_BossMonster
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -11836,7 +11863,7 @@ BUILDIN_FUNC(monster)
 #ifndef Pandas_ScriptCommand_BossMonster
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai);
 #else
-		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai, (!strcmp(command, "boss_monster")) ? 1 : 0);
+		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai, (!strcmp(script_getfuncname(st), "boss_monster")) ? 1 : 0);
 #endif // Pandas_ScriptCommand_BossMonster
 
 		if (mobid)
@@ -15670,7 +15697,6 @@ BUILDIN_FUNC(getinventorylist) {
 	if (script_hasdata(st, 3))
 		query_flag = script_getnum(st, 3);
 
-	// 清空上一次可能残留的查询结果记录数
 	script_cleararray_pc(sd, "@inventorylist_id");
 	script_cleararray_pc(sd, "@inventorylist_idx");
 	script_cleararray_pc(sd, "@inventorylist_amount");
@@ -18109,14 +18135,22 @@ BUILDIN_FUNC(sprintf)
 		if(data_isstring(data))  // String
 			StringBuf_Printf(&final_buf, buf2, script_getstr(st, arg+3));
 		else if(data_isint(data))  // Number
+#ifndef Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 			StringBuf_Printf(&final_buf, buf2, script_getnum(st, arg+3));
+#else
+			StringBuf_Printf(&final_buf, buf2, script_getnum64(st, arg+3));
+#endif // Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 		else if(data_isreference(data)) {  // Variable
 			char* name = reference_getname(data);
 
 			if(name[strlen(name)-1]=='$')  // var Str
 				StringBuf_Printf(&final_buf, buf2, script_getstr(st, arg+3));
 			else  // var Int
+#ifndef Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 				StringBuf_Printf(&final_buf, buf2, script_getnum(st, arg+3));
+#else
+				StringBuf_Printf(&final_buf, buf2, script_getnum64(st, arg+3));
+#endif // Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 		} else {  // Unsupported type
 			ShowError("buildin_sprintf: Unknown argument type!\n");
 			if(buf) aFree(buf);
@@ -28714,9 +28748,6 @@ BUILDIN_FUNC(script4each) {
 	const char *execute_script = script_getstr(st, 2);
 	int execute_range = script_getnum(st, 3);
 
-	char *cmdname = nullptr;
-	cmdname = script_getfuncname(st);
-
 	struct script_code* script = nullptr;
 	int pos = 0;
 	bool script_needfree = false;
@@ -28730,7 +28761,7 @@ BUILDIN_FUNC(script4each) {
 		pos = ev->pos;
 	}
 	else {
-		script = parse_script(execute_script, cmdname, 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+		script = parse_script(execute_script, script_getfuncname(st), 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 		script_needfree = (script != nullptr);
 	}
 #endif // !defined(Pandas_Helper_Common_Function) || !defined(Pandas_Redeclaration_Struct_Event_Data)
@@ -28740,15 +28771,16 @@ BUILDIN_FUNC(script4each) {
 	enum bl_type bltype = BL_PC;
 
 	// 根据使用的指令名称, 确定后续对什么类型的单位进行遍历
-	if (stricmp(cmdname, "script4each") == 0) {
+	const char* command = script_getfuncname(st);
+	if (stricmp(command, "script4each") == 0) {
 		bltype = BL_PC;
 		iter = mapit_geteachpc();
 	}
-	else if (stricmp(cmdname, "script4eachmob") == 0) {
+	else if (stricmp(command, "script4eachmob") == 0) {
 		bltype = BL_MOB;
 		iter = mapit_geteachmob();
 	}
-	else if (stricmp(cmdname, "script4eachnpc") == 0) {
+	else if (stricmp(command, "script4eachnpc") == 0) {
 		bltype = BL_NPC;
 		iter = mapit_geteachnpc();
 	}
@@ -28896,7 +28928,7 @@ BUILDIN_FUNC(script4each) {
 		break;
 	}
 	default:
-		ShowWarning("buildin_%s: Invalid execute range '%d'.\n", cmdname, execute_range);
+		ShowWarning("buildin_%s: Invalid execute range '%d'.\n", script_getfuncname(st), execute_range);
 		break;
 	}
 
@@ -29630,16 +29662,13 @@ BUILDIN_FUNC(gettimefmt) {
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(multicatchpet) {
 	TBL_PC* sd;
-	char* functionname = nullptr;
 	unsigned int i = 2;
 
 	if (!script_rid2sd(sd))
 		return SCRIPT_CMD_SUCCESS;
 
-	functionname = script_getfuncname(st);
-
 	if (!script_hasdata(st, i)) {
-		ShowError("buildin_%s: no arguments given!\n", functionname);
+		ShowError("buildin_%s: no arguments given!\n", script_getfuncname(st));
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
 	}
@@ -29653,7 +29682,7 @@ BUILDIN_FUNC(multicatchpet) {
 			sd->pandas.multi_catch_target_class.push_back(script_getnum(st, i));
 		}
 		else {
-			ShowError("buildin_%s: The No.%d parameter is not integer type.\n", functionname, i - 1);
+			ShowError("buildin_%s: The No.%d parameter is not integer type.\n", script_getfuncname(st), i - 1);
 			script_reportdata(data);
 			st->state = END;
 			return SCRIPT_CMD_FAILURE;
@@ -29936,7 +29965,6 @@ BUILDIN_FUNC(storagegetitem) {
 	struct item it = { 0 };
 	TBL_PC* sd = nullptr;
 	unsigned char flag = 0;
-	const char* command = script_getfuncname(st);
 	std::shared_ptr<item_data> id;
 
 	if (script_isstring(st, 2)) {// "<item name>"
@@ -29974,7 +30002,7 @@ BUILDIN_FUNC(storagegetitem) {
 	it.identify = 1;
 	it.bound = BOUND_NONE;
 
-	if (!strcmp(command, "storagegetitembound")) {
+	if (!strcmp(script_getfuncname(st), "storagegetitembound")) {
 		char bound = script_getnum(st, 4);
 		if (bound < BOUND_NONE || bound >= BOUND_MAX) {
 			ShowError("script_storagegetitembound: Not a correct bound type! Type=%d\n", bound);

@@ -998,6 +998,10 @@
 	//
 	// 解决方案: 进入游戏加载 bonus_script 的时候抛弃拥有 BSF_REM_ON_LOGOUT 标记位的数据
 	#define Pandas_Fix_Bonus_Script_Effective_Timing_Exception
+
+	// 修正 sprintf 脚本指令无法格式化 int64 数值的问题 [Sola丶小克]
+	// 注意: 即使启用此选项, 当你需要格式化 int64 的数值时依然需要使用 %lld 而不是 %d
+	#define Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1186,6 +1190,15 @@
 	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
 	#define Pandas_ScriptEngine_Express
 
+	// 调整脚本引擎在 add_str 中分配内存的步进空间 [Sola丶小克]
+	// 避免过于频繁的 RECREATE 申请并移动内存中的数据, 减少内存分配开销
+	//
+	// 性能表现参考信息
+	// --------------------------------------------------------------
+	// - 调整前 str_buf  需要被重新分配 1174 次, 调整后为 37 次
+	// - 调整前 str_data 需要被重新分配 185  次, 调整后为 47 次
+	#define Pandas_ScriptEngine_AddStr_Realloc_Memory
+
 	// 使脚本引擎能够支持备份无数个脚本堆栈 [Sola丶小克]
 	// 以此避免嵌套调用超过两层的脚本会导致程序崩溃的问题 (如: script4each -> getitem -> 成就系统)
 	#define Pandas_ScriptEngine_MutliStackBackup
@@ -1214,6 +1227,10 @@
 	// 原计划输出的 "中文" 输出将变成: "中文
 	// 而最末末尾的 " 将被作为一个新的字符串起点, 导致语法检测双引号无法闭合而报错
 	#define Pandas_ScriptEngine_DoubleByte_UnEscape_Detection
+
+	// 修正 add_str 触发 str_buf 的扩容分配后 st->funcname 的所指向的指令名称无效的问题,
+	// 因为 st->funcname 指针指向的内存已在扩容分配时被释放 [Sola丶小克]
+	#define Pandas_ScriptEngine_Relocation_Funcname_After_StrBuf_Realloc
 #endif // Pandas_ScriptEngine
 
 // ============================================================================
