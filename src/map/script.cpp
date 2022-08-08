@@ -15697,8 +15697,9 @@ BUILDIN_FUNC(getinventorylist) {
 	char card_var[NAME_LENGTH] = { 0 }, randopt_var[50] = { 0 };
 	int j = 0, k = 0;
 
-	if (!script_charid2sd(2, sd))
+	if (!script_charid2sd(2, sd)) {
 		return SCRIPT_CMD_FAILURE;
+	}
 
 	uint32 query_flag = INV_ALL;
 	if (script_hasdata(st, 3))
@@ -15707,6 +15708,8 @@ BUILDIN_FUNC(getinventorylist) {
 	struct s_storage* stor = nullptr;
 	struct item* inventory = nullptr;
 	int stor_id = (script_hasdata(st, 4) ? script_getnum(st, 4) : 0);
+
+	pc_setreg(sd, add_str("@inventorylist_count"), 0);
 	
 	if (!script_getstorage(st, sd, &stor, &inventory, stor_id)) {
 		return SCRIPT_CMD_FAILURE;
@@ -15759,7 +15762,6 @@ BUILDIN_FUNC(getinventorylist) {
 	script_cleararray_pc(sd, "@inventorylist_favorite");
 	script_cleararray_pc(sd, "@inventorylist_uid$");
 	script_cleararray_pc(sd, "@inventorylist_equipswitch");
-	pc_setreg(sd, add_str("@inventorylist_count"), 0);
 
 	for (int i = 0; i < stor->max_amount; i++) {
 		if (inventory[i].nameid <= 0 || inventory[i].amount <= 0)
