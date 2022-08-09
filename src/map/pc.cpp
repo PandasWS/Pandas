@@ -1664,6 +1664,9 @@ bool pc_authok(struct map_session_data *sd, uint32 login_id2, time_t expiration_
 		clif_authfail_fd(sd->fd, 0);
 		return false;
 	}
+#ifdef Pandas_Cross_Server
+	sd->status.changing_mapserver = changing_mapservers;
+#endif
 
 	//Set the map-server used job id. [Skotlex]
 	uint64 class_ = pc_jobid2mapid(sd->status.class_);
@@ -2046,53 +2049,6 @@ void pc_reg_received(struct map_session_data *sd)
 		guild_member_joined(sd);
 	if (sd->status.clan_id > 0)
 		clan_member_joined(sd);
-#ifdef Pandas_Cross_Server
-	//由于切换数据,这里需要刷新客户端残留内容
-	//与@refresh有一定交集，但重复的部分更多，于是手动添加
-	clif_updatestatus(sd, SP_SPEED);//解决@speed的问题
-	clif_updatestatus(sd, SP_BASELEVEL);//解决中立服inherit_source_server_chara_status:no的问题,虽然会有升级特效
-	clif_updatestatus(sd, SP_BASEEXP);//下同
-	clif_updatestatus(sd, SP_NEXTBASEEXP);
-	clif_updatestatus(sd, SP_STATUSPOINT);
-	clif_updatestatus(sd, SP_JOBLEVEL);
-	clif_updatestatus(sd, SP_JOBEXP);
-	clif_updatestatus(sd, SP_NEXTJOBEXP);
-	clif_updatestatus(sd, SP_SKILLPOINT);
-	clif_updatestatus(sd, SP_CARTINFO);//解决中立服inherit_source_server_chara_status:no,客户端手推车数据
-	clif_updatestatus(sd, SP_ZENY);//解决中立服inherit_source_server_chara_status:no,客户端zeny数据
-	//Change look, if disguised, you need to undisguise
-	//to correctly calculate new job sprite without
-	if (sd->disguise)
-		pc_disguise(sd, 0);
-
-	clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, 0, SELF);
-	status_set_viewdata(&sd->bl, sd->status.class_);
-	clif_changelook(&sd->bl, LOOK_BASE, sd->vd.class_); // move sprite update to prevent client crashes with incompatible equipment [Valaris]
-#if PACKETVER >= 20151001
-	clif_changelook(&sd->bl, LOOK_HAIR, sd->vd.hair_style); // Update player's head (only matters when switching to or from Doram)
-#endif
-	clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
-	clif_spiritball(&sd->bl, &sd->bl, SELF);
-	clif_soulball(sd, &sd->bl, SELF);
-	clif_servantball(*sd, &sd->bl, SELF);
-	clif_abyssball(*sd, &sd->bl, SELF);
-	if (sd->vd.body_style)
-		clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, sd->vd.body_style, SELF);
-	//Update skill tree.
-	pc_calc_skilltree(sd);
-	clif_skillinfoblock(sd);
-
-	if (sd->status.manner < 0)
-		clif_changestatus(sd, SP_MANNER, sd->status.manner);
-
-	pc_equiplookall(sd);
-	if (pc_isdead(sd)) // When you refresh, resend the death packet.
-		clif_clearunit_single(sd->bl.id, CLR_DEAD, sd->fd);
-	else
-		clif_changed_dir(&sd->bl, SELF);
-	pc_show_questinfo_reinit(sd);
-	pc_show_questinfo(sd);
-#endif
 #endif
 
 	// pet
@@ -2115,22 +2071,72 @@ void pc_reg_received(struct map_session_data *sd)
 	chrif_skillcooldown_request(sd->status.account_id, sd->status.char_id);
 	chrif_bsdata_request(sd->status.char_id);
 #ifdef Pandas_Cross_Server
-	//Remove peco/cart/falcon
-	i = sd->sc.option;
-	if (i & OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
-		i &= ~OPTION_RIDING;
-	if (i & OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
-		i &= ~OPTION_FALCON;
-	if (i & OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
-		i &= ~OPTION_DRAGON;
-	if (i & OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGMASTERY))
-		i &= ~OPTION_WUGRIDER;
-	if (i & OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
-		i &= ~OPTION_WUG;
-	if (i & OPTION_MADOGEAR) //You do not need a skill for this.
-		i &= ~OPTION_MADOGEAR;
-	if (i != sd->sc.option)
-		pc_setoption(sd, i);
+	//跨服时或数据源不继承时
+	//据源不继承时changing_mapserver为false
+	if(sd && sd->status.changing_mapserver || is_cross_server)
+	{
+		//由于切换数据,这里需要刷新客户端残留内容
+		//与@refresh有一定交集，但重复的部分更多，于是手动添加
+		clif_updatestatus(sd, SP_SPEED);//解决@speed的问题
+		clif_updatestatus(sd, SP_BASELEVEL);//解决中立服inherit_source_server_chara_status:no的问题,虽然会有升级特效
+		clif_updatestatus(sd, SP_BASEEXP);//下同
+		clif_updatestatus(sd, SP_NEXTBASEEXP);
+		clif_updatestatus(sd, SP_STATUSPOINT);
+		clif_updatestatus(sd, SP_JOBLEVEL);
+		clif_updatestatus(sd, SP_JOBEXP);
+		clif_updatestatus(sd, SP_NEXTJOBEXP);
+		clif_updatestatus(sd, SP_SKILLPOINT);
+		clif_updatestatus(sd, SP_CARTINFO);//解决中立服inherit_source_server_chara_status:no,客户端手推车数据
+		clif_updatestatus(sd, SP_ZENY);//解决中立服inherit_source_server_chara_status:no,客户端zeny数据
+		//Change look, if disguised, you need to undisguise
+		//to correctly calculate new job sprite without
+		if (sd->disguise)
+			pc_disguise(sd, 0);
+
+		clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, 0, SELF);
+		status_set_viewdata(&sd->bl, sd->status.class_);
+		clif_changelook(&sd->bl, LOOK_BASE, sd->vd.class_); // move sprite update to prevent client crashes with incompatible equipment [Valaris]
+#if PACKETVER >= 20151001
+		clif_changelook(&sd->bl, LOOK_HAIR, sd->vd.hair_style); // Update player's head (only matters when switching to or from Doram)
+#endif
+		clif_changelook(&sd->bl, LOOK_CLOTHES_COLOR, sd->vd.cloth_color);
+		clif_spiritball(&sd->bl, &sd->bl, SELF);
+		clif_soulball(sd, &sd->bl, SELF);
+		clif_servantball(*sd, &sd->bl, SELF);
+		clif_abyssball(*sd, &sd->bl, SELF);
+		if (sd->vd.body_style)
+			clif_refreshlook(&sd->bl, sd->bl.id, LOOK_BODY2, sd->vd.body_style, SELF);
+		//Update skill tree.
+		pc_calc_skilltree(sd);
+		clif_skillinfoblock(sd);
+
+		if (sd->status.manner < 0)
+			clif_changestatus(sd, SP_MANNER, sd->status.manner);
+
+		pc_equiplookall(sd);
+		if (pc_isdead(sd)) // When you refresh, resend the death packet.
+			clif_clearunit_single(sd->bl.id, CLR_DEAD, sd->fd);
+		else
+			clif_changed_dir(&sd->bl, SELF);
+		pc_show_questinfo_reinit(sd);
+		pc_show_questinfo(sd);
+
+		//Remove peco/cart/falcon
+		int op = sd->sc.option;
+		if (op & OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
+			op &= ~OPTION_RIDING;
+		if (op & OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
+			op &= ~OPTION_FALCON;
+		if (op & OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
+			op &= ~OPTION_DRAGON;
+		if (op & OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGMASTERY))
+			op &= ~OPTION_WUGRIDER;
+		if (op & OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
+			op &= ~OPTION_WUG;
+		if (op & OPTION_MADOGEAR) //You do not need a skill for this.
+			op &= ~OPTION_MADOGEAR;
+		pc_setoption(sd, op);
+	}
 #endif
 #ifdef VIP_ENABLE
 	sd->vip.time = 0;

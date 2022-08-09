@@ -625,6 +625,7 @@ struct mmo_charstatus {
 
 #ifdef Pandas_Cross_Server
 	bool inherit = false;
+	bool changing_mapserver = false;
 #endif
 
 	t_exp base_exp,job_exp;
