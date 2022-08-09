@@ -305,7 +305,7 @@ int chrif_isconnected(void) {
 #ifndef Pandas_Cross_Server
 int chrif_save(struct map_session_data *sd, int flag) {
 #else
-int chrif_save(struct map_session_data* sd, int flag,bool resave) {
+int chrif_save(struct map_session_data* sd, int flag,bool resave,bool changing_mapservers) {
 #endif
 	uint16 mmo_charstatus_len = 0;
 
@@ -385,10 +385,19 @@ int chrif_save(struct map_session_data* sd, int flag,bool resave) {
 	WFIFOSET(char_fd, WFIFOW(char_fd,2));
 
 #ifdef Pandas_Cross_Server
-	if (is_cross_server && inherit_source_server_chara_status && !resave){
-		//这里是为了在即使继承源服数据时，也会独立存一份guild_id,party_id等数据
-		sd->vars_dirty = true;
-		return chrif_save(sd, flag, true);
+	if (is_cross_server){
+		if (inherit_source_server_chara_status && !resave)
+		{
+			//这里是为了在即使继承源服数据时，也会独立存一份guild_id,party_id等数据
+			sd->vars_dirty = true;
+			return chrif_save(sd, flag, true);
+		}
+		else if (!inherit_source_server_chara_status && !changing_mapservers)
+		{
+			//当不继承的场合,玩家离线的时候,不会向源char服发送保存(0x2b01),0x2b01其中有使得account离线的操作
+			//所以应当给源char服发一个踢下线的指令,否则下次登陆时会遭遇'已经在线 - 拒绝登陆'的问题
+			chrif_char_offline(sd);
+		}
 	}
 #endif
 
@@ -817,7 +826,7 @@ int chrif_scdata_request(uint32 account_id, uint32 char_id) {
 #ifdef ENABLE_SC_SAVING
 #ifdef Pandas_Cross_Server
 	if(is_cross_server)
-		switch_char_fd(account_id, char_fd, chrif_state);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(account_id) : 0, char_fd);
 #endif
 	chrif_check(-1);
 
@@ -1639,7 +1648,7 @@ int chrif_save_scdata(struct map_session_data *sd) { //parses the sc_data of the
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(sd->status.account_id) : 0, char_fd);
 #endif
 	chrif_check(-1);
 	tick = gettick();
@@ -1687,7 +1696,7 @@ int chrif_skillcooldown_save(struct map_session_data *sd) {
 
 #ifdef Pandas_Cross_Server
 	if (is_cross_server)
-		switch_char_fd(sd->status.account_id, char_fd, chrif_state);
+		switch_char_fd_cs_id(inherit_source_server_chara_status ? get_cs_id(sd->status.account_id) : 0, char_fd);
 #endif
 	chrif_check(-1);
 	tick = gettick();

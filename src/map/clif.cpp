@@ -2486,10 +2486,16 @@ void clif_fixpos(struct block_list *bl)
 	WBUFW(buf,6) = bl->x;
 	WBUFW(buf,8) = bl->y;
 	clif_send(buf, packet_len(0x88), bl, AREA);
+#ifdef Pandas_Cross_Server
+	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x88), bl, AREA);
+#endif
 
 	if( disguised(bl) ) {
 		WBUFL(buf,2) = disguised_bl_id(bl->id);
 		clif_send(buf, packet_len(0x88), bl, SELF);
+#ifdef Pandas_Cross_Server
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x88), bl, SELF);
+#endif
 	}
 }
 
@@ -4831,10 +4837,12 @@ void clif_changeoption2(struct block_list* bl)
 		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x28a), bl, SELF);
 #endif
 	} else
-		clif_send(buf,packet_len(0x28a),bl,AREA);
+	{
+		clif_send(buf, packet_len(0x28a), bl, AREA);
 #ifdef Pandas_Cross_Server
-	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x28a), bl, AREA);
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x28a), bl, AREA);
 #endif
+	}
 }
 
 
@@ -11347,12 +11355,17 @@ void clif_slide(struct block_list *bl, int x, int y)
 	WBUFL(buf, 2) = bl->id;
 	WBUFW(buf, 6) = x;
 	WBUFW(buf, 8) = y;
-	clif_send(buf, packet_len(0x1ff), bl, AREA);
+#ifdef Pandas_Cross_Server
+	sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x1ff), bl, AREA);
+#endif
 
-	if( disguised(bl) )
+	if (disguised(bl))
 	{
-		WBUFL(buf,2) = disguised_bl_id(bl->id);
+		WBUFL(buf, 2) = disguised_bl_id(bl->id);
 		clif_send(buf, packet_len(0x1ff), bl, SELF);
+#ifdef Pandas_Cross_Server
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x1ff), bl, AREA);
+#endif
 	}
 }
 
@@ -21398,13 +21411,21 @@ void clif_snap( struct block_list *bl, short x, short y ) {
 	WBUFW(buf,6) = x;
 	WBUFW(buf,8) = y;
 
-	if( disguised(bl) )
+	if (disguised(bl))
 	{
 		clif_send(buf, packet_len(0x8d2), bl, AREA_WOS);
-		WBUFL(buf,2) = disguised_bl_id(bl->id);
+		WBUFL(buf, 2) = disguised_bl_id(bl->id);
 		clif_send(buf, packet_len(0x8d2), bl, SELF);
-	} else
-		clif_send(buf,packet_len(0x8d2),bl, AREA);
+#ifdef Pandas_Cross_Server
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x8d2), bl, SELF);
+#endif
+	}
+	else {
+		clif_send(buf, packet_len(0x8d2), bl, AREA);
+#ifdef Pandas_Cross_Server
+		sp_clif_send(WBUFL(buf, 2), buf, packet_len(0x8d2), bl, AREA);
+#endif
+	}
 }
 
 /// 0977 <id>.L <HP>.L <maxHP>.L (ZC_HP_INFO).

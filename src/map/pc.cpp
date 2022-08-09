@@ -2082,23 +2082,6 @@ void pc_reg_received(struct map_session_data *sd)
 	pc_calc_skilltree(sd);
 	clif_skillinfoblock(sd);
 
-	//Remove peco/cart/falcon
-	i = sd->sc.option;
-	if (i & OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
-		i &= ~OPTION_RIDING;
-	if (i & OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
-		i &= ~OPTION_FALCON;
-	if (i & OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
-		i &= ~OPTION_DRAGON;
-	if (i & OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGMASTERY))
-		i &= ~OPTION_WUGRIDER;
-	if (i & OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
-		i &= ~OPTION_WUG;
-	if (i & OPTION_MADOGEAR) //You do not need a skill for this.
-		i &= ~OPTION_MADOGEAR;
-	if (i != sd->sc.option)
-		pc_setoption(sd, i);
-
 	if (sd->status.manner < 0)
 		clif_changestatus(sd, SP_MANNER, sd->status.manner);
 
@@ -2131,6 +2114,24 @@ void pc_reg_received(struct map_session_data *sd)
 
 	chrif_skillcooldown_request(sd->status.account_id, sd->status.char_id);
 	chrif_bsdata_request(sd->status.char_id);
+#ifdef Pandas_Cross_Server
+	//Remove peco/cart/falcon
+	i = sd->sc.option;
+	if (i & OPTION_RIDING && !pc_checkskill(sd, KN_RIDING))
+		i &= ~OPTION_RIDING;
+	if (i & OPTION_FALCON && !pc_checkskill(sd, HT_FALCON))
+		i &= ~OPTION_FALCON;
+	if (i & OPTION_DRAGON && !pc_checkskill(sd, RK_DRAGONTRAINING))
+		i &= ~OPTION_DRAGON;
+	if (i & OPTION_WUGRIDER && !pc_checkskill(sd, RA_WUGMASTERY))
+		i &= ~OPTION_WUGRIDER;
+	if (i & OPTION_WUG && !pc_checkskill(sd, RA_WUGMASTERY))
+		i &= ~OPTION_WUG;
+	if (i & OPTION_MADOGEAR) //You do not need a skill for this.
+		i &= ~OPTION_MADOGEAR;
+	if (i != sd->sc.option)
+		pc_setoption(sd, i);
+#endif
 #ifdef VIP_ENABLE
 	sd->vip.time = 0;
 	sd->vip.enabled = 0;
@@ -7168,7 +7169,11 @@ enum e_setpos pc_setpos(struct map_session_data* sd, unsigned short mapindex, in
 		sd->bl.x=x;
 		sd->bl.y=y;
 		pc_clean_skilltree(sd);
-		chrif_save(sd, CSAVE_CHANGE_MAPSERV|CSAVE_INVENTORY|CSAVE_CART);
+#ifndef Pandas_Cross_Server
+		chrif_save(sd, CSAVE_CHANGE_MAPSERV | CSAVE_INVENTORY | CSAVE_CART);
+#else
+		chrif_save(sd, CSAVE_CHANGE_MAPSERV | CSAVE_INVENTORY | CSAVE_CART, false, true);
+#endif
 		chrif_changemapserver(sd, ip, (short)port);
 
 #ifdef Pandas_Cross_Server

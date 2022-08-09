@@ -755,6 +755,12 @@ int chmapif_parse_reqchangemapserv(int fd){
 #endif
 		//Char should just had been saved before this packet, so this should be safe. [Skotlex]
 		char_data = (struct mmo_charstatus*)uidb_get(char_db_, cid);
+
+		if (char_data == NULL) {	//Really shouldn't happen.
+			char_mmo_char_fromsql(cid, &char_dat, true);
+			char_data = (struct mmo_charstatus*)uidb_get(char_db_, cid);
+		}
+
 #ifdef Pandas_Cross_Server
 		//这里也有可能是fake id
 		if (!is_cross_server)
@@ -763,10 +769,6 @@ int chmapif_parse_reqchangemapserv(int fd){
 			char_data->char_id = get_real_id(char_data->char_id);
 		}
 #endif
-		if (char_data == NULL) {	//Really shouldn't happen.
-			char_mmo_char_fromsql(cid, &char_dat, true);
-			char_data = (struct mmo_charstatus*)uidb_get(char_db_, cid);
-		}
 
 		if( runflag == CHARSERVER_ST_RUNNING &&
 			session_isActive(map_fd) &&
