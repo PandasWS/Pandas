@@ -5587,7 +5587,9 @@ bool script_getstorage(struct script_state* st, struct map_session_data* sd, str
 		}
 	}
 	else {
-		ShowWarning("buildin_%s: unknow function command: '%s', defaulting to inventory.\n", command);
+		if (!strstr(command, "inventory")) {
+			ShowWarning("%s: unknow function command: '%s', defaulting to inventory.\n", __func__, command);
+		}
 		*stor = &sd->inventory;
 		*inventory = (*stor)->u.items_inventory;
 	}
