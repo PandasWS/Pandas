@@ -79,6 +79,10 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 			if (PandasUtf8::systemLanguage == PandasUtf8::PANDAS_LANGUAGE_CHT)
 				_msg_config_read(w2, size, msg_table);
 		}
+		else if (strcmpi(w1, "import_tha") == 0) {
+			if (PandasUtf8::systemLanguage == PandasUtf8::PANDAS_LANGUAGE_THA)
+				_msg_config_read(w2, size, msg_table);
+		}
 #endif // Pandas_Adaptive_Importing_Message_Database
 		else {
 			msg_number = atoi(w1);
@@ -178,6 +182,7 @@ int msg_langstr2langtype(char* langtype) {
 	else if (!strcmpi(langtype, "chs")) lang = 1;	// 简体中文
 	else if (!strcmpi(langtype, "chn")) lang = 2;	// 繁体中文的别名
 	else if (!strcmpi(langtype, "cht")) lang = 2;	// 繁体中文
+	else if (!strcmpi(langtype, "tha")) lang = 3;	// Thai
 
 	return lang;
 }
@@ -191,6 +196,7 @@ const char* msg_langtype2langstr(int langtype) {
 	case 0: return "English (ENG)";						// 英文
 	case 1: return "Chinese Simplified (CHS)";			// 简体中文
 	case 2: return "Chinese Traditional (CHT)";			// 繁体中文
+	case 3: return "Thai";								// Thai
 	default: return "??";
 	}
 }

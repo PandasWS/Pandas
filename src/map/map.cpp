@@ -204,6 +204,7 @@ const char *MSG_CONF_NAME_THA;
 #else
 const char* MSG_CONF_NAME_CHS;	// 简体中文
 const char* MSG_CONF_NAME_CHT;	// 繁体中文
+const char* MSG_CONF_NAME_THA;	// Thai
 #endif // Pandas_Message_Reorganize
 
 char wisp_server_name[NAME_LENGTH] = "Server"; // can be modified in char-server configuration file
@@ -5983,6 +5984,7 @@ int do_init(int argc, char *argv[])
 	MSG_CONF_NAME_EN = "conf/msg_conf/map_msg.conf";		// English (default)
 	MSG_CONF_NAME_CHS = "conf/msg_conf/map_msg_chs.conf";	// Chinese Simplified
 	MSG_CONF_NAME_CHT = "conf/msg_conf/map_msg_cht.conf";	// Chinese Traditional
+	MSG_CONF_NAME_THA = "conf/msg_conf/map_msg_tha.conf";	// Thai
 	/* Multilanguage */
 #endif // Pandas_Message_Reorganize
 

@@ -30,12 +30,13 @@ enum lang_types {
 enum lang_types {
 	LANG_CHS = 0x01,
 	LANG_CHT = 0x02,
+	LANG_THA = 0x04,
 	LANG_MAX
 };
 
 #ifndef LANG_ENABLE
 	// 除了英语, 我们额外启用两种语言, 分别是: 简体中文, 繁体中文 [Sola丶小克]
-	#define LANG_ENABLE (LANG_CHS | LANG_CHT)
+	#define LANG_ENABLE (LANG_CHS | LANG_CHT | LANG_THA)
 #endif
 #endif // Pandas_Message_Reorganize
 

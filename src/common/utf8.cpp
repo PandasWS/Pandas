@@ -92,6 +92,7 @@ enum e_pandas_language getSystemLanguage() {
 	case 0x0804: return PANDAS_LANGUAGE_CHS;	// Chinese (PRC) 
 	case 0x0404: return PANDAS_LANGUAGE_CHT;	// Chinese (Taiwan Region)
 	case 0x0c04: return PANDAS_LANGUAGE_CHT;	// Chinese (Hong Kong SAR, PRC) 
+	case 0x041e: return PANDAS_LANGUAGE_THA;	// Thai (Thailand)
 	default: return PANDAS_LANGUAGE_ENG;
 	}
 #else
@@ -108,6 +109,8 @@ enum e_pandas_language getSystemLanguage() {
 		return PANDAS_LANGUAGE_ENG;
 	else if (boost::istarts_with(szLocale, "C."))
 		return PANDAS_LANGUAGE_ENG;
+	else if (boost::istarts_with(szLocale, "th_TH"))
+		return PANDAS_LANGUAGE_THA;
 	else {
 		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
 	}
@@ -129,6 +132,8 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 	UINT nCodepage = GetACP();
 
 	switch (nCodepage) {
+	case 874:	// TIS-620
+		return PANDAS_ENCODING_TIS620;
 	case 936:	// GBK
 		return PANDAS_ENCODING_GBK;
 	case 950:	// BIG5
@@ -143,6 +148,7 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 		case PANDAS_LANGUAGE_ENG: return PANDAS_ENCODING_LATIN1;
 		case PANDAS_LANGUAGE_CHS: return PANDAS_ENCODING_GBK;
 		case PANDAS_LANGUAGE_CHT: return PANDAS_ENCODING_BIG5;
+		case PANDAS_LANGUAGE_THA: return PANDAS_ENCODING_TIS620;
 		default:
 			return PANDAS_ENCODING_LATIN1;
 		}
@@ -162,6 +168,7 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 		case PANDAS_LANGUAGE_ENG: return PANDAS_ENCODING_LATIN1;
 		case PANDAS_LANGUAGE_CHS: return PANDAS_ENCODING_GBK;
 		case PANDAS_LANGUAGE_CHT: return PANDAS_ENCODING_BIG5;
+		case PANDAS_LANGUAGE_THA: return PANDAS_ENCODING_TIS620;
 		default:
 			return PANDAS_ENCODING_LATIN1;
 		}
@@ -196,6 +203,7 @@ enum e_pandas_encoding getEncodingByLanguage(e_pandas_language lang) {
 	switch (lang) {
 	case PANDAS_LANGUAGE_CHS: return PANDAS_ENCODING_GBK;
 	case PANDAS_LANGUAGE_CHT: return PANDAS_ENCODING_BIG5;
+	case PANDAS_LANGUAGE_THA: return PANDAS_ENCODING_TIS620;
 	default: return UNSUPPORT_DEFAULT_ENCODING;
 	}
 }
@@ -217,6 +225,8 @@ enum e_pandas_encoding getEncodingByString(const std::string& strEncoding) {
 		return PANDAS_ENCODING_BIG5;
 	if (boost::icontains(strEncoding, "LATIN1"))
 		return PANDAS_ENCODING_LATIN1;
+	if (boost::icontains(strEncoding, "TIS-620"))
+		return PANDAS_ENCODING_TIS620;
 	return PANDAS_ENCODING_UNKNOW;
 }
 
@@ -231,6 +241,7 @@ enum e_pandas_encoding getEncodingByString(const std::string& strEncoding) {
 //************************************ 
 unsigned int convertEncodingToCodepage(enum e_pandas_encoding encoding) {
 	switch (encoding) {
+	case PANDAS_ENCODING_TIS620: return 874;
 	case PANDAS_ENCODING_GBK: return 936;
 	case PANDAS_ENCODING_BIG5: return 950;
 	case PANDAS_ENCODING_LATIN1: return 1252;
@@ -255,6 +266,7 @@ std::string convertEncodingToCodepage(enum e_pandas_encoding encoding) {
 	case PANDAS_ENCODING_BIG5: return "BIG5";
 	case PANDAS_ENCODING_LATIN1: return "LATIN1";
 	case PANDAS_ENCODING_UTF8: return "UTF-8";
+	case PANDAS_ENCODING_TIS620: return "TIS-620";
 	default:
 		ShowWarning("%s: Unsupport encoding: e_pandas_encoding[%d], defaulting to %s\n", __func__, UNSUPPORT_DEFAULT_CODEPAGE);
 		return UNSUPPORT_DEFAULT_CODEPAGE;
