@@ -30801,9 +30801,9 @@ BUILDIN_FUNC(unitaura) {
 BUILDIN_FUNC(getunittarget) {
 	struct block_list* bl = nullptr;
 	bl = map_id2bl(script_getnum(st, 2));
-	script_pushint(st, 0);
 
 	if (!bl) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
@@ -30815,6 +30815,9 @@ BUILDIN_FUNC(getunittarget) {
 	case BL_MER: script_pushint(st, ((TBL_MER*)bl)->ud.target); break;
 	case BL_PET: script_pushint(st, ((TBL_PET*)bl)->target_id); break;
 	case BL_ELEM: script_pushint(st, ((TBL_ELEM*)bl)->ud.target); break;
+	default:
+		script_pushint(st, 0);
+		break;
 	}
 
 	return SCRIPT_CMD_SUCCESS;
