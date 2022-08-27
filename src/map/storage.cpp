@@ -1231,6 +1231,12 @@ void storage_premiumStorage_open(struct map_session_data *sd) {
 	nullpo_retv(sd);
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd->state.connect_new) {
+		// 避免 GM 在角色能力重算事件中使用 getstoragelist 来查询扩充仓库信息
+		// 会导致仓库界面会由于 sd->st 为空指针而绕过拦截直接被打开的问题
+		return;
+	}
+
 	if (sd->st && sd->npc_id) {
 		// 正常的流程中 intif_parse_StorageReceived 和 storage_premiumStorage_load
 		// 都会调用 storage_premiumStorage_open 来打开客户端的仓库界面
