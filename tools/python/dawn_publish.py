@@ -363,7 +363,7 @@ def process_sub(export_file, renewal, langinfo):
         Common.exit_with_pause(-1)
     
     # 进行文本的翻译工作
-    trans.process(packagedir, langinfo['trans'], True)
+    trans.process(packagedir, langinfo['trans'], True, True)
     
     # 进行后期处理
     Message.ShowStatus('正在对打包源目录进行后期处理...')
