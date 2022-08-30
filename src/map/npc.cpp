@@ -2659,12 +2659,26 @@ bool npc_scriptcont(struct map_session_data* sd, int id, bool closing){
 		return true;
 	}
 
+#ifndef Pandas_ScriptCommand_GetInventoryList
 	if(id != fake_nd->bl.id) { // Not item script
 		if ((npc_checknear(sd, target)) == NULL) {
 			ShowWarning("npc_scriptcont: failed npc_checknear test.\n");
 			return true;
 		}
 	}
+#else
+	if(id != fake_nd->bl.id) { // Not item script
+		if ((npc_checknear(sd, target)) == NULL) {
+			// 若本次继续执行脚本是因为正在等待角色服务器返回仓库数据,
+			// 那么无需进行 npc_checknear 检查
+			if (sd->st && !(sd->st->waiting_guild_storage || sd->st->waiting_premium_storage)) {
+				ShowWarning("npc_scriptcont: failed npc_checknear test.\n");
+				return true;
+			}
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 #ifdef SECURE_NPCTIMEOUT
 	if( !closing )
 		sd->npc_idle_tick = gettick(); //Update the last NPC iteration
