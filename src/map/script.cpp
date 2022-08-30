@@ -3968,6 +3968,18 @@ void script_free_state(struct script_state* st)
 			sd->npc_id = 0;
 		}
 
+#ifdef Pandas_ScriptEngine_MutliStackBackup
+		if (sd && !sd->previous_st.empty()) {
+			for (auto iter = sd->previous_st.begin(); iter != sd->previous_st.end();) {
+				if (iter->bk_st == st) {
+					iter = sd->previous_st.erase(iter);
+					continue;
+				}
+				iter++;
+			}
+		}
+#endif // Pandas_ScriptEngine_MutliStackBackup
+
 		if (st->sleep.timer != INVALID_TIMER)
 			delete_timer(st->sleep.timer, run_script_timer);
 		if (st->stack) {
@@ -4685,11 +4697,11 @@ void script_detach_state(struct script_state* st, bool dequeue_event)
 		sd->npc_id = 0;
 		sd->state.disable_atcommand_on_npc = 0;
 
-		if (!sd->mbk_st.empty()) {
-			struct mutli_state val = sd->mbk_st.top();
+		if (!sd->previous_st.empty()) {
+			struct mutli_state val = sd->previous_st.back();
 			sd->st = val.bk_st;
 			sd->npc_id = val.bk_npcid;
-			sd->mbk_st.pop();
+			sd->previous_st.pop_back();
 		}
 
 		if (!sd->st && dequeue_event) {
@@ -4727,10 +4739,10 @@ void script_attach_state(struct script_state* st){
 			st->bk_st = sd->st;
 			st->bk_npcid = sd->npc_id;
 #else
-			struct mutli_state mbk_st = { 0 };
-			mbk_st.bk_st = sd->st;
-			mbk_st.bk_npcid = sd->npc_id;
-			sd->mbk_st.push(mbk_st);
+			struct mutli_state val = { 0 };
+			val.bk_st = sd->st;
+			val.bk_npcid = sd->npc_id;
+			sd->previous_st.push_back(val);
 #endif // Pandas_ScriptEngine_MutliStackBackup
 		}
 		sd->st = st;
@@ -5750,9 +5762,7 @@ void script_reload(void) {
 		struct map_session_data* sd = nullptr;
 		for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter)) {
 			if (!sd) continue;
-			while (!sd->mbk_st.empty()) {
-				sd->mbk_st.pop();
-			}
+			sd->previous_st.clear();
 		}
 		if (iter) mapit_free(iter);
 	}

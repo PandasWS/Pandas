@@ -3467,12 +3467,12 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 			}
 
 #ifdef Pandas_ScriptEngine_MutliStackBackup
-			while (!sd->mbk_st.empty()) {
-				struct mutli_state val = sd->mbk_st.top();
+			while (!sd->previous_st.empty()) {
+				struct mutli_state val = sd->previous_st.back();
 				if (val.bk_st != nullptr) {
-					script_free_state(sd->mbk_st.top().bk_st);
+					script_free_state(val.bk_st);
 				}
-				sd->mbk_st.pop();
+				sd->previous_st.pop_back();
 			}
 #endif // Pandas_ScriptEngine_MutliStackBackup
 

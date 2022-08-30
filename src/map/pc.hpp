@@ -505,7 +505,7 @@ struct map_session_data {
 	int npc_amount;
 	struct script_state *st;
 #ifdef Pandas_ScriptEngine_MutliStackBackup
-	std::stack<mutli_state, std::vector<mutli_state>> mbk_st;
+	std::vector<mutli_state> previous_st;
 #endif // Pandas_ScriptEngine_MutliStackBackup
 	char npc_str[CHATBOX_SIZE]; // for passing npc input box text to script engine
 	int npc_timer_id; //For player attached npc timers. [Skotlex]
