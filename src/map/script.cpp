@@ -27913,7 +27913,7 @@ BUILDIN_FUNC(battleignore) {
 	struct map_session_data *sd = nullptr;
 	int immune = script_getnum(st, 2);
 
-	if (!script_charid2sd(2, sd))
+	if (!script_charid2sd(3, sd))
 		return SCRIPT_CMD_SUCCESS;
 
 	if (cap_value(immune, 0, 1))
