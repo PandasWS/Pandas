@@ -1640,6 +1640,10 @@
 	// 是否启用 noattack2 地图标记 [HongShin]
 	// 该标记用于禁止此地图上指定单位进行普通攻击 (支持掩码指定多种类型的单位)
 	#define Pandas_MapFlag_NoAttack2
+
+	// 是否启用 convenio 地图标记 [人鱼姬的思念]
+	// 该标记用于无视地图一切地面限制都可以使用技能[集结]
+	#define Pandas_MapFlag_Convenio
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 

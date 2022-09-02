@@ -4702,6 +4702,10 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_NoAttack2
+#ifdef Pandas_MapFlag_Convenio
+	if (map_getmapflag(m_id, MF_CONVENIO))
+		strcat(atcmd_output, " Convenio |");
+#endif // Pandas_MapFlag_Convenio
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags

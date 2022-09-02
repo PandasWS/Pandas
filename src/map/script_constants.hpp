@@ -867,6 +867,9 @@
 	export_constant(MF_NOATTACK2);
 #endif // Pandas_MapFlag_NoAttack2
 
+#ifdef Pandas_MapFlag_Convenio
+	export_constant(MF_CONVENIO);
+#endif // Pandas_MapFlag_Convenio
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 3>
 
 	/* setcell types */
