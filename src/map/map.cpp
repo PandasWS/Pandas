@@ -118,7 +118,8 @@ char log_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 Sql* logmysql_handle;
 
-uint32 start_status_points = 48;
+// inter config
+struct inter_conf inter_config {};
 
 // DBMap declaration
 static DBMap* id_db=NULL; /// int id -> struct block_list*
@@ -4532,8 +4533,16 @@ int inter_config_read(const char *cfgName)
 		else
 #endif // Pandas_SQL_Configure_Optimization
 		if(strcmpi(w1,"start_status_points")==0)
-			start_status_points=atoi(w2);
+			inter_config.start_status_points=atoi(w2);
 		else
+		if(strcmpi(w1, "emblem_woe_change")==0)
+			inter_config.emblem_woe_change = config_switch(w2) == 1;
+		else
+		if (strcmpi(w1, "emblem_transparency_limit") == 0) {
+			auto val = atoi(w2);
+			val = cap_value(val, 0, 100);
+			inter_config.emblem_transparency_limit = val;
+		}
 		if( mapreg_config_read(w1,w2) )
 			continue;
 		//support the import command, just like any other config
@@ -5990,6 +5999,11 @@ int do_init(int argc, char *argv[])
 	safestrncpy(map_default.mapname, "prontera", MAP_NAME_LENGTH);
 	map_default.x = 156;
 	map_default.y = 191;
+
+	// default inter_config
+	inter_config.start_status_points = 48;
+	inter_config.emblem_woe_change = true;
+	inter_config.emblem_transparency_limit = 80;
 
 	cli_get_options(argc,argv);
 
