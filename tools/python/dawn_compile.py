@@ -358,11 +358,12 @@ def compile_prere():
     # 若指定了保护配置则尝试对文件进行保护处理
     protect_path = parser.get_protect('execute_path')
     profile_path = get_protect_profile('map-server.exe')
-    if enable_protect and protect_path and profile_path:
-        Message.ShowStatus('正在对复兴前版本的 map-server.exe 进行保护处理...')
-        protect_file('map-server.exe', 'map-server.protected.exe')
-    else:
-        Message.ShowStatus('未指定保护配置或必要选项不存在, 跳过保护处理...')
+    if enable_protect:
+        if protect_path and profile_path:
+            Message.ShowStatus('正在对复兴前版本的 map-server.exe 进行保护处理...')
+            protect_file('map-server.exe', 'map-server.protected.exe')
+        else:
+            Message.ShowStatus('未指定保护配置或必要选项不存在, 跳过保护处理...')
 
     # 将复兴前版本的编译产物重命名一下, 避免编译复兴后版本时被覆盖
 	# 因 ab7a827 的修改每次清理工程时, 也会同时清理复兴前的编译产物, 所以这里需要临时重命名
@@ -399,11 +400,12 @@ def compile_renewal():
     # 若指定了保护配置则尝试对文件进行保护处理
     protect_path = parser.get_protect('execute_path')
     profile_path = get_protect_profile('map-server.exe')
-    if enable_protect and protect_path and profile_path:
-        Message.ShowStatus('正在对复兴后版本的 map-server.exe 进行保护处理...')
-        protect_file('map-server.exe', 'map-server.protected.exe')
-    else:
-        Message.ShowStatus('未指定保护配置或必要选项不存在, 跳过保护处理...')
+    if enable_protect:
+        if protect_path and profile_path:
+            Message.ShowStatus('正在对复兴后版本的 map-server.exe 进行保护处理...')
+            protect_file('map-server.exe', 'map-server.protected.exe')
+        else:
+            Message.ShowStatus('未指定保护配置或必要选项不存在, 跳过保护处理...')
     
     # 将之前 compile_prere 中临时重命名的复兴前产物全部改回正常的文件名
     if 'pre' in parser.get('compile_mode'):
