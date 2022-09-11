@@ -395,7 +395,7 @@ struct Script_Config script_config = {
 #endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_NpcFilter_CART_ADD
-	"OnPCCartAddFilter",	// NPCF_CART_ADD		// cart_add_filter_name	// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
+	"OnPCCartAddFilter",	// NPCF_CART_ADD		// cart_add_filter_name	// 当玩家准备将道具从背包存入手推车时触发过滤器
 #endif // Pandas_NpcFilter_CART_ADD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 

@@ -6551,11 +6551,10 @@ void pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 		return;
 	}
 
-#ifdef Pandas_NpcFilter_CART_ADD//当玩家准备将道具从背包存入手推车时
-	struct item_data* data = itemdb_search(sd->inventory.u.items_inventory[idx].nameid);
-	pc_setreg(sd, add_str("@recv_nameid"), data->nameid); // 存入的道具编号
-	pc_setreg(sd, add_str("@recv_amount"), amount); // 存入的道具数量
-	pc_setreg(sd, add_str("@recv_idx"), idx); // 存入的道具来源位置序号
+#ifdef Pandas_NpcFilter_CART_ADD
+	pc_setreg(sd, add_str("@storeitem_nameid"), item_data->nameid);		// 即将存入的道具编号
+	pc_setreg(sd, add_str("@storeitem_amount"), amount);				// 即将存入的道具数量
+	pc_setreg(sd, add_str("@storeitem_idx"), idx);						// 即将存入的道具序号 (背包序号)
 	if (npc_script_filter(sd, NPCF_CART_ADD)) {
 		clif_delitem(sd, idx, 0, 0);
 		return;
