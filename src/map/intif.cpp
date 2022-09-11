@@ -1354,7 +1354,7 @@ int intif_parse_WisEnd(int fd)
  */
 static int mapif_parse_WisToGM_sub(struct map_session_data* sd,va_list va)
 {
-	int permission = va_arg(va, int);
+	e_pc_permission permission = static_cast<e_pc_permission>(va_arg(va, uint32));
 	char *wisp_name;
 	char *message;
 	int len;
@@ -1560,6 +1560,16 @@ int intif_parse_LoadGuildStorage(int fd)
 
 	memcpy(gstor,RFIFOP(fd,13+2),sizeof(struct s_storage));
 #endif // Pandas_Unlock_Storage_Capacity_Limit
+
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd && sd->st && sd->npc_id) {
+		if (sd->st->waiting_guild_storage && sd->st->state == RERUNLINE) {
+			npc_scriptcont(sd, sd->npc_id, false);
+			return 1;
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
+	
 	if( flag )
 		storage_guild_storageopen(sd);
 
@@ -3619,6 +3629,34 @@ static bool intif_parse_StorageReceived(int fd)
 	return true;
 }
 
+#ifdef Pandas_ScriptCommand_GetInventoryList
+//************************************
+// Method:      intif_parse_StorageReceived_hook
+// Description: 在 intif_parse_StorageReceived 之后进行后续处理的劫持函数
+// Parameter:   int fd
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/07/16 09:45
+//************************************
+static bool intif_parse_StorageReceived_hook(int fd) {
+	bool bReturn = intif_parse_StorageReceived(fd);
+#ifndef Pandas_Unlock_Storage_Capacity_Limit
+	uint32 account_id = RFIFOL(fd, 5);
+#else
+	uint32 account_id = RFIFOL(fd, 5 + 2);
+#endif // Pandas_Unlock_Storage_Capacity_Limit
+	struct map_session_data* sd = map_id2sd(account_id);
+
+	if (!sd || !sd->st || !sd->npc_id) {
+		return bReturn;
+	}
+
+	if (sd->st->waiting_premium_storage && sd->st->state == RERUNLINE) {
+		npc_scriptcont(sd, sd->npc_id, false);
+	}
+	return bReturn;
+}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 /**
  * Save inventory/cart/storage data for a player
  * IZ 0x388b <account_id>.L <result>.B <type>.B <storage_id>.B
@@ -4000,7 +4038,11 @@ int intif_parse(int fd)
 	case 0x3883:	intif_parse_DeletePetOk(fd); break;
 
 	// Storage
+#ifndef Pandas_ScriptCommand_GetInventoryList
 	case 0x388a:	intif_parse_StorageReceived(fd); break;
+#else
+	case 0x388a:	intif_parse_StorageReceived_hook(fd); break;
+#endif // Pandas_ScriptCommand_GetInventoryList
 	case 0x388b:	intif_parse_StorageSaved(fd); break;
 	case 0x388c:	intif_parse_StorageInfo_recv(fd); break;
 

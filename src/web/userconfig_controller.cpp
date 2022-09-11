@@ -11,13 +11,14 @@
 #include "auth.hpp"
 #include "http.hpp"
 #include "sqllock.hpp"
+#include "webutils.hpp"
 #include "web.hpp"
 
 #ifndef Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
 HANDLER_FUNC(userconfig_save) {
 	if (!isAuthorized(req, false)) {
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -29,13 +30,14 @@ HANDLER_FUNC(userconfig_save) {
 
 	if (req.has_file("data")) {
 		data = req.get_file_value("data").content;
+		addToJsonObject(data, "\"Type\": 1");
 	} else {
 		data = "{\"Type\": 1}";
 	}
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			user_configs_table)
@@ -46,7 +48,7 @@ HANDLER_FUNC(userconfig_save) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -63,7 +65,7 @@ HANDLER_FUNC(userconfig_save) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
 			sl.unlock();
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
@@ -79,7 +81,7 @@ HANDLER_FUNC(userconfig_save) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
 			sl.unlock();
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
@@ -92,7 +94,7 @@ HANDLER_FUNC(userconfig_save) {
 
 HANDLER_FUNC(userconfig_load) {
 	if (!req.has_file("AID") || !req.has_file("WorldName")) {
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -111,7 +113,7 @@ HANDLER_FUNC(userconfig_load) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
 			user_configs_table)
@@ -122,7 +124,7 @@ HANDLER_FUNC(userconfig_load) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -135,7 +137,7 @@ HANDLER_FUNC(userconfig_load) {
 		return;
 	}
 
-	char databuf[10000];
+	char databuf[SQL_BUFFER_SIZE];
 
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
@@ -143,7 +145,7 @@ HANDLER_FUNC(userconfig_load) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -210,7 +212,10 @@ HANDLER_FUNC(userconfig_save) {
 			json data_from_db = json::parse(A2UWE(databuf));
 			json data_from_client = json::parse(req.get_file_value("data").content);
 
-			data_from_db.merge_patch_v2(data_from_client, false);
+			// 此处需要允许 null 节点对数据进行覆盖
+			// 否则当玩家在客户端中重置快捷键设置的时候, 会发送上来一个全部都为 null 的节点,
+			// 此时服务端忽略掉它们, 会导致玩家下次登录还会发现快捷键还在
+			data_from_db.merge_patch_v2(data_from_client, true);
 			data = U2AWE(data_from_db.dump(3));
 		}
 	}
@@ -284,7 +289,7 @@ HANDLER_FUNC(userconfig_load) {
 		RETURN_STMT_SUCCESS(stmt, weblock);
 	}
 
-	char databuf[10000] = { 0 };
+	char databuf[SQL_BUFFER_SIZE] = { 0 };
 
 	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)

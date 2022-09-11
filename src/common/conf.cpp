@@ -9,13 +9,12 @@
 #include <iostream>
 #include <sstream>
 
-#ifndef Pandas_Support_Read_UTF8BOM_Configure
+#ifndef Pandas_Support_UTF8BOM_Files
 int conf_read_file(config_t *config, const char *config_filename)
 #else
-// 若启用了 Pandas_Support_Read_UTF8BOM_Configure 则重命名该函数
-// 以便重载一个签名完全一致的函数接管其处理逻辑
+// 重命名该函数以便重载一个签名完全一致的函数接管其处理逻辑
 int conf_read_file_internal(config_t* config, const char* config_filename)
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+#endif // Pandas_Support_UTF8BOM_Files
 {
 	config_init(config);
 	if (!config_read_file(config, config_filename)) {
@@ -27,7 +26,7 @@ int conf_read_file_internal(config_t* config, const char* config_filename)
 	return 0;
 }
 
-#ifdef Pandas_Support_Read_UTF8BOM_Configure
+#ifdef Pandas_Support_UTF8BOM_Files
 //************************************
 // Method:      conf_read_file
 // Description: 能够对 UTF8-BOM 自动转码的 libconfig 读取函数
@@ -39,19 +38,33 @@ int conf_read_file_internal(config_t* config, const char* config_filename)
 //************************************ 
 int conf_read_file(config_t* config, const char* config_filename)
 {
-	std::ifstream fin(config_filename, std::ios::binary);
+	std::string strFilename(config_filename);
+
+#ifndef _WIN32
+	// 在 Linux 环境下并且终端编码为 UTF8 的情况下,
+	// 将需要检查的文件路径直接转码成 utf8 编码再进行读取, 否则会找不到文件
+	if (PandasUtf8::systemEncoding == PandasUtf8::PANDAS_ENCODING_UTF8) {
+		strFilename = PandasUtf8::consoleConvert(config_filename);
+	}
+#endif // _WIN32
+
+	std::ifstream fin(strFilename.c_str(), std::ios::binary);
 	if (!fin) {
 		ShowWarning("conf_read_file: file is not found: %s\n", config_filename);
 		return 1;
 	}
 
-	if (PandasUtf8::fmode(fin) != PandasUtf8::FILE_CHARSETMODE_UTF8_BOM) {
+	PandasUtf8::e_file_charsetmode mode = PandasUtf8::fmode(fin);
+	if (mode != PandasUtf8::FILE_CHARSETMODE_UTF8_BOM && mode != PandasUtf8::FILE_CHARSETMODE_UTF8) {
+		// 如果文件不是 UTF8-BOM 或者 UTF8 编码, 那么直接透传到原先的 conf_read_file 函数处理
 		fin.close();
 		return conf_read_file_internal(config, config_filename);
 	}
 
-	// 先跳过最开始的标记位, UTF8-BOM 是三个字节
-	fin.seekg(3, std::ios::beg);
+	if (mode == PandasUtf8::FILE_CHARSETMODE_UTF8_BOM) {
+		// 先跳过最开始的标记位, UTF8-BOM 是三个字节
+		fin.seekg(3, std::ios::beg);
+	}
 
 	// 先读取来源文件的全部数据并保存到内存中
 	std::stringstream buffer;
@@ -71,7 +84,7 @@ int conf_read_file(config_t* config, const char* config_filename)
 	}
 	return 0;
 }
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+#endif // Pandas_Support_UTF8BOM_Files
 
 //
 // Functions to copy settings from libconfig/contrib

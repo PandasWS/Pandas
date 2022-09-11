@@ -203,11 +203,10 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 			if( battle_config.mail_attachment_weight ){
 				// Sum up all items to get the current total weight
 				for( j = 0; j < MAIL_MAX_ITEM; j++ ){
-#ifdef Pandas_Fix_Mail_ItemAttachment_Check
-					if (sd->mail.item[j].nameid == 0) {
+					if (sd->mail.item[j].nameid == 0)
 						continue;
-					}
 
+#ifdef Pandas_Fix_Mail_ItemAttachment_Check
 					if (!sd->inventory_data[sd->mail.item[j].index]) {
 						return MAIL_ATTACH_ERROR;
 					}
@@ -287,7 +286,7 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 		sd->mail.item[i].details.equip = sd->inventory.u.items_inventory[idx].equip;
 		sd->mail.item[i].details.equipSwitch = sd->inventory.u.items_inventory[idx].equipSwitch;
 
-		for (int j = sd->inventory_data[idx]->slots; j < MAX_SLOTS; j++)
+		for (int j = 0; j < MAX_SLOTS; j++)
 			sd->mail.item[i].details.card[j] = sd->inventory.u.items_inventory[idx].card[j];
 
 		for (int j = 0; j < MAX_ITEM_RDM_OPT; j++) {
@@ -488,9 +487,9 @@ bool mail_invalid_operation(struct map_session_data *sd)
 		clif_displaymessage( sd->fd, msg_txt( sd, 796 ) ); // You cannot use RODEX on this map.
 		return true;
 	}
+#endif
 
 	return false;
-#endif
 }
 
 /**

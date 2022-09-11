@@ -30,7 +30,7 @@ bool isAuthorized(const Request &request, bool checkGuildLeader) {
 
 	auto handle = loginlock.getHandle();
 
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt * stmt = SqlStmt_Malloc(handle);
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `web_auth_token` = ? AND `web_auth_token_enabled` = '1')",

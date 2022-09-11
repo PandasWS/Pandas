@@ -346,6 +346,34 @@ t_tick sett_tickimer(int tid, t_tick tick)
 	return tick;
 }
 
+#ifdef Pandas_NpcEvent
+//************************************
+// Method:      gett_tickimer
+// Description: 获取一个指定计时器的触发时间戳
+// Parameter:   int tid
+// Returns:     t_tick
+// Author:      Sola丶小克(CairoLee)  2022/04/28 21:50
+//************************************ 
+t_tick gett_tickimer(int tid)
+{
+	if (tid == INVALID_TIMER) {
+		return -1;
+	}
+
+	size_t i;
+
+	// search timer position
+	ARR_FIND(0, BHEAP_LENGTH(timer_heap), i, BHEAP_DATA(timer_heap)[i] == tid);
+	if (i == BHEAP_LENGTH(timer_heap))
+	{
+		ShowError("gett_tickimer: no such timer %d (%p(%s))\n", tid, timer_data[tid].func, search_timer_func_list(timer_data[tid].func));
+		return -1;
+	}
+
+	return timer_data[tid].tick;
+}
+#endif // Pandas_NpcEvent
+
 #ifdef Pandas_BattleRecord
 //************************************
 // Method:      exchange_timer_id

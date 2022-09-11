@@ -6,6 +6,7 @@
 #include "../config/core.hpp"
 
 #ifndef MINICORE
+#include "database.hpp"
 #include "ers.hpp"
 #include "socket.hpp"
 #include "timer.hpp"
@@ -475,7 +476,7 @@ int main (int argc, char **argv)
 	// 此处我们不需要再自己进行信号接管了, 否则当程序崩溃的时候 Breakpad 无法生成转储文件
 	signals_init();
 #endif // (defined(Pandas_Google_Breakpad) && !defined(_WIN32))
-
+	do_init_database();
 #ifdef _WIN32
 	cevents_init();
 #endif
