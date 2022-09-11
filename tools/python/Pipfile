@@ -16,6 +16,7 @@ python-dotenv = ">=0.14.0"
 PyYAML = ">=5.4.1"
 "ruamel.yaml" = "*"
 oss2 = "*"
+pyzipper = "*"
 
 [requires]
 python_version = "3"
