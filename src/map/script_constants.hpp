@@ -121,7 +121,7 @@
 #endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_NpcFilter_CART_DEL
-	export_constant(NPCF_CART_DEL);	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器 [香草]
+	export_constant(NPCF_CART_DEL);	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器
 #endif // Pandas_NpcFilter_CART_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
