@@ -90,12 +90,6 @@ enum msg_type {
 	MSG_FATALERROR
 };
 
-#ifdef Pandas_YamlBlastCache_Serialize
-// 此全局变量用来记录加载 yaml 数据库的过程是否完全没有任何错误
-// 只有没任何错误的时候疾风缓存才对它生成缓存, 只有有任何一个错误就跳过 (避免二次启动时掩盖错误)
-extern bool yaml_load_completely_success;
-#endif // Pandas_YamlBlastCache_Serialize
-
 extern void ClearScreen(void);
 #ifndef Pandas_Console_Translate
 extern int _vShowMessage(enum msg_type flag, const char *string, va_list ap);

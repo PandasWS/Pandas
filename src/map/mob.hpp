@@ -13,10 +13,6 @@
 #include "status.hpp" // struct status data, struct status_change
 #include "unit.hpp" // unit_stop_walking(), unit_stop_attack()
 
-#ifdef Pandas_YamlBlastCache_Serialize
-#include "../common/serialize.hpp"
-#endif // Pandas_YamlBlastCache_Serialize
-
 struct guardian_data;
 
 //This is the distance at which @autoloot works,
@@ -32,6 +28,8 @@ struct guardian_data;
 #define MAX_MVP_DROP_ADD 2
 #define MAX_MOB_DROP_TOTAL (MAX_MOB_DROP+MAX_MOB_DROP_ADD)
 #define MAX_MVP_DROP_TOTAL (MAX_MVP_DROP+MAX_MVP_DROP_ADD)
+
+#define MAX_MINCHASE 30	//Max minimum chase value to use for mobs.
 
 //Min time between AI executions
 const t_tick MIN_MOBTHINKTIME = 100;
@@ -215,7 +213,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 struct s_mob_item_drop_ratio {
@@ -231,7 +229,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 struct spawn_info {
@@ -274,36 +272,45 @@ struct s_mob_db {
 
 class MobDatabase : public TypesafeCachedYamlDatabase <uint32, s_mob_db> {
 private:
-
-	bool parseDropNode(std::string nodeName, YAML::Node node, uint8 max, s_mob_drop *drops);
+	bool parseDropNode(std::string nodeName, const ryml::NodeRef& node, uint8 max, s_mob_drop *drops);
 
 public:
 	MobDatabase() : TypesafeCachedYamlDatabase("MOB_DB", 3, 1) {
-#ifdef Pandas_YamlBlastCache_MobDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(624);	// Win32 + PEC + PRE
-		this->validDatatypeSize.push_back(656);	// Win32 + PEC + RENEWAL
-		this->validDatatypeSize.push_back(544);	// Win32 + NOPEC + PRE
-		this->validDatatypeSize.push_back(560);	// Win32 + NOPEC + RENEWAL
 
-		this->validDatatypeSize.push_back(680);	// x64 + PEC + PRE
-		this->validDatatypeSize.push_back(712);	// x64 + PEC + RENEWAL
-		this->validDatatypeSize.push_back(616);	// x64 + NOPEC + BOTH
-#endif // Pandas_YamlBlastCache_MobDatabase
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
-
-#ifdef Pandas_YamlBlastCache_MobDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
-#endif // Pandas_YamlBlastCache_MobDatabase
 };
 
 extern MobDatabase mob_db;
+
+struct s_map_mob_drop{
+	uint16 mob_id;
+	std::shared_ptr<s_mob_drop> drop;
+};
+
+struct s_map_drops{
+	uint16 mapid;
+	std::unordered_map<uint16, std::shared_ptr<s_mob_drop>> globals;
+	std::unordered_map<uint16, std::unordered_map<uint16, std::shared_ptr<s_mob_drop>>> specific;
+};
+
+class MapDropDatabase : public TypesafeYamlDatabase<uint16, s_map_drops>{
+public:
+	MapDropDatabase() : TypesafeYamlDatabase( "MAP_DROP_DB", 1 ){
+
+	}
+
+	const std::string getDefaultLocation() override;
+	uint64 parseBodyNode( const ryml::NodeRef& node ) override;
+
+private:
+	bool parseDrop( const ryml::NodeRef& node, std::unordered_map<uint16, std::shared_ptr<s_mob_drop>>& drops );
+};
+
+extern MapDropDatabase map_drop_db;
 
 struct mob_data {
 	struct block_list bl;
@@ -383,6 +390,10 @@ struct mob_data {
 #ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
 		std::map<uint16, int64>* special_setunitdata;	// 记录魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
 #endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+		int64 base_exp = -1;	// 魔物实例被特殊设置的基础经验值, 若为 -1 则表示使用 db 中设置的基础经验
+		int64 job_exp = -1;		// 魔物实例被特殊设置的职业经验值, 若为 -1 则表示使用 db 中设置的职业经验
+#endif // Pandas_Struct_Mob_Data_SpecialExperience
 	} pandas;
 #endif // Pandas_Struct_Mob_Data_Pandas
 
@@ -399,7 +410,7 @@ public:
 
 	void clear() override{ };
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 struct s_randomsummon_entry {
@@ -420,7 +431,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 enum e_mob_skill_target {
@@ -464,6 +475,7 @@ enum e_mob_skill_condition {
 	MSC_MASTERATTACKED,
 	MSC_ALCHEMIST,
 	MSC_SPAWN,
+	MSC_MOBNEARBYGT,
 };
 
 // The data structures for storing delayed item drops
@@ -481,7 +493,7 @@ struct item_drop_list {
 
 uint16 mobdb_searchname(const char * const str);
 std::shared_ptr<s_mob_db> mobdb_search_aegisname( const char* str );
-int mobdb_searchname_array(const char *str, uint16 * out, int size);
+uint16 mobdb_searchname_array(const char *str, uint16 * out, uint16 size);
 int mobdb_checkid(const int id);
 struct view_data* mob_get_viewdata(int mob_id);
 void mob_set_dynamic_viewdata( struct mob_data* md );
@@ -572,59 +584,15 @@ int mob_getdroprate(struct block_list* src, std::shared_ptr<s_mob_db> mob, int b
 // MvP Tomb System
 int mvptomb_setdelayspawn(struct npc_data *nd);
 TIMER_FUNC(mvptomb_delayspawn);
+#ifndef Pandas_FuncParams_Mob_MvpTomb_Create
 void mvptomb_create(struct mob_data *md, char *killer, time_t time);
+#else
+void mvptomb_create(struct mob_data* md, char* killer, time_t time, int killer_gid);
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
 void mvptomb_destroy(struct mob_data *md);
 
 void mob_setdropitem_option(struct item *itm, struct s_mob_drop *mobdrop);
 
 #define CHK_MOBSIZE(size) ((size) >= SZ_SMALL && (size) < SZ_MAX) /// Check valid Monster Size
-
-#ifdef Pandas_YamlBlastCache_MobDatabase
-namespace boost {
-	namespace serialization {
-
-		// ======================================================================
-		// struct s_mob_drop
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_mob_drop& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.rate;
-			ar& t.randomopt_group;
-			ar& t.steal_protected;
-		}
-
-		// ======================================================================
-		// struct s_mob_db
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_mob_db& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.sprite;
-			ar& t.name;
-			ar& t.jname;
-			ar& t.base_exp;
-			ar& t.job_exp;
-			ar& t.mexp;
-			ar& t.range2;
-			ar& t.range3;
-			ar& t.race2;
-			ar& t.lv;
-			ar& t.dropitem;
-			ar& t.mvpitem;
-			ar& t.status;
-			ar& t.vd;
-			//ar& t.option;			// MobDatabase 默认不会为其赋值, 暂时无需处理
-			//ar& t.skill;			// MobDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.damagetaken;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_MobDatabase
-
 
 #endif /* MOB_HPP */

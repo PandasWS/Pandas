@@ -4,6 +4,9 @@
 #ifndef SCRIPT_HPP
 #define SCRIPT_HPP
 
+#include <ryml_std.hpp>
+#include <ryml.hpp>
+
 #include "../common/database.hpp"
 #include "../common/cbasetypes.hpp"
 #include "../common/db.hpp"
@@ -36,6 +39,8 @@
 #define script_lastdata(st) ( (st)->end - (st)->start - 1 )
 /// Pushes an int into the stack
 #define script_pushint(st,val) push_val((st)->stack, C_INT, (val))
+/// Pushes an int64 into the stack
+#define script_pushint64( st, val ) push_val2( (st)->stack, C_INT, val, nullptr )
 /// Pushes a string into the stack (script engine frees it automatically)
 #define script_pushstr(st,val) push_str((st)->stack, C_STR, (val))
 /// Pushes a copy of a string into the stack
@@ -219,32 +224,44 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
-	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器 [聽風]
+	const char* guildcreate_filter_name;	// NPCF_GUILDCREATE	// OnPCGuildCreateFilter	// 当玩家准备创建公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDCREATE
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
-	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时触发过滤器 [聽風]
+	const char* guildjoin_filter_name;	// NPCF_GUILDJOIN	// OnPCGuildJoinFilter	// 当玩家即将加入公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDJOIN
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器 [聽風]
+	const char* guildleave_filter_name;	// NPCF_GUILDLEAVE	// OnPCGuildLeaveFilter	// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
-	const char* partycreate_filter_name;	// NPCF_PARTYCREATE	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器 [聽風]
+	const char* partycreate_filter_name;	// NPCF_PARTYCREATE	// OnPCPartyCreateFilter	// 当玩家准备创建队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYCREATE
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
-	const char* partyjoin_filter_name;	// NPCF_PARTYJOIN	// OnPCPartyJoinFilter	// 当玩家即将加入队伍时触发过滤器 [聽風]
+	const char* partyjoin_filter_name;	// NPCF_PARTYJOIN	// OnPCPartyJoinFilter	// 当玩家即将加入队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYJOIN
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器 [聽風]
+	const char* partyleave_filter_name;	// NPCF_PARTYLEAVE	// OnPCPartyLeaveFilter	// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROPITEM
 	const char* dropitem_filter_name;	// NPCF_DROPITEM	// OnPCDropItemFilter	// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
+
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	const char* clicktomb_filter_name;	// NPCF_CLICKTOMB	// OnPCClickTombFilter	// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	const char* storage_add_filter_name;	// NPCF_STORAGE_ADD	// OnPCStorageAddFilter	// 当玩家准备将道具存入仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	const char* storage_del_filter_name;	// NPCF_STORAGE_DEL	// OnPCStorageDelFilter	// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_NpcFilter_CART_ADD
 	const char* cart_add_filter_name;	// NPCF_CART_ADD	// OnPCCartAddFilter	// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
@@ -327,6 +344,14 @@ struct Script_Config {
 #ifdef Pandas_NpcExpress_MER_LEAVE
 	const char* mer_leave_express_name;	// NPCX_MER_LEAVE	// OnPCMerLeaveExpress	// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+	const char* pc_talk_express_name;	// NPCX_PC_TALK	// OnPCTalkExpress	// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+	const char* pcharmed_express_name;	// NPCX_PCHARMED	// OnPCHarmedExpress	// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 16>
 
 	// NPC related
@@ -489,6 +514,10 @@ struct script_state {
 #ifdef Pandas_ScriptCommand_UnlockCmd
 	unsigned unlockcmd : 1;
 #endif // Pandas_ScriptCommand_UnlockCmd
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	unsigned waiting_premium_storage : 1;
+	unsigned waiting_guild_storage : 1;
+#endif // Pandas_ScriptCommand_GetInventoryList
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
 	unsigned mes_active : 1;  // Store if invoking character has a NPC dialog box open.
@@ -729,6 +758,12 @@ enum unitdata_mobtypes {
 	UMOB_DAMAGETAKEN,
 	UMOB_DAMAGETAKEN_DB,
 #endif // Pandas_ScriptParams_UnitData_DamageTaken
+#ifdef Pandas_ScriptParams_UnitData_Experience
+	UMOB_MOBBASEEXP,
+	UMOB_MOBBASEEXP_DB,
+	UMOB_MOBJOBEXP,
+	UMOB_MOBJOBEXP_DB,
+#endif // Pandas_ScriptParams_UnitData_Experience
 };
 
 enum unitdata_homuntypes {
@@ -2104,6 +2139,47 @@ enum e_special_effects {
 	EF_TIME_ACCESSORY,
 	EF_SPRITEMABLE,
 	EF_TUNAPARTY,
+	EF_FRESHSHRIMP,
+
+	EF_SU_GROOMING = 1123,
+	EF_SU_CHATTERING,
+
+	EF_FIREDANCE = 1133,
+	EF_RICHS_COIN_A,
+
+	EF_E_CHAIN = 1137,
+	EF_HEAT_BARREL,
+	EF_H_MINE,
+	EF_FALLEN_ANGEL,
+
+	EF_IMMUNE_PROPERTY = 1149,
+	EF_MOVE_COORDINATE,
+
+	EF_LIGHTSPHERE_SUN = 1197,
+	EF_LIGHTSPHERE_MOON,
+	EF_LIGHTSPHERE_STAR,
+
+	EF_NOVAEXPLOSING = 1202,
+	EF_STAR_EMPEROR,
+	EF_SMA_BLACK,
+
+	EF_ENERGYDRAIN_BLACK = 1208,
+	EF_BLINK_BODY,
+
+	EF_SOLARBURST = 1218,
+	EF_SJ_DOCUMENT,
+	EF_FALLING_STAR,
+
+	EF_STORMKICK8 = 1223,
+
+	EF_NEWMOON_KICK = 1229,
+	EF_FULLMOON_KICK,
+	EF_BOOK_OF_DIMENSION,
+
+	EF_CURSE_EXPLOSION = 1233,
+	EF_SOUL_REAPER,
+
+	EF_SOUL_EXPLOSION = 1242,
 	EF_MAX
 };
 
@@ -2333,7 +2409,7 @@ public:
 
 	void clear() override{ }
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 #ifdef Pandas_ScriptCommand_SelfDeletion
@@ -2343,6 +2419,28 @@ enum e_selfdeletion_flag : uint16 {
 	SELFDEL_WAITFREE   = 0x02
 };
 #endif // Pandas_ScriptCommand_SelfDeletion
+
+#ifdef Pandas_ScriptCommand_GetInventoryList
+enum e_inventory_query_flag : uint32{
+	INV_ID				= 0x0001,
+	INV_IDX				= 0x0002,
+	INV_AMOUNT			= 0x0004,
+	INV_EQUIP			= 0x0008,
+	INV_REFINE			= 0x0010,
+	INV_IDENTIFY		= 0x0020,
+	INV_ATTRIBUTE		= 0x0040,
+	INV_CARD			= 0x0080,
+	INV_EXPIRE			= 0x0100,
+	INV_BOUND			= 0x0200,
+	INV_ENCHANTGRADE	= 0x0400,
+	INV_OPTION			= 0x0800,
+	INV_TRADABLE		= 0x1000,
+	INV_FAVORITE		= 0x2000,
+	INV_UID				= 0x4000,
+	INV_EQUIPSWITCH		= 0x8000,
+	INV_ALL				= 0xFFFF
+};
+#endif // Pandas_ScriptCommand_GetInventoryList
 
 /**
  * used to generate quick script_array entries

@@ -3,7 +3,7 @@
 
 #include "itemdb.hpp"
 
-#include <map>
+#include <iostream>
 #include <stdlib.h>
 
 #include "../common/nullpo.hpp"
@@ -131,7 +131,7 @@ const std::string ItemDatabase::getDefaultLocation() {
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 ItemDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	t_itemid nameid;
 
 	if (!this->asUInt32(node, "Id", nameid))
@@ -272,8 +272,10 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			}
 
 			item->subtype = static_cast<e_card_type>(constant);
-		} else
+		} else {
 			this->invalidWarning(node["SubType"], "Item sub type is not supported for this item type.\n");
+			return 0;
+		}
 	} else {
 		if (!exists)
 			item->subtype = 0;
@@ -285,8 +287,12 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asUInt32(node, "Buy", buy))
 			return 0;
 
+		if( buy > MAX_ZENY ){
+			this->invalidWarning( node["Buy"], "Buying price exceeds MAX_ZENY. Capping...\n" );
+			buy = MAX_ZENY;
+		}
+
 		item->value_buy = buy;
-		item->value_sell = 0;
 	} else {
 		if (!exists) {
 			item->value_buy = 0;
@@ -299,8 +305,12 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 		if (!this->asUInt32(node, "Sell", sell))
 			return 0;
 
+		if( sell > MAX_ZENY ){
+			this->invalidWarning( node["Sell"], "Sell price exceeds MAX_ZENY. Capping...\n" );
+			sell = MAX_ZENY;
+		}
+
 		item->value_sell = sell;
-		item->value_buy = 0;
 	} else {
 		if (!exists) {
 			item->value_sell = 0;
@@ -397,7 +407,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Jobs")) {
-		const YAML::Node &jobNode = node["Jobs"];
+		const ryml::NodeRef& jobNode = node["Jobs"];
 
 		item->class_base[0] = item->class_base[1] = item->class_base[2] = 0;
 
@@ -410,8 +420,9 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			itemdb_jobid2mapid(item->class_base, MAPID_ALL, active);
 		}
 
-		for (const auto &jobit : jobNode) {
-			std::string jobName = jobit.first.as<std::string>();
+		for (const auto& jobit : jobNode) {
+			std::string jobName;
+			c4::from_chars(jobit.key(), &jobName);
 
 			// Skipped because processed above the loop
 			if (jobName.compare("All") == 0)
@@ -421,7 +432,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			int64 constant;
 
 			if (!script_get_constant(jobName_constant.c_str(), &constant)) {
-				this->invalidWarning(jobNode[jobName], "Invalid item job %s, defaulting to All.\n", jobName.c_str());
+				this->invalidWarning(jobNode[jobit.key()], "Invalid item job %s, defaulting to All.\n", jobName.c_str());
 				itemdb_jobid2mapid(item->class_base, MAPID_ALL, true);
 				break;
 			}
@@ -442,7 +453,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Classes")) {
-		const YAML::Node &classNode = node["Classes"];
+		const auto& classNode = node["Classes"];
 
 		if (this->nodeExists(classNode, "All")) {
 			bool active;
@@ -456,8 +467,9 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 				item->class_upper &= ~ITEMJ_ALL;
 		}
 
-		for (const auto &classit : classNode) {
-			std::string className = classit.first.as<std::string>();
+		for (const auto& classit : classNode) {
+			std::string className;
+			c4::from_chars(classit.key(), &className);
 
 			// Skipped because processed above the loop
 			if (className.compare("All") == 0)
@@ -467,7 +479,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			int64 constant;
 
 			if (!script_get_constant(className_constant.c_str(), &constant)) {
-				this->invalidWarning(classNode[className], "Invalid class %s, defaulting to All.\n", className.c_str());
+				this->invalidWarning(classNode[classit.key()], "Invalid class upper %s, defaulting to All.\n", className.c_str());
 				item->class_upper |= ITEMJ_ALL;
 				break;
 			}
@@ -511,14 +523,17 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Locations")) {
-		const YAML::Node &locationNode = node["Locations"];
+		const auto& locationNode = node["Locations"];
 
-		for (const auto &locit : locationNode) {
-			std::string equipName = locit.first.as<std::string>(), equipName_constant = "EQP_" + equipName;
+		for (const auto& locit : locationNode) {
+			std::string equipName;
+			c4::from_chars(locit.key(), &equipName);
+
+			std::string equipName_constant = "EQP_" + equipName;
 			int64 constant;
 
 			if (!script_get_constant(equipName_constant.c_str(), &constant)) {
-				this->invalidWarning(locationNode[equipName], "Invalid equip location %s, defaulting to IT_ETC.\n", equipName.c_str());
+				this->invalidWarning(locationNode[locit.key()], "Invalid equip location %s, defaulting to IT_ETC.\n", equipName.c_str());
 				item->type = IT_ETC;
 				break;
 			}
@@ -682,7 +697,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Flags")) {
-		const YAML::Node &flagNode = node["Flags"];
+		const auto& flagNode = node["Flags"];
 
 		if (this->nodeExists(flagNode, "BuyingStore")) {
 			bool active;
@@ -817,7 +832,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Delay")) {
-		const YAML::Node &delayNode = node["Delay"];
+		const auto& delayNode = node["Delay"];
 
 		if (this->nodeExists(delayNode, "Duration")) {
 			uint32 duration;
@@ -841,7 +856,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			int64 constant;
 
 			if (!script_get_constant(status_constant.c_str(), &constant) || constant < SC_NONE || constant >= SC_MAX) {
-				this->invalidWarning(delayNode[status], "Invalid item delay status %s, defaulting to SC_NONE.\n", status.c_str());
+				this->invalidWarning(delayNode[c4::to_csubstr(status)], "Invalid item delay status %s, defaulting to SC_NONE.\n", status.c_str());
 				constant = SC_NONE;
 			}
 
@@ -858,7 +873,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Stack")) {
-		const YAML::Node &stackNode = node["Stack"];
+		const auto& stackNode = node["Stack"];
 
 		if (this->nodeExists(stackNode, "Amount")) {
 			uint16 amount;
@@ -935,7 +950,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 	
 	if (this->nodeExists(node, "NoUse")) {
-		const YAML::Node &nouseNode = node["NoUse"];
+		const auto& nouseNode = node["NoUse"];
 
 		if (this->nodeExists(nouseNode, "Override")) {
 			uint16 override;
@@ -973,7 +988,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Trade")) {
-		const YAML::Node &tradeNode = node["Trade"];
+		const auto& tradeNode = node["Trade"];
 
 		if (this->nodeExists(tradeNode, "Override")) {
 			uint16 override;
@@ -1125,7 +1140,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			item->script = nullptr;
 		}
 
-		item->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["Script"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+		item->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_Item_Data_Pandas
 		item_script_process(item, SCRIPT_TYPE_USED, script);
@@ -1150,7 +1165,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			item->equip_script = nullptr;
 		}
 
-		item->equip_script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["EquipScript"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+		item->equip_script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["EquipScript"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_Item_Data_Pandas
 		item_script_process(item, SCRIPT_TYPE_EQUIP, script);
@@ -1175,7 +1190,7 @@ uint64 ItemDatabase::parseBodyNode(const YAML::Node &node) {
 			item->unequip_script = nullptr;
 		}
 
-		item->unequip_script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["UnEquipScript"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+		item->unequip_script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["UnEquipScript"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_Item_Data_Pandas
 		item_script_process(item, SCRIPT_TYPE_UNEQUIP, script);
@@ -1277,86 +1292,9 @@ void ItemDatabase::loadingFinished(){
 
 		item_db.put( ITEMID_DUMMY, dummy_item );
 	}
+
+	TypesafeCachedYamlDatabase::loadingFinished();
 }
-
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-//************************************
-// Method:      doSerialize
-// Description: 对 ItemDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:32
-//************************************ 
-bool ItemDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
-		*ar & *this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemDatabase);
-		*ar & *this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 item_db 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/04/18 22:33
-//************************************ 
-void ItemDatabase::afterSerialize() {
-	for (const auto& it : *this) {
-		auto item = it.second;
-
-		// ==================================================================
-		// 反序列化后 std::string 保留的内存空间可能会小于 ITEM_NAME_LENGTH, 
-		// 这会导致在内存分段的情况下 memcpy 可能会导致越界崩溃. 
-		// 在此处显式的让物品名称字段保留 ITEM_NAME_LENGTH 长度的空间以避免错误.
-		// ==================================================================
-		item->name.reserve(ITEM_NAME_LENGTH);
-		item->ename.reserve(ITEM_NAME_LENGTH);
-
-		// ==================================================================
-		// 反序列化后将未参与序列化的字段进行初始化, 避免内存中的脏数据对工作造成错误的影响
-		// ==================================================================
-		SERIALIZE_SET_MEMORY_ZERO(item->maxchance);
-		SERIALIZE_SET_MEMORY_ZERO(item->flag.no_equip);
-		SERIALIZE_SET_MEMORY_ZERO(item->flag.autoequip);
-		SERIALIZE_SET_MEMORY_ZERO(item->mob);
-		item->combos.clear();
-
-#ifdef Pandas_Struct_Item_Data_Properties
-		SERIALIZE_SET_MEMORY_ZERO(item->pandas.properties);
-#endif // Pandas_Struct_Item_Data_Properties
-
-		// ==================================================================
-		// 根据脚本明文重新生成脚本指令序列
-		// ==================================================================
-		item->script = parse_script(
-			item->pandas.script_plaintext.script.c_str(),
-			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-
-		item->equip_script = parse_script(
-			item->pandas.script_plaintext.equip_script.c_str(),
-			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-
-		item->unequip_script = parse_script(
-			item->pandas.script_plaintext.unequip_script.c_str(),
-			"itemdb_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-	}
-}
-#endif // Pandas_YamlBlastCache_ItemDatabase
 
 /**
  * Applies gender restrictions according to settings.
@@ -1364,7 +1302,7 @@ void ItemDatabase::afterSerialize() {
  * @param node: the already parsed item data.
  * @return gender that should be used.
  */
-e_sex ItemDatabase::defaultGender( const YAML::Node &node, std::shared_ptr<item_data> id ){
+e_sex ItemDatabase::defaultGender( const ryml::NodeRef& node, std::shared_ptr<item_data> id ){
 	if (id->nameid == WEDDING_RING_M) //Grom Ring
 		return SEX_MALE;
 	if (id->nameid == WEDDING_RING_F) //Bride Ring
@@ -1467,7 +1405,7 @@ const std::string LaphineSynthesisDatabase::getDefaultLocation(){
 	return std::string( db_path ) + "/laphine_synthesis.yml";
 }
 
-uint64 LaphineSynthesisDatabase::parseBodyNode( const YAML::Node& node ){
+uint64 LaphineSynthesisDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	t_itemid item_id;
 
 	{
@@ -1540,7 +1478,7 @@ uint64 LaphineSynthesisDatabase::parseBodyNode( const YAML::Node& node ){
 	}
 
 	if( this->nodeExists( node, "Requirements" ) ){
-		for( const YAML::Node& requirementNode : node["Requirements"] ){
+		for( const ryml::NodeRef& requirementNode : node["Requirements"] ){
 			std::string name;
 
 			if( !this->asString( requirementNode, "Item", name ) ){
@@ -1638,7 +1576,7 @@ const std::string LaphineUpgradeDatabase::getDefaultLocation(){
 	return std::string( db_path ) + "/laphine_upgrade.yml";
 }
 
-uint64 LaphineUpgradeDatabase::parseBodyNode( const YAML::Node& node ){
+uint64 LaphineUpgradeDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	t_itemid item_id;
 
 	{
@@ -1692,7 +1630,7 @@ uint64 LaphineUpgradeDatabase::parseBodyNode( const YAML::Node& node ){
 	}
 
 	if( this->nodeExists( node, "TargetItems" ) ){
-		for( const YAML::Node& targetNode : node["TargetItems"] ){
+		for( const ryml::NodeRef& targetNode : node["TargetItems"] ){
 			std::string name;
 
 			if( !this->asString( targetNode, "Item", name ) ){
@@ -1776,7 +1714,7 @@ uint64 LaphineUpgradeDatabase::parseBodyNode( const YAML::Node& node ){
 			return 0;
 		}
 
-		entry->cardsAllowed = true;
+		entry->cardsAllowed = allowed;
 	}else{
 		if( !exists ){
 			entry->cardsAllowed = false;
@@ -1850,50 +1788,27 @@ uint64 LaphineUpgradeDatabase::parseBodyNode( const YAML::Node& node ){
 LaphineUpgradeDatabase laphine_upgrade_db;
 
 /*==========================================
- * Return item data from item name. (lookup)
- * @param str Item Name
- * @param aegis_only
- * @return item data
- *------------------------------------------*/
-static struct item_data* itemdb_searchname1(const char *str, bool aegis_only)
-{
-	for (const auto &it : item_db) {
-		// Absolute priority to Aegis code name.
-		if (strcmpi(it.second->name.c_str(), str) == 0)
-			return it.second.get();
-
-		// If only Aegis name is allowed, continue with the next entry
-		if (aegis_only)
-			continue;
-
-		//Second priority to Client displayed name.
-		if (strcmpi(it.second->ename.c_str(), str) == 0)
-			return it.second.get();
-	}
-
-	return nullptr;
-}
-
-/*==========================================
  * Finds up to N matches. Returns number of matches [Skotlex]
  * @param *data
  * @param size
  * @param str
  * @return Number of matches item
  *------------------------------------------*/
-int itemdb_searchname_array(struct item_data** data, int size, const char *str)
+uint16 itemdb_searchname_array(std::map<t_itemid, std::shared_ptr<item_data>> &data, uint16 size, const char *str)
 {
-	int count = 0;
+	for (const auto &item : item_db) {
+		std::shared_ptr<item_data> id = item.second;
 
-	for (const auto &it : item_db) {
-		if (count < size) {
-			if (stristr(it.second->name.c_str(), str) != nullptr || stristr(it.second->ename.c_str(), str) != nullptr || strcmpi(it.second->ename.c_str(), str) == 0)
-				data[count++] = it.second.get();
-		} else
-			break;
+		if (id == nullptr)
+			continue;
+		if (stristr(id->name.c_str(), str) != nullptr || stristr(id->ename.c_str(), str) != nullptr || strcmpi(id->ename.c_str(), str) == 0)
+			data[id->nameid] = id;
 	}
 
-	return count;
+	if (data.size() > size)
+		util::map_resize(data, size);
+
+	return static_cast<uint16>(data.size());
 }
 
 std::shared_ptr<s_item_group_entry> get_random_itemsubgroup(std::shared_ptr<s_item_group_random> random) {
@@ -2075,70 +1990,12 @@ uint8 ItemGroupDatabase::pc_get_itemgroup(uint16 group_id, bool identify, map_se
 	return 0;
 }
 
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-//************************************
-// Method:      doSerialize
-// Description: 对 ItemDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
-//************************************ 
-bool ItemGroupDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, ItemGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 itemdb_group 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 19:45
-//************************************ 
-void ItemGroupDatabase::afterSerialize() {
-	// no thing need to do after serialize
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 20:50
-//************************************ 
-std::string ItemGroupDatabase::getAdditionalCacheHash() {
-	// 在 ItemGroupDatabase 中使用到了 ITEM_DB 和 RANDOM_OPTION_GROUP 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
-		boost::format("%1%|%2%") %
-		this->getSpecifyDatabaseBlashCacheHash("ITEM_DB") %
-		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_GROUP")
-	);
-	return additional;
-}
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
-
 /** Searches for the item_data. Use this to check if item exists or not.
 * @param nameid
 * @return *item_data if item is exist, or NULL if not
 */
-struct item_data* itemdb_exists(t_itemid nameid) {
-	std::shared_ptr<item_data> item = item_db.find(nameid);
-
-	return item ? item.get() : nullptr;
+std::shared_ptr<item_data> itemdb_exists(t_itemid nameid) {
+	return item_db.find(nameid);
 }
 
 /// Returns name type of ammunition [Cydh]
@@ -2354,7 +2211,7 @@ const std::string ItemGroupDatabase::getDefaultLocation() {
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 ItemGroupDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 ItemGroupDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	std::string group_name;
 
 	if (!this->asString(node, "Group", group_name))
@@ -2382,9 +2239,9 @@ uint64 ItemGroupDatabase::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "SubGroups")) {
-		const YAML::Node &subNode = node["SubGroups"];
+		const auto& subNode = node["SubGroups"];
 
-		for (const YAML::Node &subit : subNode) {
+		for (const auto& subit : subNode) {
 			if (this->nodeExists(subit, "Clear")) {
 				uint16 id;
 
@@ -2417,9 +2274,9 @@ uint64 ItemGroupDatabase::parseBodyNode(const YAML::Node &node) {
 				group->random[subgroup] = random;
 			}
 
-			const YAML::Node &listNode = subit["List"];
+			const auto& listNode = subit["List"];
 
-			for (const YAML::Node &listit : listNode) {
+			for (const auto& listit : listNode) {
 				if (this->nodeExists(listit, "Clear")) {
 					std::string item_name;
 
@@ -2651,6 +2508,8 @@ void ItemGroupDatabase::loadingFinished() {
 			}
 		}
 	}
+
+	TypesafeCachedYamlDatabase::loadingFinished();
 }
 
 /** Read item forbidden by mapflag (can't equip item)
@@ -2659,12 +2518,13 @@ void ItemGroupDatabase::loadingFinished() {
 static bool itemdb_read_noequip(char* str[], int columns, int current) {
 	t_itemid nameid;
 	int flag;
-	struct item_data *id;
 
 	nameid = strtoul(str[0], nullptr, 10);
 	flag = atoi(str[1]);
 
-	if( ( id = itemdb_exists(nameid) ) == NULL )
+	std::shared_ptr<item_data> id = item_db.find(nameid);
+
+	if( id == nullptr )
 	{
 		ShowWarning("itemdb_read_noequip: Invalid item id %u.\n", nameid);
 		return false;
@@ -2697,33 +2557,34 @@ uint16 ComboDatabase::find_combo_id( const std::vector<t_itemid>& items ){
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 ComboDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	std::vector<std::vector<t_itemid>> items_list;
 
 	if( !this->nodesExist( node, { "Combos" } ) ){
 		return 0;
 	}
 
-	const YAML::Node &combosNode = node["Combos"];
+	const ryml::NodeRef& combosNode = node["Combos"];
 
-	for (const auto &comboit : combosNode) {
+	for (const auto& comboit : combosNode) {
 		static const std::string nodeName = "Combo";
 
 		if (!this->nodesExist(comboit, { nodeName })) {
 			return 0;
 		}
 
-		const YAML::Node &comboNode = comboit[nodeName];
+		const ryml::NodeRef& comboNode = comboit["Combo"];
 
-		if (!comboNode.IsSequence()) {
+		if (!comboNode.is_seq()) {
 			this->invalidWarning(comboNode, "%s should be a sequence.\n", nodeName.c_str());
 			return 0;
 		}
 
 		std::vector<t_itemid> items = {};
 
-		for (const auto &it : comboNode) {
-			std::string item_name = it.as<std::string>();
+		for (const auto it : comboNode) {
+			std::string item_name;
+			c4::from_chars(it.val(), &item_name);
 
 			std::shared_ptr<item_data> item = item_db.search_aegisname(item_name.c_str());
 
@@ -2802,7 +2663,11 @@ uint64 ComboDatabase::parseBodyNode(const YAML::Node &node) {
 				script_free_code(combo->script);
 				combo->script = nullptr;
 			}
-			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), node["Script"].Mark().line + 1, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+
+#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+			combo->script_plaintext = strTrim(script);
+#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 		} else {
 			if (!exists) {
 				combo->script = nullptr;
@@ -2822,10 +2687,14 @@ void ComboDatabase::loadingFinished() {
 	// Populate item_data to refer to the combo
 	for (const auto &combo : *this) {
 		for (const auto &itm : combo.second->nameid) {
-			item_data *it = itemdb_exists(itm);
-			it->combos.push_back(combo.second);
+			std::shared_ptr<item_data> it = item_db.find(itm);
+
+			if (it != nullptr)
+				it->combos.push_back(combo.second);
 		}
 	}
+
+	TypesafeYamlDatabase::loadingFinished();
 }
 
 #ifdef Pandas_Crashfix_RouletteData_UnInit
@@ -2988,267 +2857,304 @@ static void itemdb_roulette_free(void) {
  * @return True on success or false otherwise
  */
 static bool itemdb_read_sqldb_sub(std::vector<std::string> str) {
-	YAML::Node node;
+	ryml::Tree tree;
+	ryml::NodeRef rootNode = tree.rootref();
+	rootNode |= ryml::MAP;
 	int32 index = -1;
 
-	node["Id"] = std::stoul(str[++index], nullptr, 10);
+	rootNode["Id"] << str[++index];
 	if (!str[++index].empty())
-		node["AegisName"] = str[index];
+		rootNode["AegisName"] << str[index];
 	if (!str[++index].empty())
-		node["Name"] = str[index];
+		rootNode["Name"] << str[index];
 	if (!str[++index].empty())
-		node["Type"] = str[index];
+		rootNode["Type"] << str[index];
 	if (!str[++index].empty())
-		node["SubType"] = str[index];
+		rootNode["SubType"] << str[index];
 	if (!str[++index].empty())
-		node["Buy"] = std::stoi(str[index]);
+		rootNode["Buy"] << str[index];
 	if (!str[++index].empty())
-		node["Sell"] = std::stoi(str[index]);
+		rootNode["Sell"] << str[index];
 	if (!str[++index].empty())
-		node["Weight"] = std::stoi(str[index]);
+		rootNode["Weight"] << str[index];
 	if (!str[++index].empty())
-		node["Attack"] = std::stoi(str[index]);
+		rootNode["Attack"] << str[index];
 	if (!str[++index].empty())
-		node["Defense"] = std::stoi(str[index]);
+		rootNode["Defense"] << str[index];
 	if (!str[++index].empty())
-		node["Range"] = std::stoi(str[index]);
+		rootNode["Range"] << str[index];
 	if (!str[++index].empty())
-		node["Slots"] = std::stoi(str[index]);
+		rootNode["Slots"] << str[index];
 
-	YAML::Node jobs;
-
-	if (!str[++index].empty())
-		jobs["All"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Acolyte"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Alchemist"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Archer"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Assassin"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["BardDancer"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Blacksmith"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Crusader"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Gunslinger"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Hunter"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Knight"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Mage"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Merchant"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Monk"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Ninja"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Novice"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Priest"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Rogue"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Sage"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["SoulLinker"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["StarGladiator"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["SuperNovice"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Swordman"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Taekwon"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Thief"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		jobs["Wizard"] = std::stoi(str[index]) ? "true" : "false";
-
-	YAML::Node classes;
+	ryml::NodeRef jobs = rootNode["Jobs"];
+	jobs |= ryml::MAP;
 
 	if (!str[++index].empty())
-		classes["All"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["All"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		classes["Normal"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["Acolyte"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		classes["Upper"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["Alchemist"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		classes["Baby"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["Archer"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Assassin"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["BardDancer"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Blacksmith"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Crusader"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Gunslinger"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Hunter"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Knight"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Mage"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Merchant"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Monk"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Ninja"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Novice"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Priest"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Rogue"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Sage"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["SoulLinker"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["StarGladiator"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["SuperNovice"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Swordman"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Taekwon"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Thief"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Wizard"] << (std::stoi(str[index]) ? "true" : "false");
+
+	ryml::NodeRef classes = rootNode["Classes"];
+	classes |= ryml::MAP;
 
 	if (!str[++index].empty())
-		node["Gender"] = str[index];
-
-	YAML::Node locations;
-
+		classes["All"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		locations["Head_Top"] = std::stoi(str[index]) ? "true" : "false";
+		classes["Normal"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		locations["Head_Mid"] = std::stoi(str[index]) ? "true" : "false";
+		classes["Upper"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		locations["Head_Low"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Armor"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Right_Hand"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Left_Hand"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Garment"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shoes"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Right_Accessory"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Left_Accessory"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Costume_Head_Top"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Costume_Head_Mid"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Costume_Head_Low"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Costume_Garment"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Ammo"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shadow_Armor"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shadow_Weapon"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shadow_Shield"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shadow_Shoes"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shadow_Right_Accessory"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		locations["Shadow_Left_Accessory"] = std::stoi(str[index]) ? "true" : "false";
-	node["Locations"] = locations;
+		classes["Baby"] << (std::stoi(str[index]) ? "true" : "false");
 
 	if (!str[++index].empty())
-		node["WeaponLevel"] = std::stoi(str[index]);
-	if (!str[++index].empty())
-		node["ArmorLevel"] = std::stoi(str[index]);
-	if (!str[++index].empty())
-		node["EquipLevelMin"] = std::stoi(str[index]);
-	if (!str[++index].empty())
-		node["EquipLevelMax"] = std::stoi(str[index]);
-	if (!str[++index].empty())
-		node["Refineable"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		node["View"] = std::stoi(str[index]);
-	if (!str[++index].empty())
-		node["AliasName"] = str[index];
+		rootNode["Gender"] << str[index];
 
-	YAML::Node flags;
+	ryml::NodeRef locations = rootNode["Locations"];
+	locations |= ryml::MAP;
 
 	if (!str[++index].empty())
-		flags["BuyingStore"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Head_Top"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["DeadBranch"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Head_Mid"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["Container"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Head_Low"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["UniqueId"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Armor"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["BindOnEquip"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Right_Hand"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["DropAnnounce"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Left_Hand"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["NoConsume"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Garment"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		flags["DropEffect"] = str[index];
-	node["Flags"] = flags;
-
-	YAML::Node delay;
-
+		locations["Shoes"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		delay["Duration"] = std::stoi(str[index]);
+		locations["Right_Accessory"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		delay["Status"] = str[index];
-	node["Delay"] = delay;
-
-	YAML::Node stack;
-
+		locations["Left_Accessory"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		stack["Amount"] = std::stoi(str[index]);
+		locations["Costume_Head_Top"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		stack["Inventory"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Costume_Head_Mid"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		stack["Cart"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Costume_Head_Low"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		stack["Storage"] = std::stoi(str[index]) ? "true" : "false";
+		locations["Costume_Garment"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		stack["GuildStorage"] = std::stoi(str[index]) ? "true" : "false";
-	node["Stack"] = stack;
-
-	YAML::Node nouse;
-
+		locations["Ammo"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		nouse["Override"] = std::stoi(str[index]);
+		locations["Shadow_Armor"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		nouse["Sitting"] = std::stoi(str[index]) ? "true" : "false";
-	node["NoUse"] = nouse;
-
-	YAML::Node trade;
+		locations["Shadow_Weapon"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		locations["Shadow_Shield"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		locations["Shadow_Shoes"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		locations["Shadow_Right_Accessory"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		locations["Shadow_Left_Accessory"] << (std::stoi(str[index]) ? "true" : "false");
 
 	if (!str[++index].empty())
-		trade["Override"] = std::stoi(str[index]);
+		rootNode["WeaponLevel"] << str[index];
 	if (!str[++index].empty())
-		trade["NoDrop"] = std::stoi(str[index]) ? "true" : "false";
+		rootNode["ArmorLevel"] << str[index];
 	if (!str[++index].empty())
-		trade["NoTrade"] = std::stoi(str[index]) ? "true" : "false";
+		rootNode["EquipLevelMin"] << str[index];
 	if (!str[++index].empty())
-		trade["TradePartner"] = std::stoi(str[index]) ? "true" : "false";
+		rootNode["EquipLevelMax"] << str[index];
 	if (!str[++index].empty())
-		trade["NoSell"] = std::stoi(str[index]) ? "true" : "false";
+		rootNode["Refineable"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		trade["NoCart"] = std::stoi(str[index]) ? "true" : "false";
+		rootNode["View"] << str[index];
 	if (!str[++index].empty())
-		trade["NoStorage"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		trade["NoGuildStorage"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		trade["NoMail"] = std::stoi(str[index]) ? "true" : "false";
-	if (!str[++index].empty())
-		trade["NoAuction"] = std::stoi(str[index]) ? "true" : "false";
-	node["Trade"] = trade;
+		rootNode["AliasName"] << str[index];
+
+	ryml::NodeRef flags = rootNode["Flags"];
+	flags |= ryml::MAP;
 
 	if (!str[++index].empty())
-		node["Script"] = str[index];
+		flags["BuyingStore"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		node["EquipScript"] = str[index];
+		flags["DeadBranch"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		node["UnEquipScript"] = str[index];
+		flags["Container"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		flags["UniqueId"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		flags["BindOnEquip"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		flags["DropAnnounce"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		flags["NoConsume"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		flags["DropEffect"] << str[index];
+	rootNode["Flags"] = flags;
+
+	ryml::NodeRef delay = rootNode["Delay"];
+	delay |= ryml::MAP;
+
+	if (!str[++index].empty())
+		delay["Duration"] << str[index];
+	if (!str[++index].empty())
+		delay["Status"] << str[index];
+
+	ryml::NodeRef stack = rootNode["Stack"];
+	stack |= ryml::MAP;
+
+	if (!str[++index].empty())
+		stack["Amount"] << str[index];
+	if (!str[++index].empty())
+		stack["Inventory"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		stack["Cart"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		stack["Storage"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		stack["GuildStorage"] << (std::stoi(str[index]) ? "true" : "false");
+
+
+	ryml::NodeRef nouse = rootNode["NoUse"];
+	nouse |= ryml::MAP;
+
+	if (!str[++index].empty())
+		nouse["Override"] << str[index];
+	if (!str[++index].empty())
+		nouse["Sitting"] << (std::stoi(str[index]) ? "true" : "false");
+
+	ryml::NodeRef trade = rootNode["Trade"];
+	trade |= ryml::MAP;
+
+	if (!str[++index].empty())
+		trade["Override"] << str[index];
+	if (!str[++index].empty())
+		trade["NoDrop"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoTrade"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["TradePartner"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoSell"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoCart"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoStorage"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoGuildStorage"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoMail"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		trade["NoAuction"] << (std::stoi(str[index]) ? "true" : "false");
+
+	if (!str[++index].empty())
+		rootNode["Script"] << str[index];
+	if (!str[++index].empty())
+		rootNode["EquipScript"] << str[index];
+	if (!str[++index].empty())
+		rootNode["UnEquipScript"] << str[index];
 
 #ifdef RENEWAL
 	if (!str[++index].empty())
-		node["MagicAttack"] = std::stoi(str[index]);
+		rootNode["MagicAttack"] << str[index];
 	if (!str[++index].empty())
-		classes["Third"] = std::stoi(str[index]) ? "true" : "false";
+		classes["Third"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		classes["Third_Upper"] = std::stoi(str[index]) ? "true" : "false";
+		classes["Third_Upper"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		classes["Third_Baby"] = std::stoi(str[index]) ? "true" : "false";
+		classes["Third_Baby"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		classes["Fourth"] = std::stoi(str[index]) ? "true" : "false";
+		classes["Fourth"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		jobs["KagerouOboro"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["KagerouOboro"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		jobs["Rebellion"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["Rebellion"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		jobs["Summoner"] = std::stoi(str[index]) ? "true" : "false";
+		jobs["Summoner"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		jobs["Spirit_Handler"] << (std::stoi(str[index]) ? "true" : "false");
 #endif
 
-	node["Classes"] = classes;
-	node["Jobs"] = jobs;
+	if( !jobs.has_children() ){
+		rootNode.remove_child( jobs );
+	}
 
-	return item_db.parseBodyNode(node) > 0;
+	if( !classes.has_children() ){
+		rootNode.remove_child( classes );
+	}
+
+	if( !locations.has_children() ){
+		rootNode.remove_child( locations );
+	}
+
+	if( !flags.has_children() ){
+		rootNode.remove_child( flags );
+	}
+
+	if( !delay.has_children() ){
+		rootNode.remove_child( delay );
+	}
+
+	if( !stack.has_children() ){
+		rootNode.remove_child( stack );
+	}
+
+	if( !nouse.has_children() ){
+		rootNode.remove_child( nouse );
+	}
+
+	if( !trade.has_children() ){
+		rootNode.remove_child( trade );
+	}
+
+	return item_db.parseBodyNode(rootNode) > 0;
 }
 
 /**
@@ -3273,7 +3179,7 @@ static int itemdb_read_sqldb(void) {
 			"`delay_duration`,`delay_status`,`stack_amount`,`stack_inventory`,`stack_cart`,`stack_storage`,`stack_guildstorage`,`nouse_override`,`nouse_sitting`,"
 			"`trade_override`,`trade_nodrop`,`trade_notrade`,`trade_tradepartner`,`trade_nosell`,`trade_nocart`,`trade_nostorage`,`trade_noguildstorage`,`trade_nomail`,`trade_noauction`,`script`,`equip_script`,`unequip_script`"
 #ifdef RENEWAL
-			",`magic_attack`,`class_third`,`class_third_upper`,`class_third_baby`,`class_fourth`,`job_kagerouoboro`,`job_rebellion`,`job_summoner`"
+			",`magic_attack`,`class_third`,`class_third_upper`,`class_third_baby`,`class_fourth`,`job_kagerouoboro`,`job_rebellion`,`job_summoner`,`job_spirit_handler`"
 #endif
 			" FROM `%s`", item_db_name[fi]) ) {
 			Sql_ShowDebug(mmysql_handle);
@@ -3346,7 +3252,7 @@ const std::string RandomOptionDatabase::getDefaultLocation() {
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 RandomOptionDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 RandomOptionDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	uint16 id;
 
 	if (!this->asUInt16(node, "Id", id))
@@ -3388,7 +3294,7 @@ uint64 RandomOptionDatabase::parseBodyNode(const YAML::Node &node) {
 			randopt->script = nullptr;
 		}
 
-		randopt->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), id, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+		randopt->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 		randopt->script_plaintext = strTrim(script);
@@ -3420,6 +3326,8 @@ void RandomOptionDatabase::loadingFinished(){
 
 		script_set_constant( name.c_str(), pair.first, false, false );
 	}
+
+	TypesafeYamlDatabase::loadingFinished();
 }
 
 RandomOptionDatabase random_option_db;
@@ -3455,57 +3363,11 @@ bool RandomOptionDatabase::option_get_id(std::string name, uint16 &id) {
 	return false;
 }
 
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-//************************************
-// Method:      doSerialize
-// Description: 对 RandomOptionDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
-//************************************ 
-bool RandomOptionDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionDatabase);
-		*ar&* this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionDatabase);
-		*ar&* this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 random_option_db 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 20:46
-//************************************ 
-void RandomOptionDatabase::afterSerialize() {
-	for (const auto& pair : *this) {
-		// ==================================================================
-		// 根据脚本明文重新生成脚本指令序列
-		// ==================================================================
-		pair.second->script = parse_script(
-			pair.second->script_plaintext.c_str(),
-			"random_option_db_serialize", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS
-		);
-	}
-}
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
-
 const std::string RandomOptionGroupDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/item_randomopt_group.yml";
 }
 
-bool RandomOptionGroupDatabase::add_option(const YAML::Node &node, std::shared_ptr<s_random_opt_group_entry> &entry) {
+bool RandomOptionGroupDatabase::add_option(const ryml::NodeRef& node, std::shared_ptr<s_random_opt_group_entry> &entry) {
 	uint16 option_id;
 
 	if (this->nodeExists(node, "Option")) {
@@ -3585,6 +3447,13 @@ void s_random_opt_group::apply( struct item& item ){
 		item_option.param = option->param;
 	};
 
+	// (Re)initialize all the options
+	for( size_t i = 0; i < MAX_ITEM_RDM_OPT; i++ ){
+		item.option[i].id = 0;
+		item.option[i].value = 0;
+		item.option[i].param = 0;
+	};
+
 	// Apply Must options
 	for( size_t i = 0; i < this->slots.size(); i++ ){
 		// Try to apply an entry
@@ -3628,7 +3497,7 @@ void s_random_opt_group::apply( struct item& item ){
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-uint64 RandomOptionGroupDatabase::parseBodyNode(const YAML::Node &node) {
+uint64 RandomOptionGroupDatabase::parseBodyNode(const ryml::NodeRef& node) {
 	uint16 id;
 
 	if (!this->asUInt16(node, "Id", id))
@@ -3659,35 +3528,42 @@ uint64 RandomOptionGroupDatabase::parseBodyNode(const YAML::Node &node) {
 		randopt->name = name;
 	}
 
+	if (this->nodeExists(node, "Slots")) {
+		const auto& slotsNode = node["Slots"];
+		for (const ryml::NodeRef& slotNode : slotsNode) {
+			if (randopt->slots.size() >= MAX_ITEM_RDM_OPT) {
+				this->invalidWarning(slotNode, "Reached maximum of %d Random Option group options. Skipping the remaining slots...\n", MAX_ITEM_RDM_OPT);
+				break;
+			}
 
-	for (const YAML::Node &slotNode : node["Slots"]) {
-		if (randopt->slots.size() >= MAX_ITEM_RDM_OPT) {
-			this->invalidWarning(slotNode, "Reached maximum of %d Random Option group options. Skipping the remaining slots...\n", MAX_ITEM_RDM_OPT);
-			break;
-		}
+			uint16 slot;
 
-		uint16 slot;
-
-		if (!this->asUInt16(slotNode, "Slot", slot))
-			return 0;
-
-		if (slot < 1 || slot > MAX_ITEM_RDM_OPT) {
-			this->invalidWarning(slotNode["Slot"], "Invalid Random Opton Slot number %hu given, must be between 1~%d, skipping.\n", slot, MAX_ITEM_RDM_OPT);
-			return 0;
-		}
-
-		std::vector<std::shared_ptr<s_random_opt_group_entry>> entries;
-
-		for (const YAML::Node &optionNode : slotNode["Options"]) {
-			std::shared_ptr<s_random_opt_group_entry> entry;
-
-			if (!this->add_option(optionNode, entry))
+			if (!this->asUInt16(slotNode, "Slot", slot))
 				return 0;
 
-			entries.push_back(entry);
-		}
+			if (slot < 1 || slot > MAX_ITEM_RDM_OPT) {
+				this->invalidWarning(slotNode["Slot"], "Invalid Random Opton Slot number %hu given, must be between 1~%d, skipping.\n", slot, MAX_ITEM_RDM_OPT);
+				return 0;
+			}
 
-		randopt->slots[slot - 1] = entries;
+			if (!this->nodeExists(slotNode, "Options")) {
+				this->invalidWarning(slotNode, "Random option slot does not contain Options node, skipping.\n");
+				return 0;
+			}
+
+			std::vector<std::shared_ptr<s_random_opt_group_entry>> entries;
+			const auto& optionsNode = slotNode["Options"];
+			for (const auto& optionNode : optionsNode) {
+				std::shared_ptr<s_random_opt_group_entry> entry;
+
+				if (!this->add_option(optionNode, entry))
+					return 0;
+
+				entries.push_back(entry);
+			}
+
+			randopt->slots[slot - 1] = entries;
+		}
 	}
 
 	if (this->nodeExists(node, "MaxRandom")) {
@@ -3710,7 +3586,8 @@ uint64 RandomOptionGroupDatabase::parseBodyNode(const YAML::Node &node) {
 	if (this->nodeExists(node, "Random")) {
 		randopt->random_options.clear();
 
-		for (const YAML::Node &randomNode : node["Random"]) {
+		const auto& randomNode = node["Random"];
+		for (const auto& randomNode : randomNode) {
 			std::shared_ptr<s_random_opt_group_entry> entry;
 
 			if (!this->add_option(randomNode, entry))
@@ -3758,61 +3635,6 @@ bool RandomOptionGroupDatabase::option_get_id(std::string name, uint16 &id) {
 
 	return false;
 }
-
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-//************************************
-// Method:      doSerialize
-// Description: 对 RandomOptionGroupDatabase 进行序列化和反序列化操作
-// Access:      public 
-// Parameter:   const std::string & type
-// Parameter:   void * archive
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
-//************************************ 
-bool RandomOptionGroupDatabase::doSerialize(const std::string& type, void* archive) {
-	if (type == typeid(SERIALIZE_SAVE_ARCHIVE).name()) {
-		SERIALIZE_SAVE_ARCHIVE* ar = (SERIALIZE_SAVE_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	else if (type == typeid(SERIALIZE_LOAD_ARCHIVE).name()) {
-		SERIALIZE_LOAD_ARCHIVE* ar = (SERIALIZE_LOAD_ARCHIVE*)archive;
-		ARCHIVEPTR_REGISTER_TYPE(ar, RandomOptionGroupDatabase);
-		*ar&* this;
-		return true;
-	}
-	return false;
-}
-
-//************************************
-// Method:      afterSerialize
-// Description: 反序列化完成之后对 random_option_group 中的对象进行加工处理
-// Access:      public 
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/08/09 22:53
-//************************************ 
-void RandomOptionGroupDatabase::afterSerialize() {
-	// no thing need to do after serialize
-}
-
-//************************************
-// Method:      getAdditionalCacheHash
-// Description: 额外追加的缓存散列特征
-// Access:      public 
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2022/03/12 20:59
-//************************************ 
-std::string RandomOptionGroupDatabase::getAdditionalCacheHash() {
-	// 在 RandomOptionGroupDatabase 中使用到了 RANDOM_OPTION_DB 的信息
-	// 因此我们将这些数据库的缓存特征散列作为自己特征散列的一部分, 这样当他们变化时我们的缓存也认为过期
-	std::string additional = boost::str(
-		boost::format("%1%") %
-		this->getSpecifyDatabaseBlashCacheHash("RANDOM_OPTION_DB")
-	);
-	return additional;
-}
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 
 /**
 * Read all item-related databases

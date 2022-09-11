@@ -253,7 +253,7 @@ set( Boost_USE_STATIC_RUNTIME OFF ) # 不使用 runtime 静态库
 set( BOOST_ROOT 3rdparty/boost ) # 从指定的位置搜索 Boost 库
 
 # 寻找名为 Boost 的库, 要求携带指定的多个组件, 失败则报错
-find_package(Boost COMPONENTS regex locale filesystem date_time serialization REQUIRED)
+find_package(Boost COMPONENTS regex locale filesystem date_time REQUIRED)
 
 # 如果成功找到 Boost 库, 那么进行相关的设置操作
 if( Boost_FOUND )
@@ -572,18 +572,24 @@ set( DEVELOPMENT_DIRECTORIES
 	)
 set( RUNTIME_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/athena-start"
-	"${CMAKE_CURRENT_SOURCE_DIR}/charserv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/dbghelp.dll"
-	"${CMAKE_CURRENT_SOURCE_DIR}/libmysql.dll"
 	"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
-	"${CMAKE_CURRENT_SOURCE_DIR}/logserv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/mapserv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/pcre3.dll"
-	"${CMAKE_CURRENT_SOURCE_DIR}/README.txt"
-	"${CMAKE_CURRENT_SOURCE_DIR}/runserver.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/serv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/zlib1.dll"
+	"${CMAKE_CURRENT_SOURCE_DIR}/README.md"
 	)
+if (WIN32)
+	set (RUNTIME_FILES 
+		${RUNTIME_FILES}
+		"${CMAKE_CURRENT_SOURCE_DIR}/dbghelp.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/libmysql.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pcre3.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/zlib1.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/tools/charserv.bat"
+		"${CMAKE_CURRENT_SOURCE_DIR}/tools/logserv.bat"
+		"${CMAKE_CURRENT_SOURCE_DIR}/tools/mapserv.bat"
+		"${CMAKE_CURRENT_SOURCE_DIR}/tools/runserver.bat"
+		"${CMAKE_CURRENT_SOURCE_DIR}/tools/serv.bat"
+	)
+endif(WIN32)
+
 set( RUNTIME_DIRECTORIES
 	"conf"
 	"db"

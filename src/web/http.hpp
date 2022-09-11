@@ -5,12 +5,12 @@
 #define HTTP_HPP
 
 #include <string>
-#include <httplib.h>
 
 #ifdef WIN32
-#include <Windows.h>
+#include "../common/winapi.hpp"
 #endif
 
+#include <httplib.h>
 #include "../config/pandas.hpp"
 #include "../nlohmann_json/json.hpp"
 

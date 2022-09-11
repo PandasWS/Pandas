@@ -139,7 +139,6 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/performance.hpp"
 	"${COMMON_SOURCE_DIR}/processmutex.hpp"
 	"${COMMON_SOURCE_DIR}/configparser.hpp"
-	"${COMMON_SOURCE_DIR}/serialize.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${BREAKPAD_HEADERS}
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -222,7 +221,6 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/performance.hpp"
 		"${COMMON_SOURCE_DIR}/processmutex.hpp"
 		"${COMMON_SOURCE_DIR}/configparser.hpp"
-		"${COMMON_SOURCE_DIR}/serialize.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 		${BREAKPAD_HEADERS}
 		${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -278,8 +276,8 @@ if( WITH_ZLIB )
 		CACHE INTERNAL "common_base definitions"
 	)
 
-	# 设置依赖项目, 这里设置了依赖 yaml-cpp breakpad cryptopp-static libopencc libuchardet 这几个项目
-	set( DEPENDENCIES breakpad yaml-cpp cryptopp-static libopencc libuchardet )
+	# 设置依赖项目, 这里设置了依赖 yaml-cpp ryml breakpad cryptopp-static libopencc libuchardet 这几个项目
+	set( DEPENDENCIES breakpad yaml-cpp ryml cryptopp-static libopencc libuchardet )
 
 	# 设置依赖的库文件
 	# 包括 GLOBAL_LIBRARIES, ZLIB_LIBRARIES, 包括依赖项目的库文件

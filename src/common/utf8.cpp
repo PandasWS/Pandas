@@ -11,7 +11,9 @@
 
 #undef fopen
 #undef fgets
+#undef _fgets
 #undef fread
+#undef _fread
 #undef fclose
 
 #ifdef _WIN32
@@ -28,6 +30,8 @@
 #endif // _WIN32
 
 #include <unordered_map>
+
+#include "../../3rdparty/uchardet/src/uchardet.h"
 
 namespace PandasUtf8 {
 // -------------------------------------------------------------------
@@ -293,7 +297,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	return std::move(encoded);
 #else
 	std::string encoding = convertEncodingToCodepage(strEncoding);
-	iconv_t descr_in = iconv_open("WCHAR_T", encoding.c_str());
+	iconv_t descr_in = iconv_open("WCHAR_T//IGNORE", encoding.c_str());
 
 	if ((iconv_t)-1 == descr_in) {
 		return L"";
@@ -305,6 +309,7 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
 	wchar_t* result_buf_out = result_buf;
 	size_t result_buf_len = instr_len * sizeof(wchar_t);
+	memset(result_buf, 0, result_buf_len);
 
 	size_t iconv_result = iconv(descr_in,
 		(char**)&instr, &instr_len,
@@ -340,6 +345,7 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	return std::move(decoded);
 #else
 	std::string encoding = convertEncodingToCodepage(strEncoding);
+	encoding += "//IGNORE";
 	iconv_t descr_out = iconv_open(encoding.c_str(), "WCHAR_T");
 
 	if ((iconv_t)-1 == descr_out) {
@@ -352,6 +358,7 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	char* result_buf = new char[instr_len];
 	char* result_buf_out = result_buf;
 	size_t result_buf_len = instr_len;
+	memset(result_buf, 0, result_buf_len);
 
 	size_t iconv_result = iconv(descr_out,
 		(char**)&instr, &instr_len,
@@ -475,6 +482,36 @@ std::string splashForUtf8(const std::string& strUtf8) {
 	return strResult;
 }
 
+//************************************
+// Method:      isUtf8Content
+// Description: 判断给定的缓冲区是不是 UTF-8 编码的内容
+// Parameter:   const char * buffer
+// Parameter:   size_t len
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/08/02 22:09
+//************************************
+bool isUtf8Content(const char* buffer, size_t len) {
+	uchardet_t handle = uchardet_new();
+	
+	int retval = uchardet_handle_data(handle, buffer, len);
+	if (retval != 0) {
+		uchardet_data_end(handle);
+		uchardet_delete(handle);
+		return false;
+	}
+	uchardet_data_end(handle);
+
+	bool bIsUtf8Content = false;
+	const char* charset = uchardet_get_charset(handle);
+
+	if (charset && !stricmp(charset, "UTF-8")) {
+		bIsUtf8Content = true;
+	}
+
+	uchardet_delete(handle);
+	return bIsUtf8Content;
+}
+
 #ifndef _WIN32
 //************************************
 // Method:      consoleConvert
@@ -569,7 +606,8 @@ std::string utf8ToAnsi(const std::string& strUtf8, int flag) {
 // Parameter:   const std::string & strUtf8
 // Parameter:   const std::string & toEncoding
 // Parameter:   int flag
-//				0x1	若携带此标记则表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+//				0x1	表示需要先移除掉 Utf8 编码下为 0x5C 追加的反斜杠
+// 				0x2 表示需要在转换成 BIG5 编码的时候为低位为 0x5C 的字符追加反斜杠
 // Returns:     std::string
 // Author:      Sola丶小克(CairoLee)  2021/09/30 20:57
 //************************************ 
@@ -587,9 +625,11 @@ std::string utf8ToAnsi(const std::string& strUtf8, e_pandas_encoding toEncoding,
 			strUnicode = UnicodeEncode(strUnsplashUtf8, PANDAS_ENCODING_UTF8);
 		}
 
-		// 若指定的目标 Codepage 是繁体中文 (BIG5),
-		// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
-		return splashUnicodeToBIG5(strUnicode);
+		if (flag & 0x2) {
+			// 若指定的目标 Codepage 是繁体中文 (BIG5),
+			// 那么需要在字符的低位字节为 0x5C 的情况下, 自动追加反斜杠
+			return splashUnicodeToBIG5(strUnicode);
+		}
 	}
 
 	// 若不是繁体中文 (BIG5) 则不存在此问题, 将 Unicode 转换成 ANSI 字符即可
@@ -727,23 +767,27 @@ void clearModeMapping(FILE* _fp) {
 // Description: 提供一个缓冲区, 尝试获取其编码模式
 // Access:      public 
 // Parameter:   unsigned char * buf
-// Parameter:   size_t extracted 缓冲区的长度
+// Parameter:   size_t len 缓冲区的长度
 // Returns:     enum e_file_charsetmode
 // Author:      Sola丶小克(CairoLee)  2021/02/06 11:29
 //************************************ 
-enum e_file_charsetmode get_charsetmode(unsigned char* buf, size_t extracted) {
+enum e_file_charsetmode get_charsetmode(unsigned char* buf, size_t len) {
 	enum e_file_charsetmode charset_mode = FILE_CHARSETMODE_UNKNOW;
-	if (extracted == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
+	if (len >= 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) {
 		// UTF8-BOM
 		charset_mode = FILE_CHARSETMODE_UTF8_BOM;
 	}
-	else if (extracted >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
+	else if (len >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
 		// UCS-2 LE
 		charset_mode = FILE_CHARSETMODE_UCS2_LE;
 	}
-	else if (extracted >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
+	else if (len >= 2 && buf[0] == 0xFE && buf[1] == 0xFF) {
 		// UCS-2 BE
 		charset_mode = FILE_CHARSETMODE_UCS2_BE;
+	}
+	else if (len > 0 && isUtf8Content((const char*)buf, len)) {
+		// UTF8 without BOM
+		charset_mode = FILE_CHARSETMODE_UTF8;
 	}
 	else {
 		// 若无法根据上面的前几个字节判断出编码, 那么默认为 ANSI 编码 (GBK\BIG5)
@@ -766,23 +810,35 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 		return cached_charsetmode;
 	}
 
-	size_t extracted = 0;
-	unsigned char buf[3] = { 0 };
-
 	// 若传递的 FILE 指针无效则直接返回编码不可知
 	if (_Stream == nullptr) {
 		return FILE_CHARSETMODE_UNKNOW;
 	}
 
-	// 记录目前指针所在的位置
+	// 记录目前游标所在的位置
 	long curpos = ftell(_Stream);
 
-	// 指针移动到开头, 读取前 3 个字节
-	fseek(_Stream, 0, SEEK_SET);
-	extracted = ::fread(buf, sizeof(unsigned char), 3, _Stream);
+	// 将游标移动到文件末尾
+	fseek(_Stream, 0, SEEK_END);
 
-	// 根据读取到的前几个字节来判断文本的编码类型
+	// 读取文件的大小
+	size_t size = ftell(_Stream);
+
+	// 申请容量足够的缓冲区, 用于存放一会儿要读取的内容
+	unsigned char* buf = (unsigned char*)aMalloc(size + 1);
+
+	// 指针移动到开头, 准备读取整个文件的内容
+	fseek(_Stream, 0, SEEK_SET);
+
+	// 读取整个文件的内容
+	size_t extracted = 0;
+	extracted = ::fread(buf, sizeof(unsigned char), size, _Stream);
+
+	// 根据读取到的数据来判断文本的编码类型
 	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
+
+	// 释放掉缓冲区
+	if (buf) aFree(buf);
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	fseek(_Stream, curpos, SEEK_SET);
@@ -801,21 +857,36 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 // Author:      Sola丶小克(CairoLee)  2020/01/27 21:38
 //************************************
 enum e_file_charsetmode fmode(std::ifstream& ifs) {
-	unsigned char buf[3] = { 0 };
-
-	// 记录目前指针所在的位置
+	// 记录目前游标所在的位置
 	long curpos = (long)ifs.tellg();
+
+	// 将游标移动到文件末尾
+	ifs.seekg(0, std::ios::end);
+
+	// 读取文件的大小
+	long size = (long)ifs.tellg();
 
 	// 指针移动到开头, 读取前 3 个字节
 	ifs.seekg(0, std::ios::beg);
-	ifs.read((char*)buf, 3);
+
+	// 申请容量足够的缓冲区, 用于存放一会儿要读取的内容
+	unsigned char* buf = (unsigned char*)aMalloc(size + 1);
+
+	// 读取整个文件的内容
+	ifs.read((char*)buf, size);
+
+	// 获取读取成功的字节个数
 	long extracted = (long)ifs.gcount();
 
-	// 根据读取到的前几个字节来判断文本的编码类型
+	// 根据读取到的数据来判断文本的编码类型
 	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
+
+	// 释放掉缓冲区
+	if (buf) aFree(buf);
 
 	// 将指针设置回原来的位置, 避免影响后续的读写流程
 	ifs.seekg(curpos, std::ios::beg);
+
 	return charset_mode;
 }
 
@@ -828,21 +899,33 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 // Author:      Sola丶小克(CairoLee)  2020/01/24 01:27
 //************************************
 FILE* fopen(const char* _FileName, const char* _Mode) {
-	// 若当前打开文件的模式已经是二进制, 那么直接调用 fopen 并返回
-	// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也直接调用 fopen 并返回
+	std::string strMode(_Mode);
+	std::string strFilename(_FileName);
+	
 	if (strchr(_Mode, 'b') || strchr(_Mode, 'w') || strchr(_Mode, 'a')) {
-		return ::fopen(_FileName, _Mode);
+		// 若当前打开文件的模式已经是二进制, 那么无需修改打开模式
+		// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也无需修改打开模式
+		strMode = _Mode;
+	}
+	else {
+		// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
+		strMode += "b";
 	}
 
-	// 若文件的打开模式不以二进制模式打开, 那么补充对应的 _Mode 标记
-	std::string sMode(_Mode);
-	sMode += "b";
-	return ::fopen(_FileName, sMode.c_str());
+#ifndef _WIN32
+	// 在 Linux 环境下并且终端编码为 UTF8 的情况下,
+	// 将需要打开的文件路径直接转码成 utf8 编码再进行读取, 否则会找不到文件
+	if (systemEncoding == PANDAS_ENCODING_UTF8) {
+		strFilename = consoleConvert(_FileName).c_str();
+	}
+#endif // _WIN32
+
+	return ::fopen(strFilename.c_str(), strMode.c_str());
 }
 
 //************************************
 // Method:      fclose
-// Description: 进行了一些清理工作的 fclose 方法
+// Description: 进行了一些清理工作的 fclose 函数
 // Parameter:   FILE * _fp
 // Returns:     int
 // Author:      Sola丶小克(CairoLee)  2020/02/16 01:05
@@ -852,16 +935,28 @@ int fclose(FILE* _fp) {
 	return ::fclose(_fp);
 }
 
-char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
-	// 若不是 UTF8-BOM, 那么直接透传 fgets 调用
-	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM) {
+//************************************
+// Method:      fgets
+// Description: 能够将 utf8 内容转换成普通 ansi 编码的 fgets 函数
+// Parameter:   char * _Buffer
+// Parameter:   int _MaxCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     char*
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
+//************************************
+char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
+	e_file_charsetmode mode = PandasUtf8::fmode(_Stream);
+
+	// 若不是 UTF8-BOM 或者 UTF8, 那么直接透传 fgets 调用
+	if (mode != FILE_CHARSETMODE_UTF8_BOM && mode != FILE_CHARSETMODE_UTF8) {
 		return ::fgets(_Buffer, _MaxCount, _Stream);
 	}
 
-	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
+	// 使用 UTF8-BOM 编码时, 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
 	// 避免后续进行 fgets 的时候读取到前 3 个字节, 同时将当前位置记录到 curpos
 	long curpos = ftell(_Stream);
-	if (curpos <= 3) fseek(_Stream, 3, SEEK_SET);
+	if (mode == FILE_CHARSETMODE_UTF8_BOM && curpos < 3) fseek(_Stream, 3, SEEK_SET);
 
 	// 读取 _MaxCount 长度的内容并保存到 buffer 中
 	char* buffer = new char[_MaxCount];
@@ -873,29 +968,60 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream) {
 	}
 	
 	std::string line(buffer);
-	delete[] buffer;
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(line);
+	std::string strAnsi = utf8ToAnsi(line, flag);
 	memset(_Buffer, 0, _MaxCount);
 
-	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
-	// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
-	// 不过就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-	if (ansi.size() > (size_t)_MaxCount) {
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
-		fseek(_Stream, curpos, SEEK_SET);
-		return ::fgets(_Buffer, _MaxCount, _Stream);
+	if (strAnsi.size() > (size_t)_MaxCount) {
+		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), strAnsi.size());
+		memcpy(_Buffer, buffer, _MaxCount);
+	}
+	else {
+		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
+		memcpy(_Buffer, strAnsi.c_str(), strAnsi.size());
 	}
 
-	// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-	memcpy(_Buffer, ansi.c_str(), ansi.size());
+	delete[] buffer;
 	return _Buffer;
 }
 
-size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream) {
-	// 若不是 UTF8-BOM 或者 _ElementSize 不等于 1, 那么直接透传 fread 调用
-	if (PandasUtf8::fmode(_Stream) != FILE_CHARSETMODE_UTF8_BOM || _ElementSize != 1) {
+//************************************
+// Method:      _fgets
+// Description: 防止 utf8_defines.hpp 中宏定义重复的 fgets 透传函数
+// Parameter:   char * _Buffer
+// Parameter:   int _MaxCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     char*
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:06
+//************************************
+char* _fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
+	return fgets(_Buffer, _MaxCount, _Stream, flag);
+}
+
+//************************************
+// Method:      fread
+// Description: 能够将 utf8 内容转换成普通 ansi 编码的 fread 函数
+// Parameter:   void * _Buffer
+// Parameter:   size_t _ElementSize
+// Parameter:   size_t _ElementCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     size_t
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:05
+//************************************
+size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
+	e_file_charsetmode mode = PandasUtf8::fmode(_Stream);
+
+	// 若不是 UTF8-BOM 或者 UTF8, 那么直接透传 fread 调用
+	if (mode != FILE_CHARSETMODE_UTF8_BOM && mode != FILE_CHARSETMODE_UTF8) {
+		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+	}
+
+	// 若 _ElementSize 不等于 1, 那么直接透传 fread 调用
+	if (_ElementSize != 1) {
 		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
 	}
 
@@ -904,9 +1030,9 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	size_t elementlen = (_ElementSize * _ElementCount) + 1;
 	char* buffer = new char[elementlen];
 
-	// 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节后面,
-	// 避免后续进行 fread 的时候读取到前 3 个字节
-	if (curpos <= 3) {
+	// 使用 UTF8-BOM 编码时, 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节后面,
+	// 避免后续进行 fread 的时候读取到前 3 个字节的 BOM
+	if (mode == FILE_CHARSETMODE_UTF8_BOM && curpos < 3) {
 		fseek(_Stream, 3, SEEK_SET);
 
 		// 需要重新分配缓冲区大小, 以及调整 _ElementCount 的大小
@@ -922,30 +1048,51 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	// 读取特定长度的内容并保存到 buffer 中
 	extracted = ::fread(buffer, _ElementSize, _ElementCount, _Stream);
 
+	// 这里需要手动处理一下确保零结尾
+	// 在 Linux 系统上虽然前面已经将缓冲区填充为 0
+	// 但最终返回的内容依然会有一些内存中的残留数据跟着回来
+	buffer[extracted] = '\0';
+	
 	if (!extracted) {
 		delete[] buffer;
 		return extracted;
 	}
 
 	// 将 UTF8 编码的字符转换成 ANSI 多字节字符集 (GBK 或者 BIG5)
-	std::string ansi = utf8ToAnsi(std::string(buffer));
+	std::string strAnsi = utf8ToAnsi(std::string(buffer), flag);
 	memset(_Buffer, 0, _ElementSize * _ElementCount);
-	delete[] buffer;
 
-	// 按道理来说, 此函数主要负责将 UTF8-BOM 编码的字符转成 ANSI
-	// 转换结束按道理来说需要的空间会更小, 无需拓展空间, 所以理论上基本无需分配额外内存
-	// 不过就算 _Buffer 的空间不足, 其实也无法进行 realloc 操作...
-	if (ansi.size() > elementlen) {
-		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, sizeof(_Buffer), ansi.size());
-		fseek(_Stream, curpos, SEEK_SET);
-		// 之前修正过 _ElementCount 的大小, 现在这里需要改回去
-		if (curpos <= 3) _ElementCount += 3;
-		return ::fread(_Buffer, _ElementSize, _ElementCount, _Stream);
+	if (strAnsi.size() > elementlen) {
+		// 如果转换后的字符串长度大于 _Buffer 的容量, 那么放弃转换并报错
+		ShowWarning("%s: _Buffer size is only %lu but we need %lu, Could not realloc...\n", __func__, _ElementCount, strAnsi.size());
+		memcpy(_Buffer, buffer, elementlen);
+	}
+	else {
+		// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
+		memcpy(_Buffer, strAnsi.c_str(), strAnsi.size());
+
+		// 转换成功后 extracted 应该更新为 strAnsi 字符串的大小
+		// 因为外部调用者可能会依赖返回值对字符串进行截断
+		extracted = strAnsi.size();
 	}
 
-	// 外部函数定义的 _Buffer 容量足够, 直接进行赋值
-	memcpy(_Buffer, ansi.c_str(), ansi.size());
+	delete[] buffer;
 	return extracted;
+}
+
+//************************************
+// Method:      _fread
+// Description: 防止 utf8_defines.hpp 中宏定义重复的 fread 透传函数
+// Parameter:   void * _Buffer
+// Parameter:   size_t _ElementSize
+// Parameter:   size_t _ElementCount
+// Parameter:   FILE * _Stream
+// Parameter:   int flag
+// Returns:     size_t
+// Author:      Sola丶小克(CairoLee)  2022/07/30 22:06
+//************************************
+size_t _fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag/* = 0*/) {
+	return fread(_Buffer, _ElementSize, _ElementCount, _Stream, flag);
 }
 
 } // namespace PandasUtf8

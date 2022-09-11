@@ -23,6 +23,7 @@ import re
 
 from ruamel.yaml import YAML, scalarstring
 from libs import Common, Inputer, Message
+from opencc import OpenCC
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
@@ -390,6 +391,29 @@ configures = [
     },
 ]
 
+# 配置需要将其转换成繁体中文的路径
+need_s2tw_convert = [
+    r'conf\*',
+    r'conf\battle\*',
+    r'doc\*',
+    r'db\*.yml',
+    r'db\*.txt',
+    r'db\import-tmpl\*.yml',
+    r'db\import-tmpl\*.txt',
+    r'db\pandas\**',
+    r'db\re\*.yml',
+    r'db\re\*.txt',
+    r'db\pre-re\*.yml',
+    r'db\pre-re\*.txt',
+    r'sql-files\composer\**\**\*',
+    r'tools\python\dist\**\*'
+]
+
+only_convert_comment = [
+    r'.*\\db\\.*(\.yml|\.txt)$'
+]
+
+
 def MobSkillForSkillName(origin, target):
     fields = origin.split('@')
     if len(fields) != 2:
@@ -462,6 +486,49 @@ def convert_backslash_step2(filepath):
     with open(filepath, 'w', encoding='UTF-8') as f:
         f.write(content)
         f.close()
+
+def s2twp_convert(filepath):
+    '''
+    将指定的文件转换成繁体中文
+    '''
+    if not os.path.exists(filepath):
+        return
+    
+    if not os.path.isfile(filepath):
+        return
+
+    cc = OpenCC('s2twp')
+    contents = []
+    encoding = Common.get_file_encoding(filepath)
+    encoding = 'latin1' if encoding is None else encoding
+    with open(filepath, 'r', encoding=encoding) as f:
+        contents = f.readlines()
+    
+    file_ext = Common.get_file_ext(filepath)
+    file_ext = file_ext.lower()
+    only_comment = False
+
+    for pattern in only_convert_comment:
+        matches = re.match(pattern, filepath)
+        if matches:
+            only_comment = True
+            break
+
+    trans_contents = []
+    for line in contents:
+        if not only_comment:
+            trans_contents.append(cc.convert(line))
+        else:
+            if file_ext == '.yml' and line.strip().startswith('#'):
+                trans_contents.append(cc.convert(line))
+            elif file_ext == '.txt' and line.strip().startswith('//'):
+                trans_contents.append(cc.convert(line))
+            else:
+                trans_contents.append(line)
+
+    with open(filepath, 'w', encoding='UTF-8-SIG') as f:
+        for x in trans_contents:
+            f.write(x)
 
 class TranslateDatabase():
     def __init__(self, name, lang = 'zh-cn'):
@@ -839,8 +906,12 @@ class YamlReplaceController():
         contents = self.__process(contents)
         return self.__save(contents, savefile)
 
-def process(project_dir, lang = 'zh-cn', silent = False):
+def process(project_dir, lang = 'zh-cn', with_doc = False, silent = False):
     try:
+        # ===============================================================
+        # 数据和 DB 文件翻译环节
+        # ===============================================================
+        Message.ShowStatus('正在根据对照表替换 db 中的物品、魔物、任务名称等...')
         for v in configures:
             operate_params = v['operate_params']
             operate_params['lang'] = lang
@@ -866,6 +937,20 @@ def process(project_dir, lang = 'zh-cn', silent = False):
                                     break
                         if not is_exclude:
                             operate.execute(x)
+        Message.ShowStatus('已完成对 db 文件的替换过程...')
+        
+        # ===============================================================
+        # 配置和文档翻译环节 (使用 OpenCC 进行简繁转换)
+        # ===============================================================
+        if (lang == 'zh-tw' and with_doc):
+            Message.ShowStatus('正在将文档中的简体中文转换成繁体中文...')
+            for suffix in need_s2tw_convert:
+                rule = project_dir + suffix
+
+                for path in glob.glob(rule):
+                    s2twp_convert(path)
+            Message.ShowStatus('已完成对文档的转换过程...')
+
     except Exception as _err:
         Message.ShowError(str(_err))
         Common.exit_with_pause(-1)
@@ -891,7 +976,14 @@ def main():
         ]
     })
 
-    process(project_slndir, 'zh-cn' if langtype == 0 else 'zh-tw')
+    with_doc = False
+    if langtype == 1:   # zh-tw
+        with_doc = Inputer().requireBool({
+            'tips' : '是否也将文档 (conf, doc, etc...) 转换成繁体中文?',
+            'default' : False
+        })
+
+    process(project_slndir, 'zh-cn' if langtype == 0 else 'zh-tw', with_doc)
 
     Common.exit_with_pause()
 

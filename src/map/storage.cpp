@@ -371,6 +371,14 @@ void storage_storageadd(struct map_session_data* sd, struct s_storage *stor, int
 	if (result == STORAGE_ADD_INVALID)
 		return;
 	else if (result == STORAGE_ADD_OK) {
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+		if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_INVENTORY)) {
+			clif_storageitemremoved(sd, index, 0);
+			clif_dropitem(sd, index, 0);
+			return;
+		}
+#endif // Pandas_NpcFilter_STORAGE_ADD
+		
 		switch( storage_additem(sd, stor, &sd->inventory.u.items_inventory[index], amount) ){
 			case 0:
 				pc_delitem(sd,index,amount,0,4,LOG_TYPE_STORAGE);
@@ -405,6 +413,13 @@ void storage_storageget(struct map_session_data *sd, struct s_storage *stor, int
 	if (result != STORAGE_ADD_OK)
 		return;
 
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
 	if ((flag = pc_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE)) == ADDITEM_SUCCESS)
 		storage_delitem(sd,stor,index,amount);
 	else {
@@ -434,6 +449,14 @@ void storage_storageaddfromcart(struct map_session_data *sd, struct s_storage *s
 	if (result == STORAGE_ADD_INVALID)
 		return;
 	else if (result == STORAGE_ADD_OK) {
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+		if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_CART)) {
+			clif_storageitemremoved(sd, index, 0);
+			clif_cart_delitem(sd, index, 0);
+			return;
+		}
+#endif // Pandas_NpcFilter_STORAGE_ADD
+		
 		switch( storage_additem(sd, stor, &sd->cart.u.items_cart[index], amount) ){
 			case 0:
 				pc_cart_delitem(sd,index,amount,0,LOG_TYPE_STORAGE);
@@ -472,6 +495,13 @@ void storage_storagegettocart(struct map_session_data* sd, struct s_storage *sto
 	result = storage_canGetItem(stor, index, amount);
 	if (result != STORAGE_ADD_OK)
 		return;
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 	if ((flag = pc_cart_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE)) == 0)
 		storage_delitem(sd,stor,index,amount);
@@ -641,6 +671,11 @@ void storage_guild_log( struct map_session_data* sd, struct item* item, int16 am
 	StringBuf buf;
 	StringBuf_Init(&buf);
 
+#ifdef Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
+	char esc_name[NAME_LENGTH * 2 + 1] = { 0 };
+	Sql_EscapeStringLen(mmysql_handle, esc_name, sd->status.name, strnlen(sd->status.name, NAME_LENGTH));
+#endif // Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
+
 	StringBuf_Printf(&buf, "INSERT INTO `%s` (`time`, `guild_id`, `char_id`, `name`, `nameid`, `amount`, `identify`, `refine`, `attribute`, `unique_id`, `bound`, `enchantgrade`", guild_storage_log_table);
 	for (i = 0; i < MAX_SLOTS; ++i)
 		StringBuf_Printf(&buf, ", `card%d`", i);
@@ -649,8 +684,13 @@ void storage_guild_log( struct map_session_data* sd, struct item* item, int16 am
 		StringBuf_Printf(&buf, ", `option_val%d`", i);
 		StringBuf_Printf(&buf, ", `option_parm%d`", i);
 	}
+#ifndef Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
 	StringBuf_Printf(&buf, ") VALUES(NOW(),'%u','%u', '%s', '%u', '%d','%d','%d','%d','%" PRIu64 "','%d','%d'",
 		sd->status.guild_id, sd->status.char_id, sd->status.name, item->nameid, amount, item->identify, item->refine,item->attribute, item->unique_id, item->bound, item->enchantgrade);
+#else
+	StringBuf_Printf(&buf, ") VALUES(NOW(),'%u','%u', '%s', '%u', '%d','%d','%d','%d','%" PRIu64 "','%d','%d'",
+		sd->status.guild_id, sd->status.char_id, esc_name, item->nameid, amount, item->identify, item->refine, item->attribute, item->unique_id, item->bound, item->enchantgrade);
+#endif // Pandas_Fix_Guild_Storage_Log_Escape_For_CharName
 
 	for (i = 0; i < MAX_SLOTS; i++)
 		StringBuf_Printf(&buf, ",'%u'", item->card[i]);
@@ -829,19 +869,20 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
  * @return True : success, False : fail
  */
 bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amount) {
-	struct item_data *id;
 	int i;
 
 	nullpo_ret(stor);
 	nullpo_ret(item);
 
-	if (item->nameid == 0 || amount <= 0 || !(id = itemdb_exists(item->nameid)))
+	if (item->nameid == 0 || amount <= 0)
 		return false;
 
-	if (item->expire_time)
+	std::shared_ptr<item_data> id = item_db.find(item->nameid);
+
+	if (id == nullptr || item->expire_time)
 		return false;
 
-	if (itemdb_isstackable2(id)) { // Stackable
+	if (itemdb_isstackable2(id.get())) { // Stackable
 		for (i = 0; i < stor->max_amount; i++) {
 			if (compare_item(&stor->u.items_guild[i], item)) {
 				// Set the amount, make it fit with max amount
@@ -940,6 +981,14 @@ void storage_guild_storageadd(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_INVENTORY)) {
+		clif_storageitemremoved(sd, index, 0);
+		clif_dropitem(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
 	if(storage_guild_additem(sd,stor,&sd->inventory.u.items_inventory[index],amount))
 		pc_delitem(sd,index,amount,0,4,LOG_TYPE_GSTORAGE);
 	else {
@@ -980,6 +1029,13 @@ void storage_guild_storageget(struct map_session_data* sd, int index, int amount
 		return;
 	}
 
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_INVENTORY)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
 	if((flag = pc_additem(sd,&stor->u.items_guild[index],amount,LOG_TYPE_GSTORAGE)) == 0)
 		storage_guild_delitem(sd,stor,index,amount);
 	else { // inform fail
@@ -1012,6 +1068,14 @@ void storage_guild_storageaddfromcart(struct map_session_data* sd, int index, in
 
 	if( amount < 1 || amount > sd->cart.u.items_cart[index].amount )
 		return;
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	if (npc_event_aide_storage_add(sd, stor, index, amount, TABLE_CART)) {
+		clif_storageitemremoved(sd, index, 0);
+		clif_cart_delitem(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_ADD
 
 	if(storage_guild_additem(sd,stor,&sd->cart.u.items_cart[index],amount))
 		pc_cart_delitem(sd,index,amount,0,LOG_TYPE_GSTORAGE);
@@ -1047,6 +1111,13 @@ void storage_guild_storagegettocart(struct map_session_data* sd, int index, int 
 
 	if(amount < 1 || amount > stor->u.items_guild[index].amount)
 		return;
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	if (npc_event_aide_storage_del(sd, stor, index, amount, TABLE_CART)) {
+		clif_storageitemremoved(sd, index, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 	if((flag = pc_cart_additem(sd,&stor->u.items_guild[index],amount,LOG_TYPE_GSTORAGE)) == 0)
 		storage_guild_delitem(sd,stor,index,amount);
@@ -1158,6 +1229,24 @@ void storage_guild_storage_quit(struct map_session_data* sd, int flag)
  **/
 void storage_premiumStorage_open(struct map_session_data *sd) {
 	nullpo_retv(sd);
+
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd->state.connect_new) {
+		// 避免 GM 在角色能力重算事件中使用 getstoragelist 来查询扩充仓库信息
+		// 会导致仓库界面会由于 sd->st 为空指针而绕过拦截直接被打开的问题
+		return;
+	}
+
+	if (sd->st && sd->npc_id) {
+		// 正常的流程中 intif_parse_StorageReceived 和 storage_premiumStorage_load
+		// 都会调用 storage_premiumStorage_open 来打开客户端的仓库界面
+		//
+		// 但如果本次查询是为了响应 getstoragelist 的请求, 那么就没必要打开客户端的仓库界面
+		if (sd->st->waiting_premium_storage && sd->st->state == RERUNLINE) {
+			return;
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
 
 	sd->state.storage_flag = 3;
 	storage_sortitem(sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage));

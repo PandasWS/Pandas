@@ -59,7 +59,7 @@
   <!-- Intermediate and Output directories -->
   <!-- Cryptlib and Cryptest need extra care due to Non-DLL/DLL configs -->
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'" Label="Non-DLL Directories">
-    <OutDir>$(SolutionDir).vs\build\</OutDir>
+    <OutDir>$(SolutionDir).vs\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
