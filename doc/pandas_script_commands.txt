@@ -3201,38 +3201,18 @@ NPC名称:
 *getgradeitem <物品编号>,<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<装备的附魔评级>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>{,<账号编号>};
 *getgradeitem "<物品名称>",<创造数量>,<是否已鉴定>,<精炼值>,<属性>,<第一卡槽>,<第二卡槽>,<第三卡槽>,<第四卡槽>,<装备的附魔评级>,<随机属性的编号数组>,<随机属性的值数组>,<随机属性的参数数组>{,<账号编号>};
 
-创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现.
-也就是在 getitem3 的基础上多增加一个附魔评级字段
+创造带有指定附魔评级的道具, 与 getitem4 脚本指令完全等价.
 
 装备的附魔评级:
-	可选值是 0 ~ 4, 复兴后最大值为 4, 复兴前不支持
-
-返回值:
-	该指令无论成功与否, 都不会有返回值
+	ENCHANTGRADE_NONE	表示没有评级
+	ENCHANTGRADE_D		表示评级为 D
+	ENCHANTGRADE_C		表示评级为 C
+	ENCHANTGRADE_B		表示评级为 B
+	ENCHANTGRADE_A		表示评级为 A
 
 提示信息:
-	之所以不使用 getitem4 命名, 是为了避免未来 rAthena 实现同名指令带来的兼容问题
-	若您现在有大量脚本使用了相同参数结构但指令名称为 getitem4 的话,
-	可以使用脚本 function 进行封装, 放到 npc\other\Global_Functions.txt 来兼容.
-
-封装脚本:
-
-function	script	getitem4	{
-	if (getargcount() == 13) {
-		getgradeitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
-			getarg(5), getarg(6), getarg(7), getarg(8), getarg(9), getarg(10),
-			getarg(11), getarg(12);
-	}
-	else if (getargcount() == 14) {
-		getgradeitem getarg(0), getarg(1), getarg(2), getarg(3), getarg(4),
-			getarg(5), getarg(6), getarg(7), getarg(8), getarg(9), getarg(10),
-			getarg(11), getarg(12), getarg(13);
-	}
-	else {
-		debugmes "buildin_getitem4: please pass the correct number of parameters (13 or 14 parameters)";
-	}
-	return;
-}
+	从 v1.1.17 开始 rAthena 已经实现了 getitem4 指令,
+	因此 getgradeitem 降级为 getitem4 的别名, 为了脚本通用性请尽量使用 getitem4.
 
 --------------------------------------------------------------
 

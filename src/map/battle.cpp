@@ -503,12 +503,12 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 					damage *= 2;
 #endif
 					//Remove a unit group or end whole status change
-					status_change_end(target, SC_SPIDERWEB, INVALID_TIMER);
+					status_change_end(target, SC_SPIDERWEB);
 				}
 				if (tsc->data[SC_THORNSTRAP] && battle_getcurrentskill(src) != GN_CARTCANNON)
-					status_change_end(target, SC_THORNSTRAP, INVALID_TIMER);
+					status_change_end(target, SC_THORNSTRAP);
 				if (tsc->data[SC_CRYSTALIZE])
-					status_change_end(target, SC_CRYSTALIZE, INVALID_TIMER);
+					status_change_end(target, SC_CRYSTALIZE);
 				if (tsc->data[SC_EARTH_INSIGNIA])
 #ifdef RENEWAL
 					ratio += 50;
@@ -521,7 +521,7 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 #else
 					damage *= 2;
 #endif
-					status_change_end(target,SC_WIDEWEB,INVALID_TIMER);
+					status_change_end(target,SC_WIDEWEB);
 				}
 				if( tsc->data[SC_BURNT] ) {
 #ifdef RENEWAL
@@ -587,7 +587,7 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 #else
 					damage += (int64)(damage * 50 / 100);
 #endif
-				status_change_end(target, SC_MAGNETICFIELD, INVALID_TIMER); //freed if received earth dmg
+				status_change_end(target, SC_MAGNETICFIELD); //freed if received earth dmg
 				break;
 			case ELE_NEUTRAL:
 				if (tsc->data[SC_ANTI_M_BLAST])
@@ -1134,7 +1134,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 				damage = -sce->val2;
 		}
 		if ((--sce->val3) <= 0 || (sce->val2 <= 0) || skill_id == AL_HOLYLIGHT)
-			status_change_end(target, SC_KYRIE, INVALID_TIMER);
+			status_change_end(target, SC_KYRIE);
 	}
 
 	if ((sce = sc->data[SC_P_ALTER]) && damage > 0) {
@@ -1145,7 +1145,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		else
 			damage = -sce->val3;
 		if (sce->val3 <= 0)
-			status_change_end(target, SC_P_ALTER, INVALID_TIMER);
+			status_change_end(target, SC_P_ALTER);
 	}
 
 	if ((sce = sc->data[SC_TUNAPARTY]) && damage > 0) {
@@ -1155,20 +1155,20 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		else
 			damage = -sce->val2;
 		if (sce->val2 <= 0)
-			status_change_end(target, SC_TUNAPARTY, INVALID_TIMER);
+			status_change_end(target, SC_TUNAPARTY);
 	}
 
 	if ((sce = sc->data[SC_DIMENSION1]) && damage > 0) {
 		sce->val2 -= static_cast<int>(cap_value(damage, INT_MIN, INT_MAX));
 		if (sce->val2 <= 0)
-			status_change_end(target, SC_DIMENSION1, INVALID_TIMER);
+			status_change_end(target, SC_DIMENSION1);
 		return false;
 	}
 
 	if ((sce = sc->data[SC_DIMENSION2]) && damage > 0) {
 		sce->val2 -= static_cast<int>(cap_value(damage, INT_MIN, INT_MAX));
 		if (sce->val2 <= 0)
-			status_change_end(target, SC_DIMENSION2, INVALID_TIMER);
+			status_change_end(target, SC_DIMENSION2);
 		return false;
 	}
 
@@ -1182,7 +1182,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 				damage = -sce->val2;
 		}
 		if (sce->val2 <= 0)
-			status_change_end(target, SC_GUARDIAN_S, INVALID_TIMER);
+			status_change_end(target, SC_GUARDIAN_S);
 	}
 
 	// Weapon Blocking can be triggered while the above statuses are active.
@@ -1229,7 +1229,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 			}
 			return false;
 		}
-		status_change_end(target, SC_SAFETYWALL, INVALID_TIMER);
+		status_change_end(target, SC_SAFETYWALL);
 	}
 
 	if ((sc->data[SC_PNEUMA] && (flag&(BF_MAGIC | BF_LONG)) == BF_LONG) ||
@@ -1259,7 +1259,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		{
 			if (skill_id == WL_SOULEXPANSION)
 				damage <<= 1; // If used against a player in White Imprison, the skill deals double damage.
-			status_change_end(target, SC_WHITEIMPRISON, INVALID_TIMER); // Those skills do damage and removes effect
+			status_change_end(target, SC_WHITEIMPRISON); // Those skills do damage and removes effect
 		} else {
 			d->dmg_lv = ATK_BLOCK;
 			return false;
@@ -1275,7 +1275,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 				clif_millenniumshield(target, sce->val2);
 				sce->val3 = 1000; // Next shield
 			} else
-				status_change_end(target, SC_MILLENNIUMSHIELD, INVALID_TIMER); // All shields down
+				status_change_end(target, SC_MILLENNIUMSHIELD); // All shields down
 			status_change_start(src, target, SC_STUN, 10000, 0, 0, 0, 0, 1000, SCSTART_NOTICKDEF);
 		}
 		return false;
@@ -1343,7 +1343,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 			unit_setdir(target, dir);
 		}
 		d->dmg_lv = ATK_DEF;
-		status_change_end(target, SC_LIGHTNINGWALK, INVALID_TIMER);
+		status_change_end(target, SC_LIGHTNINGWALK);
 		return false;
 	}
 
@@ -1382,7 +1382,7 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		if (skill_id != ASC_BREAKER || !(flag&BF_WEAPON))
 #endif
 			if (--sce->val3 <= 0) //We make it work like Safety Wall, even though it only blocks 1 time.
-				status_change_end(target, SC_KAUPE, INVALID_TIMER);
+				status_change_end(target, SC_KAUPE);
 		return false;
 	}
 
@@ -1401,9 +1401,9 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 		}
 		//Both need to be consumed if they are active.
 		if (sce && --sce->val2 <= 0)
-			status_change_end(target, SC_UTSUSEMI, INVALID_TIMER);
+			status_change_end(target, SC_UTSUSEMI);
 		if ((sce = sc->data[SC_BUNSINJYUTSU]) && --sce->val2 <= 0)
-			status_change_end(target, SC_BUNSINJYUTSU, INVALID_TIMER);
+			status_change_end(target, SC_BUNSINJYUTSU);
 		return false;
 	}
 
@@ -1470,13 +1470,22 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 		case HW_GRAVITATION:
 #endif
 		case SP_SOULEXPLOSION:
+			// Adjust these based on any possible PK damage rates.
+			if (battle_config.pk_mode == 1 && map_getmapflag(bl->m, MF_PVP) > 0)
+				damage = battle_calc_pk_damage(*src, *bl, damage, skill_id, flag);
+
 			return damage; //These skills bypass everything else.
-  }
+	}
 
 	// Nothing can reduce the damage, but Safety Wall and Millennium Shield can block it completely.
 	// So can defense sphere's but what the heck is that??? [Rytech]
-	if (skill_id == SJ_NOVAEXPLOSING && !(sc && (sc->data[SC_SAFETYWALL] || sc->data[SC_MILLENNIUMSHIELD])))
+	if (skill_id == SJ_NOVAEXPLOSING && !(sc && (sc->data[SC_SAFETYWALL] || sc->data[SC_MILLENNIUMSHIELD]))) {
+		// Adjust this based on any possible PK damage rates.
+		if (battle_config.pk_mode == 1 && map_getmapflag(bl->m, MF_PVP) > 0)
+			damage = battle_calc_pk_damage(*src, *bl, damage, skill_id, flag);
+
 		return damage;
+	}
 
 	if( sc && sc->count ) {
 		if (!battle_status_block_damage(src, bl, sc, d, damage, skill_id, skill_lv)) // Statuses that reduce damage to 0.
@@ -1495,7 +1504,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 #ifndef RENEWAL
 			if( skill_id != ASC_BREAKER || !(flag&BF_WEAPON) )
 #endif
-				status_change_end(bl, SC_AETERNA, INVALID_TIMER); //Shouldn't end until Breaker's non-weapon part connects.
+				status_change_end(bl, SC_AETERNA); //Shouldn't end until Breaker's non-weapon part connects.
 		}
 
 #ifdef RENEWAL
@@ -1510,7 +1519,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 		if( damage ) {
 			if( sc->data[SC_DEEPSLEEP] ) {
 				damage += damage / 2; // 1.5 times more damage while in Deep Sleep.
-				status_change_end(bl,SC_DEEPSLEEP,INVALID_TIMER);
+				status_change_end(bl,SC_DEEPSLEEP);
 			}
 			if( tsd && sd && sc->data[SC_CRYSTALIZE] && flag&BF_WEAPON ) {
 				switch(tsd->status.weapon) {
@@ -1538,7 +1547,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 				}
 			}
 			if( sc->data[SC_VOICEOFSIREN] )
-				status_change_end(bl,SC_VOICEOFSIREN,INVALID_TIMER);
+				status_change_end(bl,SC_VOICEOFSIREN);
 		}
 
 		if (sc->data[SC_SOUNDOFDESTRUCTION])
@@ -1671,7 +1680,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 			per /=20; //Uses 20% SP intervals.
 			//SP Cost: 1% + 0.5% per every 20% SP
 			if (!status_charge(bl, 0, (10+5*per)*status->max_sp/1000))
-				status_change_end(bl, SC_ENERGYCOAT, INVALID_TIMER);
+				status_change_end(bl, SC_ENERGYCOAT);
 			damage -= damage * 6 * (1 + per) / 100; //Reduction: 6% + 6% every 20%
 		}
 
@@ -1708,9 +1717,9 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 
 		//Finally added to remove the status of immobile when Aimed Bolt is used. [Jobbie]
 		if( skill_id == RA_AIMEDBOLT && (sc->data[SC_BITE] || sc->data[SC_ANKLE] || sc->data[SC_ELECTRICSHOCKER]) ) {
-			status_change_end(bl, SC_BITE, INVALID_TIMER);
-			status_change_end(bl, SC_ANKLE, INVALID_TIMER);
-			status_change_end(bl, SC_ELECTRICSHOCKER, INVALID_TIMER);
+			status_change_end(bl, SC_BITE);
+			status_change_end(bl, SC_ANKLE);
+			status_change_end(bl, SC_ELECTRICSHOCKER);
 		}
 
 		if (!damage)
@@ -1829,7 +1838,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 	} //End of caster SC_ check
 
 	//PK damage rates
-	if (map_getmapflag(bl->m, MF_PVP) > 0)
+	if (battle_config.pk_mode == 1 && map_getmapflag(bl->m, MF_PVP) > 0)
 		damage = battle_calc_pk_damage(*src, *bl, damage, skill_id, flag);
 
 	if(battle_config.skill_min_damage && damage > 0 && damage < div_) {
@@ -2826,7 +2835,7 @@ static bool is_attack_critical(struct Damage* wd, struct block_list *src, struct
 				if(sc && !sc->data[SC_AUTOCOUNTER])
 					break;
 				clif_specialeffect(src, EF_AUTOCOUNTER, AREA);
-				status_change_end(src, SC_AUTOCOUNTER, INVALID_TIMER);
+				status_change_end(src, SC_AUTOCOUNTER);
 			case KN_AUTOCOUNTER:
 				if(battle_config.auto_counter_type &&
 					(battle_config.auto_counter_type&src->type))
@@ -3975,7 +3984,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 						skillratio += -100 + sd->inventory_data[index]->weight / 10 + sd->inventory_data[index]->atk +
 							100 * sd->inventory_data[index]->weapon_level * (sd->inventory.u.items_inventory[index].refine + 6);
 				}
-				status_change_end(src,SC_CRUSHSTRIKE,INVALID_TIMER);
+				status_change_end(src,SC_CRUSHSTRIKE);
 				skill_break_equip(src,src,EQP_WEAPON,2000,BCT_SELF);
 			} else {
 				if (sc->data[SC_GIANTGROWTH] && (sd->class_&MAPID_THIRDMASK) == MAPID_RUNE_KNIGHT) { // Increase damage again if Crush Strike is not active
@@ -5785,22 +5794,40 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 	}
 
 #ifdef RENEWAL
-	/**
-	 * RE DEF Reduction
-	 * Damage = Attack * (4000+eDEF)/(4000+eDEF*10) - sDEF
-	 * Pierce defence gains 1 atk per def/2
-	 */
-	if( def1 == -400 ) /* -400 creates a division by 0 and subsequently crashes */
-		def1 = -399;
-	ATK_ADD2(wd->damage, wd->damage2,
-		is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_R) ? (def1*battle_calc_attack_skill_ratio(wd, src, target, skill_id, skill_lv))/200 : 0,
-		is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_L) ? (def1*battle_calc_attack_skill_ratio(wd, src, target, skill_id, skill_lv))/200 : 0
-	);
-	if( !attack_ignores_def(wd, src, target, skill_id, skill_lv, EQI_HAND_R) && !is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_R) )
-		wd->damage = wd->damage * (4000+def1) / (4000+10*def1) - vit_def;
-	if( is_attack_left_handed(src, skill_id) && !attack_ignores_def(wd, src, target, skill_id, skill_lv, EQI_HAND_L) && !is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_L) )
-		wd->damage2 = wd->damage2 * (4000+def1) / (4000+10*def1) - vit_def;
+	switch(skill_id) {
+		case RK_DRAGONBREATH:
+		case RK_DRAGONBREATH_WATER:
+		case NC_ARMSCANNON:
+		case GN_CARTCANNON:
+			if (attack_ignores_def(wd, src, target, skill_id, skill_lv, EQI_HAND_R) || attack_ignores_def(wd, src, target, skill_id, skill_lv, EQI_HAND_L))
+				return;
+			if (is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_R) || is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_L))
+				return;
 
+			// Defense reduction by flat value.
+			// This completely bypasses the normal RE DEF Reduction formula.
+			wd->damage -= (def1 + vit_def);
+			if (is_attack_left_handed(src, skill_id))
+				wd->damage2 -= (def1 + vit_def);
+			break;
+		/**
+		 * RE DEF Reduction
+		 * Damage = Attack * (4000+eDEF)/(4000+eDEF*10) - sDEF
+		 * Pierce defence gains 1 atk per def/2
+		 */
+		default:
+			if( def1 == -400 ) /* -400 creates a division by 0 and subsequently crashes */
+				def1 = -399;
+			ATK_ADD2(wd->damage, wd->damage2,
+				is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_R) ? (def1*battle_calc_attack_skill_ratio(wd, src, target, skill_id, skill_lv))/200 : 0,
+				is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_L) ? (def1*battle_calc_attack_skill_ratio(wd, src, target, skill_id, skill_lv))/200 : 0
+			);
+			if( !attack_ignores_def(wd, src, target, skill_id, skill_lv, EQI_HAND_R) && !is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_R) )
+				wd->damage = wd->damage * (4000+def1) / (4000+10*def1) - vit_def;
+			if( is_attack_left_handed(src, skill_id) && !attack_ignores_def(wd, src, target, skill_id, skill_lv, EQI_HAND_L) && !is_attack_piercing(wd, src, target, skill_id, skill_lv, EQI_HAND_L) )
+				wd->damage2 = wd->damage2 * (4000+def1) / (4000+10*def1) - vit_def;
+			break;
+	}
 #else
 		if (def1 > 100) def1 = 100;
 		ATK_RATE2(wd->damage, wd->damage2,
@@ -5885,7 +5912,7 @@ static void battle_calc_attack_plant(struct Damage* wd, struct block_list *src,s
 	bool attack_hits = is_attack_hitting(wd, src, target, skill_id, skill_lv, false);
 
 	if (skill_id != SN_SHARPSHOOTING && skill_id != RA_ARROWSTORM)
-		status_change_end(src, SC_CAMOUFLAGE, INVALID_TIMER);
+		status_change_end(src, SC_CAMOUFLAGE);
 
 	//Plants receive 1 damage when hit
 	if( attack_hits || wd->damage > 0 )
@@ -6110,7 +6137,7 @@ static void battle_calc_weapon_final_atk_modifiers(struct Damage* wd, struct blo
 		status_fix_damage(target,src,wd->damage,clif_damage(target,src,gettick(),0,0,wd->damage,0,DMG_NORMAL,0,false),ST_REJECTSWORD);
 		clif_skill_nodamage(target,target,ST_REJECTSWORD,tsc->data[SC_REJECTSWORD]->val1,1);
 		if( --(tsc->data[SC_REJECTSWORD]->val3) <= 0 )
-			status_change_end(target, SC_REJECTSWORD, INVALID_TIMER);
+			status_change_end(target, SC_REJECTSWORD);
 	}
 
 	if( tsc && tsc->data[SC_CRESCENTELBOW] && wd->flag&BF_SHORT && rnd()%100 < tsc->data[SC_CRESCENTELBOW]->val2 ) {
@@ -6126,7 +6153,7 @@ static void battle_calc_weapon_final_atk_modifiers(struct Damage* wd, struct blo
 		clif_damage(src, target, gettick(), status_get_amotion(src)+1000, 0, rdamage/10, 1, DMG_NORMAL, 0, false);
 		status_damage(target, src, rdamage, 0, 0, 0, 0);
 		status_damage(src, target, rdamage/10, 0, 0, 1, 0);
-		status_change_end(target, SC_CRESCENTELBOW, INVALID_TIMER);
+		status_change_end(target, SC_CRESCENTELBOW);
 	}
 
 	if( sc ) {
@@ -6159,7 +6186,7 @@ static void battle_calc_weapon_final_atk_modifiers(struct Damage* wd, struct blo
 			}
 		}
 		if (skill_id != SN_SHARPSHOOTING && skill_id != RA_ARROWSTORM)
-			status_change_end(src, SC_CAMOUFLAGE, INVALID_TIMER);
+			status_change_end(src, SC_CAMOUFLAGE);
 	}
 
 #ifndef RENEWAL
@@ -8495,7 +8522,7 @@ int64 battle_calc_return_damage(struct block_list* tbl, struct block_list *src, 
 					*dmg = rd1 * 30 / 100; // Received damage = 30% of amplified damage.
 					clif_skill_damage(src, tbl, gettick(), status_get_amotion(src), 0, -30000, 1, RK_DEATHBOUND, tsc->data[SC_DEATHBOUND]->val1, DMG_SINGLE);
 					skill_blown(tbl, src, skill_get_blewcount(RK_DEATHBOUND, tsc->data[SC_DEATHBOUND]->val1), unit_getdir(src), BLOWN_NONE);
-					status_change_end(tbl, SC_DEATHBOUND, INVALID_TIMER);
+					status_change_end(tbl, SC_DEATHBOUND);
 					rdamage += rd1 * 70 / 100; // Target receives 70% of the amplified damage. [Rytech]
 				}
 			}
@@ -8822,11 +8849,11 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 	if (sc && sc->count) {
 		if (sc->data[SC_CLOAKING] && !(sc->data[SC_CLOAKING]->val4 & 2))
-			status_change_end(src, SC_CLOAKING, INVALID_TIMER);
+			status_change_end(src, SC_CLOAKING);
 		else if (sc->data[SC_CLOAKINGEXCEED] && !(sc->data[SC_CLOAKINGEXCEED]->val4 & 2))
-			status_change_end(src, SC_CLOAKINGEXCEED, INVALID_TIMER);
+			status_change_end(src, SC_CLOAKINGEXCEED);
 		else if (sc->data[SC_NEWMOON] && --(sc->data[SC_NEWMOON]->val2) <= 0)
-			status_change_end(src, SC_NEWMOON, INVALID_TIMER);
+			status_change_end(src, SC_NEWMOON);
 	}
 	if (tsc && tsc->data[SC_AUTOCOUNTER] && status_check_skilluse(target, src, KN_AUTOCOUNTER, 1)) {
 		uint8 dir = map_calc_dir(target,src->x,src->y);
@@ -8838,7 +8865,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 			clif_skillcastcancel(target); //Remove the casting bar. [Skotlex]
 			clif_damage(src, target, tick, sstatus->amotion, 1, 0, 1, DMG_NORMAL, 0, false); //Display MISS.
-			status_change_end(target, SC_AUTOCOUNTER, INVALID_TIMER);
+			status_change_end(target, SC_AUTOCOUNTER);
 			skill_attack(BF_WEAPON,target,target,src,KN_AUTOCOUNTER,skill_lv,tick,0);
 			return ATK_BLOCK;
 		}
@@ -8857,7 +8884,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			if (status_get_class_(src) == CLASS_BOSS)
 				duration = 2000; // Only lasts 2 seconds for Boss monsters
 #endif
-		status_change_end(target, SC_BLADESTOP_WAIT, INVALID_TIMER);
+		status_change_end(target, SC_BLADESTOP_WAIT);
 		if(sc_start4(src,src, SC_BLADESTOP, 100, sd?pc_checkskill(sd, MO_BLADESTOP):5, 0, 0, target->id, duration))
 		{	//Target locked.
 			clif_damage(src, target, tick, sstatus->amotion, 1, 0, 1, DMG_NORMAL, 0, false); //Display MISS.
@@ -8876,7 +8903,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 		if (sc && sc->data[SC_SKILLRATE_UP] && sc->data[SC_SKILLRATE_UP]->val1 == MO_TRIPLEATTACK) {
 			triple_rate+= triple_rate*(sc->data[SC_SKILLRATE_UP]->val2)/100;
-			status_change_end(src, SC_SKILLRATE_UP, INVALID_TIMER);
+			status_change_end(src, SC_SKILLRATE_UP);
 		}
 		if (rnd()%100 < triple_rate) {
 			//Need to apply canact_tick here because it doesn't go through skill_castend_id
@@ -8893,7 +8920,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 			damage_lv ret_val;
 
 			if( --sc->data[SC_SACRIFICE]->val2 <= 0 )
-				status_change_end(src, SC_SACRIFICE, INVALID_TIMER);
+				status_change_end(src, SC_SACRIFICE);
 
 			/**
 			 * We need to calculate the DMG before the hp reduction, because it can kill the source.
@@ -8950,7 +8977,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 
 	if( sc && sc->count ) {
 		if (sc->data[SC_EXEEDBREAK])
-			status_change_end(src, SC_EXEEDBREAK, INVALID_TIMER);
+			status_change_end(src, SC_EXEEDBREAK);
 		if( sc->data[SC_SPELLFIST] && !vellum_damage ){
 			if (status_charge(src, 0, 20)) {
 				if (!is_infinite_defense(target, wd.flag)) {
@@ -8963,7 +8990,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 					DAMAGE_DIV_FIX(wd.damage, wd.div_);
 				}
 			} else
-				status_change_end(src,SC_SPELLFIST,INVALID_TIMER);
+				status_change_end(src,SC_SPELLFIST);
 		}
 		if (sc->data[SC_GIANTGROWTH] && (wd.flag&BF_SHORT) && rnd()%100 < sc->data[SC_GIANTGROWTH]->val2 && !is_infinite_defense(target, wd.flag) && !vellum_damage)
 			wd.damage += wd.damage * 150 / 100; // 2.5 times damage
@@ -9257,7 +9284,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				}
 			}
 			else
-				status_change_end(target, SC_DEVOTION, INVALID_TIMER);
+				status_change_end(target, SC_DEVOTION);
 		}
 		if (target->type == BL_PC && (wd.flag&BF_SHORT) && tsc->data[SC_CIRCLE_OF_FIRE_OPTION]) {
 			s_elemental_data *ed = ((TBL_PC*)target)->ed;
@@ -9466,7 +9493,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 				--sce->val2;
 			}
 			if (sce->val2 <= 0)
-				status_change_end(target, SC_POISONREACT, INVALID_TIMER);
+				status_change_end(target, SC_POISONREACT);
 		}
 	}
 

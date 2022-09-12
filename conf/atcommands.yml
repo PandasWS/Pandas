@@ -692,6 +692,9 @@ Body:
     Help: |
       参数: <装备位置编号> <+/- 精炼值>
       调整角色身上指定位置的装备精炼值, 使用负数表示下调精炼值
+  - Command: grade
+    Help: |
+      Params: <equip position> <+/- amount>
   - Command: produce
     Help: |
       参数: <装备名称|装备编号> <属性> <几级强悍>

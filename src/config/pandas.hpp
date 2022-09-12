@@ -2133,8 +2133,8 @@
 	#define Pandas_ScriptCommand_Next_Dropitem_Special
 
 	// 是否启用 getgradeitem 脚本指令 [Sola丶小克]
-	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
-	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
+	// 该指令用于创造带有指定附魔评级的道具, 由于 rAthena 已经正式实现了 getitem4,
+	// getgradeitem 仅用于兼容旧版本的脚本, 请尽量使用 getitem4
 	#define Pandas_ScriptCommand_GetGradeItem
 
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
