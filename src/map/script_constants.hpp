@@ -120,6 +120,10 @@
 	export_constant(NPCF_STORAGE_DEL);	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
 
+#ifdef Pandas_NpcFilter_CART_ADD
+	export_constant(NPCF_CART_ADD);	// cart_add_filter_name	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器
+#endif // Pandas_NpcFilter_CART_ADD
+
 #ifdef Pandas_NpcFilter_CART_DEL
 	export_constant(NPCF_CART_DEL);	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器
 #endif // Pandas_NpcFilter_CART_DEL

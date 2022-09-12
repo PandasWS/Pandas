@@ -6551,6 +6551,16 @@ void pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 		return;
 	}
 
+#ifdef Pandas_NpcFilter_CART_ADD
+	pc_setreg(sd, add_str("@storeitem_nameid"), item_data->nameid);		// 即将存入的道具编号
+	pc_setreg(sd, add_str("@storeitem_amount"), amount);				// 即将存入的道具数量
+	pc_setreg(sd, add_str("@storeitem_idx"), idx);						// 即将存入的道具序号 (背包序号)
+	if (npc_script_filter(sd, NPCF_CART_ADD)) {
+		clif_delitem(sd, idx, 0, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_CART_ADD
+
 	enum e_additem_result flag = pc_cart_additem(sd,item_data,amount,LOG_TYPE_NONE);
 
 	if (flag == ADDITEM_SUCCESS)
