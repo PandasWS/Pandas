@@ -2387,6 +2387,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
+
+#ifdef Pandas_NpcFilter_CART_ADD
+	NPCF_CART_ADD,	// cart_add_filter_name	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器
+#endif // Pandas_NpcFilter_CART_ADD
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
