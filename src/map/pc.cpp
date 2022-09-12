@@ -6606,6 +6606,16 @@ void pc_getitemfromcart(struct map_session_data *sd,int idx,int amount)
 	if (item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->state.vending || sd->state.prevend)
 		return;
 
+#ifdef Pandas_NpcFilter_CART_DEL
+	pc_setreg(sd, add_str("@removeitem_nameid"), item_data->nameid);	// 即将取出的道具编号
+	pc_setreg(sd, add_str("@removeitem_amount"), amount);				// 即将取出的道具数量
+	pc_setreg(sd, add_str("@removeitem_idx"), idx);						// 即将取出的道具序号 (手推车序号)
+	if (npc_script_filter(sd, NPCF_CART_DEL)) {
+		clif_cart_delitem(sd, idx, 0);
+		return;
+	}
+#endif // Pandas_NpcFilter_CART_DEL
+
 	enum e_additem_result flag = pc_additem(sd, item_data, amount, LOG_TYPE_NONE);
 
 	if (flag == ADDITEM_SUCCESS)

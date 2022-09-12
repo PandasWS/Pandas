@@ -266,6 +266,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_CART_ADD
 	const char* cart_add_filter_name;	// NPCF_CART_ADD	// OnPCCartAddFilter	// 当玩家准备将道具从背包存入手推车时触发过滤器
 #endif // Pandas_NpcFilter_CART_ADD
+
+#ifdef Pandas_NpcFilter_CART_DEL
+	const char* cart_del_filter_name;	// NPCF_CART_DEL	// OnPCCartDelFilter	// 当玩家准备将道具从手推车取回背包时触发过滤器
+#endif // Pandas_NpcFilter_CART_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
