@@ -14,3 +14,19 @@ WHERE `send_id` NOT IN (
 	from `char`
 )
 ;
+
+-- -----------------------------------------------
+-- upgrade_20220830.sql
+-- -----------------------------------------------
+
+ALTER TABLE `char`
+	ADD COLUMN `body_direction` tinyint unsigned NOT NULL default '0'
+;
+
+-- -----------------------------------------------
+-- upgrade_20220831.sql
+-- -----------------------------------------------
+
+ALTER TABLE `char`
+	ADD COLUMN `disable_call` tinyint unsigned NOT NULL default '0'
+;

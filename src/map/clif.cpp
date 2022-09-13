@@ -11763,6 +11763,10 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			npc_script_event(sd, NPCE_LOGIN);
 		}
 
+		// Set facing direction before check below to update client
+		if (battle_config.spawn_direction)
+			unit_setdir(&sd->bl, sd->status.body_direction, false);
+
 #ifdef Pandas_NpcExpress_ENTERMAP
 		if (sd) {
 			pc_setreg(sd, add_str("@frommap_id"), 0);
@@ -11815,6 +11819,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 		clif_equipcheckbox(sd);
 #endif
 		clif_pet_autofeed_status(sd,false);
+		clif_configuration( sd, CONFIG_CALL, sd->status.disable_call );
 #if PACKETVER >= 20170920
 		if( battle_config.homunculus_autofeed_always ){
 			// Always send ON or OFF
@@ -15991,7 +15996,7 @@ void clif_parse_PMIgnore(int fd, struct map_session_data* sd)
 
 		// find entry
 		ARR_FIND( 0, MAX_IGNORE_LIST, i, sd->ignore[i].name[0] == '\0' || strcmp(sd->ignore[i].name, nick) == 0 );
-		if( i == MAX_IGNORE_LIST || sd->ignore[i].name[i] == '\0' ) { //Not found
+		if( i == MAX_IGNORE_LIST || sd->ignore[i].name[0] == '\0' ) { //Not found
 			clif_wisexin(sd, type, 1); // fail
 			return;
 		}
@@ -17201,7 +17206,9 @@ void clif_Mail_read( struct map_session_data *sd, int mail_id ){
 		WFIFOL(fd,72) = 0;
 		WFIFOL(fd,76) = msg->zeny;
 
-		if( item->nameid && (data = itemdb_exists(item->nameid)) != NULL ) {
+		std::shared_ptr<item_data> data = item_db.find(item->nameid);
+
+		if( item->nameid && data != nullptr ) {
 			WFIFOL(fd,80) = item->amount;
 			WFIFOW(fd,84) = client_nameid( item->nameid );
 			WFIFOW(fd,86) = itemtype( item->nameid );
@@ -18642,6 +18649,9 @@ void clif_parse_configuration( int fd, struct map_session_data* sd ){
 	switch( type ){
 		case CONFIG_OPEN_EQUIPMENT_WINDOW:
 			sd->status.show_equip = flag;
+			break;
+		case CONFIG_CALL:
+			sd->status.disable_call = flag;
 			break;
 		case CONFIG_PET_AUTOFEED:
 			// Player can not click this if he does not have a pet
@@ -24359,21 +24369,24 @@ void clif_parse_laphine_synthesis( int fd, struct map_session_data* sd ){
 		}
 	}
 
-	int16 index = pc_search_inventory( sd, sd->state.laphine_synthesis );
+	// If triggered from item
+	if( sd->itemid == sd->state.laphine_synthesis ){
+		int16 index = pc_search_inventory( sd, sd->state.laphine_synthesis );
 
-	if( index < 0 ){
-		clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
-		return;
-	}
-
-	if( ( sd->inventory_data[index]->flag.delay_consume & DELAYCONSUME_NOCONSUME ) == 0 ){
-		if( pc_delitem( sd, index, 1, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
+		if( index < 0 ){
+			clif_laphine_synthesis_result( sd, LAPHINE_SYNTHESIS_ITEM );
 			return;
+		}
+
+		if( ( sd->inventory_data[index]->flag.delay_consume & DELAYCONSUME_NOCONSUME ) == 0 ){
+			if( pc_delitem( sd, index, 1, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
+				return;
+			}
 		}
 	}
 
 	for( size_t i = 0; i < count; i++ ){
-		index = server_index( p->items[i].index );
+		int16 index = server_index( p->items[i].index );
 
 		if( pc_delitem( sd, index, p->items[i].count, 0, 0, LOG_TYPE_LAPHINE ) != 0 ){
 			return;

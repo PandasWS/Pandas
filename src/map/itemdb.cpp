@@ -3311,8 +3311,6 @@ static bool itemdb_read_sqldb_sub(std::vector<std::string> str) {
 	if (!str[++index].empty())
 		rootNode["Refineable"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
-		rootNode["Gradable"] << (std::stoi(str[index]) ? "true" : "false");
-	if (!str[++index].empty())
 		rootNode["View"] << str[index];
 	if (!str[++index].empty())
 		rootNode["AliasName"] << str[index];
@@ -3419,6 +3417,8 @@ static bool itemdb_read_sqldb_sub(std::vector<std::string> str) {
 		jobs["Summoner"] << (std::stoi(str[index]) ? "true" : "false");
 	if (!str[++index].empty())
 		jobs["Spirit_Handler"] << (std::stoi(str[index]) ? "true" : "false");
+	if (!str[++index].empty())
+		rootNode["Gradable"] << (std::stoi(str[index]) ? "true" : "false");
 #endif
 
 	if( !jobs.has_children() ){
