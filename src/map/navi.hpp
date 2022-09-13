@@ -1,4 +1,4 @@
-#ifndef NAVI_H
+﻿#ifndef NAVI_H
 #define NAVI_H
 
 #include "../config/core.hpp"
