@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "../config/core.hpp"
+
 #include "../common/cbasetypes.hpp"
 #include "../common/cli.hpp"
 #include "../common/core.hpp"
@@ -41,6 +43,7 @@
 #include "mapreg.hpp"
 #include "mercenary.hpp"
 #include "mob.hpp"
+#include "navi.hpp"
 #include "npc.hpp"
 #include "party.hpp"
 #include "path.hpp"
@@ -5700,7 +5703,9 @@ void do_final(void){
 	do_final_battle();
 	do_final_chrif();
 	do_final_clan();
+#ifndef GENERATE_NAVI
 	do_final_clif();
+#endif
 	do_final_npc();
 	do_final_quest();
 	do_final_achievement();
@@ -6084,7 +6089,9 @@ int do_init(int argc, char *argv[])
 	do_init_instance();
 	do_init_chrif();
 	do_init_clan();
+#ifndef GENERATE_NAVI
 	do_init_clif();
+#endif
 	do_init_script();
 	do_init_itemdb();
 #ifdef Pandas_Aura_Mechanism
@@ -6127,6 +6134,11 @@ int do_init(int argc, char *argv[])
 	performance_stop("core_init");
 	ShowStatus("The Map-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u, took %" PRIu64 " milliseconds).\n\n", map_port, performance_get_milliseconds("core_init"));
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+
+#ifdef GENERATE_NAVI
+	navi_create_lists();
+	runflag = CORE_ST_STOP;
+#endif
 
 	if( runflag != CORE_ST_STOP )
 	{
