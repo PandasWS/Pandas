@@ -159,25 +159,16 @@ bool YamlDatabase::load(const std::string& path) {
 	fclose(f);
 
 	parser = {};
-#ifndef Pandas_UserExperience_Yaml_Error
-	ryml::Tree tree = parser.parse_in_arena(c4::to_csubstr(path), c4::to_csubstr(buf));
-#else
-	// - 在 item_db_equip.yml 随便找个道具的 Name 字段, 把它的值换成三个小数点: ...
-	// - 然后启动地图服务器, 当加载到 item_db_equip.yml 文件就会直接崩溃
-	
 	ryml::Tree tree;
-	try {
+
+	try{
 		tree = parser.parse_in_arena(c4::to_csubstr(path), c4::to_csubstr(buf));
-	}
-	catch (std::runtime_error const& err) {
-		ShowWarning("The following error occurred while loading the '%s': \n", path.c_str());
-		ShowWarning("Press any key to continue reading other files, but it usually means a lot of errors.\n");
-		ShowError("%s\n", err.what());
-		systemPause();
-		aFree(buf);
+	}catch( const std::runtime_error& e ){
+		ShowError( "Failed to load %s database file from '" CL_WHITE "%s" CL_RESET "'.\n", this->type.c_str(), path.c_str() );
+		ShowError( "There is likely a syntax error in the file.\n" );
+		ShowError( "Error message: %s\n", e.what() );
 		return false;
 	}
-#endif // Pandas_UserExperience_Yaml_Error
 
 	// Required here already for header error reporting
 	this->currentFile = path;
