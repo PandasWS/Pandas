@@ -65550,7 +65550,7 @@ Body:
       BuyingStore: true
   - Id: 1000930
     AegisName: VR_Heart_Cookie
-    Name: 하트 쿠키
+    Name: Heart Cookie
     Type: Etc
     Flags:
       BuyingStore: true
