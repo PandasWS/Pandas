@@ -40,6 +40,10 @@ pipeline {
 					}
 					loadEnvironmentFromFile("${env.JENKINS_ENVIRONMENT_FILE}")
 				}
+
+				dir('artifacts') {
+					deleteDir()
+				}
 			}
 		}
 		
@@ -103,6 +107,25 @@ pipeline {
 						"""
 					}
 				}
+			}
+		}
+
+		stage('Archive') {
+			when {
+				expression {
+					return params.publish_package || params.archive_symbols
+				}
+			}
+			steps {
+				archiveArtifacts artifacts: 'artifacts\\**', fingerprint: true, onlyIfSuccessful: true
+			}
+		}
+	}
+
+	post {
+		always {
+			dir('artifacts') {
+				deleteDir()
 			}
 		}
 	}

@@ -427,6 +427,17 @@ def process_sub(export_file, renewal, langinfo):
         lang = langinfo['name']
     ))
 
+    # 若处于 Jenkins 环境下, 则将制品复制到指定的目录中去
+    if Common.is_jenkins():
+        os.makedirs(os.path.join(
+            os.environ['WORKSPACE'], 'artifacts', 'packages'
+        ), exist_ok = True)
+        
+        copyfile(zipfilename, os.path.join(
+            os.environ['WORKSPACE'], 'artifacts', 'packages', os.path.basename(zipfilename)
+        ))
+        Message.ShowStatus('已将打包后的 ZIP 文件复制到制品输出目录中.')
+
 def process(export_file, renewal, publish_lang):
     '''
     开始进行处理工作

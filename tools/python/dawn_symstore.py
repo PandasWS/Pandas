@@ -49,7 +49,7 @@ project_symstoredir = parser.get_symbols('archive_path')
 project_symstoredir = '../Symbols' if len(project_symstoredir) == 0 else project_symstoredir
 project_symstoredir = os.path.abspath(project_slndir + project_symstoredir) if project_symstoredir.startswith('..') else project_symstoredir
 
-def deploy_file(filepath):
+def deploy_file(filepath, savedir = project_symstoredir):
     basename = os.path.basename(filepath)
     extname = Common.get_file_ext(basename)
 
@@ -62,7 +62,7 @@ def deploy_file(filepath):
         filehash = Common.get_pe_hash(filepath)
 
     target_filepath = '{symstore}/{filename}/{hash}/{filename}'.format(
-        symstore = project_symstoredir, hash = filehash,
+        symstore = savedir, hash = filehash,
         filename = basename.replace('-pre', '')
     )
     os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
@@ -104,6 +104,16 @@ def deploy_symbols(sourcedir, ask_for_deploy = True):
 
     for filepath in waiting_deploy_files:
         deploy_file(filepath)
+
+    # 若处于 Jenkins 环境下, 则将制品复制到指定的目录中去
+    if Common.is_jenkins():
+        os.makedirs(os.path.join(
+            os.environ['WORKSPACE'], 'artifacts', 'symbols'
+        ), exist_ok = True)
+
+        for filepath in waiting_deploy_files:
+            deploy_file(filepath, os.path.abspath(os.path.join(os.environ['WORKSPACE'], 'artifacts', 'symbols')))
+        Message.ShowStatus('已将符号文件复制到制品输出目录中.')
     
     Message.ShowStatus('符号文件已经归档完毕...')
 
