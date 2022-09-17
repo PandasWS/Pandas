@@ -2,7 +2,6 @@
 
 import os
 import re
-from tkinter.messagebox import NO
 import yaml
 
 from libs import Common, SecretParser
