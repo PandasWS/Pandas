@@ -73,8 +73,8 @@ bool HTTPUpload::SendRequest(const string &url,
   // current binary, no need to search for a dynamic version.
   void* curl_lib = dlopen(NULL, RTLD_NOW);
   if (!CheckCurlLib(curl_lib)) {
-    fprintf(stderr,
-            "Failed to open curl lib from binary, use libcurl.so instead\n");
+    //fprintf(stderr,
+    //        "Failed to open curl lib from binary, use libcurl.so instead\n");
     dlerror();  // Clear dlerror before attempting to open libraries.
     dlclose(curl_lib);
     curl_lib = NULL;
