@@ -218,6 +218,7 @@ def arrange_common(packagedir):
     remove_file(packagedir, 'configure')
     remove_file(packagedir, 'athena-start')
     remove_file(packagedir, 'CMakeLists.txt')
+    remove_file(packagedir, 'Jenkinsfile')
 
     remove_file(packagedir, 'DONATION.md')
     remove_file(packagedir, 'README.md')
