@@ -198,7 +198,7 @@ HANDLER_FUNC(userconfig_save) {
 	// 客户端只会回传被修改过的那部分数据, 没有修改过的不会发送给服务端
 	// 完整的数据是服务端记录的内容 + 本次客户端回传的内容, 因此需要先读取服务端保存的内容然后再进行合并存档
 
-	char databuf[10000] = { 0 };
+	char databuf[SQL_BUFFER_SIZE] = { 0 };
 
 	if (SQL_SUCCESS == SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
 		&& SQL_SUCCESS == SqlStmt_NextRow(stmt)

@@ -10624,28 +10624,28 @@ static const struct _battle_data {
 	{ "always_trigger_mvp_killevent",       &battle_config.always_trigger_mvp_killevent,    1,      0,      1,              },
 #endif // Pandas_BattleConfig_AlwaysTriggerMVPKillEvent
 #ifdef Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
-	{ "batrec_autoenabled_unit",           &battle_config.batrec_autoenabled_unit,          542,    0,      BL_ALL,         },
+	{ "batrec_autoenabled_unit",            &battle_config.batrec_autoenabled_unit,         542,    0,      BL_ALL,         },
 #endif // Pandas_BattleConfig_BattleRecord_AutoEnabled_Unit
 #ifdef Pandas_BattleConfig_Repeat_ClearUnit_Interval
-	{ "repeat_clearunit_interval",         &battle_config.repeat_clearunit_interval,        0,      0,      1000,           },
+	{ "repeat_clearunit_interval",          &battle_config.repeat_clearunit_interval,       0,      0,      1000,           },
 #endif // Pandas_BattleConfig_Repeat_ClearUnit_Interval
 #ifdef Pandas_BattleConfig_Dead_Area_Size
-	{ "dead_area_size",                    &battle_config.dead_area_size,                   28,     0,      200,            },
+	{ "dead_area_size",                     &battle_config.dead_area_size,                  28,     0,      200,            },
 #endif // Pandas_BattleConfig_Dead_Area_Size
 #ifdef Pandas_BattleConfig_Remove_Manhole_With_Status
-	{ "remove_manhole_with_status",        &battle_config.remove_manhole_with_status,       1,      0,      1,              },
+	{ "remove_manhole_with_status",         &battle_config.remove_manhole_with_status,      1,      0,      1,              },
 #endif // Pandas_BattleConfig_Remove_Manhole_With_Status
 #ifdef Pandas_BattleConfig_Restore_Mes_Logic
-	{ "restore_mes_logic",                 &battle_config.restore_mes_logic,                1,      0,      1,              },
+	{ "restore_mes_logic",                  &battle_config.restore_mes_logic,               1,      0,      1,              },
 #endif // Pandas_BattleConfig_Restore_Mes_Logic
 #ifdef Pandas_BattleConfig_ItemDB_Warning_Policy
-	{ "itemdb_warning_policy",             &battle_config.itemdb_warning_policy,            0,      0,      3,              },
+	{ "itemdb_warning_policy",              &battle_config.itemdb_warning_policy,           0,      0,      3,              },
 #endif // Pandas_BattleConfig_ItemDB_Warning_Policy
 #ifdef Pandas_BattleConfig_MobDB_DamageMotion_Min
-	{ "mob_default_damagemotion",          &battle_config.mob_default_damagemotion,         0,      0,      UINT16_MAX,     },
+	{ "mob_default_damagemotion",           &battle_config.mob_default_damagemotion,        0,      0,      UINT16_MAX,     },
 #endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
 #ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
-	{ "mob_setunitdata_persistence",       &battle_config.mob_setunitdata_persistence,      1,      0,      1,              },
+	{ "mob_setunitdata_persistence",        &battle_config.mob_setunitdata_persistence,     1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include "../custom/battle_config_init.inc"
