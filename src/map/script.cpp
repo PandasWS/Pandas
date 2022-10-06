@@ -32725,7 +32725,7 @@ BUILDIN_FUNC(getbossinfo) {
 		script_both_setreg(st, "boss_tomb_respawnsecs", -1, true, count, char_id);
 		t_tick respawntime = -1;
 		if (tomb_nd && tomb_nd->u.tomb.md->spawn) {
-			respawntime = gett_tickimer(tomb_nd->u.tomb.md->spawn_timer);
+			respawntime = gettick_timer(tomb_nd->u.tomb.md->spawn_timer);
 			if (respawntime != -1) {
 				respawntime = DIFF_TICK(respawntime, gettick());
 				respawntime = respawntime / 1000;

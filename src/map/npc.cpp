@@ -2525,7 +2525,7 @@ void run_tomb(map_session_data* sd, struct npc_data* nd)
 		pc_setreg(sd, add_str("@tomb_mob_respawnsecs"), -1);
 		t_tick respawntime = -1;
 		if (nd->u.tomb.md->spawn) {
-			respawntime = gett_tickimer(nd->u.tomb.md->spawn_timer);
+			respawntime = gettick_timer(nd->u.tomb.md->spawn_timer);
 			if (respawntime != -1) {
 				respawntime = DIFF_TICK(respawntime, gettick());
 				respawntime = respawntime / 1000;
