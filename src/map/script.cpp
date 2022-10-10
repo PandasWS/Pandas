@@ -11924,6 +11924,7 @@ BUILDIN_FUNC(guildchangegm)
 /*==========================================
  * Spawn a monster:
  * *monster "<map name>",<x>,<y>,"<name to show>",<mob id>,<amount>{,"<event label>",<size>,<ai>};
+ * *monster "<map name>",<x>,<y>,"<name to show>","<mob name>",<amount>{,"<event label>",<size>,<ai>};
  *------------------------------------------*/
 BUILDIN_FUNC(monster)
 {
@@ -11931,7 +11932,7 @@ BUILDIN_FUNC(monster)
 	int x				= script_getnum(st,3);
 	int y				= script_getnum(st,4);
 	const char* str		= script_getstr(st,5);
-	int class_			= script_getnum(st,6);
+	int class_;
 	int amount			= script_getnum(st,7);
 	const char* event	= "";
 	unsigned int size	= SZ_SMALL;
@@ -11940,6 +11941,34 @@ BUILDIN_FUNC(monster)
 	struct map_session_data* sd;
 	int16 m;
 	int i;
+
+	if( script_isstring( st, 6 ) ){
+		const char* name = script_getstr( st, 6 );
+
+		std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname( name );
+
+		if( mob == nullptr ){
+#ifndef Pandas_ScriptCommand_BossMonster
+			ShowWarning( "buildin_monster: Attempted to spawn non-existing monster \"%s\"\n", name );
+#else
+			ShowWarning("buildin_%s: Attempted to spawn non-existing monster \"%s\"\n", script_getfuncname(st), name);
+#endif // Pandas_ScriptCommand_BossMonster
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		class_ = mob->id;
+	}else{
+		class_ = script_getnum( st, 6 );
+
+		if( class_ >= 0 && !mobdb_checkid( class_ ) ){
+#ifndef Pandas_ScriptCommand_BossMonster
+			ShowWarning( "buildin_monster: Attempted to spawn non-existing monster class %d\n", class_ );
+#else
+			ShowWarning("buildin_%s: Attempted to spawn non-existing monster class %d\n", script_getfuncname(st), class_);
+#endif // Pandas_ScriptCommand_BossMonster
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
 
 	if (script_hasdata(st, 8)) {
 		event = script_getstr(st, 8);
@@ -11968,15 +11997,6 @@ BUILDIN_FUNC(monster)
 #endif // Pandas_ScriptCommand_BossMonster
 			return SCRIPT_CMD_FAILURE;
 		}
-	}
-
-	if (class_ >= 0 && !mobdb_checkid(class_)) {
-#ifndef Pandas_ScriptCommand_BossMonster
-		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
-#else
-		ShowWarning("buildin_%s: Attempted to spawn non-existing monster class %d\n", script_getfuncname(st), class_);
-#endif // Pandas_ScriptCommand_BossMonster
-		return SCRIPT_CMD_FAILURE;
 	}
 
 	sd = map_id2sd(st->rid);
@@ -12049,7 +12069,7 @@ BUILDIN_FUNC(areamonster)
 	int x1				= script_getnum(st,5);
 	int y1				= script_getnum(st,6);
 	const char* str		= script_getstr(st,7);
-	int class_			= script_getnum(st,8);
+	int class_;
 	int amount			= script_getnum(st,9);
 	const char* event	= "";
 	unsigned int size	= SZ_SMALL;
@@ -12059,6 +12079,26 @@ BUILDIN_FUNC(areamonster)
 	int16 m;
 	int i;
 
+	if( script_isstring( st, 8 ) ){
+		const char* name = script_getstr( st, 8 );
+
+		std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname( name );
+
+		if( mob == nullptr ){
+			ShowWarning( "buildin_areamonster: Attempted to spawn non-existing monster \"%s\"\n", name );
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		class_ = mob->id;
+	}else{
+		class_ = script_getnum( st, 8 );
+
+		if( class_ >= 0 && !mobdb_checkid( class_ ) ){
+			ShowWarning( "buildin_areamonster: Attempted to spawn non-existing monster class %d\n", class_ );
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
 	if (script_hasdata(st,10)) {
 		event = script_getstr(st, 10);
 		check_event(st, event);
@@ -12067,7 +12107,7 @@ BUILDIN_FUNC(areamonster)
 	if (script_hasdata(st, 11)) {
 		size = script_getnum(st, 11);
 		if (size > 3) {
-			ShowWarning("buildin_monster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_);
+			ShowWarning( "buildin_areamonster: Attempted to spawn non-existing size %d for monster class %d\n", size, class_ );
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
@@ -12075,14 +12115,9 @@ BUILDIN_FUNC(areamonster)
 	if (script_hasdata(st, 12)) {
 		ai = static_cast<enum mob_ai>(script_getnum(st, 12));
 		if (ai >= AI_MAX) {
-			ShowWarning("buildin_monster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_);
+			ShowWarning( "buildin_areamonster: Attempted to spawn non-existing ai %d for monster class %d\n", ai, class_ );
 			return SCRIPT_CMD_FAILURE;
 		}
-	}
-
-	if (class_ >= 0 && !mobdb_checkid(class_)) {
-		ShowWarning("buildin_monster: Attempted to spawn non-existing monster class %d\n", class_);
-		return SCRIPT_CMD_FAILURE;
 	}
 
 	sd = map_id2sd(st->rid);
@@ -23428,13 +23463,12 @@ static int buildin_mobuseskill_sub(struct block_list *bl,va_list ap)
 }
 
 /*==========================================
- * areamobuseskill "Map Name",<x>,<y>,<range>,<Mob ID>,"Skill Name"/<Skill ID>,<Skill Lv>,<Cast Time>,<Cancelable>,<Emotion>,<Target Type>;
+ * areamobuseskill "<Map Name>",<x>,<y>,<range>,"<Mob name>"/<Mob ID>,"<Skill Name>"/<Skill ID>,<Skill Lv>,<Cast Time>,<Cancelable>,<Emotion>,<Target Type>;
  *------------------------------------------*/
 BUILDIN_FUNC(areamobuseskill)
 {
 	struct block_list center;
 	int16 m;
-	int range,mobid,skill_id,skill_lv,casttime,emotion,target,cancel;
 
 	if( (m = map_mapname2mapid(script_getstr(st,2))) < 0 ) {
 		ShowError("areamobuseskill: invalid map name.\n");
@@ -23444,8 +23478,31 @@ BUILDIN_FUNC(areamobuseskill)
 	center.m = m;
 	center.x = script_getnum(st,3);
 	center.y = script_getnum(st,4);
-	range = script_getnum(st,5);
-	mobid = script_getnum(st,6);
+	int range = script_getnum( st,5 );
+	uint16 mobid;
+
+	if( script_isstring( st, 6 ) ){
+		const char* name = script_getstr( st, 6 );
+
+		std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname( name );
+
+		if( mob == nullptr ){
+			ShowWarning( "buildin_areamobuseskill: Attempted to use skill of non-existing monster \"%s\"\n", name );
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		mobid = mob->id;
+	}else{
+		mobid = script_getnum( st, 6 );
+
+		if( !mob_db.exists( mobid ) ){
+			ShowWarning( "buildin_areamobuseskill: Attempted to use skill of non-existing monster class %d\n", mobid );
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	int skill_id;
+
 	if (script_isstring(st, 7)) {
 		const char *name = script_getstr(st, 7);
 
@@ -23461,13 +23518,17 @@ BUILDIN_FUNC(areamobuseskill)
 			return SCRIPT_CMD_FAILURE;
 		}
 	}
-	if( (skill_lv = script_getnum(st,8)) > battle_config.mob_max_skilllvl )
-		skill_lv = battle_config.mob_max_skilllvl;
 
-	casttime = script_getnum(st,9);
-	cancel = script_getnum(st,10);
-	emotion = script_getnum(st,11);
-	target = script_getnum(st,12);
+	int skill_lv = script_getnum( st, 8 );
+
+	if( skill_lv > battle_config.mob_max_skilllvl ){
+		skill_lv = battle_config.mob_max_skilllvl;
+	}
+
+	int casttime = script_getnum( st, 9 );
+	int cancel = script_getnum( st, 10 );
+	int emotion = script_getnum( st, 11 );
+	int target = script_getnum( st, 12 );
 
 	map_foreachinallrange(buildin_mobuseskill_sub, &center, range, BL_MOB, mobid, skill_id, skill_lv, casttime, cancel, emotion, target);
 	return SCRIPT_CMD_SUCCESS;
@@ -28033,6 +28094,30 @@ BUILDIN_FUNC(item_reform){
 #endif
 }
 
+BUILDIN_FUNC(item_enchant){
+#if PACKETVER_RE_NUM < 20211103
+	ShowError( "buildin_item_enchant: This command requires packet version 2021-11-03 or newer.\n" );
+	return SCRIPT_CMD_FAILURE;
+#else
+	struct map_session_data* sd;
+
+	if( !script_charid2sd( 3, sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	uint64 clientLuaIndex = script_getnum64( st, 2 );
+
+	if( !item_enchant_db.exists( clientLuaIndex ) ){
+		ShowError( "buildin_item_enchant: %" PRIu64 " is not a valid item enchant index.\n", clientLuaIndex );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_enchantwindow_open( *sd, clientLuaIndex );
+
+	return SCRIPT_CMD_SUCCESS;
+#endif
+}
+
 #include "../custom/script.inc"
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -32510,9 +32595,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(itemskill,"vi?"),
 	BUILDIN_DEF(produce,"i"),
 	BUILDIN_DEF(cooking,"i"),
-	BUILDIN_DEF(monster,"siisii???"),
+	BUILDIN_DEF(monster,"siisvi???"),
 	BUILDIN_DEF(getmobdrops,"i"),
-	BUILDIN_DEF(areamonster,"siiiisii???"),
+	BUILDIN_DEF(areamonster,"siiiisvi???"),
 	BUILDIN_DEF(killmonster,"ss?"),
 	BUILDIN_DEF(killmonsterall,"s?"),
 	BUILDIN_DEF(clone,"siisi????"),
@@ -32834,7 +32919,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(mercenary_set_faith,"ii"),
 	BUILDIN_DEF(readbook,"ii"),
 	BUILDIN_DEF(setfont,"i"),
-	BUILDIN_DEF(areamobuseskill,"siiiiviiiii"),
+	BUILDIN_DEF(areamobuseskill,"siiivviiiii"),
 	BUILDIN_DEF(progressbar,"si"),
 	BUILDIN_DEF(progressbar_npc, "si?"),
 	BUILDIN_DEF(pushpc,"ii"),
@@ -33071,6 +33156,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(set_reputation_points, "ii?"),
 	BUILDIN_DEF(get_reputation_points, "i?"),
 	BUILDIN_DEF(item_reform, "??"),
+	BUILDIN_DEF(item_enchant, "i?"),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
@@ -33308,7 +33394,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getskillinfo, "iv??"),					// 获取指定技能在技能数据库中所配置的各项信息 [聽風]
 #endif // Pandas_ScriptCommand_GetSkillInfo
 #ifdef Pandas_ScriptCommand_BossMonster
-	BUILDIN_DEF2(monster,"boss_monster", "siisii???"),	// 召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS) [人鱼姬的思念]
+	BUILDIN_DEF2(monster,"boss_monster", "siisvi???"),	// 召唤魔物并使之能被 BOSS 雷达探测 (哪怕被召唤魔物本身不是 BOSS) [人鱼姬的思念]
 #endif // Pandas_ScriptCommand_BossMonster
 #ifdef Pandas_ScriptCommand_Sleep3
 	BUILDIN_DEF(sleep3,"i"),							// 休眠一段时间再执行后续脚本, 与 sleep2 类似但忽略报错 [人鱼姬的思念]

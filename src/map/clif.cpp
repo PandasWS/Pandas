@@ -11077,6 +11077,7 @@ void clif_equipcheckbox(struct map_session_data* sd)
 /// 0997 <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.31B* (ZC_EQUIPWIN_MICROSCOPE_V5, PACKETVER >= 20120925)
 /// 0a2d <packet len>.W <name>.24B <class>.W <hairstyle>.W <bottom-viewid>.W <mid-viewid>.W <up-viewid>.W <robe>.W <haircolor>.W <cloth-dye>.W <gender>.B {equip item}.57B* (ZC_EQUIPWIN_MICROSCOPE_V6, PACKETVER >= 20150225)
 void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* tsd ){
+#if PACKETVER_AD_NUM >= 20071211 || PACKETVER_SAK_NUM >= 20071127 || PACKETVER_MAIN_NUM >= 20071211 || defined(PACKETVER_RE)
 	nullpo_retv( sd );
 	nullpo_retv( tsd );
 
@@ -11128,6 +11129,7 @@ void clif_viewequip_ack( struct map_session_data* sd, struct map_session_data* t
 	p->sex = tsd->vd.sex;
 
 	clif_send( p, p->PacketLength, &sd->bl, SELF );
+#endif
 }
 
 
@@ -12025,7 +12027,7 @@ void clif_parse_TickSend(int fd, struct map_session_data *sd)
 /// 07d9 { <is skill>.B <id>.L <count>.W }*38 (ZC_SHORTCUT_KEY_LIST_V2, PACKETVER >= 20090617)
 /// 0a00 <rotate>.B { <is skill>.B <id>.L <count>.W }*38 (ZC_SHORTCUT_KEY_LIST_V3, PACKETVER >= 20141022)
 void clif_hotkeys_send( struct map_session_data *sd, int tab ){
-#ifdef HOTKEY_SAVING
+#if defined(HOTKEY_SAVING) && ( PACKETVER_MAIN_NUM >= 20070711 || PACKETVER_RE_NUM >= 20080827 || PACKETVER_AD_NUM >= 20070711 || PACKETVER_SAK_NUM >= 20070628 )
 	nullpo_retv( sd );
 
 	struct PACKET_ZC_SHORTCUT_KEY_LIST p;
@@ -25168,6 +25170,532 @@ void clif_parse_item_reform_start( int fd, struct map_session_data* sd ){
 	clif_additem( sd, index, 1, 0 );
 
 	clif_item_reform_result( *sd, index, 0 );
+#endif
+}
+
+void clif_enchantwindow_open( struct map_session_data& sd, uint64 clientLuaIndex ){
+#if PACKETVER_RE_NUM >= 20211103
+	// Hardcoded clientside check
+	if( sd.weight > ( ( sd.max_weight * 70 ) / 100 ) ){
+		clif_msg_color( &sd, C_ENCHANT_OVERWEIGHT, color_table[COLOR_RED] );
+		sd.state.item_enchant_index = 0;
+		return;
+		
+	}
+
+	struct PACKET_ZC_UI_OPEN_V3 p = {};
+
+	p.packetType = HEADER_ZC_UI_OPEN_V3;
+	p.type = OUT_UI_ENCHANT;
+	p.data = clientLuaIndex;
+
+	clif_send( &p, sizeof( p ), &sd.bl, SELF );
+
+	sd.state.item_enchant_index = clientLuaIndex;
+#endif
+}
+
+void clif_enchantwindow_result( struct map_session_data& sd, bool success, t_itemid enchant = 0 ){
+#if PACKETVER_RE_NUM >= 20211103
+	struct PACKET_ZC_RESPONSE_ENCHANT p = {};
+
+	p.packetType = HEADER_ZC_RESPONSE_ENCHANT;
+	if( success ){
+		p.messageId = C_ENCHANT_SUCCESS;
+	}else{
+		p.messageId = C_ENCHANT_FAILURE;
+	}
+	p.enchantItemId = enchant;
+
+	clif_send( &p, sizeof( p ), &sd.bl, SELF );
+
+	sd.state.item_enchant_index = 0;
+#endif
+}
+
+bool clif_parse_enchant_basecheck( struct item& selected_item, std::shared_ptr<s_item_enchant> enchant ){
+	if( selected_item.equip != 0 ){
+		return false;
+	}
+
+	if( selected_item.equipSwitch != 0 ){
+		return false;
+	}
+
+	if( selected_item.attribute != 0 ){
+		return false;
+	}
+
+	if( !util::vector_exists( enchant->target_item_ids, selected_item.nameid ) ){
+		return false;
+	}
+
+	if( selected_item.refine < enchant->minimumRefine ){
+		return false;
+	}
+
+	if( selected_item.enchantgrade < enchant->minimumEnchantgrade ){
+		return false;
+	}
+
+	if( !enchant->allowRandomOptions ){
+		for( const s_item_randomoption& option : selected_item.option ){
+			if( option.id != 0 ){
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void clif_parse_enchantwindow_general( int fd, struct map_session_data* sd ){
+#if PACKETVER_RE_NUM >= 20211103
+	struct PACKET_CZ_REQUEST_RANDOM_ENCHANT *p = (struct PACKET_CZ_REQUEST_RANDOM_ENCHANT*)RFIFOP( fd, 0 );
+
+	if( sd->state.item_enchant_index != p->clientLuaIndex ){
+		return;
+	}
+
+	uint16 index = server_index( p->index );
+
+	if( index >= MAX_INVENTORY ){
+		return;
+	}
+
+	if( sd->inventory_data[index] == nullptr ){
+		return;
+	}
+
+	struct item& selected_item = sd->inventory.u.items_inventory[index];
+	std::shared_ptr<s_item_enchant> enchant = item_enchant_db.find( p->clientLuaIndex );
+
+	if( enchant == nullptr ){
+		return;
+	}
+
+	if( !clif_parse_enchant_basecheck( selected_item, enchant ) ){
+		return;
+	}
+
+	uint16 slot = MAX_SLOTS;
+
+	for( uint16 nextSlot : enchant->order ){
+		if( selected_item.card[nextSlot] == 0 ){
+			slot = nextSlot;
+			break;
+		}
+	}
+
+	if( slot == MAX_SLOTS ){
+		return;
+	}
+
+	if( slot < sd->inventory_data[index]->slots ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant_slot> enchant_slot = util::umap_find( enchant->slots, slot );
+
+	if( enchant_slot == nullptr ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant_normal> enchants_for_enchantgrade = util::umap_find( enchant_slot->normal.enchants, (uint16)selected_item.enchantgrade );
+
+	if( enchants_for_enchantgrade == nullptr ){
+		clif_messagecolor( &sd->bl, color_table[COLOR_RED], msg_txt( sd, 829 ), false, SELF); // Enchanting is not possible for your item's enchant grade.
+		clif_enchantwindow_result( *sd, false );
+		return;
+	}
+
+	if( sd->status.zeny < enchant_slot->normal.zeny ){
+		return;
+	}
+
+	std::unordered_map<uint16, uint16> materials;
+
+	for( const auto& entry : enchant_slot->normal.materials ){
+		int16 idx = pc_search_inventory( sd, entry.first );
+
+		if( idx < 0 ){
+			return;
+		}
+
+		if( sd->inventory.u.items_inventory[idx].amount < entry.second ){
+			return;
+		}
+
+		materials[idx] = entry.second;
+	}
+
+	if( pc_payzeny( sd, enchant_slot->normal.zeny, LOG_TYPE_ENCHANT, nullptr ) != 0 ){
+		return;
+	}
+
+	for( const auto& entry : materials ){
+		if( pc_delitem( sd, entry.first, entry.second, 0, 0, LOG_TYPE_ENCHANT )  != 0 ){
+			return;
+		}
+	}
+
+	uint32 chance = enchant_slot->normal.chance;
+
+	for( int i = 0; i <= MAX_ENCHANTGRADE; i++ ){
+		chance += enchant_slot->normal.enchantgradeChanceIncrease[i];
+	}
+
+	if( chance < 100000 && rnd_value( 0, 100000 ) > chance ){
+		clif_enchantwindow_result( *sd, false );
+		return;
+	}
+
+	// Log removal of item
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, -1, &selected_item );
+
+	size_t maximum = 3 * enchant_slot->normal.enchants.size();
+	bool enchanted = false;
+
+	for( int i = 0; i < maximum; i++ ){
+		std::shared_ptr<s_item_enchant_normal_sub> normal_enchant = util::umap_random( enchants_for_enchantgrade->enchants );
+
+		if( rnd_value( 0, 10000 ) < normal_enchant->chance ){
+			selected_item.card[slot] = normal_enchant->item_id;
+			enchanted = true;
+			break;
+		}
+	}
+
+	if( !enchanted ){
+		std::shared_ptr<s_item_enchant_normal_sub> normal_enchant = util::umap_random( enchants_for_enchantgrade->enchants );
+		selected_item.card[slot] = normal_enchant->item_id;
+	}
+
+	// Log retrieving the item again -> with the new enchant
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, 1, &selected_item );
+
+	clif_enchantwindow_result( *sd, true, selected_item.card[slot] );
+#endif
+}
+
+void clif_parse_enchantwindow_perfect( int fd, struct map_session_data* sd ){
+#if PACKETVER_RE_NUM >= 20211103
+	struct PACKET_CZ_REQUEST_PERFECT_ENCHANT *p = (struct PACKET_CZ_REQUEST_PERFECT_ENCHANT*)RFIFOP( fd, 0 );
+
+	if( sd->state.item_enchant_index != p->clientLuaIndex ){
+		return;
+	}
+
+	uint16 index = server_index( p->index );
+
+	if( index >= MAX_INVENTORY ){
+		return;
+	}
+
+	if( sd->inventory_data[index] == nullptr ){
+		return;
+	}
+
+	struct item& selected_item = sd->inventory.u.items_inventory[index];
+	std::shared_ptr<s_item_enchant> enchant = item_enchant_db.find( p->clientLuaIndex );
+
+	if( enchant == nullptr ){
+		return;
+	}
+
+	if( !clif_parse_enchant_basecheck( selected_item, enchant ) ){
+		return;
+	}
+
+	uint16 slot = MAX_SLOTS;
+
+	for( uint16 nextSlot : enchant->order ){
+		if( selected_item.card[nextSlot] == 0 ){
+			slot = nextSlot;
+			break;
+		}
+	}
+
+	if( slot == MAX_SLOTS ){
+		return;
+	}
+
+	if( slot < sd->inventory_data[index]->slots ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant_slot> enchant_slot = util::umap_find( enchant->slots, slot );
+
+	if( enchant_slot == nullptr ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant_perfect> perfect_enchant = util::umap_find( enchant_slot->perfect.enchants, p->itemId );
+
+	if( perfect_enchant == nullptr ){
+		return;
+	}
+
+	if( sd->status.zeny < perfect_enchant->zeny ){
+		return;
+	}
+
+	std::unordered_map<uint16, uint16> materials;
+
+	for( const auto& entry : perfect_enchant->materials ){
+		int16 idx = pc_search_inventory( sd, entry.first );
+
+		if( idx < 0 ){
+			return;
+		}
+
+		if( sd->inventory.u.items_inventory[idx].amount < entry.second ){
+			return;
+		}
+
+		materials[idx] = entry.second;
+	}
+
+	if( pc_payzeny( sd, perfect_enchant->zeny, LOG_TYPE_ENCHANT, nullptr ) != 0 ){
+		return;
+	}
+
+	for( const auto& entry : materials ){
+		if( pc_delitem( sd, entry.first, entry.second, 0, 0, LOG_TYPE_ENCHANT )  != 0 ){
+			return;
+		}
+	}
+
+	// Log removal of item
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, -1, &selected_item );
+
+	selected_item.card[slot] = perfect_enchant->item_id;
+
+	// Log retrieving the item again -> with the new enchant
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, 1, &selected_item );
+
+	clif_enchantwindow_result( *sd, true, selected_item.card[slot] );
+#endif
+}
+
+void clif_parse_enchantwindow_upgrade( int fd, struct map_session_data* sd ){
+#if PACKETVER_RE_NUM >= 20211103
+	struct PACKET_CZ_REQUEST_UPGRADE_ENCHANT *p = (struct PACKET_CZ_REQUEST_UPGRADE_ENCHANT*)RFIFOP( fd, 0 );
+
+	if( sd->state.item_enchant_index != p->clientLuaIndex ){
+		return;
+	}
+
+	uint16 index = server_index( p->index );
+
+	if( index >= MAX_INVENTORY ){
+		return;
+	}
+
+	if( sd->inventory_data[index] == nullptr ){
+		return;
+	}
+
+	struct item& selected_item = sd->inventory.u.items_inventory[index];
+	std::shared_ptr<s_item_enchant> enchant = item_enchant_db.find( p->clientLuaIndex );
+
+	if( enchant == nullptr ){
+		return;
+	}
+
+	if( !clif_parse_enchant_basecheck( selected_item, enchant ) ){
+		return;
+	}
+
+	uint16 slot = p->slot;
+
+	if( slot >= MAX_SLOTS ){
+		return;
+	}
+
+	if( slot < sd->inventory_data[index]->slots ){
+		return;
+	}
+
+	if( selected_item.card[slot] == 0 ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant_slot> enchant_slot = util::umap_find( enchant->slots, slot );
+
+	if( enchant_slot == nullptr ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant_upgrade> upgrade = util::umap_find( enchant_slot->upgrade.enchants, selected_item.card[slot] );
+
+	if( upgrade == nullptr ){
+		return;
+	}
+
+	if( sd->status.zeny < upgrade->zeny ){
+		return;
+	}
+
+	std::unordered_map<uint16, uint16> materials;
+
+	for( const auto& entry : upgrade->materials ){
+		int16 idx = pc_search_inventory( sd, entry.first );
+
+		if( idx < 0 ){
+			return;
+		}
+
+		if( sd->inventory.u.items_inventory[idx].amount < entry.second ){
+			return;
+		}
+
+		materials[idx] = entry.second;
+	}
+
+	if( pc_payzeny( sd, upgrade->zeny, LOG_TYPE_ENCHANT, nullptr ) != 0 ){
+		return;
+	}
+
+	for( const auto& entry : materials ){
+		if( pc_delitem( sd, entry.first, entry.second, 0, 0, LOG_TYPE_ENCHANT )  != 0 ){
+			return;
+		}
+	}
+
+	// Log removal of item
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, -1, &selected_item );
+
+	selected_item.card[slot] = upgrade->upgrade_item_id;
+
+	// Log retrieving the item again -> with the new enchant
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, 1, &selected_item );
+
+	clif_enchantwindow_result( *sd, true, selected_item.card[slot] );
+#endif
+}
+
+void clif_parse_enchantwindow_reset( int fd, struct map_session_data* sd ){
+#if PACKETVER_RE_NUM >= 20211103
+	struct PACKET_CZ_REQUEST_RESET_ENCHANT *p = (struct PACKET_CZ_REQUEST_RESET_ENCHANT*)RFIFOP( fd, 0 );
+
+	if( sd->state.item_enchant_index != p->clientLuaIndex ){
+		return;
+	}
+
+	uint16 index = server_index( p->index );
+
+	if( index >= MAX_INVENTORY ){
+		return;
+	}
+
+	if( sd->inventory_data[index] == nullptr ){
+		return;
+	}
+
+	struct item& selected_item = sd->inventory.u.items_inventory[index];
+
+	if( selected_item.equip != 0 ){
+		return;
+	}
+
+	if( selected_item.equipSwitch != 0 ){
+		return;
+	}
+
+	if( selected_item.attribute != 0 ){
+		return;
+	}
+
+	std::shared_ptr<s_item_enchant> enchant = item_enchant_db.find( p->clientLuaIndex );
+
+	if( enchant == nullptr ){
+		return;
+	}
+
+	if( !util::vector_exists( enchant->target_item_ids, selected_item.nameid ) ){
+		return;
+	}
+
+	if( selected_item.refine < enchant->minimumRefine ){
+		return;
+	}
+
+	if( selected_item.enchantgrade < enchant->minimumEnchantgrade ){
+		return;
+	}
+
+	bool is_enchanted = false;
+
+	for( int i = sd->inventory_data[index]->slots; i < MAX_SLOTS; i++ ){
+		if( selected_item.card[i] != 0 ){
+			is_enchanted = true;
+			break;
+		}
+	}
+
+	if( !is_enchanted ){
+		return;
+	}
+
+	if( sd->status.zeny < enchant->reset.zeny ){
+		return;
+	}
+
+	std::unordered_map<uint16, uint16> materials;
+
+	for( const auto& entry : enchant->reset.materials ){
+		int16 idx = pc_search_inventory( sd, entry.first );
+
+		if( idx < 0 ){
+			return;
+		}
+
+		if( sd->inventory.u.items_inventory[idx].amount < entry.second ){
+			return;
+		}
+
+		materials[idx] = entry.second;
+	}
+
+	if( pc_payzeny( sd, enchant->reset.zeny, LOG_TYPE_ENCHANT, nullptr ) != 0 ){
+		return;
+	}
+
+	for( const auto& entry : materials ){
+		if( pc_delitem( sd, entry.first, entry.second, 0, 0, LOG_TYPE_ENCHANT )  != 0 ){
+			return;
+		}
+	}
+
+	uint32 chance = enchant->reset.chance;
+
+	if( chance == 0 ){
+		return;
+	}
+
+	if( chance < 100000 && rnd_value( 0, 100000 ) > chance ){
+		clif_enchantwindow_result( *sd, false );
+		return;
+	}
+
+	// Log removal of item
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, -1, &selected_item );
+
+	for( int i = sd->inventory_data[index]->slots; i < MAX_SLOTS; i++ ){
+		selected_item.card[i] = 0;
+	}
+
+	// Log retrieving the item again -> with the new enchant
+	log_pick_pc( sd, LOG_TYPE_ENCHANT, 1, &selected_item );
+
+	clif_enchantwindow_result( *sd, true );
+#endif
+}
+
+void clif_parse_enchantwindow_close( int fd, struct map_session_data* sd ){
+#if PACKETVER_RE_NUM >= 20211103
+	sd->state.item_enchant_index = 0;
 #endif
 }
 
