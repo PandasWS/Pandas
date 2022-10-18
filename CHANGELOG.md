@@ -12,6 +12,273 @@
 
 -------------------------------------------------------------------------------
 
+## [v1.1.17] - `2022-09-13`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- Oysica、Sense、香草、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 升级提示
+
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.17_main.sql`
+- 若您启用了 WEB 接口服务器, 那么请在 WEB 接口数据库导入:
+	- `sql-files\web\upgrades\upgrade_to_1.1.17_web.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+### 新增功能
+
+- 实现 `OnPCCartAddFilter` 过滤器事件, 当玩家准备将道具从背包存入手推车时触发 [香草] (#544)
+- 实现 `OnPCCartDelFilter` 过滤器事件, 当玩家准备将道具从手推车取回背包时触发 [香草] (#545)
+
+### 缺陷修正
+
+- 修正使用 `utf8 / utf8mb4` 编码时无法根据语言转换成对应 ANSI 编码的问题
+- 修正某些情况下 getstoragelist 会意外打开仓库界面的问题 (#642)
+- 修正 `battleignore` 脚本指令工作异常的问题 (感谢 "Sense" 反馈) (#641)
+- 修正因技能而触发 `OnPCHarmedExpress` 导致的事件执行错误 (#643)
+- 使 `getstoragelist` 系列指令不必非得在无坐标的浮动 NPC 中使用 (#644)
+- 当 `script_state` 被释放的时候, 同时清理玩家多层脚本堆栈备份清单中的副本 (#640)
+- 参考 "RO幻想厅" 的数据, 补充繁体中文情况下魔物名称翻译表 (感谢 "Oysica" 提交) (#645)
+
+-------------------------------------------------------------------------------
+
+## [v1.1.16] - `2022-08-10`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- 香草、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 风险提示
+
+- rAthena 重新调整了物理攻击的算法使之与官服匹配, 可能会导致玩家反馈物理伤害发生变化
+
+### 新增功能
+
+- 使 `bonus2 bSkillNoRequire` 效果调整器可以移除 AP/APRATE 施放條件 (#622)
+
+### 缺陷修正
+
+- 修正使用 `getinventorylist` 导致地图服务器崩溃的低级错误 (感谢 "香草" 反馈) (#634)
+
+-------------------------------------------------------------------------------
+
+## [v1.1.15] - `2022-08-08`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- Oysica、Messiah、DDWT、jian916、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 新增功能
+
+- 完全支持读取 UTF8 (包含或者不含BOM) 编码的脚本、配置和数据文件 (#623)
+- 实现 `getcartinfo` 脚本指令, 用于查询指定手推车序号的道具详细信息
+- 实现 `getguildstorageinfo` 脚本指令, 用于查询指定公会仓库序号的道具详细信息
+- 实现 `getstorageinfo` 脚本指令, 用于查询指定个人仓库/扩充仓库序号的道具详细信息
+
+### 功能调整
+
+- 当使用 `utf8` / `utf8mb4` 作为数据库编码时不再给予警告 (#620)
+- 当 YAML 数据文件中不存在 `Body` 节点时也依然输出结尾信息 (#625)
+- 调整脚本引擎在 `add_str` 中分配内存的步进空间, 降低内存重分配次数 (#632)
+
+### 缺陷修正
+
+- 修正仓库存取事件打断后 `Alt + 鼠标右键` 快捷键失效的问题 (感谢 "香草" 修正)
+- 修正仓库存取事件打断后手推车物品无法拖拽的问题 (感谢 "香草" 修正)
+- 修正 `spawn_level[]` 字段返回值不符合预期的问题 (感谢 "Oysica" 反馈) (#618)
+- 修正 `UTF8-BOM` 字符转换成 `BIG5` 时存在多余反斜杠的问题 (感谢 "DDWT", "jian916" 反馈) (#619)
+- 修正拥有 `BSF_REM_ON_LOGOUT` 标记位的 `bonus_script` 极少数情况下会在重登后生效的问题 (感谢 "香草" 反馈) (#626)
+- 修正 `breakpad` 在 `Ubuntu 22.04 LTS` 无法被 `gcc-11` 顺利编译的问题 (感谢 "Messiah" 反馈) (#628)
+- 修正 `sprintf` 脚本指令无法格式化 int64 数值的问题 (#631)
+- 修正触发 `str_buf` 扩容后, 所有 `st->funcname` 保存的指令名发生错误的情况 (#633)
+- 修正复兴前的状态数据库丢失了部分字段导致的一系列问题 (感谢 "Oysica" 反馈) (#629)
+
+-------------------------------------------------------------------------------
+
+## [v1.1.14] - `2022-07-17`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- Oysica、Messiah、DDWT、人鱼姬的思念、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 新增功能
+
+- 实现 `getcartlist` 脚本指令, 用于获取手推车中的物品信息
+- 实现 `getguildstoragelist` 脚本指令, 用于获取公会仓库中的物品信息
+- 实现 `getstoragelist` 脚本指令, 用于获取个人仓库中的物品信息 (支持扩充仓库)
+- 改进 `getinventorylist` 系列脚本指令, 使之可以控制想查询的数据类型
+- 实现 `OnPCHarmedExpress` 实时事件, 当玩家受到伤害并即将进行结算时触发 [人鱼姬的思念] (#533)
+
+### 功能调整
+
+- 移除用于优化 YAML 文件读取速度的疾风缓存机制, 已结束历史使命 (#610)
+- 优化加载与解析 YAML 文件时出现的一些报错体验
+
+### 缺陷修正
+
+- 修正背包剩余空间容量判断错误的问题
+- 修正在特定配置下炼金术士召唤部分魔物时会导致地图服务器崩溃的问题 (感谢 "Oysica" 指出) (#609)
+- 修正在 Linux 非英文环境下编码转换失败的问题 (感谢 Messiah 反馈) (#611)
+- 修正 `reloadbarterdb` 没有调用父类 clear 导致数据没被重置的问题 (#606)
+- 修正客户端重置快捷键后 WEB 接口服务器没有删除对应记录的问题 (#605)
+- 修正 MVP 被系统击杀时会出现 nullpo 提示的问题 (#602)
+- 修正 `getmapspawns` 和 `getmobspawns` 的说明错误 (感谢 "DDWT" 指出) (#603)
+- 修正已向角色服务器请求获取 'd' 个公会城堡信息的错误
+
+-------------------------------------------------------------------------------
+
+## [v1.1.13] - `2022-06-19`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- 香草、忘我、人鱼姬的思念、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 升级提示
+
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.13_logs.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.13_main_use_sql_db.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+### 新增功能
+
+- 实现 `reloadlaphinedb` 管理员指令, 用于重新加载 Laphine 数据库 (#596)
+- 实现 `reloadbarterdb` 管理员指令, 用于重新加载以物易物数据库 (#597)
+- 实现 `getbossinfo` 脚本指令, 用于查询 BOSS 魔物重生时间及其坟墓等信息 (#598)
+- 实现 `whodropitem` 脚本指令, 用于查询指定道具会从哪些魔物身上掉落 (#591)
+- 实现 `OnPCStorageAddFilter` 过滤器事件, 当玩家准备将道具存入仓库时触发过滤器 (感谢 "香草" 实现) (#539)
+- 实现 `OnPCStorageDelFilter` 过滤器事件, 当玩家准备将道具取出仓库时触发过滤器 (感谢 "香草" 实现) (#540)
+
+### 功能调整
+
+- 同步 kRO 截止 `2022-06-13` 可用的 NPC 外观编号范围 (#595)
+- 使 `OnMobDropItemExpress` 能够返回即将掉落道具的魔物的游戏单位编号 (#593)
+- 使 `OnPCViewEquipFilter` 可以知道被查看角色是否允许其他人看他的装备 (#594)
+
+### 缺陷修正
+
+- 修正 `bonus3 bAddEffOnSkill` 中 `PC_BONUS_CHK_SC` 带入检测参数错误的问题 (感谢 "忘我" 反馈) (#575)
+
+-------------------------------------------------------------------------------
+
+## [v1.1.12] - `2022-05-15`
+
+### 特别感谢
+
+在此版本的开发过程中以下朋友提供了各种形式的支持, 特此鸣谢 (排名不分先后).
+
+- Mr.Siu、SSBoyz、人鱼姬的思念、secretdataz、Sky、小林、HongShin、Renee
+
+### 特别公告
+
+熊猫模拟器的官网也已经正式上线了, 欢迎各位朋友前往访问! [前往访问](https://pandas.ws)
+
+### 加入 Discord 社区
+
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+
+### 风险提示
+
+此版本距离上个版本间隔了两个月时间,
+这期间主要的原因是我们的上游项目 rAthena 进行了一项较大改动.
+
+它将代码中全部状态 (可以理解为游戏里的 BUFF) 从代码中抽离成一个 status.yml 配置文件,
+这会极大赋予用户随意调整状态工作细节的能力, 但是也将 rAthena 带入了缺陷频出的一段不稳定时期.
+
+经过这段时间的沉淀, 相信应该已经到了一个比较平衡的情况,
+但可能也依然存在社区和我们没有发现的问题, 如果有发现请随时上报给开发者.
+
+### 升级提示
+
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.12_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
+特别注意: 本次更新中 `skill_db.yml` 和新增的 `status.yml` 要注意同步, 特别是老用户.
+
+### 新增功能
+
+- 实现 `getrateidx` 脚本指令, 用于根据权重随机获取一个数值型数组的索引序号 (#555)
+- 实现用于获取手推车负重信息的 `CartWeight` 和 `MaxCartWeight` 脚本常量 (感谢 "人鱼姬的思念" 实现) (#503)
+- 实现 `OnPCClickTombFilter` 触发器事件, 当玩家点击魔物墓碑时触发 (感谢 "人鱼姬的思念" 实现) (#510)
+- 实现 `OnPCTalkExpress` 实时事件, 当玩家往聊天框发送信息时触发 (感谢 "人鱼姬的思念" 实现) (#511)
+- 使得 `getunitdata` / `setunitdata` 可以读取或设置特定魔物单位的经验值 (感谢 "人鱼姬的思念" 实现) (#526)
+
+### 功能调整
+
+- 完善对于 `script4each` 字符串转义的说明 (感谢 "小林" 指出) (#553)
+- 更新繁体中文的技能名称翻译对照表 (感谢 "SSBoyz" 提交) (#563)
+- 对疾风缓存机制进行重构, 并调整各类声明和定义的位置 (#565)
+- 修正交叉切换 Debug / Release 方案进行编译时报错的问题 (#564)
+- 默认禁止在角色、公会、队伍名称中使用单引号 (感谢 "SSBoyz" 建议) (#568)
+
+### 缺陷修正
+
+- 修正魔物死亡但客户端没移除魔物单位的一种新情况 (感谢 "Mr.Siu" 提供环境配合验证) (#562)
+- 修复使用 RODEX 系统发送已插卡的装备会导致邮件发送失败的问题 (感谢 "SSBoyz" 反馈) (#541)
+- 修正写入公会仓库日志时没有对角色名进行转义处理的问题 (感谢 "小林" 反馈) (#552)
+- 修正异步查询数据库指令执行过程中 `reloadscript` 可能会导致崩溃的问题 (#567)
+
+-------------------------------------------------------------------------------
+
 ## [v1.1.11] - `2022-03-13`
 
 ### 特别感谢
@@ -22,12 +289,14 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
-- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.11_main_use_sql_db.sql`
-- 升级到 `1.1.11` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.11_logs`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.11_logs.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.11_main_use_sql_db.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -76,12 +345,14 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
-- 升级到 `1.1.10` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.10_main.sql`
-- 升级到 `1.1.10` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.10_logs.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.10_main.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.10_logs.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -127,7 +398,7 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
@@ -149,12 +420,14 @@
 
 ### 加入 Discord 社区
 
-我们在 Discord 开设了 PandasWS 官方社区，欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
+我们在 Discord 开设了 PandasWS 官方社区, 欢迎各位朋友加入! [猛击此处立刻加入](https://discord.gg/9bEfrPPruj)
 
 ### 升级提示
 
-- 升级到 `1.1.8` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.8_main.sql`
-- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.8_main_use_sql_db.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.8_main.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.8_main_use_sql_db.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -198,7 +471,8 @@
 
 ### 升级提示
 
-- 若您启用了 WEB 接口服务器, 那么请在 WEB 接口数据库导入: `sql-files\web\upgrades\upgrade_to_1.1.7_web.sql`
+- 若您启用了 WEB 接口服务器, 那么请在 WEB 接口数据库导入:
+	- `sql-files\web\upgrades\upgrade_to_1.1.7_web.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -264,7 +538,8 @@
 
 ### 升级提示
 
-- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.5_main_use_sql_db.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.5_main_use_sql_db.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -333,8 +608,10 @@
 
 ### 升级提示
 
-- 升级到 `1.1.2` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.2_main.sql`
-- 升级到 `1.1.2` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.1.2_logs.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.2_main.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.1.2_logs.sql`
 - 由于 `msg_conf` 中地图服务器的消息编号有所调整, 请注意使用最新的消息数据库
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
@@ -371,7 +648,11 @@
 
 ### 升级提示
 
-- 升级到 `1.1.1` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.1_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.1_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
 
 ### 新增功能
 
@@ -416,7 +697,12 @@
 
 ### 升级提示
 
-- 升级到 `1.1.0` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.1.0_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.1.0_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
 - 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
 - 本次 `rAthena` 官方整合了多个物品数据文件到 `item_db.yml` 单文件中
 - 本次 `rAthena` 官方提升 `quest_db.yml` 的数据版本 (从 1 调整为 2)
@@ -461,7 +747,8 @@
 
 ### 升级提示
 
-- 升级到 `1.0.8` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.8_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.8_main.sql`
 
 ### 新增功能
 
@@ -482,9 +769,12 @@
 
 ### 升级提示
 
-- 升级到 `1.0.7` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.7_main.sql`
-	- 若启用 `SQL` 版本的魔物/物品数据库, 那么还需导入: `sql-files\main\upgrades\upgrade_to_1.0.7_main_use_sql_db.sql`
-- 升级到 `1.0.7` 请在日志数据库导入: `sql-files\logs\upgrades\upgrade_to_1.0.7_logs.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.7_main.sql`
+- 若启用 `SQL` 版本的魔物/物品数据库, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.7_main_use_sql_db.sql`
+- 请在日志数据库导入:
+	- `sql-files\logs\upgrades\upgrade_to_1.0.7_logs.sql`
 
 > 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
 > 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
@@ -544,7 +834,11 @@
 
 ### 升级提示
 
-- 升级到 `1.0.6` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.6_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.6_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
 
 ### 新增功能
 
@@ -577,7 +871,11 @@
 
 ### 升级提示
 
-- 升级到 `1.0.5` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.5_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.5_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
 
 ### 新增功能
 
@@ -618,7 +916,12 @@
 
 ### 升级提示
 
-- 升级到 `1.0.3` 请在主数据库导入: `sql-files\main\upgrades\upgrade_to_1.0.3_main.sql`
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.0.3_main.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 通常会有一些导入顺序的建议.
+> 请养成升级数据库之前备份的好习惯, 因为升级脚本并未经过大规模测试!!
+
 - 由于 `Boost` 依赖项目变化, 请使用源码的同学重新编译 `3rdparty\boost` 工程
 - 本次 `rAthena` 官方整合了多个技能数据文件到 `skill_db.yml` 单文件中
 - 使用 `csv2yaml.exe` 可以将 `txt` 数据文件升级为 `yml` 格式的数据文件
@@ -736,6 +1039,13 @@
 
 -------------------------------------------------------------------------------
 
+[v1.1.17]: https://github.com/PandasWS/Pandas/compare/v1.1.16...v1.1.17
+[v1.1.16]: https://github.com/PandasWS/Pandas/compare/v1.1.15...v1.1.16
+[v1.1.15]: https://github.com/PandasWS/Pandas/compare/v1.1.14...v1.1.15
+[v1.1.14]: https://github.com/PandasWS/Pandas/compare/v1.1.13...v1.1.14
+[v1.1.13]: https://github.com/PandasWS/Pandas/compare/v1.1.12...v1.1.13
+[v1.1.12]: https://github.com/PandasWS/Pandas/compare/v1.1.11...v1.1.12
+[v1.1.11]: https://github.com/PandasWS/Pandas/compare/v1.1.10...v1.1.11
 [v1.1.10]: https://github.com/PandasWS/Pandas/compare/v1.1.9...v1.1.10
 [v1.1.9]: https://github.com/PandasWS/Pandas/compare/v1.1.8...v1.1.9
 [v1.1.8]: https://github.com/PandasWS/Pandas/compare/v1.1.7...v1.1.8

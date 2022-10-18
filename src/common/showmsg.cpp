@@ -59,12 +59,6 @@ int msg_silent = 0; //Specifies how silent the console is.
 int console_msg_log = 0;//[Ind] msg error logging
 char console_log_filepath[32] = "./log/unknown.log";
 
-#ifdef Pandas_YamlBlastCache_Serialize
-// 此全局变量用来记录加载 yaml 数据库的过程是否完全没有任何错误
-// 只有没任何错误的时候疾风缓存才对它生成缓存, 只有有任何一个错误就跳过 (避免二次启动时掩盖错误)
-bool yaml_load_completely_success = true;
-#endif // Pandas_YamlBlastCache_Serialize
-
 ///////////////////////////////////////////////////////////////////////////////
 /// static/dynamic buffer for the messages
 
@@ -878,9 +872,6 @@ void ShowWarning(const char *string, ...) {
 	va_start(ap, string);
 	_vShowMessage(MSG_WARNING, string, ap);
 	va_end(ap);
-#ifdef Pandas_YamlBlastCache_Serialize
-	yaml_load_completely_success = false;
-#endif // Pandas_YamlBlastCache_Serialize
 }
 void ShowConfigWarning(config_setting_t *config, const char *string, ...)
 {
@@ -899,25 +890,16 @@ void ShowDebug(const char *string, ...) {
 	va_start(ap, string);
 	_vShowMessage(MSG_DEBUG, string, ap);
 	va_end(ap);
-#ifdef Pandas_YamlBlastCache_Serialize
-	yaml_load_completely_success = false;
-#endif // Pandas_YamlBlastCache_Serialize
 }
 void ShowError(const char *string, ...) {
 	va_list ap;
 	va_start(ap, string);
 	_vShowMessage(MSG_ERROR, string, ap);
 	va_end(ap);
-#ifdef Pandas_YamlBlastCache_Serialize
-	yaml_load_completely_success = false;
-#endif // Pandas_YamlBlastCache_Serialize
 }
 void ShowFatalError(const char *string, ...) {
 	va_list ap;
 	va_start(ap, string);
 	_vShowMessage(MSG_FATALERROR, string, ap);
 	va_end(ap);
-#ifdef Pandas_YamlBlastCache_Serialize
-	yaml_load_completely_success = false;
-#endif // Pandas_YamlBlastCache_Serialize
 }

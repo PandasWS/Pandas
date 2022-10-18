@@ -47,7 +47,11 @@ __all__ = [
     'get_pdb_hash',
     'get_file_ext',
     'get_byte_encoding',
-    'get_file_encoding'
+    'get_file_encoding',
+    'normalize_path',
+    'display_version_info',
+    'get_current_branch',
+    'is_jenkins'
 ]
 
 init()
@@ -58,12 +62,14 @@ def md5(value):
     '''
     return hashlib.md5(value.encode(encoding='UTF-8')).hexdigest()
 
-def glob_delete(glob_pattern):
+def glob_delete(glob_pattern, excludes = None):
     '''
     删除一个指定通配符路径中的全部文件
     '''
     contents = glob.glob(glob_pattern)
     for path in contents:
+        if excludes and str.lower(os.path.basename(path)) in excludes:
+            continue
         if os.path.isfile(path):
             os.remove(path)
             if not os.listdir(os.path.dirname(path)):
@@ -209,8 +215,8 @@ def get_file_encoding(filepath):
     filesize = f.tell()
     f.seek(0, 0)
 
-    # 初始化的块长度为 1024 * 4
-    blocksize = 1024 * 4
+    # 初始化的块长度为 1024 * 8
+    blocksize = 1024 * 8
 
     # 文件大小和块大小相比, 取最小那个值, 作为新的块大小
     blocksize = filesize if filesize < blocksize else blocksize
@@ -484,6 +490,11 @@ def is_pandas_release(slndir):
     读取当前 Pandas 在 src/config/pandas.hpp 定义的版本号
     并判断最后一段是否为 0 (表示正式版)
     '''
+    # 若是专业版则认为本次编译的就是正式版
+    if is_commercial_ver(slndir):
+        return True
+    
+    # 若是社区版则根据版本后最后一位进行判断
     version = get_community_ver(slndir, origin = True)
     splitver = version.split('.')
     return (len(splitver) == 4 and splitver[3] == '0')
@@ -516,3 +527,43 @@ def get_file_ext(filepath):
     '''
     _base_name, extension_name = os.path.splitext(filepath.lower())
     return extension_name
+
+def normalize_path(path):
+    '''
+    将路径中的斜杠统一为反斜杠
+    '''
+    return path.replace('/', os.path.sep).replace('\\', os.path.sep)
+
+def display_version_info(slndir_path, repo = None):
+    '''
+    显示 Pandas 的版本信息
+    '''
+    pandas_communtiy_ver = get_community_ver(slndir_path, origin=True)
+    pandas_ver = get_community_ver(slndir_path, prefix='v', origin=False)
+    if is_commercial_ver(slndir_path):
+        pandas_commercial_ver = get_commercial_ver(slndir_path, origin=True)
+        pandas_display_ver = get_pandas_ver(slndir_path, prefix='v')
+        Message.ShowInfo('社区版版本号: %s | 专业版版本号: %s' % (pandas_communtiy_ver, pandas_commercial_ver))
+        Message.ShowInfo('最终显示版本: %s' % pandas_display_ver)
+    else:
+        Message.ShowInfo('社区版版本号: %s (%s)' % (pandas_communtiy_ver, pandas_ver))
+    
+    if repo and get_current_branch(repo):
+        Message.ShowInfo('当前代码分支: %s' % get_current_branch(repo))
+
+def get_current_branch(repo):
+    '''
+    获取当前仓库的分支名称
+    '''
+    branch_name = None
+    try:
+        branch_name = repo.active_branch.name
+    except Exception as _err:
+        pass
+    return branch_name
+
+def is_jenkins():
+    '''
+    判断当前是否在 Jenkins 上运行
+    '''
+    return 'JENKINS_HOME' in os.environ

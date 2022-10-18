@@ -67,11 +67,11 @@ void TranslateDB::showStatus() {
 //************************************
 // Method:      parseBodyNode
 // Description: 解析 Body 节点的主要处理函数
-// Parameter:   const YAML::Node & node
+// Parameter:   const ryml::NodeRef & node
 // Returns:     uint64
 // Author:      Sola丶小克(CairoLee)  2020/01/03 20:32
 //************************************
-uint64 TranslateDB::parseBodyNode(const YAML::Node& node) {
+uint64 TranslateDB::parseBodyNode(const ryml::NodeRef& node) {
 	std::string original, translation;
 
 	if (!this->asString(node, "Original", original)) {

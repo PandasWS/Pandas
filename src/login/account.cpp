@@ -22,12 +22,12 @@
 typedef struct AccountDB_SQL {
 	AccountDB vtable;    // public interface
 	Sql* accounts;       // SQL handle accounts storage
-	char   db_hostname[64]; // Doubled for long hostnames (bugreport:8003)
+	char   db_hostname[1024]; // Doubled for long hostnames (bugreport:8003)
 	uint16 db_port;
-	char   db_username[32];
-	char   db_password[32];
-	char   db_database[32];
-	char   codepage[32];
+	char   db_username[1024];
+	char   db_password[1024];
+	char   db_database[1024];
+	char   codepage[1024];
 	// other settings
 	bool case_sensitive;
 	//table name
@@ -131,8 +131,8 @@ static bool account_db_sql_init(AccountDB* self) {
 
 	if( SQL_ERROR == Sql_Connect(sql_handle, username, password, hostname, port, database) )
 	{
-                ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-                        username, password, hostname, port, database);
+                ShowError("Couldn't connect with uname='%s',host='%s',port='%d',database='%s'\n",
+                        username, hostname, port, database);
 		Sql_ShowDebug(sql_handle);
 		Sql_Free(db->accounts);
 		db->accounts = NULL;
@@ -554,6 +554,11 @@ static bool mmo_auth_fromsql(AccountDB_SQL* db, struct mmo_account* acc, uint32 
 	Sql_FreeResult(sql_handle);
 	acc->web_auth_token[0] = '\0';
 
+	if( acc->char_slots > MAX_CHARS ){
+		ShowError( "Account %s (AID=%u) exceeds MAX_CHARS. Capping...\n", acc->userid, acc->account_id );
+		acc->char_slots = MAX_CHARS;
+	}
+
 	return true;
 }
 
@@ -924,13 +929,37 @@ bool account_db_sql_enable_webtoken( AccountDB* self, const uint32 account_id ){
 	return true;
 }
 
+/**
+ * Timered function to disable webtoken for user
+ * If the user is online, then they must have logged since we started the timer.
+ * In that case, do nothing. The new authtoken must be valid.
+ * @param tid: timer id
+ * @param tick: tick of execution
+ * @param id: user account id
+ * @param data: AccountDB // because we don't use singleton???
+ * @return :0
+ */
+TIMER_FUNC(account_disable_webtoken_timer){
+	const struct online_login_data* p = login_get_online_user(id);
+	AccountDB_SQL* db = reinterpret_cast<AccountDB_SQL*>(data);
+
+	if (p == nullptr) {
+		ShowInfo("Web Auth Token for account %d was disabled\n", id);
+		if( SQL_ERROR == Sql_Query( db->accounts, "UPDATE `%s` SET `web_auth_token_enabled` = '0' WHERE `account_id` = '%u'", db->account_db, id ) ){
+			Sql_ShowDebug( db->accounts );
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
+
+
 bool account_db_sql_disable_webtoken( AccountDB* self, const uint32 account_id ){
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 
-	if( SQL_ERROR == Sql_Query( db->accounts, "UPDATE `%s` SET `web_auth_token_enabled` = '0' WHERE `account_id` = '%u'", db->account_db, account_id ) ){
-		Sql_ShowDebug( db->accounts );
-		return false;
-	}
+	add_timer(gettick() + login_config.disable_webtoken_delay, account_disable_webtoken_timer, account_id, reinterpret_cast<intptr_t>(db));
 
 	return true;
 }

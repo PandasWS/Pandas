@@ -36,10 +36,13 @@
     <ClCompile Include="merchantstore_controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="recruitment_controller.cpp">
+    <ClCompile Include="http.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="http.cpp">
+    <ClCompile Include="webutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recruitment_controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="recruitment_controller.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="webutils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

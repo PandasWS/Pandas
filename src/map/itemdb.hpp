@@ -15,10 +15,6 @@
 #include "script.hpp"
 #include "status.hpp"
 
-#ifdef Pandas_YamlBlastCache_Serialize
-#include "../common/serialize.hpp"
-#endif // Pandas_YamlBlastCache_Serialize
-
 enum e_ammo_type : uint8;
 
 ///Use apple for unknown items.
@@ -26,7 +22,9 @@ const t_itemid UNKNOWN_ITEM_ID = 512;
 /// The maximum number of item delays
 #define MAX_ITEMDELAYS	10
 ///Designed for search functions, species max number of matches to display.
-#define MAX_SEARCH	5
+#ifndef MAX_SEARCH
+#define MAX_SEARCH	10
+#endif
 
 #define MAX_ROULETTE_LEVEL 7 /** client-defined value **/
 #define MAX_ROULETTE_COLUMNS 9 /** client-defined value **/
@@ -150,8 +148,7 @@ enum rune_item_list : t_itemid
 enum mechanic_item_list : t_itemid
 {
 	ITEMID_ACCELERATOR				= 2800,
-	ITEMID_HOVERING_BOOSTER,
-	ITEMID_SUICIDAL_DEVICE,
+	ITEMID_SUICIDAL_DEVICE				= 2802,
 	ITEMID_SHAPE_SHIFTER,
 	ITEMID_COOLING_DEVICE,
 	ITEMID_MAGNETIC_FIELD_GENERATOR,
@@ -311,6 +308,7 @@ enum e_random_item_group {
 	IG_A_GRADE_COIN_BAG,
 	IG_ADVANCED_WEAPONS_BOX,
 	IG_SPLENDID_BOX,
+	IG_SPLENDID_BOX2,
 	IG_CARDALBUM_ARMOR,
 	IG_CARDALBUM_HELM,
 	IG_CARDALBUM_ACC,
@@ -783,12 +781,12 @@ enum e_random_item_group {
 	IG_THIRD_JOB_STONE_BOTTOM_BOX,
 	IG_THIRD_JOB_STONE_BOTTOM_BOX2,
 	IG_SHADOW_EXCHANGE_BOX,
-	IG_DROOPING_GUNSLINGER_SCROLL,
+	IG_GUNSLINGER_ENCHANT,
 	IG_ENCHANTSTONE_RECIPE,
 	IG_PET_EGG_BOX,
 	IG_COSTUME_EXCHANGE_BOX,
-	IG_FAN_MODIFICATION_KIT,
-	IG_UNIFORM_REPAIR_KIT,
+	IG_FAN_UPGRADE_KIT,
+	IG_SUIT_UPGRADE_KIT,
 	IG_SCROLL_OF_FALLEN_ANGEL_WINGS,
 	IG_CLASS_SHADOW_BOX_WEAPON,
 	IG_CLASS_SHADOW_BOX_ARMOR,
@@ -801,11 +799,11 @@ enum e_random_item_group {
 	IG_BEARERSSHADOW_MIX,
 	IG_COMPOSESHADOW_MIX,
 	IG_RACESHADOW_MIX,
-	IG_CANDY_POUCH_BLESSING_SCROLL_MELEE,
-	IG_CANDY_POUCH_BLESSING_SCROLL_RANGE,
-	IG_CANDY_POUCH_BLESSING_SCROLL_MAGIC,
-	IG_MAGICAL_BOOSTER_AMPLIFIER,
-	IG_MAGIC_CAT_HAND_SCROLL,
+	IG_CANDY_BAG_SCROLL_MELEE,
+	IG_CANDY_BAG_SCROLL_RANGE,
+	IG_CANDY_BAG_SCROLL_MAGIC,
+	IG_BOOSTER_AMPLIFIER,
+	IG_MAGICAL_CAT_HAND,
 	IG_INFINITYSHADOW_MIX,
 	IG_SILVER_STATUE,
 	IG_PHYSICALMAGICAL_MIX,
@@ -894,6 +892,108 @@ enum e_random_item_group {
 	IG_PIERCING_MIX,
 	IG_HASTY_MIX,
 	IG_ENCHANTSTONE_RECIPE_4M,
+	IG_SHADOW_CUBE,
+	IG_SHADOW_CUBE_PENDANT,
+	IG_SHADOW_CUBE_EARING,
+	IG_ANGELPORING_BOX,
+	IG_HELM_OF_FAITH_BOX,
+	IG_2022_LUNARNEWYEARS_BOX,
+	IG_2020_REWARD_BOX,
+	IG_COSTUME_MILE_PACK_26_1,
+	IG_COSTUME_MILE_PACK_26_2,
+	IG_COSTUME_MILE_PACK_26_3,
+	IG_EP17_1_SPC01,
+	IG_EP17_1_SPC02,
+	IG_EP17_1_SPC03,
+	IG_EP17_1_SPC04,
+	IG_STABILITYSHADOW_MIX,
+	IG_BS_SHA_M_S_2,
+	IG_BS_SHA_M_S_22,
+	IG_SLD_CARD_RECIPE,
+	IG_R_BEARERSSHADOW_MIX,
+	IG_M_BLITZSHADOW_MIX,
+	IG_RELOADSHADOW_MIX,
+	IG_SPELLCASTERSHADOW_MIX,
+	IG_MAGICALSHADOW_MIX,
+	IG_PHYSICALSHADOW_MIX,
+	IG_MAJORAUTOSPELL_MIX,
+	IG_ABSORBSHADOW_MIX,
+	IG_TRUE_GEMSHADOW_MIX,
+	IG_MAMMOTH_MIX,
+	IG_FULLTEMPSHADOW_MIX,
+	IG_FULLPENESHADOW_MIX,
+	IG_REMODEL_HERO_BOOTS,
+	IG_ORIENTAL_SWORD_CUBE,
+	IG_DRAGONIC_SLAYER_CUBE,
+	IG_SHIVER_KATAR_K_CUBE,
+	IG_BLADE_KATAR_CUBE,
+	IG_SWORD_OF_BLUEFIRE_CUBE,
+	IG_SLATE_SWORD_CUBE,
+	IG_NARCIS_BOW_CUBE,
+	IG_TRUMPET_SHELL_K_CUBE,
+	IG_BARB_WIRE_K_CUBE,
+	IG_AVENGER_CUBE,
+	IG_METEOR_STRIKER_CUBE,
+	IG_MAGIC_SWORD_CUBE,
+	IG_FATALIST_CUBE,
+	IG_ROYAL_BOW_K_CUBE,
+	IG_SCALET_DRAGON_L_CUBE,
+	IG_SHADOW_STAFF_K_CUBE,
+	IG_FREEZING_ROD_CUBE,
+	IG_IRON_NAIL_K_CUBE,
+	IG_RAY_KNUCKLE_CUBE,
+	IG_UNDINE_SPEAR_K_CUBE,
+	IG_LIGHT_BLADE_CUBE,
+	IG_IRON_STAFF_CUBE,
+	IG_BLUE_CRYSTAL_STAFF_CUBE,
+	IG_DEMON_HUNT_BIBLE_CUBE,
+	IG_SAINT_HALL_CUBE,
+	IG_MEAWFOXTAIL_CUBE,
+	IG_FOG_DEW_SWORD_CUBE,
+	IG_HUMMA_CLEAR_CUBE,
+	IG_THOUSAND_SUN_CUBE,
+	IG_SPIRIT_PENDULUM_CUBE,
+	IG_CRIMSON_ROSE_CUBE,
+	IG_MASTER_SOUL_RIFLE_CUBE,
+	IG_GOLDEN_LORD_LAUNCHER_CUBE,
+	IG_THE_BLACK_CUBE,
+	IG_DEMON_SLAYER_SHOT_CUBE,
+	IG_RUNE_CRAFT_MATERIALS,
+	IG_ELEMENTAL_CONVERTER,
+	IG_POISONS,
+	IG_BLACKSMITH,
+	IG_POTION_CRAFT_MATERIALS,
+	IG_KUNAI_BOX,
+	IG_BULLET_CASE,
+	IG_SOUL_LINKER,
+	IG_ELEMENTAL_STONES,
+	IG_SHADOW_CUBE_ARMOR,
+	IG_SHADOW_CUBE_SHIELD,
+	IG_SHADOW_CUBE_SHOES,
+	IG_SHADOW_CUBE_WEAPON,
+	IG_AUTOMATIC_MODULE_MIX,
+	IG_EPIC_MODULE_MIX,
+	IG_AUTO_M_I_BOX_A,
+	IG_AUTO_M_I_BOX_B,
+	IG_ILLUSION_MODULE_MIX,
+	IG_ENCHANT_STONE_BOX22,
+	IG_ENCHANT_STONE_BOX23,
+	IG_ENCHANT_STONE_BOX24,
+	IG_ENCHANT_STONE_BOX25,
+	IG_ENCHANT_STONE_BOX27,
+	IG_ANCIENT_HERO_BOX_1,
+	IG_3LV_9REFINE_WEAPON_7GU,
+	IG_3LV_10REFINE_WEAPON_8GU,
+	IG_3LV_11REFINE_WEAPON_9GU,
+	IG_3LV_12REFINE_WEAPON_10G,
+	IG_4LV_9REFINE_WEAPON_8GU,
+	IG_4LV_10REFINE_WEAPON_9GU,
+	IG_4LV_11REFINE_WEAPON_10G,
+	IG_BS_ITEM_M_S_52,
+	IG_Bs_Item_M_S_53,
+	IG_Bs_Item_M_S_54,
+	IG_Bs_Item_M_S_55,
+	IG_Bs_Item_M_S_56,
 
 	IG_MAX,
 };
@@ -951,6 +1051,10 @@ struct s_item_combo {
 	script_code *script;
 	uint16 id;
 
+#ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
+	std::string script_plaintext;
+#endif // Pandas_Struct_S_Item_Combo_With_Plaintext
+
 	~s_item_combo() {
 		if (this->script) {
 			script_free_code(this->script);
@@ -976,7 +1080,7 @@ public:
 		this->combo_num = 0;
 	}
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
 };
 
@@ -1022,25 +1126,16 @@ public:
 class RandomOptionDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_data> {
 public:
 	RandomOptionDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_DB", 1) {
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(56);	// Win32
-		this->validDatatypeSize.push_back(80);	// x64
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
+
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
 
 	// Additional
 	bool option_exists(std::string name);
 	bool option_get_id(std::string name, uint16 &id);
-
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
 };
 
 extern RandomOptionDatabase random_option_db;
@@ -1048,27 +1143,16 @@ extern RandomOptionDatabase random_option_db;
 class RandomOptionGroupDatabase : public TypesafeYamlDatabase<uint16, s_random_opt_group> {
 public:
 	RandomOptionGroupDatabase() : TypesafeYamlDatabase("RANDOM_OPTION_GROUP", 1) {
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(52);	// Win32
-		this->validDatatypeSize.push_back(88);	// x64
-		this->validDatatypeSize.push_back(120);	// Linux
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
+
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 
 	// Additional
-	bool add_option(const YAML::Node &node, std::shared_ptr<s_random_opt_group_entry> &entry);
+	bool add_option(const ryml::NodeRef& node, std::shared_ptr<s_random_opt_group_entry> &entry);
 	bool option_exists(std::string name);
 	bool option_get_id(std::string name, uint16 &id);
-
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 };
 
 extern RandomOptionGroupDatabase random_option_group;
@@ -1155,37 +1239,22 @@ struct item_data
 	struct script_code *equip_script;	//Script executed once when equipping.
 	struct script_code *unequip_script;//Script executed once when unequipping.
 	struct {
-#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned available : 1;
-#else
-		uint8 available = 0;
-#endif // Pandas_YamlBlastCache_ItemDatabase
 		uint32 no_equip;
-#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned no_refine : 1;	// [celest]
-#else
-		uint8 no_refine = 0;
-#endif // Pandas_YamlBlastCache_ItemDatabase
 		unsigned delay_consume;	// [Skotlex]
 		struct {
 			bool drop, trade, trade_partner, sell, cart, storage, guild_storage, mail, auction;
 		} trade_restriction;	//Item restrictions mask [Skotlex]
-#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned autoequip: 1;
-#else
-		uint8 autoequip = 0;
-#endif // Pandas_YamlBlastCache_ItemDatabase
 		bool buyingstore;
 		bool dead_branch; // As dead branch item. Logged at `branchlog` table and cannot be used at 'nobranch' mapflag [Cydh]
 		bool group; // As item group container [Cydh]
-#ifndef Pandas_YamlBlastCache_ItemDatabase
 		unsigned guid : 1; // This item always be attached with GUID and make it as bound item! [Cydh]
-#else
-		uint8 guid = 0;
-#endif // Pandas_YamlBlastCache_ItemDatabase
 		bool broadcast; ///< Will be broadcasted if someone obtain the item [Cydh]
 		bool bindOnEquip; ///< Set item as bound when equipped
 		e_item_drop_effect dropEffect; ///< Drop Effect Mode
+		unsigned gradable : 1;
 	} flag;
 	struct {// item stacking limitation
 		uint16 amount;
@@ -1266,34 +1335,15 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<item_data>> nameToItemDataMap;
 	std::unordered_map<std::string, std::shared_ptr<item_data>> aegisNameToItemDataMap;
 
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<t_itemid, item_data>>(*this);
-
-		// 由于 029d8df 的改动, 类私有成员 nameToItemDataMap 和 aegisNameToItemDataMap 的数据已经不会在
-		// loadingFinished 中构建, 因此这里将它们的内容也保存到疾风缓存中去.
-		ar& nameToItemDataMap;
-		ar& aegisNameToItemDataMap;
-	}
-#endif // Pandas_YamlBlastCache_ItemDatabase
-
-	e_sex defaultGender( const YAML::Node &node, std::shared_ptr<item_data> id );
+	e_sex defaultGender( const ryml::NodeRef& node, std::shared_ptr<item_data> id );
 
 public:
-	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(368);	// Win32 + BOTH
-		this->validDatatypeSize.push_back(448);	// x64 + PRE
-		this->validDatatypeSize.push_back(456);	// x64 + RENEWAL
-#endif // Pandas_YamlBlastCache_ItemDatabase
+	ItemDatabase() : TypesafeCachedYamlDatabase("ITEM_DB", 3, 1) {
+
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
 	void clear() override{
 		TypesafeCachedYamlDatabase::clear();
@@ -1305,11 +1355,6 @@ public:
 	// Additional
 	std::shared_ptr<item_data> searchname( const char* name );
 	std::shared_ptr<item_data> search_aegisname( const char *name );
-
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-#endif // Pandas_YamlBlastCache_ItemDatabase
 };
 
 extern ItemDatabase item_db;
@@ -1317,17 +1362,11 @@ extern ItemDatabase item_db;
 class ItemGroupDatabase : public TypesafeCachedYamlDatabase<uint16, s_item_group_db> {
 public:
 	ItemGroupDatabase() : TypesafeCachedYamlDatabase("ITEM_GROUP_DB", 2, 1) {
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(36);	// Win32
-		this->validDatatypeSize.push_back(72);	// x64
 
-		this->validDatatypeSize.push_back(64);	// Linux
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void loadingFinished() override;
 
 	// Additional
@@ -1336,12 +1375,6 @@ public:
 	t_itemid get_random_item_id(uint16 group_id, uint8 sub_group);
 	std::shared_ptr<s_item_group_entry> get_random_entry(uint16 group_id, uint8 sub_group);
 	uint8 pc_get_itemgroup(uint16 group_id, bool identify, map_session_data *sd);
-
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
 };
 
 extern ItemGroupDatabase itemdb_group;
@@ -1367,7 +1400,7 @@ public:
 	}
 
 	const std::string getDefaultLocation();
-	uint64 parseBodyNode( const YAML::Node& node );
+	uint64 parseBodyNode( const ryml::NodeRef& node );
 };
 
 extern LaphineSynthesisDatabase laphine_synthesis_db;
@@ -1392,14 +1425,115 @@ public:
 	}
 
 	const std::string getDefaultLocation();
-	uint64 parseBodyNode( const YAML::Node& node );
+	uint64 parseBodyNode( const ryml::NodeRef& node );
 };
 
 extern LaphineUpgradeDatabase laphine_upgrade_db;
 
-int itemdb_searchname_array(struct item_data** data, int size, const char *str);
+struct s_item_reform_base{
+	t_itemid item_id;
+	uint16 minimumRefine;
+	uint16 maximumRefine;
+	uint16 requiredRandomOptions;
+	bool cardsAllowed;
+	std::unordered_map<t_itemid, uint16> materials;
+	t_itemid resultItemId;
+	int16 refineChange;
+	std::shared_ptr<s_random_opt_group> randomOptionGroup;
+	bool clearSlots;
+	bool removeEnchantgrade;
+};
+
+struct s_item_reform{
+	t_itemid item_id;
+	std::unordered_map<t_itemid, std::shared_ptr<s_item_reform_base>> base_items;
+};
+
+class ItemReformDatabase : public TypesafeYamlDatabase<t_itemid, s_item_reform>{
+public:
+	ItemReformDatabase() : TypesafeYamlDatabase( "ITEM_REFORM_DB", 1 ){
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode( const ryml::NodeRef& node );
+};
+
+extern ItemReformDatabase item_reform_db;
+
+struct s_item_enchant_normal_sub{
+	t_itemid item_id;
+	uint32 chance;
+};
+
+struct s_item_enchant_normal{
+	uint16 enchantgrade;
+	std::unordered_map<t_itemid, std::shared_ptr<s_item_enchant_normal_sub>> enchants;
+};
+
+struct s_item_enchant_perfect{
+	t_itemid item_id;
+	uint32 zeny;
+	std::unordered_map<t_itemid, uint16> materials;
+};
+
+struct s_item_enchant_upgrade{
+	t_itemid enchant_item_id;
+	t_itemid upgrade_item_id;
+	uint32 zeny;
+	std::unordered_map<t_itemid, uint16> materials;
+};
+
+struct s_item_enchant_slot{
+	uint16 slot;
+	struct{
+		uint32 zeny;
+		std::unordered_map<t_itemid, uint16> materials;
+		uint32 chance;
+		std::unordered_map<uint16, uint32> enchantgradeChanceIncrease;
+		std::unordered_map<uint16, std::shared_ptr<s_item_enchant_normal>> enchants;
+	} normal;
+	struct{
+		std::unordered_map<t_itemid, std::shared_ptr<s_item_enchant_perfect>> enchants;
+	} perfect;
+	struct{
+		std::unordered_map<t_itemid, std::shared_ptr<s_item_enchant_upgrade>> enchants;
+	} upgrade;
+};
+
+struct s_item_enchant{
+	uint64 id;
+	std::vector<t_itemid> target_item_ids;
+	uint16 minimumRefine;
+	uint16 minimumEnchantgrade;
+	bool allowRandomOptions;
+	struct {
+		uint32 zeny;
+		std::unordered_map<t_itemid, uint16> materials;
+		uint32 chance;
+	} reset;
+	std::vector<uint16> order;
+	std::unordered_map<uint16, std::shared_ptr<s_item_enchant_slot>> slots;
+};
+
+class ItemEnchantDatabase : public TypesafeYamlDatabase<uint64, s_item_enchant>{
+private:
+	bool parseMaterials( const ryml::NodeRef& node, std::unordered_map<t_itemid, uint16>& materials );
+
+public:
+	ItemEnchantDatabase() : TypesafeYamlDatabase( "ITEM_ENCHANT_DB", 1 ){
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode( const ryml::NodeRef& node );
+};
+
+extern ItemEnchantDatabase item_enchant_db;
+
+uint16 itemdb_searchname_array(std::map<t_itemid, std::shared_ptr<item_data>> &data, uint16 size, const char *str);
 struct item_data* itemdb_search(t_itemid nameid);
-struct item_data* itemdb_exists(t_itemid nameid);
+std::shared_ptr<item_data> itemdb_exists(t_itemid nameid);
 #define itemdb_name(n) itemdb_search(n)->name.c_str()
 #define itemdb_ename(n) itemdb_search(n)->ename.c_str()
 #define itemdb_type(n) itemdb_search(n)->type
@@ -1424,7 +1558,6 @@ const char *itemdb_typename_ammo (e_ammo_type ammo);
 
 #define itemdb_value_buy(n) itemdb_search(n)->value_buy
 #define itemdb_value_sell(n) itemdb_search(n)->value_sell
-#define itemdb_canrefine(n) (!itemdb_search(n)->flag.no_refine)
 //Item trade restrictions [Skotlex]
 bool itemdb_isdropable_sub(struct item_data *itd, int gmlv, int unused);
 bool itemdb_cantrade_sub(struct item_data *itd, int gmlv, int gmlv2);
@@ -1460,207 +1593,5 @@ void itemdb_reload(void);
 
 void do_final_itemdb(void);
 void do_init_itemdb(void);
-
-#ifdef Pandas_YamlBlastCache_ItemDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct item_data
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct item_data& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.name;
-			ar& t.ename;
-
-			ar& t.value_buy;
-			ar& t.value_sell;
-			ar& t.type;
-			ar& t.subtype;
-			//ar& t.maxchance;				// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.sex;
-			ar& t.equip;
-			ar& t.weight;
-			ar& t.atk;
-			ar& t.def;
-			ar& t.range;
-			ar& t.slots;
-			ar& t.look;
-			ar& t.elv;
-			ar& t.weapon_level;
-			ar& t.armor_level;
-			ar& t.view_id;
-			ar& t.elvmax;
-#ifdef RENEWAL
-			ar& t.matk;
-#endif
-
-			ar& t.class_base;
-			ar& t.class_upper;
-			//ar& t.mob;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
-
-			ar& t.flag.available;
-			//ar& t.flag.no_equip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.flag.no_refine;
-			ar& t.flag.delay_consume;
-
-			ar& t.flag.trade_restriction.drop;
-			ar& t.flag.trade_restriction.trade;
-			ar& t.flag.trade_restriction.trade_partner;
-			ar& t.flag.trade_restriction.sell;
-			ar& t.flag.trade_restriction.cart;
-			ar& t.flag.trade_restriction.storage;
-			ar& t.flag.trade_restriction.guild_storage;
-			ar& t.flag.trade_restriction.mail;
-			ar& t.flag.trade_restriction.auction;
-
-			//ar& t.flag.autoequip;			// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.flag.buyingstore;
-			ar& t.flag.dead_branch;
-
-			ar& t.flag.group;
-			ar& t.flag.guid;
-			ar& t.flag.broadcast;
-			ar& t.flag.bindOnEquip;
-			ar& t.flag.dropEffect;
-
-			ar& t.stack.amount;
-			ar& t.stack.inventory;
-			ar& t.stack.cart;
-			ar& t.stack.storage;
-			ar& t.stack.guild_storage;
-
-			ar& t.item_usage.override;
-			ar& t.item_usage.sitting;
-
-			ar& t.gm_lv_trade_override;
-			//ar& t.combos;					// ItemDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.delay.duration;
-			ar& t.delay.sc;
-
-#ifdef Pandas_Struct_Item_Data_Pandas
-
-			//ar& t.script;					// 改用 t.pandas.script_plaintext.script 来序列化数据
-			//ar& t.equip_script;			// 改用 t.pandas.script_plaintext.equip_script 来序列化数据
-			//ar& t.unequip_script;			// 改用 t.pandas.script_plaintext.unequip_script 来序列化数据
-
-			ar& t.pandas.script_plaintext.script;
-			ar& t.pandas.script_plaintext.equip_script;
-			ar& t.pandas.script_plaintext.unequip_script;
-
-#ifdef Pandas_Struct_Item_Data_Taming_Mobid
-			ar& t.pandas.taming_mobid;
-#endif // Pandas_Struct_Item_Data_Taming_Mobid
-
-#ifdef Pandas_Struct_Item_Data_Has_CallFunc
-			ar& t.pandas.has_callfunc;
-#endif // Pandas_Struct_Item_Data_Has_CallFunc
-
-#endif // Pandas_Struct_Item_Data_Pandas
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_ItemDatabase
-
-
-#ifdef Pandas_YamlBlastCache_ItemGroupDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_item_group_entry
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_item_group_entry& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.rate;
-			ar& t.duration;
-			ar& t.amount;
-			ar& t.isAnnounced;
-			ar& t.GUID;
-			ar& t.isStacked;
-			ar& t.isNamed;
-			ar& t.bound;
-			ar& t.randomOptionGroup;
-			ar& t.refineMinimum;
-			ar& t.refineMaximum;
-		}
-
-		// ======================================================================
-		// struct s_item_group_random
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_item_group_random& t, const unsigned int version)
-		{
-			ar& t.total_rate;
-			ar& t.data;
-		}
-
-		// ======================================================================
-		// struct s_item_group_db
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_item_group_db& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.random;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_ItemGroupDatabase
-
-
-#ifdef Pandas_YamlBlastCache_RandomOptionDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_random_opt_data
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_random_opt_data& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.name;
-			//ar& t.script;				// 改用 t.script_plaintext 来序列化数据
-			ar& t.script_plaintext;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_RandomOptionDatabase
-
-
-#ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_random_opt_group_entry
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_random_opt_group_entry& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.min_value;
-			ar& t.max_value;
-			ar& t.param;
-			ar& t.chance;
-		}
-
-		// ======================================================================
-		// struct s_random_opt_group
-		// ======================================================================
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_random_opt_group& t, const unsigned int version)
-		{
-			ar& t.id;
-			ar& t.name;
-			ar& t.slots;
-			ar& t.max_random;
-			ar& t.random_options;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_RandomOptionGroupDatabase
 
 #endif /* ITEMDB_HPP */

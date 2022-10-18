@@ -9,6 +9,9 @@ set( WEB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}  CACHE INTERNAL "" )
 #
 # web server
 #
+if ( NOT ENABLE_WEB_SERVER )
+	return()
+endif ( NOT ENABLE_WEB_SERVER )
 
 # 如果已经定义了 BUILD_SERVERS 和 ENABLE_WEB_SERVER 变量的话, 说明依赖条件已经具备
 # 可以开始正式编译 web-server 的相关配置

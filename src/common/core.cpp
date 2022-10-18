@@ -6,6 +6,7 @@
 #include "../config/core.hpp"
 
 #ifndef MINICORE
+#include "database.hpp"
 #include "ers.hpp"
 #include "socket.hpp"
 #include "timer.hpp"
@@ -30,8 +31,8 @@
 #ifndef DEPRECATED_COMPILER_SUPPORT
 	#if defined( _MSC_VER ) && _MSC_VER < 1900
 		#error "Visual Studio versions older than Visual Studio 2015 are not officially supported anymore"
-	#elif defined( __clang__ ) && __clang_major__ < 4 && !( __clang_major__ == 3 && __clang_minor__ >= 7 )
-		#error "clang versions older than clang 3.7 are not officially supported anymore"
+	#elif defined( __clang__ ) && __clang_major__ < 6
+		#error "clang versions older than clang 6.0 are not officially supported anymore"
 	#elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 5
 		#error "GCC versions older than GCC 5 are not officially supported anymore"
 	#endif
@@ -475,7 +476,7 @@ int main (int argc, char **argv)
 	// 此处我们不需要再自己进行信号接管了, 否则当程序崩溃的时候 Breakpad 无法生成转储文件
 	signals_init();
 #endif // (defined(Pandas_Google_Breakpad) && !defined(_WIN32))
-
+	do_init_database();
 #ifdef _WIN32
 	cevents_init();
 #endif

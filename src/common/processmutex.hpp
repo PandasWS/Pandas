@@ -5,16 +5,8 @@
 
 #include <string>
 
-#ifdef _WIN32
-	#include <Windows.h>
-#else
-	#include <unistd.h>
+#ifndef _WIN32
 	#include <semaphore.h>
-	#include <stdio.h>
-	#include <fcntl.h>
-	#include <signal.h>
-	#include <string.h>
-	#include <memory.h>
 #endif // _WIN32
 
 class ProcessMutex {
@@ -28,8 +20,9 @@ private:
 public:
 	ProcessMutex(const char* mutexName = nullptr);
 
-	bool Lock();
-	bool Unlock();
+	bool lock();
+	bool unlock();
+	int wait(long millisecond);
 
 	~ProcessMutex();
 };
