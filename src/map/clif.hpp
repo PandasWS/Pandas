@@ -579,8 +579,11 @@ enum clif_messages : uint16_t {
 	MSG_ATTENDANCE_DISABLED = 0xd92,
 
 	// Unofficial names
-	C_ITEM_EQUIP_SWITCH = 0xbc7, 
+	C_ITEM_EQUIP_SWITCH = 0xbc7,
 	C_ITEM_NOEQUIP = 0x174,	/// <"You can't put this item on."
+	C_ENCHANT_OVERWEIGHT = 0xEFD,
+	C_ENCHANT_SUCCESS = 0xF11,
+	C_ENCHANT_FAILURE = 0xF12,
 };
 
 enum e_personalinfo : uint8_t {
@@ -620,8 +623,8 @@ enum class e_pet_evolution_result : uint32 {
 
 enum e_config_type : uint32 {
 	CONFIG_OPEN_EQUIPMENT_WINDOW = 0,
-	// Unknown
-	CONFIG_PET_AUTOFEED = 2,
+	CONFIG_CALL,
+	CONFIG_PET_AUTOFEED,
 	CONFIG_HOMUNCULUS_AUTOFEED
 };
 
@@ -682,6 +685,7 @@ void clif_viewpoint(struct map_session_data *sd, int npc_id, int type, int x, in
 void clif_additem(struct map_session_data *sd, int n, int amount, unsigned char fail); // self
 void clif_dropitem(struct map_session_data *sd,int n,int amount);	//self
 void clif_delitem(struct map_session_data *sd,int n,int amount, short reason); //self
+void clif_update_hp(map_session_data &sd);
 void clif_updatestatus(struct map_session_data *sd,int type);	//self
 void clif_changestatus(struct map_session_data* sd,int type,int val);	//area
 int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int sdelay, int ddelay, int64 sdamage, int div, enum e_damage_type type, int64 sdamage2, bool spdamage);	// area
@@ -1197,11 +1201,15 @@ enum in_ui_type : int8 {
 };
 
 enum out_ui_type : int8 {
-	OUT_UI_STYLIST = 1,
-	OUT_UI_ATTENDANCE = 7
+	OUT_UI_BANK = 0,
+	OUT_UI_STYLIST,
+	OUT_UI_QUEST = 6,
+	OUT_UI_ATTENDANCE,
+	OUT_UI_ENCHANTGRADE,
+	OUT_UI_ENCHANT = 10,
 };
 
-void clif_ui_open( struct map_session_data *sd, enum out_ui_type ui_type, int32 data );
+void clif_ui_open( struct map_session_data& sd, enum out_ui_type ui_type, int32 data );
 void clif_attendence_response( struct map_session_data *sd, int32 data );
 
 void clif_weight_limit( struct map_session_data* sd );
@@ -1233,6 +1241,16 @@ void clif_summon_hp_bar(struct mob_data& md);
 // Laphine System
 void clif_laphine_synthesis_open( struct map_session_data *sd, std::shared_ptr<s_laphine_synthesis> synthesis );
 void clif_laphine_upgrade_open( struct map_session_data* sd, std::shared_ptr<s_laphine_upgrade> upgrade );
+
+// Reputation System
+void clif_reputation_type( struct map_session_data& sd, int64 type, int64 points );
+void clif_reputation_list( struct map_session_data& sd );
+
+// Item Reform UI
+void clif_item_reform_open( struct map_session_data& sd, t_itemid item );
+
+// Item Enchant UI
+void clif_enchantwindow_open( struct map_session_data& sd, uint64 clientLuaIndex );
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用

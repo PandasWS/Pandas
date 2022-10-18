@@ -25,6 +25,9 @@
 #include <linux/limits.h> // PATH_MAX
 #endif // _WIN32
 
+#include <boost/regex.hpp>
+#include <boost/date_time/local_time/local_time.hpp>
+
 #include "strlib.hpp"
 #include "db.hpp"
 #include "showmsg.hpp"
@@ -39,6 +42,81 @@
 #endif // _WIN32
 
 extern "C" int __isa_available;
+
+//************************************
+// Method:      systemPause
+// Description: 暂停并要求用户按任意键继续
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2022/05/07 16:43
+//************************************
+void systemPause() {
+#ifdef _WIN32
+	system("pause");
+#else
+	int _unused = system("read");
+#endif // _WIN32
+}
+
+//************************************
+// Method:      isRegexMatched
+// Description: 
+// Parameter:   const std::string& patterns
+// Parameter:   const std::string& content
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2019/10/13 15:59
+//************************************
+bool isRegexMatched(const std::string& content, const std::string& patterns) {
+	try
+	{
+		boost::regex re(patterns, boost::regex::icase);
+		boost::smatch match_result;
+
+		if (!boost::regex_search(content, match_result, re)) {
+			return false;
+		}
+	}
+	catch (const boost::regex_error& e)
+	{
+		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
+		return false;
+	}
+	return true;
+}
+
+//************************************
+// Method:      regexExtract
+// Description: 使用正则表达式提取指定分组的内容
+// Parameter:   const std::string & patterns
+// Parameter:   const std::string & content
+// Parameter:   size_t extract_group	分组编号
+// Parameter:   bool icase				匹配时是否区分大小写
+// Returns:     std::string
+// Author:      Sola丶小克(CairoLee)  2022/05/04 16:53
+//************************************ 
+std::string regexExtract(const std::string& content, const std::string& patterns, size_t extract_group, bool icase) {
+	try
+	{
+		boost::regex re(patterns, icase ? boost::regex::icase : boost::regex::normal);
+		boost::smatch match_result;
+
+		if (!boost::regex_search(content, match_result, re)) {
+			return "";
+		}
+
+		if (extract_group >= match_result.size()) {
+			return "";
+		}
+
+		return match_result[extract_group];
+	}
+	catch (const boost::regex_error& e)
+	{
+		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
+		return "";
+	}
+
+	return "";
+}
 
 //************************************
 // Method:      deployImportDirectory
@@ -158,7 +236,7 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 void deployImportDirectories() {
 	ProcessMutex mutex = ProcessMutex("PANDAS_IMPORT_DEPLOY_MUTEX");
 
-	mutex.Lock();
+	mutex.lock();
 
 	const struct _import_data {
 		std::string import_from;
@@ -173,7 +251,7 @@ void deployImportDirectories() {
 		deployImportDirectory(import_data[i].import_from, import_data[i].import_to);
 	}
 
-	mutex.Unlock();
+	mutex.unlock();
 }
 
 //************************************
@@ -503,11 +581,11 @@ void strReplace(char* str, const char* from, const char* to) {
 // Method:      strContain
 // Description: 判断 str 中是否包含 needle 数组中的任何一个字符串 (不区分大小写)
 // Parameter:   std::vector<std::string> needle
-// Parameter:   std::string& str
+// Parameter:   const std::string& str
 // Returns:     bool 只要包含任何一个则返回 true, 都不包含则返回 false
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
-bool strContain(std::vector<std::string> needle, std::string& str) {
+bool strContain(std::vector<std::string> needle, const std::string& str) {
 	for (auto it : needle) {
 		if (strContain(it, str)) return true;
 	}
@@ -518,11 +596,11 @@ bool strContain(std::vector<std::string> needle, std::string& str) {
 // Method:      strContain
 // Description: 判断 str 中是否包含 needle 字符串 (不区分大小写)
 // Parameter:   std::string needle
-// Parameter:   std::string& str
+// Parameter:   const std::string& str
 // Returns:     bool 包含则返回 true, 不包含则返回 false
 // Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
 //************************************
-bool strContain(std::string needle, std::string& str) {
+bool strContain(std::string needle, const std::string& str) {
 	auto it = std::search(
 		str.begin(), str.end(),
 		needle.begin(), needle.end(),
@@ -558,7 +636,31 @@ std::vector<std::string> strExplode(std::string const& s, char delim) {
 	for (std::string token; std::getline(iss, token, delim); ) {
 		result.push_back(std::move(token));
 	}
+	if (s.back() == delim) {
+		result.push_back("");
+	}
 	return result;
+}
+
+//************************************
+// Method:      strIsNumber
+// Description: 检查指定的字符串是不是一个数字
+// Access:      public 
+// Parameter:   const std::string & str
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2022/04/16 18:34
+//************************************ 
+bool strIsNumber(const std::string& str) {
+	if (!str.length()) {
+		return false;
+	}
+
+	for (char const& c : str) {
+		if (std::isdigit(c) == 0) {
+			return false;
+		}
+	}
+	return true;
 }
 
 //************************************
@@ -890,6 +992,32 @@ bool isEscapeSequence(const char* start_p) {
 	if (len != 2) return false;
 	size_t n = sv_unescape_c(buf, start_p, len);
 	return (n == 1);
+}
+
+//************************************
+// Method:      convertRFC2822toTimeStamp
+// Description: 将符合 RFC2822 标准的时间字符串转换成时间戳
+// Access:      public 
+// Parameter:   std::string strRFC822Date
+//				例如: Sun, 23 Jan 2022 05:03:50 GMT
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2022/01/23 13:17
+//************************************ 
+int convertRFC2822toTimeStamp(std::string strRFC822Date)
+{
+	boost::posix_time::ptime pt;
+	boost::posix_time::time_input_facet* tif(
+		new boost::posix_time::time_input_facet("%a, %d %b %Y %H:%M:%S GMT")
+	);
+
+	std::stringstream ss;
+	ss.imbue(std::locale(std::locale::classic(), tif));
+	ss.str(strRFC822Date);
+	ss >> pt;
+
+	boost::posix_time::ptime time_t_begin(boost::gregorian::date(1970, 1, 1));
+	boost::posix_time::time_duration timestamp = pt - time_t_begin;
+	return (int)timestamp.total_seconds();
 }
 
 //************************************

@@ -33,6 +33,7 @@
 #include "log.hpp"
 #include "map.hpp"
 #include "mob.hpp"
+#include "navi.hpp"
 #include "pc.hpp"
 #include "pet.hpp"
 #include "script.hpp" // script_config
@@ -148,7 +149,12 @@ std::map<enum npce_event, std::vector<struct script_event_s>> script_event;
 // Author:      Sola丶小克(CairoLee)  2021/04/03 20:10
 //************************************ 
 void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md) {
-	if (!sd || !md) return;
+	nullpo_retv(md);
+
+	// 此处不再使用 nullpo_retv 对 sd 进行判断
+	// 因为被系统杀死的魔物 sd 将永远为 0, 而使用 nullpo_retv 会导致终端抛出空指针错误
+	// 在这个场景下, 空指针是可预期
+	if (!sd) return;
 
 	struct status_data* status;
 	status = &md->status;
@@ -185,7 +191,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killed_gid"), (target ? target->id : 0));						// 死亡单位的游戏单位编号
 	mapreg_setreg(add_str("$@killed_type"), (target ? target->type : 0));					// 死亡单位的类型
 	mapreg_setreg(add_str("$@killed_mapid"), (target ? target->m : -1));					// 死亡单位所在的地图编号
-	mapreg_setregstr(add_str("$@killed_mapname$"), (target ? map[target->m].name : ""));	// 死亡单位所在的地图名称
+	mapreg_setregstr(add_str("$@killed_mapname$"), (target && target->m >= 0 ? map[target->m].name : ""));	// 死亡单位所在的地图名称
 	mapreg_setreg(add_str("$@killed_x"), (target ? target->x : 0));							// 死亡单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killed_y"), (target ? target->y : 0));							// 死亡单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killed_classid"), (target ? status_get_class(target) : 0));	// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -193,7 +199,7 @@ void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, 
 	mapreg_setreg(add_str("$@killer_gid"), (src ? src->id : 0));							// 最后一击杀手单位的游戏单位编号(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_type"), (src ? src->type : 0));							// 最后一击杀手单位的类型(若为 0 则表示被系统击杀)
 	mapreg_setreg(add_str("$@killer_mapid"), (src ? src->m : -1));							// 最后一击杀手单位所在的地图编号
-	mapreg_setregstr(add_str("$@killer_mapname$"), (src ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
+	mapreg_setregstr(add_str("$@killer_mapname$"), (src && src->m >= 0 ? map[src->m].name : ""));			// 最后一击杀手单位所在的地图名称
 	mapreg_setreg(add_str("$@killer_x"), (src ? src->x : 0));								// 最后一击杀手单位所在的 X 坐标
 	mapreg_setreg(add_str("$@killer_y"), (src ? src->y : 0));								// 最后一击杀手单位所在的 Y 坐标
 	mapreg_setreg(add_str("$@killer_classid"), (src ? status_get_class(src) : 0));			// 死亡单位的种类编号(魔物编号\生命体编号等等)
@@ -232,11 +238,12 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	struct item_data* id = itemdb_search(nameid);
 
 	if (ITEM_PROPERTIES_HASFLAG(id, special_mask, ITEM_PRO_EXECUTE_MOBDROP_EXPRESS)) {
+		mapreg_setreg(add_str("$@mobdrop_gid"), (md ? md->bl.id : 0));
 		mapreg_setreg(add_str("$@mobdrop_mobid"), (md ? md->mob_id : 0));
 		mapreg_setreg(add_str("$@mobdrop_itemid"), nameid);
 		mapreg_setreg(add_str("$@mobdrop_rate"), drop_rate);
 		mapreg_setreg(add_str("$@mobdrop_from"), drop_type);
-		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md ? map[md->bl.m].name : ""));
+		mapreg_setregstr(add_str("$@mobdrop_mapname$"), (md && md->bl.m >= 0 ? map[md->bl.m].name : ""));
 		mapreg_setreg(add_str("$@mobdrop_killerrid"), (src && src->type == BL_PC ? src->id : 0));
 		mapreg_setreg(add_str("$@mobdrop_belongrid"), belond_rid);
 		mapreg_setreg(add_str("$@mobdrop_bypass"), 0);
@@ -286,6 +293,104 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	return npc_express_aide_mobdropitem(md, src, 0, nameid, drop_rate, drop_type);
 }
 #endif // Pandas_NpcExpress_MOBDROPITEM
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+//************************************
+// Method:      npc_event_aide_storage_add
+// Description: 用来触发 OnPCStorageAddFilter 过滤器事件的辅助函数
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * store
+// Parameter:   int idx
+// Parameter:   int amount
+// Parameter:   int item_from
+// Returns:     bool
+//				返回 true 表示被中断, 返回 false 表示没有被中断
+// Author:      Sola丶小克(CairoLee)  2022/06/18 21:45
+//************************************
+bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_from) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, store);
+
+	struct item* idata = nullptr;
+
+	switch (item_from) {
+	case TABLE_INVENTORY:
+		if (idx >= 0 && idx < MAX_INVENTORY) {
+			idata = &sd->inventory.u.items_inventory[idx];
+		}
+		break;
+	case TABLE_CART:
+		if (idx >= 0 && idx < MAX_CART) {
+			idata = &sd->cart.u.items_cart[idx];
+		}
+		break;
+	}
+
+	if (idata == nullptr) {
+		return false;
+	}
+
+	pc_setreg(sd, add_str("@storeitem_src_from"), item_from);				// 即将存入的道具来源 (1: 背包; 2: 手推车)
+	pc_setreg(sd, add_str("@storeitem_src_idx"), idx);						// 即将存入的道具序号 (若在从背包来则是背包序号, 若从手推车来则是手推车中的物品序号)
+	pc_setreg(sd, add_str("@storeitem_src_nameid"), idata->nameid);			// 即将存入的道具编号
+	pc_setreg(sd, add_str("@storeitem_src_amount"), amount);				// 即将存入的道具数量
+
+	pc_setreg(sd, add_str("@storeitem_dst_type"), (int)(store->type - 2));	// 计划将其存放到的目标仓库类型 (1: 个人仓库; 2: 公会仓库)
+	pc_setreg(sd, add_str("@storeitem_dst_storeid"), store->stor_id);		// 计划将其存放到的目标仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+
+	return npc_script_filter(sd, NPCF_STORAGE_ADD);
+}
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+//************************************
+// Method:      npc_event_aide_storage_del
+// Description: 用来触发 OnPCStorageDelFilter 过滤器事件的辅助函数
+// Parameter:   struct map_session_data * sd
+// Parameter:   struct s_storage * store
+// Parameter:   int idx
+// Parameter:   int amount
+// Parameter:   int item_to
+// Returns:     bool
+//				返回 true 表示被中断, 返回 false 表示没有被中断
+// Author:      Sola丶小克(CairoLee)  2022/06/19 08:39
+//************************************ 
+bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to) {
+	nullpo_retr(false, sd);
+	nullpo_retr(false, store);
+
+	struct item* idata = nullptr;
+
+	switch (store->type) {
+	case TABLE_STORAGE:
+		if (idx >= 0 && idx < store->max_amount) {
+			idata = &store->u.items_storage[idx];
+		}
+		break;
+	case TABLE_GUILD_STORAGE:
+		if (idx >= 0 && idx < store->max_amount) {
+			idata = &store->u.items_guild[idx];
+		}
+		break;
+	}
+
+	if (idata == nullptr) {
+		return false;
+	}
+
+	pc_setreg(sd, add_str("@removeitem_src_from"), (int)(store->type - 2));	// 即将取出的道具来源仓库类型 (1: 个人仓库; 2: 公会仓库)
+	pc_setreg(sd, add_str("@removeitem_src_storeid"), store->stor_id);		// 即将取出的道具来源仓库编号 (对个人仓库才有意义, 此处为 conf/inter_server.yml 的 ID 字段)
+	pc_setreg(sd, add_str("@removeitem_src_idx"), idx);						// 即将取出的道具索引序号
+	pc_setreg(sd, add_str("@removeitem_src_nameid"), idata->nameid);		// 即将取出的道具编号
+	pc_setreg(sd, add_str("@removeitem_src_amount"), amount);				// 即将取出的道具数量
+
+	pc_setreg(sd, add_str("@removeitem_dst_type"), item_to);				// 计划将其存放到的目的地 (1: 背包; 2: 手推车)
+
+	return npc_script_filter(sd, NPCF_STORAGE_DEL);
+	
+	return false;
+}
+#endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_Helper_Common_Function
 //************************************
@@ -339,7 +444,7 @@ const std::string StylistDatabase::getDefaultLocation(){
 	return std::string(db_path) + "/stylist.yml";
 }
 
-bool StylistDatabase::parseCostNode( std::shared_ptr<s_stylist_entry> entry, bool doram, const YAML::Node& node ){
+bool StylistDatabase::parseCostNode( std::shared_ptr<s_stylist_entry> entry, bool doram, const ryml::NodeRef& node ){
 	std::shared_ptr<s_stylist_costs> costs = doram ? entry->doram : entry->human;
 	bool costs_exists = costs != nullptr;
 
@@ -419,7 +524,7 @@ bool StylistDatabase::parseCostNode( std::shared_ptr<s_stylist_entry> entry, boo
 	return true;
 }
 
-uint64 StylistDatabase::parseBodyNode( const YAML::Node &node ){
+uint64 StylistDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	if( !this->nodesExist( node, { "Look", "Options" } ) ){
 		return 0;
 	}
@@ -460,7 +565,7 @@ uint64 StylistDatabase::parseBodyNode( const YAML::Node &node ){
 		list->look = (uint16)constant;
 	}
 
-	for( const YAML::Node& optionNode : node["Options"] ){
+	for( const ryml::NodeRef& optionNode : node["Options"] ){
 		int16 index;
 
 		if( !this->asInt16( optionNode, "Index", index ) ){
@@ -608,7 +713,7 @@ const std::string BarterDatabase::getDefaultLocation(){
 #endif // Pandas_UserExperience_Move_BartersYml_To_DB
 }
 
-uint64 BarterDatabase::parseBodyNode( const YAML::Node& node ){
+uint64 BarterDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	std::string npcname;
 
 	if( !this->asString( node, "Name", npcname ) ){
@@ -752,7 +857,7 @@ uint64 BarterDatabase::parseBodyNode( const YAML::Node& node ){
 	}
 
 	if( this->nodeExists( node, "Items" ) ){
-		for( const YAML::Node& itemNode : node["Items"] ){
+		for( const ryml::NodeRef& itemNode : node["Items"] ){
 			uint16 index;
 
 			if( !this->asUInt16( itemNode, "Index", index ) ){
@@ -824,7 +929,7 @@ uint64 BarterDatabase::parseBodyNode( const YAML::Node& node ){
 			}
 
 			if( this->nodeExists( itemNode, "RequiredItems" ) ){
-				for( const YAML::Node& requiredItemNode : itemNode["RequiredItems"] ){
+				for( const ryml::NodeRef& requiredItemNode : itemNode["RequiredItems"] ){
 					uint16 requirement_index;
 
 					if( !this->asUInt16( requiredItemNode, "Index", requirement_index ) ){
@@ -1047,7 +1152,36 @@ void BarterDatabase::loadingFinished(){
 			}
 		}
 	}
+
+	TypesafeYamlDatabase::loadingFinished();
 }
+
+#ifdef Pandas_AtCommand_ReloadBarterDB
+//************************************
+// Method:      npc_reload_barters_sub
+// Description: 用于遍历卸载以物易物商店的子函数
+// Parameter:   struct npc_data * nd
+// Parameter:   va_list args
+// Returns:     int
+// Author:      Sola丶小克(CairoLee)  2022/06/16 07:58
+//************************************ 
+static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
+	nullpo_retr(0, nd);
+	
+	if (nd->subtype != NPCTYPE_BARTER)
+		return 0;
+
+	npc_unload_duplicates(nd);
+	npc_unload(nd, true);
+
+	return 0;
+}
+
+void BarterDatabase::clear() {
+	map_foreachnpc(npc_reload_barters_sub);
+	TypesafeYamlDatabase::clear();
+}
+#endif // Pandas_AtCommand_ReloadBarterDB
 
 BarterDatabase barter_db;
 
@@ -2112,7 +2246,7 @@ int npc_touch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y, st
 	case NPCTYPE_WARP:
 		if ((!nd->trigger_on_hidden && (pc_ishiding(sd) || (sd->sc.count && sd->sc.data[SC_CAMOUFLAGE]))) || pc_isdead(sd))
 			break; // hidden or dead chars cannot use warps
-		if (!pc_job_can_entermap((enum e_job)sd->status.class_, map_mapindex2mapid(nd->u.warp.mapindex), sd->group_level))
+		if (!pc_job_can_entermap((enum e_job)sd->status.class_, map_mapindex2mapid(nd->u.warp.mapindex), pc_get_group_level(sd)))
 			break;
 		if (sd->count_rewarp > 10) {
 			ShowWarning("Prevented infinite warp loop for player (%d:%d). Please fix NPC: '%s', path: '%s'\n", sd->status.account_id, sd->status.char_id, nd->exname, nd->path);
@@ -2359,6 +2493,43 @@ int npc_globalmessage(const char* name, const char* mes)
 // MvP tomb [GreenBox]
 void run_tomb(struct map_session_data* sd, struct npc_data* nd)
 {
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	if (sd && sd->bl.type == BL_PC && nd && nd->u.tomb.md) {
+		pc_setreg(sd, add_str("@tomb_mapid"), nd->bl.m);
+		pc_setreg(sd, add_str("@tomb_x"), nd->bl.x);
+		pc_setreg(sd, add_str("@tomb_y"), nd->bl.y);
+		pc_setregstr(sd, add_str("@tomb_mapname$"), map[nd->bl.m].name);
+
+		pc_setreg(sd, add_str("@tomb_gid"), nd->bl.id);
+		pc_setreg(sd, add_str("@tomb_createtime"), nd->u.tomb.kill_time);
+
+		pc_setreg(sd, add_str("@tomb_mob_gid"), nd->u.tomb.md->bl.id);
+		pc_setreg(sd, add_str("@tomb_mob_classid"), nd->u.tomb.md->mob_id);
+
+		pc_setreg(sd, add_str("@tomb_mob_respawnsecs"), -1);
+		t_tick respawntime = -1;
+		if (nd->u.tomb.md->spawn) {
+			respawntime = gett_tickimer(nd->u.tomb.md->spawn_timer);
+			if (respawntime != -1) {
+				respawntime = DIFF_TICK(respawntime, gettick());
+				respawntime = respawntime / 1000;
+				pc_setreg(sd, add_str("@tomb_mob_respawnsecs"), respawntime);
+				respawntime = respawntime + (int)time(NULL);
+			}
+		}
+		pc_setreg(sd, add_str("@tomb_mob_respawntime"), respawntime);
+
+		pc_setregstr(sd, add_str("@tomb_killer_name$"), nd->u.tomb.killer_name);
+#ifdef Pandas_FuncParams_Mob_MvpTomb_Create
+		pc_setreg(sd, add_str("@tomb_killer_gid"), nd->u.tomb.killer_gid);
+#endif // Pandas_FuncParams_Mob_MvpTomb_Create
+
+		if (npc_script_filter(sd, NPCF_CLICKTOMB)) {
+			return;
+		}
+	}
+#endif // Pandas_NpcFilter_CLICKTOMB
+
 	char buffer[200];
 	char time[10];
 
@@ -2489,12 +2660,26 @@ bool npc_scriptcont(struct map_session_data* sd, int id, bool closing){
 		return true;
 	}
 
+#ifndef Pandas_ScriptCommand_GetInventoryList
 	if(id != fake_nd->bl.id) { // Not item script
 		if ((npc_checknear(sd, target)) == NULL) {
 			ShowWarning("npc_scriptcont: failed npc_checknear test.\n");
 			return true;
 		}
 	}
+#else
+	if(id != fake_nd->bl.id) { // Not item script
+		if ((npc_checknear(sd, target)) == NULL) {
+			// 若本次继续执行脚本是因为正在等待角色服务器返回仓库数据,
+			// 那么无需进行 npc_checknear 检查
+			if (sd->st && !(sd->st->waiting_guild_storage || sd->st->waiting_premium_storage)) {
+				ShowWarning("npc_scriptcont: failed npc_checknear test.\n");
+				return true;
+			}
+		}
+	}
+#endif // Pandas_ScriptCommand_GetInventoryList
+
 #ifdef SECURE_NPCTIMEOUT
 	if( !closing )
 		sd->npc_idle_tick = gettick(); //Update the last NPC iteration
@@ -2608,7 +2793,7 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 			break;
 		case NPCTYPE_ITEMSHOP:
 			{
-				struct item_data *id = itemdb_exists(nd->u.shop.itemshop_nameid);
+				std::shared_ptr<item_data> id = item_db.find(nd->u.shop.itemshop_nameid);
 				int delete_amount = price, i;
 
 				if (!id) { // Item Data is checked at script parsing but in case of item_db reload, check again.
@@ -2707,7 +2892,6 @@ int npc_cashshop_buylist( struct map_session_data *sd, int points, std::vector<s
 	t_itemid nameid;
 	struct npc_data *nd = (struct npc_data *)map_id2bl(sd->npc_shopid);
 	enum e_CASHSHOP_ACK res;
-	item_data *id;
 
 	if( !nd || ( nd->subtype != NPCTYPE_CASHSHOP && nd->subtype != NPCTYPE_ITEMSHOP && nd->subtype != NPCTYPE_POINTSHOP ) )
 		return ERROR_TYPE_NPC;
@@ -2723,7 +2907,8 @@ int npc_cashshop_buylist( struct map_session_data *sd, int points, std::vector<s
 	{
 		nameid = item_list[i].nameid;
 		amount = item_list[i].qty;
-		id = itemdb_exists(nameid);
+
+		std::shared_ptr<item_data> id = item_db.find(nameid);
 
 		if( !id || amount <= 0 )
 			return ERROR_TYPE_ITEM_ID;
@@ -2734,7 +2919,7 @@ int npc_cashshop_buylist( struct map_session_data *sd, int points, std::vector<s
 
 		nameid = item_list[i].nameid = nd->u.shop.shop_item[j].nameid; //item_avail replacement
 
-		if( !itemdb_isstackable2(id) && amount > 1 )
+		if( !itemdb_isstackable2(id.get()) && amount > 1 )
 		{
 			ShowWarning("Player %s (%d:%d) sent a hexed packet trying to buy %d of nonstackable item %u!\n", sd->status.name, sd->status.account_id, sd->status.char_id, amount, nameid);
 			amount = item_list[i].qty = 1;
@@ -2818,7 +3003,7 @@ void npc_shop_currency_type(struct map_session_data *sd, struct npc_data *nd, in
 		case NPCTYPE_ITEMSHOP:
 		{
 			int total = 0, i;
-			struct item_data *id = itemdb_exists(nd->u.shop.itemshop_nameid);
+			std::shared_ptr<item_data> id = item_db.find(nd->u.shop.itemshop_nameid);
 
 			if (id) { // Item Data is checked at script parsing but in case of item_db reload, check again.
 				if (display) {
@@ -2871,7 +3056,6 @@ void npc_shop_currency_type(struct map_session_data *sd, struct npc_data *nd, in
 int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, int points)
 {
 	struct npc_data *nd = (struct npc_data *)map_id2bl(sd->npc_shopid);
-	struct item_data *item;
 	int i, price, w;
 	enum e_CASHSHOP_ACK res;
 
@@ -2887,7 +3071,9 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 	if( sd->state.trading )
 		return ERROR_TYPE_EXCHANGE;
 
-	if( (item = itemdb_exists(nameid)) == NULL )
+	std::shared_ptr<item_data> id = item_db.find(nameid);
+
+	if( id == nullptr )
 		return ERROR_TYPE_ITEM_ID; // Invalid Item
 
 	ARR_FIND(0, nd->u.shop.count, i, nd->u.shop.shop_item[i].nameid == nameid || itemdb_viewid(nd->u.shop.shop_item[i].nameid) == nameid);
@@ -2898,7 +3084,7 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 
 	nameid = nd->u.shop.shop_item[i].nameid; //item_avail replacement
 
-	if(!itemdb_isstackable2(item) && amount > 1)
+	if(!itemdb_isstackable2(id.get()) && amount > 1)
 	{
 		ShowWarning("Player %s (%d:%d) sent a hexed packet trying to buy %d of nonstackable item %u!\n",
 			sd->status.name, sd->status.account_id, sd->status.char_id, amount, nameid);
@@ -2908,20 +3094,20 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 	switch( pc_checkadditem(sd, nameid, amount) )
 	{
 		case CHKADDITEM_NEW:
-			if( pc_inventoryblank(sd) < item->inventorySlotNeeded(amount) )
+			if( pc_inventoryblank(sd) < id->inventorySlotNeeded(amount) )
 				return ERROR_TYPE_INVENTORY_WEIGHT;
 			break;
 		case CHKADDITEM_OVERAMOUNT:
 			return ERROR_TYPE_INVENTORY_WEIGHT;
 	}
 
-	w = item->weight * amount;
+	w = id->weight * amount;
 	if( w + sd->weight > sd->max_weight )
 		return ERROR_TYPE_INVENTORY_WEIGHT;
 
 	if( (double)nd->u.shop.shop_item[i].value * amount > INT_MAX )
 	{
-		ShowWarning("npc_cashshop_buy: Item '%s' (%u) price overflow attempt!\n", item->name.c_str(), nameid);
+		ShowWarning("npc_cashshop_buy: Item '%s' (%u) price overflow attempt!\n", id->name.c_str(), nameid);
 		ShowDebug("(NPC:'%s' (%s,%d,%d), player:'%s' (%d/%d), value:%d, amount:%d)\n",
 					nd->exname, map_mapid2mapname(nd->bl.m), nd->bl.x, nd->bl.y, sd->status.name, sd->status.account_id, sd->status.char_id, nd->u.shop.shop_item[i].value, amount);
 		return ERROR_TYPE_ITEM_ID;
@@ -2935,21 +3121,17 @@ int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, i
 		return res;
 
 	if( !pet_create_egg(sd, nameid) ) {
-		struct item item_tmp;
-#ifndef Pandas_LGTM_Optimization
-		unsigned short get_amt = amount, j;
-#else
-		int get_amt = amount, j;
-#endif // Pandas_LGTM_Optimization
+		unsigned short get_amt = amount;
 
-		memset(&item_tmp, 0, sizeof(item_tmp));
+		struct item item_tmp = {};
+
 		item_tmp.nameid = nameid;
 		item_tmp.identify = 1;
 
-		if (item->flag.guid)
+		if (id->flag.guid)
 			get_amt = 1;
 
-		for (j = 0; j < amount; j += get_amt)
+		for (int j = 0; j < amount; j += get_amt)
 			pc_additem(sd,&item_tmp, get_amt, LOG_TYPE_NPC);
 	}
 
@@ -3025,7 +3207,6 @@ e_purchase_result npc_buylist( struct map_session_data* sd, std::vector<s_npc_bu
 		t_itemid nameid;
 		unsigned short amount;
 		int value;
-		item_data *id;
 
 		// find this entry in the shop's sell list
 		ARR_FIND( 0, nd->u.shop.count, j,
@@ -3047,12 +3228,13 @@ e_purchase_result npc_buylist( struct map_session_data* sd, std::vector<s_npc_bu
 		amount = item_list[i].qty;
 		nameid = item_list[i].nameid = shop[j].nameid; //item_avail replacement
 		value = shop[j].value;
-		id = itemdb_exists(nameid);
+
+		std::shared_ptr<item_data> id = item_db.find(nameid);
 
 		if( !id )
 			return e_purchase_result::PURCHASE_FAIL_COUNT; // item no longer in itemdb
 
-		if( !itemdb_isstackable2(id) && amount > 1 ) { //Exploit? You can't buy more than 1 of equipment types o.O
+		if( !itemdb_isstackable2(id.get()) && amount > 1 ) { //Exploit? You can't buy more than 1 of equipment types o.O
 			ShowWarning("Player %s (%d:%d) sent a hexed packet trying to buy %d of nonstackable item %u!\n",
 				sd->status.name, sd->status.account_id, sd->status.char_id, amount, nameid);
 			amount = item_list[i].qty = 1;
@@ -3358,7 +3540,7 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 	uint32 requiredItems[MAX_INVENTORY] = { 0 };
 
 	for( s_barter_purchase& purchase : purchases ){
-		purchase.data = itemdb_exists( purchase.item->nameid );
+		purchase.data = item_db.find( purchase.item->nameid ).get();
 
 		if( purchase.data == nullptr ){
 			return e_purchase_result::PURCHASE_FAIL_EXCHANGE_FAILED;
@@ -3383,14 +3565,13 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 
 		for( const auto& requirementPair : purchase.item->requirements ){
 			std::shared_ptr<s_npc_barter_requirement> requirement = requirementPair.second;
-
-			item_data* id = itemdb_exists( requirement->nameid );
+			std::shared_ptr<item_data> id = item_db.find(requirement->nameid);
 
 			if( id == nullptr ){
 				return e_purchase_result::PURCHASE_FAIL_EXCHANGE_FAILED;
 			}
 
-			if( itemdb_isstackable2( id ) ){
+			if( itemdb_isstackable2( id.get() ) ){
 				int j;
 
 				for( j = 0; j < MAX_INVENTORY; j++ ){
@@ -3434,7 +3615,7 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 					return e_purchase_result::PURCHASE_FAIL_GOODS;
 				}
 			}else{
-				for( int i = 0; i < requirement->amount; i++ ){
+				for( int i = 0; i < (requirement->amount * amount); i++ ){
 					int j;
 
 					for( j = 0; j < MAX_INVENTORY; j++ ){
@@ -3616,11 +3797,7 @@ e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_
 //This doesn't remove it from map_db
 int npc_remove_map(struct npc_data* nd)
 {
-#ifndef Pandas_LGTM_Optimization
-	int16 i;
-#else
 	int i;
-#endif // Pandas_LGTM_Optimization
 	nullpo_retr(1, nd);
 
 	if(nd->bl.prev == NULL || nd->bl.m < 0)
@@ -4061,6 +4238,12 @@ struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
 	nd->progressbar.timeout = 0;
 	nd->vd = npc_viewdb[0]; // Default to JT_INVISIBLE
 
+#ifdef GENERATE_NAVI
+	nd->navi.pos = {m, x, y};
+	nd->navi.id = 0;
+	nd->navi.npc = nd;
+#endif
+
 #ifdef Pandas_ScriptCommand_ShowVend
 	nd->vendingboard.show = false;
 	memset(nd->vendingboard.message, 0, NAME_LENGTH + 1);
@@ -4195,6 +4378,11 @@ static const char* npc_parse_warp(char* w1, char* w2, char* w3, char* w4, const 
 	nd->u.warp.y = to_y;
 	nd->u.warp.xs = xs;
 	nd->u.warp.ys = ys;
+
+#ifdef GENERATE_NAVI
+	nd->navi.warp_dest = {map_mapindex2mapid(i), to_x, to_y};
+#endif
+
 	npc_warp++;
 	nd->bl.type = BL_NPC;
 	nd->subtype = NPCTYPE_WARP;
@@ -4360,7 +4548,6 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 		t_itemid nameid2;
 		int32 qty = -1;
 		int value;
-		struct item_data* id;
 		bool skip = false;
 
 		if( p == NULL )
@@ -4385,7 +4572,9 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 		if (skip)
 			break;
 
-		if( (id = itemdb_exists(nameid2)) == NULL ) {
+		std::shared_ptr<item_data> id = item_db.find(nameid2);
+
+		if( id == nullptr ) {
 			ShowWarning("npc_parse_shop: Invalid sell item in file '%s', line '%d' (id '%u').\n", filepath, strline(buffer,start-buffer), nameid2);
 			p = strchr(p+1,',');
 			continue;
@@ -5095,7 +5284,8 @@ static int npc_market_checkall_sub(DBKey key, DBData *data, va_list ap) {
 		ARR_FIND(0, nd->u.shop.count, j, nd->u.shop.shop_item[j].nameid == list->nameid);
 		if (j != nd->u.shop.count) {
 			nd->u.shop.shop_item[j].value = list->value;
-			nd->u.shop.shop_item[j].qty = list->qty;
+			if (nd->u.shop.shop_item[j].qty > -1)
+				nd->u.shop.shop_item[j].qty = list->qty;
 			nd->u.shop.shop_item[j].flag = list->flag;
 			npc_market_tosql(nd->exname, &nd->u.shop.shop_item[j]);
 			continue;
@@ -5105,7 +5295,8 @@ static int npc_market_checkall_sub(DBKey key, DBData *data, va_list ap) {
 			RECREATE(nd->u.shop.shop_item, struct npc_item_list, nd->u.shop.count+1);
 			nd->u.shop.shop_item[j].nameid = list->nameid;
 			nd->u.shop.shop_item[j].value = list->value;
-			nd->u.shop.shop_item[j].qty = list->qty;
+			if (nd->u.shop.shop_item[j].qty > -1)
+				nd->u.shop.shop_item[j].qty = list->qty;
 			nd->u.shop.shop_item[j].flag = list->flag;
 			nd->u.shop.count++;
 			npc_market_tosql(nd->exname, &nd->u.shop.shop_item[j]);
@@ -5352,7 +5543,7 @@ int npc_do_atcmd_event(struct map_session_data* sd, const char* command, const c
 
 	for( i = 0; i < ( strlen( message ) + 1 ) && k < 127; i ++ ) {
 		if( message[i] == ' ' || message[i] == '\0' ) {
-			if( message[ ( i - 1 ) ] == ' ' ) {
+			if (i > 0 && message[i - 1] == ' ') {
 				continue; // To prevent "@atcmd [space][space]" and .@atcmd_numparameters return 1 without any parameter.
 			}
 			temp[k] = '\0';
@@ -5956,9 +6147,17 @@ int npc_parsesrcfile(const char* filepath)
 	}
 	fseek(fp, 0, SEEK_END);
 	len = ftell(fp);
+#ifndef Pandas_Support_UTF8BOM_Files
 	buffer = (char*)aMalloc(len+1);
 	fseek(fp, 0, SEEK_SET);
 	len = fread(buffer, 1, len, fp);
+#else
+	// 潜在的编码转换需要, 将字节数与 wchar_t 的大小相乘
+	len = len * sizeof(wchar_t) + 1;
+	buffer = (char*)aMalloc(len);
+	fseek(fp, 0, SEEK_SET);
+	len = fread(buffer, 1, len, fp);
+#endif // Pandas_Support_UTF8BOM_Files
 	buffer[len] = '\0';
 	if( ferror(fp) )
 	{
@@ -6170,6 +6369,14 @@ bool npc_event_is_express(enum npce_event eventtype) {
 #ifdef Pandas_NpcExpress_MER_LEAVE
 		NPCX_MER_LEAVE,	// mer_leave_express_name	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+		NPCX_PC_TALK,	// pc_talk_express_name	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+		NPCX_PCHARMED,	// pcharmed_express_name	// OnPCHarmedExpress		// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 19>
 	};
 
@@ -6241,35 +6448,55 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #endif // Pandas_NpcFilter_ONECLICK_IDENTIFY
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
-		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+		NPCF_GUILDCREATE,	// guildcreate_filter_name	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDCREATE
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
-		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+		NPCF_GUILDJOIN,	// guildjoin_filter_name	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDJOIN
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
-		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+		NPCF_GUILDLEAVE,	// guildleave_filter_name	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
-		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+		NPCF_PARTYCREATE,	// partycreate_filter_name	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYCREATE
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
-		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		NPCF_PARTYJOIN,	// partyjoin_filter_name	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYJOIN
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
-		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		NPCF_PARTYLEAVE,	// partyleave_filter_name	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROPITEM
 		NPCF_DROPITEM,	// dropitem_filter_name	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
 
+#ifdef Pandas_NpcFilter_CLICKTOMB
+		NPCF_CLICKTOMB,	// clicktomb_filter_name	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+		NPCF_STORAGE_ADD,	// storage_add_filter_name	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+		NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
+#ifdef Pandas_NpcFilter_CART_ADD
+		NPCF_CART_ADD,	// cart_add_filter_name	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器
+#endif // Pandas_NpcFilter_CART_ADD
+
+#ifdef Pandas_NpcFilter_CART_DEL
+		NPCF_CART_DEL,	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器
+#endif // Pandas_NpcFilter_CART_DEL
+
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
-		NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具移回普通栏位时触发过滤器 [香草]
+		NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
@@ -6449,32 +6676,32 @@ const char *npc_get_script_event_name(int npce_index)
 
 #ifdef Pandas_NpcFilter_GUILDCREATE
 	case NPCF_GUILDCREATE:
-		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器 [聽風]
+		return script_config.guildcreate_filter_name;	// OnPCGuildCreateFilter		// 当玩家准备创建公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDCREATE
 
 #ifdef Pandas_NpcFilter_GUILDJOIN
 	case NPCF_GUILDJOIN:
-		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器 [聽風]
+		return script_config.guildjoin_filter_name;	// OnPCGuildJoinFilter		// 当玩家即将加入公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDJOIN
 
 #ifdef Pandas_NpcFilter_GUILDLEAVE
 	case NPCF_GUILDLEAVE:
-		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器 [聽風]
+		return script_config.guildleave_filter_name;	// OnPCGuildLeaveFilter		// 当玩家准备离开公会时触发过滤器
 #endif // Pandas_NpcFilter_GUILDLEAVE
 
 #ifdef Pandas_NpcFilter_PARTYCREATE
 	case NPCF_PARTYCREATE:
-		return script_config.partycreate_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器 [聽風]
+		return script_config.partycreate_filter_name;	// OnPCPartyCreateFilter		// 当玩家准备创建队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYCREATE
 
 #ifdef Pandas_NpcFilter_PARTYJOIN
 	case NPCF_PARTYJOIN:
-		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器 [聽風]
+		return script_config.partyjoin_filter_name;	// OnPCPartyJoinFilter		// 当玩家即将加入队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYJOIN
 
 #ifdef Pandas_NpcFilter_PARTYLEAVE
 	case NPCF_PARTYLEAVE:
-		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器 [聽風]
+		return script_config.partyleave_filter_name;	// OnPCPartyLeaveFilter		// 当玩家准备离开队伍时触发过滤器
 #endif // Pandas_NpcFilter_PARTYLEAVE
 
 #ifdef Pandas_NpcFilter_DROPITEM
@@ -6482,9 +6709,34 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.dropitem_filter_name;	// OnPCDropItemFilter		// 当玩家准备丢弃或掉落道具时触发过滤器
 #endif // Pandas_NpcFilter_DROPITEM
 
+#ifdef Pandas_NpcFilter_CLICKTOMB
+	case NPCF_CLICKTOMB:
+		return script_config.clicktomb_filter_name;	// OnPCClickTombFilter		// 当玩家点击魔物墓碑时触发过滤器
+#endif // Pandas_NpcFilter_CLICKTOMB
+
+#ifdef Pandas_NpcFilter_STORAGE_ADD
+	case NPCF_STORAGE_ADD:
+		return script_config.storage_add_filter_name;	// OnPCStorageAddFilter		// 当玩家准备将道具存入仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_ADD
+
+#ifdef Pandas_NpcFilter_STORAGE_DEL
+	case NPCF_STORAGE_DEL:
+		return script_config.storage_del_filter_name;	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
+#endif // Pandas_NpcFilter_STORAGE_DEL
+
+#ifdef Pandas_NpcFilter_CART_ADD
+	case NPCF_CART_ADD:
+		return script_config.cart_add_filter_name;	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器
+#endif // Pandas_NpcFilter_CART_ADD
+
+#ifdef Pandas_NpcFilter_CART_DEL
+	case NPCF_CART_DEL:
+		return script_config.cart_del_filter_name;	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器
+#endif // Pandas_NpcFilter_CART_DEL
+
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	case NPCF_FAVORITE_DEL:
-		return script_config.favorite_del_filter_name;	// OnPCFavoriteDelFilter		// 当玩家准备将道具移回普通栏位时触发过滤器 [香草]
+		return script_config.favorite_del_filter_name;	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
@@ -6581,6 +6833,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCX_MER_LEAVE:
 		return script_config.mer_leave_express_name;	// OnPCMerLeaveExpress		// 当佣兵离开玩家时触发实时事件
 #endif // Pandas_NpcExpress_MER_LEAVE
+
+#ifdef Pandas_NpcExpress_PC_TALK
+	case NPCX_PC_TALK:
+		return script_config.pc_talk_express_name;	// OnPCTalkExpress		// 当玩家往聊天框发送信息时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PC_TALK
+
+#ifdef Pandas_NpcExpress_PCHARMED
+	case NPCX_PCHARMED:
+		return script_config.pcharmed_express_name;	// OnPCHarmedExpress		// 当玩家受到伤害并即将进行结算时触发实时事件 [人鱼姬的思念]
+#endif // Pandas_NpcExpress_PCHARMED
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 15>
 
 	default:

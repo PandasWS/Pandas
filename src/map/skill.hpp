@@ -15,10 +15,6 @@
 
 #include "map.hpp" // struct block_list
 
-#ifdef Pandas_YamlBlastCache_Serialize
-#include "../common/serialize.hpp"
-#endif // Pandas_YamlBlastCache_Serialize
-
 enum damage_lv : uint8;
 enum sc_type : int16;
 enum send_target : uint8;
@@ -30,6 +26,7 @@ struct homun_data;
 struct skill_unit;
 struct s_skill_unit_group;
 struct status_change_entry;
+struct status_change;
 
 #define MAX_SKILL_PRODUCE_DB	300 /// Max Produce DB
 #define MAX_PRODUCE_RESOURCE	12 /// Max Produce requirements
@@ -112,6 +109,7 @@ enum e_skill_inf2 : uint8 {
 	INF2_IGNORECICADA, // Skill is not blocked by SC_UTSUSEMI or SC_BUNSINJYUTSU (physical-skill only)
 	INF2_SHOWSCALE, // Skill shows AoE area while casting
 	INF2_IGNOREGTB, // Skill ignores effect of GTB
+	INF2_TOGGLEABLE, // Skill can be toggled on and off (won't consume HP/SP when toggled off)
 	INF2_MAX,
 };
 
@@ -255,11 +253,6 @@ struct s_skill_copyable { // [Cydh]
 	uint16 req_opt;
 };
 
-/// Skill Reading Spellbook structure.
-struct s_skill_spellbook {
-	uint16 nameid, point;
-};
-
 /// Database skills
 struct s_skill_db {
 	uint16 nameid;								///< Skill ID
@@ -315,8 +308,8 @@ struct s_skill_db {
 	struct s_skill_copyable copyable;
 
 	int32 abra_probability[MAX_SKILL_LEVEL];
-	s_skill_spellbook reading_spellbook;
 	uint16 improvisedsong_rate;
+	sc_type sc;									///< Default SC for skill
 };
 
 class SkillDatabase : public TypesafeCachedYamlDatabase <uint16, s_skill_db> {
@@ -326,48 +319,20 @@ private:
 	/// Skill count, also as last index
 	uint16 skill_num;
 
-	template<typename T, size_t S> bool parseNode(std::string nodeName, std::string subNodeName, YAML::Node node, T(&arr)[S]);
-
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-	friend class boost::serialization::access;
-
-	template <typename Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<TypesafeCachedYamlDatabase<uint16, s_skill_db>>(*this);
-
-		ar& skilldb_id2idx;
-		ar& skill_num;
-	}
-#endif // Pandas_YamlBlastCache_SkillDatabase
+	template<typename T, size_t S> bool parseNode(const std::string& nodeName, const std::string& subNodeName, const ryml::NodeRef& node, T(&arr)[S]);
 
 public:
 	SkillDatabase() : TypesafeCachedYamlDatabase("SKILL_DB", 3, 1) {
 		this->clear();
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-		this->supportSerialize = true;
-		this->validDatatypeSize.push_back(1600);	// Win32 + PRE
-		this->validDatatypeSize.push_back(1648);	// Win32 + RENEWAL
-		this->validDatatypeSize.push_back(1632);	// x64 + PRE
-		this->validDatatypeSize.push_back(1688);	// x64 + RENEWAL
-
-		this->validDatatypeSize.push_back(1640);	// Linux + PRE
-		this->validDatatypeSize.push_back(1696);	// Linux + RENEWAL
-#endif // Pandas_YamlBlastCache_SkillDatabase
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 	void clear() override;
 	void loadingFinished() override;
 
 	// Additional
 	uint16 get_index( uint16 skill_id, bool silent, const char* func, const char* file, int line );
-
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-	bool doSerialize(const std::string& type, void* archive);
-	void afterSerialize();
-	std::string getAdditionalCacheHash();
-#endif // Pandas_YamlBlastCache_SkillDatabase
 };
 
 extern SkillDatabase skill_db;
@@ -504,7 +469,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 extern SkillArrowDatabase skill_arrow_db;
@@ -522,21 +487,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
-};
-
-struct s_skill_improvise_db {
-	uint16 skill_id, per;
-};
-
-class ImprovisedSongDatabase : public TypesafeYamlDatabase<uint16, s_skill_improvise_db> {
-public:
-	ImprovisedSongDatabase() : TypesafeYamlDatabase("IMPROVISED_SONG_DB", 1) {
-
-	}
-
-	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 void do_init_skill(void);
@@ -659,7 +610,7 @@ bool skill_check_condition_castend(struct map_session_data *sd, uint16 skill_id,
 int skill_check_condition_char_sub (struct block_list *bl, va_list ap);
 void skill_consume_requirement(struct map_session_data *sd, uint16 skill_id, uint16 skill_lv, short type);
 struct s_skill_condition skill_get_requirement(struct map_session_data *sd, uint16 skill_id, uint16 skill_lv);
-int skill_disable_check(struct status_change *sc, uint16 skill_id);
+bool skill_disable_check(status_change &sc, uint16 skill_id);
 bool skill_pos_maxcount_check(struct block_list *src, int16 x, int16 y, uint16 skill_id, uint16 skill_lv, enum bl_type type, bool display_failure);
 
 int skill_check_pc_partner(struct map_session_data *sd, uint16 skill_id, uint16 *skill_lv, int range, int cast_flag);
@@ -678,7 +629,6 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 bool skill_check_cloaking(struct block_list *bl, struct status_change_entry *sce);
 
 // Abnormal status
-void skill_enchant_elemental_end(struct block_list *bl, int type);
 bool skill_isNotOk(uint16 skill_id, struct map_session_data *sd);
 bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv);
 bool skill_isNotOk_mercenary(uint16 skill_id, s_mercenary_data *md);
@@ -2258,6 +2208,111 @@ enum e_skill {
 	EM_ELEMENTAL_BUSTER_GROUND,
 	EM_ELEMENTAL_BUSTER_POISON,
 
+	NW_P_F_I = 5401,
+	NW_GRENADE_MASTERY,
+	NW_INTENSIVE_AIM,
+	NW_GRENADE_FRAGMENT,
+	NW_THE_VIGILANTE_AT_NIGHT,
+	NW_ONLY_ONE_BULLET,
+	NW_SPIRAL_SHOOTING,
+	NW_MAGAZINE_FOR_ONE,
+	NW_WILD_FIRE,
+	NW_BASIC_GRENADE,
+	NW_HASTY_FIRE_IN_THE_HOLE,
+	NW_GRENADES_DROPPING,
+	NW_AUTO_FIRING_LAUNCHER,
+	NW_HIDDEN_CARD,
+	NW_MISSION_BOMBARD,
+
+	SOA_TALISMAN_MASTERY,
+	SOA_SOUL_MASTERY,
+	SOA_TALISMAN_OF_PROTECTION,
+	SOA_TALISMAN_OF_WARRIOR,
+	SOA_TALISMAN_OF_MAGICIAN,
+	SOA_SOUL_GATHERING,
+	SOA_TOTEM_OF_TUTELARY,
+	SOA_TALISMAN_OF_FIVE_ELEMENTS,
+	SOA_TALISMAN_OF_SOUL_STEALING,
+	SOA_EXORCISM_OF_MALICIOUS_SOUL,
+	SOA_TALISMAN_OF_BLUE_DRAGON,
+	SOA_TALISMAN_OF_WHITE_TIGER,
+	SOA_TALISMAN_OF_RED_PHOENIX,
+	SOA_TALISMAN_OF_BLACK_TORTOISE,
+	SOA_TALISMAN_OF_FOUR_BEARING_GOD,
+	SOA_CIRCLE_OF_DIRECTIONS_AND_ELEMENTALS,
+	SOA_SOUL_OF_HEAVEN_AND_EARTH,
+
+	SH_MYSTICAL_CREATURE_MASTERY,
+	SH_COMMUNE_WITH_CHUL_HO,
+	SH_CHUL_HO_SONIC_CLAW,
+	SH_HOWLING_OF_CHUL_HO,
+	SH_HOGOGONG_STRIKE,
+	SH_COMMUNE_WITH_KI_SUL,
+	SH_KI_SUL_WATER_SPRAYING,
+	SH_MARINE_FESTIVAL_OF_KI_SUL,
+	SH_SANDY_FESTIVAL_OF_KI_SUL,
+	SH_KI_SUL_RAMPAGE,
+	SH_COMMUNE_WITH_HYUN_ROK,
+	SH_COLORS_OF_HYUN_ROK,
+	SH_HYUN_ROKS_BREEZE,
+	SH_HYUN_ROK_CANNON,
+	SH_TEMPORARY_COMMUNION,
+	SH_BLESSING_OF_MYSTICAL_CREATURES,
+
+	HN_SELFSTUDY_TATICS,
+	HN_SELFSTUDY_SOCERY,
+	HN_DOUBLEBOWLINGBASH,
+	HN_MEGA_SONIC_BLOW,
+	HN_SHIELD_CHAIN_RUSH,
+	HN_SPIRAL_PIERCE_MAX,
+	HN_METEOR_STORM_BUSTER,
+	HN_JUPITEL_THUNDER_STORM,
+	HN_JACK_FROST_NOVA,
+	HN_HELLS_DRIVE,
+	HN_GROUND_GRAVITATION,
+	HN_NAPALM_VULCAN_STRIKE,
+	HN_BREAKINGLIMIT,
+	HN_RULEBREAK,
+
+	SKE_SKY_MASTERY,
+	SKE_WAR_BOOK_MASTERY,
+	SKE_RISING_SUN,
+	SKE_NOON_BLAST,
+	SKE_SUNSET_BLAST,
+	SKE_RISING_MOON,
+	SKE_MIDNIGHT_KICK,
+	SKE_DAWN_BREAK,
+	SKE_TWINKLING_GALAXY,
+	SKE_STAR_BURST,
+	SKE_STAR_CANNON,
+	SKE_ALL_IN_THE_SKY,
+	SKE_ENCHANTING_SKY,
+
+	SS_TOKEDASU,
+	SS_SHIMIRU,
+	SS_AKUMUKESU,
+	SS_SHINKIROU,
+	SS_KAGEGARI,
+	SS_KAGENOMAI,
+	SS_KAGEGISSEN,
+	SS_FUUMASHOUAKU,
+	SS_FUUMAKOUCHIKU,
+	SS_KUNAIWAIKYOKU,
+	SS_KUNAIKAITEN,
+	SS_KUNAIKUSSETSU,
+	SS_SEKIENHOU,
+	SS_REIKETSUHOU,
+	SS_RAIDENPOU,
+	SS_KINRYUUHOU,
+	SS_ANTENPOU,
+	SS_KAGEAKUMU,
+	SS_HITOUAKUMU,
+	SS_ANKOKURYUUAKUMU,
+
+	NW_THE_VIGILANTE_AT_NIGHT_GUN_GATLING,
+	NW_THE_VIGILANTE_AT_NIGHT_GUN_SHOTGUN,
+	SS_FUUMAKOUCHIKU_BLASTING,
+
 	HLIF_HEAL = 8001,
 	HLIF_AVOID,
 	HLIF_BRAIN,
@@ -2557,8 +2612,8 @@ enum e_skill_unit_id : uint16 {
 
 	UNT_RAIN_OF_CRYSTAL,
 	UNT_MYSTERY_ILLUSION,
-	UNT_UNKNOWN_1,// No idea. Makes a old style plant appear for a second.
-	UNT_STRANTUM_TREMOR,
+
+	UNT_STRANTUM_TREMOR = 269,
 	UNT_VIOLENT_QUAKE,
 	UNT_ALL_BLOOM,
 	UNT_TORNADO_STORM,
@@ -2574,6 +2629,20 @@ enum e_skill_unit_id : uint16 {
 	UNT_LIGHTNING_LAND,
 	UNT_VENOM_SWAMP,
 	UNT_CONFLAGRATION,
+	UNT_CANE_OF_EVIL_EYE,
+	UNT_TWINKLING_GALAXY,
+	UNT_STAR_CANNON,
+	UNT_GRENADES_DROPPING,
+
+	UNT_FUUMASHOUAKU = 290, // Huuma Shuriken - Grasp
+	UNT_MISSION_BOMBARD,
+	UNT_TOTEM_OF_TUTELARY,
+	UNT_HYUN_ROKS_BREEZE,
+	UNT_SHINKIROU, // Mirage
+	UNT_JACK_FROST_NOVA,
+	UNT_GROUND_GRAVITATION,
+
+	UNT_KUNAIWAIKYOKU = 298, // Kunai - Distortion
 
 	// Skill units outside the normal unit range.
 	UNT_DEEPBLINDTRAP = 20852,
@@ -2620,7 +2689,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node& node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 
 	// Additional
 	std::shared_ptr<s_skill_spellbook_db> findBook(t_itemid nameid);
@@ -2628,7 +2697,7 @@ public:
 
 extern ReadingSpellbookDatabase reading_spellbook_db;
 
-void skill_spellbook(struct map_session_data *sd, t_itemid nameid);
+void skill_spellbook(map_session_data &sd, t_itemid nameid);
 
 int skill_block_check(struct block_list *bl, enum sc_type type, uint16 skill_id);
 
@@ -2643,7 +2712,7 @@ public:
 	}
 
 	const std::string getDefaultLocation() override;
-	uint64 parseBodyNode(const YAML::Node &node) override;
+	uint64 parseBodyNode(const ryml::NodeRef& node) override;
 };
 
 extern MagicMushroomDatabase magic_mushroom_db;
@@ -2682,6 +2751,7 @@ int skill_is_combo(uint16 skill_id);
 void skill_combo_toggle_inf(struct block_list* bl, uint16 skill_id, int inf);
 void skill_combo(struct block_list* src,struct block_list *dsrc, struct block_list *bl, uint16 skill_id, uint16 skill_lv, t_tick tick);
 
+enum sc_type skill_get_sc(int16 skill_id);
 void skill_reveal_trap_inarea(struct block_list *src, int range, int x, int y);
 int skill_get_time3(struct map_data *mapdata, uint16 skill_id, uint16 skill_lv);
 
@@ -2700,111 +2770,5 @@ int skill_get_time3(struct map_data *mapdata, uint16 skill_id, uint16 skill_lv);
 #define SKILL_CHK_ELEM(skill_id)  ( (skill_id) >= EL_SKILLBASE && (skill_id) < EL_SKILLBASE+MAX_ELEMENTALSKILL )
 #define SKILL_CHK_ABR(skill_id)   ( (skill_id) >= ABR_SKILLBASE && (skill_id) < ABR_SKILLBASE+MAX_ABRSKILL )
 #define SKILL_CHK_GUILD(skill_id) ( (skill_id) >= GD_SKILLBASE && (skill_id) < GD_SKILLBASE+MAX_GUILDSKILL )
-
-#ifdef Pandas_YamlBlastCache_SkillDatabase
-namespace boost {
-	namespace serialization {
-		// ======================================================================
-		// struct s_skill_db
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_db& t, const unsigned int version)
-		{
-			ar& t.nameid;
-			ar& t.name;
-			ar& t.desc;
-			ar& t.range;
-			ar& t.hit;
-			ar& t.inf;
-			ar& t.element;
-			ar& t.nk;
-			ar& t.splash;
-			ar& t.max;
-			ar& t.num;
-			ar& t.castcancel;
-			ar& t.cast_def_rate;
-			ar& t.skill_type;
-			ar& t.blewcount;
-			ar& t.inf2;
-			ar& t.maxcount;
-
-			ar& t.castnodex;
-			ar& t.delaynodex;
-
-			//ar& t.nocast;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.giveap;
-
-			ar& t.unit_id;
-			ar& t.unit_id2;
-			ar& t.unit_layout_type;
-			ar& t.unit_range;
-			ar& t.unit_interval;
-			ar& t.unit_target;
-			ar& t.unit_flag;
-
-			ar& t.cast;
-			ar& t.delay;
-			ar& t.walkdelay;
-			ar& t.upkeep_time;
-			ar& t.upkeep_time2;
-			ar& t.cooldown;
-#ifdef RENEWAL_CAST
-			ar& t.fixed_cast;
-#endif // RENEWAL_CAST
-
-			ar& t.require;
-
-			ar& t.unit_nonearnpc_range;
-			ar& t.unit_nonearnpc_type;
-
-			//ar& t.damage;					// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			ar& t.copyable;
-
-			//ar& t.abra_probability;		// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			//ar& t.reading_spellbook;		// SkillDatabase 默认不会为其赋值, 暂时无需处理
-			//ar& t.improvisedsong_rate;	// SkillDatabase 默认不会为其赋值, 暂时无需处理
-		}
-
-		// ======================================================================
-		// struct s_skill_copyable
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_copyable& t, const unsigned int version)
-		{
-			ar& t.option;
-			ar& t.req_opt;
-		}
-
-		// ======================================================================
-		// struct s_skill_require
-		// ======================================================================
-
-		template <typename Archive>
-		void serialize(Archive& ar, struct s_skill_require& t, const unsigned int version)
-		{
-			ar& t.hp;
-			ar& t.mhp;
-			ar& t.sp;
-			ar& t.ap;
-			ar& t.hp_rate;
-			ar& t.sp_rate;
-			ar& t.ap_rate;
-			ar& t.zeny;
-			ar& t.weapon;
-			ar& t.ammo;
-			ar& t.ammo_qty;
-			ar& t.state;
-			ar& t.spiritball;
-			ar& t.itemid;
-			ar& t.amount;
-			ar& t.eqItem;
-			ar& t.status;
-			ar& t.itemid_level_dependent;
-		}
-	} // namespace serialization
-} // namespace boost
-#endif // Pandas_YamlBlastCache_SkillDatabase
 
 #endif /* SKILL_HPP */

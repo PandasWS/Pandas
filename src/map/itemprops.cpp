@@ -33,11 +33,11 @@ const std::string ItemProperties::getDefaultLocation() {
 //************************************
 // Method:      parseBodyNode
 // Description: 解析 Body 节点的主要处理函数
-// Parameter:   const YAML::Node & node
+// Parameter:   const ryml::NodeRef & node
 // Returns:     uint64
 // Author:      Sola丶小克(CairoLee)  2020/01/03 20:33
 //************************************
-uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
+uint64 ItemProperties::parseBodyNode(const ryml::NodeRef& node) {
 	uint32 nameid = 0;
 
 	if (!this->asUInt32(node, "ItemID", nameid)) {
@@ -58,7 +58,7 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "Property")) {
-		const YAML::Node& propertyNode = node["Property"];
+		const ryml::NodeRef& propertyNode = node["Property"];
 		GETYAML_NODE_BOOL(propertyNode, "AvoidConsumeForUse", properties_item->special, ITEM_PRO_AVOID_CONSUME_FOR_USE);
 		GETYAML_NODE_BOOL(propertyNode, "AvoidConsumeForSkill", properties_item->special, ITEM_PRO_AVOID_CONSUME_FOR_SKILL);
 		GETYAML_NODE_BOOL(propertyNode, "IsAmuletItem", properties_item->special, ITEM_PRO_IS_AMULET_ITEM);
@@ -66,13 +66,13 @@ uint64 ItemProperties::parseBodyNode(const YAML::Node &node) {
 	}
 
 	if (this->nodeExists(node, "ControlViewID")) {
-		const YAML::Node& noviewNode = node["ControlViewID"];
+		const ryml::NodeRef& noviewNode = node["ControlViewID"];
 		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenISee", properties_item->noview, ITEM_NOVIEW_WHEN_I_SEE);
 		GETYAML_NODE_BOOL(noviewNode, "InvisibleWhenTheySee", properties_item->noview, ITEM_NOVIEW_WHEN_T_SEE);
 	}
 
 	if (this->nodeExists(node, "AnnouceRules")) {
-		const YAML::Node& annouceNode = node["AnnouceRules"];
+		const ryml::NodeRef& annouceNode = node["AnnouceRules"];
 		GETYAML_NODE_BOOL(annouceNode, "DropToGround", properties_item->annouce, ITEM_ANNOUCE_DROP_TO_GROUND);
 		GETYAML_NODE_BOOL(annouceNode, "DropToInventoryForMVP", properties_item->annouce, ITEM_ANNOUCE_DROP_TO_INVENTORY_FOR_MVP);
 		GETYAML_NODE_BOOL(annouceNode, "StealToInventory", properties_item->annouce, ITEM_ANNOUCE_STEAL_TO_INVENTORY);

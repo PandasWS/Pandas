@@ -58,7 +58,7 @@ def initialize():
     # 完成了 install 之后, 在新的 pipenv 会话中启动当前脚本
     call('start cmd /K "{cmdline}"'.format(
         cmdline = ' && '.join([
-            'pipenv run %s' % inspect.stack()[-1][1]
+            'pipenv run "%s"' % inspect.stack()[-1][1]
         ])
     ), cwd=__current_path__)
     

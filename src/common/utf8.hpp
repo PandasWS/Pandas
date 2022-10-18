@@ -19,6 +19,7 @@ enum e_file_charsetmode : uint8 {
 	FILE_CHARSETMODE_UNKNOW = 0,
 	FILE_CHARSETMODE_ANSI,
 	FILE_CHARSETMODE_UTF8_BOM,
+	FILE_CHARSETMODE_UTF8,
 	FILE_CHARSETMODE_UCS2_LE,
 	FILE_CHARSETMODE_UCS2_BE
 };
@@ -74,8 +75,10 @@ void clearModeMapping(FILE* _fp);
 enum e_file_charsetmode fmode(FILE* _Stream);
 enum e_file_charsetmode fmode(std::ifstream& ifs);
 FILE* fopen(const char* _FileName, const char* _Mode);
-char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream);
-size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream);
+char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag = 0);
+char* _fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag = 0);
+size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag = 0);
+size_t _fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _Stream, int flag = 0);
 int fclose(FILE* _fp);
 
 } // namespace PandasUtf8
