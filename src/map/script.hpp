@@ -271,6 +271,10 @@ struct Script_Config {
 	const char* cart_del_filter_name;	// NPCF_CART_DEL	// OnPCCartDelFilter	// 当玩家准备将道具从手推车取回背包时触发过滤器
 #endif // Pandas_NpcFilter_CART_DEL
 
+#ifdef Pandas_NpcFilter_FAVORITE_ADD
+	const char* favorite_add_filter_name;	// NPCF_FAVORITE_ADD	// OnPCFavoriteAddFilter	// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_ADD
+
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	const char* favorite_del_filter_name;	// NPCF_FAVORITE_DEL	// OnPCFavoriteDelFilter	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL

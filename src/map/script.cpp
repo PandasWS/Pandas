@@ -402,6 +402,10 @@ struct Script_Config script_config = {
 	"OnPCCartDelFilter",	// NPCF_CART_DEL		// cart_del_filter_name	// 当玩家准备将道具从手推车取回背包时触发过滤器
 #endif // Pandas_NpcFilter_CART_DEL
 
+#ifdef Pandas_NpcFilter_FAVORITE_ADD
+	"OnPCFavoriteAddFilter",	// NPCF_FAVORITE_ADD		// favorite_add_filter_name	// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_ADD
+
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	"OnPCFavoriteDelFilter",	// NPCF_FAVORITE_DEL		// favorite_del_filter_name	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL

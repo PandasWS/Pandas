@@ -2403,6 +2403,10 @@ enum npce_event : uint8 {
 	NPCF_CART_DEL,	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器
 #endif // Pandas_NpcFilter_CART_DEL
 
+#ifdef Pandas_NpcFilter_FAVORITE_ADD
+	NPCF_FAVORITE_ADD,	// favorite_add_filter_name	// OnPCFavoriteAddFilter		// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_ADD
+
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
