@@ -405,6 +405,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_FAVORITE_ADD
 	"OnPCFavoriteAddFilter",	// NPCF_FAVORITE_ADD		// favorite_add_filter_name	// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_ADD
+
+#ifdef Pandas_NpcFilter_FAVORITE_DEL
+	"OnPCFavoriteDelFilter",	// NPCF_FAVORITE_DEL		// favorite_del_filter_name	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/

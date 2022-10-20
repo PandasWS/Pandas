@@ -6498,6 +6498,10 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_FAVORITE_ADD
 		NPCF_FAVORITE_ADD,	// favorite_add_filter_name	// OnPCFavoriteAddFilter		// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_ADD
+
+#ifdef Pandas_NpcFilter_FAVORITE_DEL
+		NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6738,6 +6742,11 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_FAVORITE_ADD:
 		return script_config.favorite_add_filter_name;	// OnPCFavoriteAddFilter		// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_ADD
+
+#ifdef Pandas_NpcFilter_FAVORITE_DEL
+	case NPCF_FAVORITE_DEL:
+		return script_config.favorite_del_filter_name;	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
