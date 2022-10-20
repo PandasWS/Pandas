@@ -1426,6 +1426,11 @@
 		// 事件类型: Filter / 事件名称: OnPCCartDelFilter
 		// 常量名称: NPCF_CART_DEL / 变量名称: cart_del_filter_name
 		#define Pandas_NpcFilter_CART_DEL
+
+		// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCFavoriteAddFilter
+		// 常量名称: NPCF_FAVORITE_ADD / 变量名称: favorite_add_filter_name
+		#define Pandas_NpcFilter_FAVORITE_ADD
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
