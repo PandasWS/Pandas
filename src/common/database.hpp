@@ -119,7 +119,7 @@ public:
 		}
 	}
 
-	void put( keytype key, std::shared_ptr<datatype> ptr ){
+	virtual void put( keytype key, std::shared_ptr<datatype> ptr ){
 		this->data[key] = ptr;
 	}
 
@@ -143,7 +143,7 @@ public:
 		return rathena::util::umap_random( this->data );
 	}
 
-	void erase(keytype key) {
+	virtual void erase(keytype key) {
 		this->data.erase(key);
 	}
 };
@@ -151,18 +151,22 @@ public:
 template <typename keytype, typename datatype> class TypesafeCachedYamlDatabase : public TypesafeYamlDatabase<keytype, datatype>{
 private:
 	std::vector<std::shared_ptr<datatype>> cache;
+	bool loaded;
 
 public:
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_, uint16 minimumVersion_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, minimumVersion_ ){
+		this->loaded = false;
 	}
 
 	TypesafeCachedYamlDatabase( const std::string& type_, uint16 version_ ) : TypesafeYamlDatabase<keytype, datatype>( type_, version_, version_ ){
+		this->loaded = false;
 	}
 
 	void clear() override{
 		TypesafeYamlDatabase<keytype, datatype>::clear();
 		cache.clear();
 		cache.shrink_to_fit();
+		this->loaded = false;
 	}
 
 	std::shared_ptr<datatype> find( keytype key ) override{
@@ -211,6 +215,26 @@ public:
 				this->cache.shrink_to_fit();
 				break;
 			}
+		}
+
+		this->loaded = true;
+	}
+
+	void erase( keytype key ) override{
+		TypesafeYamlDatabase<keytype, datatype>::erase( key );
+
+		// Prevent excessive usage during loading
+		if( this->loaded ){
+			this->cache[this->calculateCacheKey( key )] = nullptr;
+		}
+	}
+
+	void put( keytype key, std::shared_ptr<datatype> ptr ) override{
+		TypesafeYamlDatabase<keytype, datatype>::put( key, ptr );
+
+		// Prevent excessive usage during loading
+		if( this->loaded ){
+			this->cache[this->calculateCacheKey( key )] = ptr;
 		}
 	}
 };
