@@ -153,7 +153,7 @@ int party_create(struct map_session_data *sd,char *name,int item,int item2)
 		return 0;
 
 	if( sd->status.party_id > 0 || sd->party_joining || sd->party_creating ) { // already associated with a party
-		clif_party_created(sd,2);
+		clif_party_created( *sd, 2 );
 		return -2;
 	}
 
@@ -188,7 +188,7 @@ void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *
 
 	if( !fail ) {
 		sd->status.party_id = party_id;
-		clif_party_created(sd,0); // Success message
+		clif_party_created( *sd, 0 ); // Success message
 
 		achievement_update_objective(sd, AG_PARTY, 1, 1);
 
@@ -198,7 +198,7 @@ void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *
 			party_create_byscript = 0;
 		}
 	} else
-		clif_party_created(sd,1); // "party name already exists"
+		clif_party_created( *sd, 1 ); // "party name already exists"
 }
 
 int party_request_info(int party_id, uint32 char_id)
@@ -364,12 +364,13 @@ int party_recv_info(struct party* sp, uint32 char_id)
 			continue;// not online
 
 		clif_name_area(&sd->bl); //Update other people's display. [Skotlex]
-		clif_party_member_info(p,sd);
+		clif_party_member_info( *p, *sd );
 		// Only send this on party creation, otherwise it will be sent by party_send_movemap [Lemongrass]
 		if( sd->party_creating ){
 			clif_party_option(p,sd,0x100);
 		}
-		clif_party_info(p,NULL);
+
+		clif_party_info( *p );
 
 		if (p->instance_id > 0)
 			instance_reqinfo(sd, p->instance_id);
@@ -377,7 +378,7 @@ int party_recv_info(struct party* sp, uint32 char_id)
 	
 	// If a player was renamed, make sure to resend the party information
 	if( rename ){
-		clif_party_info(p,NULL);
+		clif_party_info( *p );
 	}
 
 	if( char_id != 0 ) { // requester
@@ -411,7 +412,7 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	if (tsd && battle_config.block_account_in_same_party) {
 		ARR_FIND(0, MAX_PARTY, i, p->party.member[i].account_id == tsd->status.account_id);
 		if (i < MAX_PARTY) {
-			clif_party_invite_reply(sd, tsd->status.name, PARTY_REPLY_DUAL);
+			clif_party_invite_reply( *sd, tsd->status.name, PARTY_REPLY_DUAL );
 			return 0;
 		}
 	}
@@ -420,7 +421,7 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	ARR_FIND(0, MAX_PARTY, i, p->party.member[i].account_id == 0);
 
 	if( i == MAX_PARTY ) {
-		clif_party_invite_reply(sd, (tsd?tsd->status.name:""), PARTY_REPLY_FULL);
+		clif_party_invite_reply( *sd, ( tsd ? tsd->status.name : "" ), PARTY_REPLY_FULL );
 		return 0;
 	}
 
@@ -431,7 +432,7 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 	}
 
 	if( tsd == NULL) {
-		clif_party_invite_reply(sd, "", PARTY_REPLY_OFFLINE);
+		clif_party_invite_reply( *sd, "", PARTY_REPLY_OFFLINE );
 		return 0;
 	}
 
@@ -441,26 +442,26 @@ int party_invite(struct map_session_data *sd,struct map_session_data *tsd)
 #else
 		if (tsd->guild_invite > 0 || tsd->trade_partner || tsd->adopt_invite || tsd->party_applicant) {
 #endif // Pandas_PacketFunction_PartyJoinRequest
-			clif_party_invite_reply(sd,tsd->status.name,PARTY_REPLY_JOIN_OTHER_PARTY);
+			clif_party_invite_reply( *sd, tsd->status.name, PARTY_REPLY_JOIN_OTHER_PARTY );
 			return 0;
 		}
 	}
 
 	if (!tsd->fd) { //You can't invite someone who has already disconnected.
-		clif_party_invite_reply(sd,tsd->status.name,PARTY_REPLY_REJECTED);
+		clif_party_invite_reply( *sd, tsd->status.name, PARTY_REPLY_REJECTED );
 		return 0;
 	}
 
 	if( tsd->status.party_id > 0 || tsd->party_invite > 0 )
 	{// already associated with a party
-		clif_party_invite_reply(sd,tsd->status.name,PARTY_REPLY_JOIN_OTHER_PARTY);
+		clif_party_invite_reply( *sd, tsd->status.name, PARTY_REPLY_JOIN_OTHER_PARTY );
 		return 0;
 	}
 
 	tsd->party_invite=sd->status.party_id;
 	tsd->party_invite_account=sd->status.account_id;
 
-	clif_party_invite(sd,tsd);
+	clif_party_invite( *sd, *tsd );
 	return 1;
 }
 
@@ -493,7 +494,7 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 			sd->party_invite = 0;
 			sd->party_invite_account = 0;
 
-			clif_party_invite_reply(tsd, sd->status.name, PARTY_REPLY_REJECTED);
+			clif_party_invite_reply(*tsd, sd->status.name, PARTY_REPLY_REJECTED);
 			return 0;
 		}
 	}
@@ -509,7 +510,7 @@ int party_reply_invite(struct map_session_data *sd,int party_id,int flag)
 		sd->party_invite_account = 0;
 
 		if( tsd != NULL )
-			clif_party_invite_reply(tsd,sd->status.name,PARTY_REPLY_REJECTED);
+			clif_party_invite_reply( *tsd, sd->status.name, PARTY_REPLY_REJECTED );
 	}
 
 	return 0;
@@ -532,7 +533,7 @@ bool party_join(struct map_session_data* sd, uint32 leader_aid, uint32 leader_ci
 
 	// 申请者所在地图是否允许申请入队
 	if (map_getmapflag(sd->bl.m, MF_PARTYLOCK)) {
-		clif_party_invite_reply(sd, "", PARTY_REPLY_INVALID_MAPPROPERTY_ME);
+		clif_party_invite_reply(*sd, "", PARTY_REPLY_INVALID_MAPPROPERTY_ME);
 		return false;
 	}
 
@@ -726,9 +727,6 @@ void party_member_joined(struct map_session_data *sd)
 
 	if (i < MAX_PARTY) {
 		p->data[i].sd = sd;
-
-		if (p->instance_id > 0)
-			instance_reqinfo(sd, p->instance_id);
 	} else
 		sd->status.party_id = 0; //He does not belongs to the party really?
 }
@@ -761,7 +759,7 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 
 	if( flag ) { // failed
 		if( sd2 != NULL )
-			clif_party_invite_reply(sd2,sd->status.name,PARTY_REPLY_FULL);
+			clif_party_invite_reply( *sd2, sd->status.name, PARTY_REPLY_FULL );
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 		// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉队长队伍满了 (其实是异常了)
 		if (sd && sd2 && sd2->party_applicant_char == sd->status.char_id) {
@@ -775,12 +773,12 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 
 	sd->status.party_id = party_id;
 
-	clif_party_member_info(p,sd);
+	clif_party_member_info( *p, *sd );
 	clif_party_option(p,sd,0x100);
-	clif_party_info(p,sd);
+	clif_party_info( *p, sd );
 
 	if( sd2 != NULL )
-		clif_party_invite_reply(sd2,sd->status.name,PARTY_REPLY_ACCEPTED);
+		clif_party_invite_reply( *sd2, sd->status.name, PARTY_REPLY_ACCEPTED );
 
 #ifdef Pandas_PacketFunction_PartyJoinRequest
 	// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉 sd 申请者加入成功
@@ -795,11 +793,11 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 		sd2 = p->data[i].sd;
 
 		if( sd2 && sd2->status.account_id != account_id && sd2->status.char_id != char_id )
-			clif_hpmeter_single(sd->fd, sd2->bl.id, sd2->battle_status.hp, sd2->battle_status.max_hp);
+			clif_hpmeter_single( *sd, sd2->bl.id, sd2->battle_status.hp, sd2->battle_status.max_hp );
 	}
 
-	clif_party_hp(sd);
-	clif_party_xy(sd);
+	clif_party_hp( *sd );
+	clif_party_xy( *sd );
 	clif_name_area(&sd->bl); //Update char name's display [Skotlex]
 
 	if (p->instance_id > 0)
@@ -911,8 +909,13 @@ int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char 
 	struct party_data* p = party_search(party_id);
 
 	if( p ) {
+		struct map_session_data* party_sd = party_getavailablesd( p );
+
+		if( party_sd != nullptr ){
+			clif_party_withdraw( *party_sd, account_id, name, type, PARTY );
+		}
+
 		int i;
-		clif_party_withdraw(party_getavailablesd(p), account_id, name, type, PARTY);
 		ARR_FIND( 0, MAX_PARTY, i, p->party.member[i].account_id == account_id && p->party.member[i].char_id == char_id );
 		if( i < MAX_PARTY ) {
 			memset(&p->party.member[i], 0, sizeof(p->party.member[0]));
@@ -968,8 +971,8 @@ int party_broken(int party_id)
 		instance_destroy( p->instance_id );
 
 	for( i = 0; i < MAX_PARTY; i++ ) {
-		if( p->data[i].sd != NULL ) {
-			clif_party_withdraw(p->data[i].sd,p->party.member[i].account_id,p->party.member[i].name,PARTY_MEMBER_WITHDRAW_EXPEL,SELF);
+		if( p->data[i].sd != nullptr ) {
+			clif_party_withdraw( *p->data[i].sd, p->party.member[i].account_id, p->party.member[i].name, PARTY_MEMBER_WITHDRAW_EXPEL, SELF );
 			p->data[i].sd->status.party_id=0;
 		}
 	}
@@ -1102,7 +1105,7 @@ int party_changeleader(struct map_session_data *sd, struct map_session_data *tsd
 
 	// Update info.
 	intif_party_leaderchange(p->party.party_id,p->party.member[tmi].account_id,p->party.member[tmi].char_id);
-	clif_party_info(p,NULL);
+	clif_party_info( *p );
 
 #ifdef Pandas_Fix_Dungeon_Command_Status_Refresh
 	// 成功更换队长后, 需要刷新一下副本的状态信息
@@ -1141,7 +1144,7 @@ int party_recv_movemap(int party_id,uint32 account_id,uint32 char_id, unsigned s
 	//Check if they still exist on this map server
 	p->data[i].sd = party_sd_check(party_id, account_id, char_id);
 
-	clif_party_info(p,NULL);
+	clif_party_info( *p );
 
 	return 0;
 }
@@ -1161,8 +1164,8 @@ void party_send_movemap(struct map_session_data *sd)
 	if(sd->state.connect_new) {
 		//Note that this works because this function is invoked before connect_new is cleared.
 		clif_party_option(p,sd,0x100);
-		clif_party_info(p,sd);
-		clif_party_member_info(p,sd);
+		clif_party_info( *p, sd );
+		clif_party_member_info( *p, *sd );
 	}
 
 	if (sd->fd) { // synchronize minimap positions with the rest of the party
@@ -1172,8 +1175,8 @@ void party_send_movemap(struct map_session_data *sd)
 				p->data[i].sd != sd &&
 				p->data[i].sd->bl.m == sd->bl.m)
 			{
-				clif_party_xy_single(sd->fd, p->data[i].sd);
-				clif_party_xy_single(p->data[i].sd->fd, sd);
+				clif_party_xy_single( *sd, *p->data[i].sd );
+				clif_party_xy_single( *p->data[i].sd, *sd );
 			}
 		}
 	}
@@ -1224,7 +1227,7 @@ int party_recv_message(int party_id,uint32 account_id,const char *mes,int len)
 	struct party_data *p;
 	if( (p=party_search(party_id))==NULL)
 		return 0;
-	clif_party_message(p,account_id,mes,len);
+	clif_party_message( *p, account_id, mes, len );
 	return 0;
 }
 
@@ -1303,13 +1306,13 @@ TIMER_FUNC(party_send_xy_timer){
 				continue;
 
 			if( p->data[i].x != sd->bl.x || p->data[i].y != sd->bl.y ) { // perform position update
-				clif_party_xy(sd);
+				clif_party_xy( *sd );
 				p->data[i].x = sd->bl.x;
 				p->data[i].y = sd->bl.y;
 			}
 
 			if (battle_config.party_hp_mode && p->data[i].hp != sd->battle_status.hp) { // perform hp update
-				clif_party_hp(sd);
+				clif_party_hp( *sd );
 				p->data[i].hp = sd->battle_status.hp;
 			}
 		}
