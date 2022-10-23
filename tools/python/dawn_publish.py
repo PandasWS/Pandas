@@ -229,8 +229,8 @@ def arrange_common(packagedir):
     rmdir(packagedir + 'sql-files/tools')
     rmdir(packagedir + 'sql-files/upgrades')
     
-    copyfile(packagedir + 'tools/batches/runserver.bat', packagedir + 'runserver.bat')
-    remove_file(packagedir + 'tools/batches', 'runserver.bat')
+    shutil.move(packagedir + 'tools/batches/runserver.bat', packagedir + 'runserver.bat')
+    shutil.move(packagedir + 'tools/batches/navigenerator.bat', packagedir + 'navigenerator.bat')
     
     # --------------------------------------------------------
     # 对数据库的创建脚本进行分类归档
@@ -314,6 +314,7 @@ def arrange_renewal(packagedir):
     copyfile(project_slndir + 'login-server.exe', packagedir + 'login-server.exe')
     copyfile(project_slndir + 'char-server.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server.exe', packagedir + 'map-server.exe')
+    copyfile(project_slndir + 'map-server-generator.exe', packagedir + 'map-server-generator.exe')
     copyfile(project_slndir + 'web-server.exe', packagedir + 'web-server.exe')
     copyfile(project_slndir + 'csv2yaml.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
@@ -337,6 +338,7 @@ def arrange_pre_renewal(packagedir):
     copyfile(project_slndir + 'login-server-pre.exe', packagedir + 'login-server.exe')
     copyfile(project_slndir + 'char-server-pre.exe', packagedir + 'char-server.exe')
     copyfile(project_slndir + 'map-server-pre.exe', packagedir + 'map-server.exe')
+    copyfile(project_slndir + 'map-server-generator-pre.exe', packagedir + 'map-server-generator.exe')
     copyfile(project_slndir + 'web-server-pre.exe', packagedir + 'web-server.exe')
     copyfile(project_slndir + 'csv2yaml-pre.exe', packagedir + 'csv2yaml.exe')
     copyfile(project_slndir + 'mapcache.exe', packagedir + 'mapcache.exe')
@@ -409,10 +411,9 @@ def process_sub(export_file, renewal, langinfo):
         arrange_pre_renewal(packagedir)
 
     # 专业版的特殊处理逻辑
-    if is_commercial:
-        remove_file(packagedir, 'VMProtectSDK32.dll')
-        remove_file(packagedir, 'VMProtectSDK64.dll')
-        rmdir(packagedir + 'secret')
+    remove_file(packagedir, 'VMProtectSDK32.dll')
+    remove_file(packagedir, 'VMProtectSDK64.dll')
+    rmdir(packagedir + 'secret')
 
     Message.ShowStatus('后期处理完毕, 即将把打包源压缩成 ZIP 文件...')
     

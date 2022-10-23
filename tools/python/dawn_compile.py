@@ -78,6 +78,9 @@ product_files = [
     'csv2yaml.pdb',
     'yamlupgrade.exe',
     'yamlupgrade.pdb',
+    'map-server-generator.exe',
+    'map-server-generator.pdb',
+    'map-server-generator.map',
     'map-server.protected.exe'
 ]
 
@@ -235,6 +238,7 @@ def clean_environment():
     Common.glob_delete(slndir('webserv.bat'))
     Common.glob_delete(slndir('serv.bat'))
     Common.glob_delete(slndir('runserver.bat'))
+    Common.glob_delete(slndir('navigenerator.bat'))
 
     Common.glob_delete(slndir('dbghelp.dll'))
     Common.glob_delete(slndir('libmysql.dll'))
