@@ -215,6 +215,7 @@
     <ClInclude Include="date.hpp" />
     <ClInclude Include="duel.hpp" />
     <ClInclude Include="elemental.hpp" />
+    <ClInclude Include="generator_resource.h" />
     <ClInclude Include="guild.hpp" />
     <ClInclude Include="homunculus.hpp" />
     <ClInclude Include="instance.hpp" />
@@ -321,6 +322,9 @@
     <ProjectReference Include="..\..\3rdparty\cryptopp\cryptlib.vcxproj">
       <Project>{c39f4b46-6e89-4074-902e-ca57073044d2}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="map-server-generator.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
