@@ -1269,6 +1269,9 @@
 
 	// 当 YAML 数据文件中不存在 Body 节点时也依然输出结尾信息 [Sola丶小克]
 	#define Pandas_UserExperience_Output_Ending_Even_Body_Node_Is_Not_Exists
+
+	// 使 map-server-generator 能在运行时按需自动创建输出目录 [Sola丶小克]
+	#define Pandas_UserExperience_AutoCreate_Generated_Directory
 #endif // Pandas_UserExperience
 
 // ============================================================================

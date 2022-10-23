@@ -420,6 +420,10 @@ void write_spawn(std::ostream &os, const struct map_data * m, const std::shared_
 }
 
 void write_object_lists() {
+#ifdef Pandas_UserExperience_AutoCreate_Generated_Directory
+	makeDirectories(filePrefix);
+#endif // Pandas_UserExperience_AutoCreate_Generated_Directory
+
 	auto mob_file = std::ofstream(filePrefix + "./navi_mob_krpri.lub");
 	auto links_file = std::ofstream(filePrefix + "./navi_link_krpri.lub");
 	auto npc_file = std::ofstream(filePrefix + "./navi_npc_krpri.lub");
