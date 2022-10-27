@@ -1135,6 +1135,10 @@
 	// 避免非 DelayConsume 类型的道具在使用脚本中调用 laphine_synthesis 脚本指令时,
 	// 当最后一个物品被消耗时会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_Laphine_Synthesis_Without_DelayConsume
+
+	// 避免非 DelayConsume 类型的道具在使用脚本中调用 laphine_upgrade 脚本指令时,
+	// 当最后一个物品被消耗时会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_Laphine_Upgrade_Without_DelayConsume
 #endif // Pandas_Crashfix
 
 // ============================================================================
