@@ -27846,6 +27846,13 @@ BUILDIN_FUNC( laphine_synthesis ){
 			return SCRIPT_CMD_FAILURE;
 		}
 
+#ifdef Pandas_Crashfix_Laphine_Synthesis_Without_DelayConsume
+		if (!sd->inventory_data[sd->itemindex]) {
+			ShowError( "buildin_laphine_synthesis: Called from item %u, the item data is invalid, it's maybe not a consumed delayed.\n", sd->itemid );
+			return SCRIPT_CMD_FAILURE;
+		}
+#endif // Pandas_Crashfix_Laphine_Synthesis_Without_DelayConsume
+		
 		if( sd->inventory_data[sd->itemindex]->flag.delay_consume == 0 ){
 			ShowError( "buildin_laphine_synthesis: Called from item %u, which is not a consumed delayed.\n", sd->itemid );
 			return SCRIPT_CMD_FAILURE;
