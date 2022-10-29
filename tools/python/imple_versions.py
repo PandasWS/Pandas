@@ -170,7 +170,7 @@ def main():
 
     # 询问获取升级后的目标版本
     newver = Inputer().requireText({
-        'tips' : '请输入新的版本号 (%s): ' % rule_tips,
+        'tips' : '请输入新的版本号 (%s)' % rule_tips,
     })
 
     if not isVersionFormatValid(newver):
