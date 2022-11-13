@@ -1,4 +1,4 @@
-﻿# This file is a part of rAthena.
+# This file is a part of rAthena.
 #   Copyright(C) 2022 rAthena Development Team
 #   https://rathena.org - https://github.com/rathena
 #
@@ -45,32 +45,27 @@ Header:
   Type: BARTER_DB
   Version: 1
 
-# Body:
-#   - Name: Pharmacist Merchant 
-#     Map: geffen
-#     X: 117
-#     Y: 72
-#     Direction: North
-#     Sprite: 2_F_MAGICMASTER
-#     Items:
-#       - Index: 0
-#         Item: White_Potion
-#         Stock: 0
-#         Zeny: 100
-#         RequiredItems:
-#           - Index: 0
-#             Item: Red_Potion
-#             Amount: 2
-#           - Index: 1
-#             Item: Jellopy
-#             Amount: 1
-
-Footer:
-  Imports:
-  - Path: npc/re/merchants/barters/Extended_Ammunition.yml
-  - Path: npc/re/merchants/barters/Gemstone_Bagger.yml
-  - Path: npc/re/merchants/barters/quests_16_1.yml
-  - Path: npc/re/merchants/barters/quests_16_2.yml
-  - Path: npc/re/merchants/barters/quests_17_1.yml
-  - Path: npc/re/merchants/barters/refine.yml
-  - Path: npc/re/merchants/barters/enchantgrade.yml
+Body:
+###########################################################################
+##= Gemstone Bagger ( Exchange )
+###########################################################################
+  - Name: Gemstone_Bagger
+    Items:
+      - Index: 0
+        Item: Gemstone_Blue
+        RequiredItems:
+          - Index: 0
+            Item: Blue_Gemstone
+            Amount: 500
+      - Index: 1
+        Item: Gemstone_YL
+        RequiredItems:
+          - Index: 0
+            Item: Yellow_Gemstone
+            Amount: 500
+      - Index: 2
+        Item: Gemstone_Red
+        RequiredItems:
+          - Index: 0
+            Item: Red_Gemstone
+            Amount: 500
