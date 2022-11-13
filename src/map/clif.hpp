@@ -1256,6 +1256,8 @@ void clif_enchantwindow_open( struct map_session_data& sd, uint64 clientLuaIndex
 // Enchanting Shadow / Shadow Scar Spirit
 void clif_enchantingshadow_spirit(unit_data &ud);
 
+void clif_broadcast_refine_result(struct map_session_data& sd, t_itemid itemId, int8 level, bool success);
+
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
 void clif_change_title_ack(struct map_session_data* sd, unsigned char result, unsigned long title_id);
