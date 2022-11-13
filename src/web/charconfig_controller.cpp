@@ -228,7 +228,7 @@ HANDLER_FUNC(charconfig_save) {
 			json data_from_db = json::parse(A2UWE(databuf));
 			json data_from_client = json::parse(req.get_file_value("data").content);
 
-			data_from_db.merge_patch_v2(data_from_client, false);
+			mergeData(data_from_db, data_from_client, false);
 			data = U2AWE(data_from_db.dump(3));
 		}
 	}

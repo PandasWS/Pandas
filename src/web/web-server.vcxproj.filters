@@ -36,9 +36,6 @@
     <ClCompile Include="merchantstore_controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="http.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="webutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

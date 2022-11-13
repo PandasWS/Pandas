@@ -14,7 +14,6 @@
 #include "../config/core.hpp"
 
 #include "../common/utf8.hpp"
-#include "../../3rdparty/nlohmann_json/json.hpp"
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 	// Utf8 to Ansi with Web Encoding
