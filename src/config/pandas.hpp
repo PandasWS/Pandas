@@ -1824,7 +1824,7 @@
 	#define Pandas_ScriptCommand_InstanceUsers
 
 	// 是否启用 cap 脚本指令 [Sola丶小克]
-	// 确保数值不低于给定的最小值, 不超过给定的最大值
+	// 由于 rAthena 已经实现 cap_value 指令, 这里兼容老版本 cap 指令
 	#define Pandas_ScriptCommand_CapValue
 
 	// 是否启用 mobremove 脚本指令 [Sola丶小克]

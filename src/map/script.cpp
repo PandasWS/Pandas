@@ -8461,7 +8461,7 @@ BUILDIN_FUNC(checkweight2)
 		if(fail)
 			continue; //cpntonie to depop rest
 
-		if(itemdb_exists(nameid) == NULL ) {
+		if (!item_db.exists(nameid)) {
 			ShowError("buildin_checkweight2: Invalid item '%u'.\n", nameid);
 			fail=1;
 			continue;
@@ -8797,7 +8797,7 @@ BUILDIN_FUNC(rentitem) {
 	else
 	{
 		nameid = script_getnum(st, 2);
-		if( nameid == 0 || !itemdb_exists(nameid) )
+		if( !item_db.exists(nameid) )
 		{
 			ShowError("buildin_rentitem: Nonexistant item %u requested.\n", nameid);
 			return SCRIPT_CMD_FAILURE;
@@ -8966,7 +8966,7 @@ BUILDIN_FUNC(getnameditem)
 	}else
 		nameid = script_getnum(st, 2);
 
-	if(!itemdb_exists(nameid)/* || itemdb_isstackable(nameid)*/)
+	if(!item_db.exists(nameid)/* || itemdb_isstackable(nameid)*/)
 	{	//Even though named stackable items "could" be risky, they are required for certain quests.
 		script_pushint(st,0);
 		return SCRIPT_CMD_SUCCESS;
@@ -9050,7 +9050,7 @@ BUILDIN_FUNC(makeitem) {
 			nameid = (t_itemid)val;
 		}
 
-		if( !itemdb_exists( nameid ) ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "buildin_makeitem: Unknown item id %u\n", nameid );
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -9126,7 +9126,7 @@ BUILDIN_FUNC(makeitem2) {
 	}else{
 		nameid = (t_itemid)script_getnum( st, 2 );
 
-		if( !itemdb_exists( nameid ) ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "buildin_%s: Unknown item id %u\n", funcname, nameid );
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -9517,7 +9517,7 @@ BUILDIN_FUNC(delitem)
 	else
 	{
 		it.nameid = script_getnum(st, 2);// <item id>
-		if( !itemdb_exists( it.nameid ) )
+		if( !item_db.exists( it.nameid ) )
 		{
 			ShowError("buildin_%s: unknown item \"%u\".\n", command, it.nameid);
 			st->state = END;
@@ -9612,7 +9612,7 @@ BUILDIN_FUNC(delitem2)
 	else
 	{
 		it.nameid = script_getnum(st, 2);// <item id>
-		if( !itemdb_exists( it.nameid ) )
+		if( !item_db.exists( it.nameid ) )
 		{
 			ShowError("buildin_%s: unknown item \"%u\".\n", command, it.nameid);
 			st->state = END;
@@ -11167,6 +11167,26 @@ BUILDIN_FUNC(petautobonus3) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(skill_plagiarism)
+{
+	TBL_PC *sd;
+
+	if (script_rid2sd(sd))
+		script_pushint(st, pc_skill_plagiarism(*sd, script_getnum(st, 2), script_getnum(st, 3)));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(skill_plagiarism_reset)
+{
+	TBL_PC *sd;
+
+	if (!script_rid2sd(sd))
+		script_pushint(st, pc_skill_plagiarism_reset(*sd, script_getnum(st, 2)));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /// Changes the level of a player skill.
 /// <flag> defaults to 1
 /// <flag>=0 : set the level of the skill
@@ -12160,7 +12180,7 @@ BUILDIN_FUNC(getmobdrops)
 	{
 		if( mob->dropitem[i].nameid == 0 )
 			continue;
-		if( itemdb_exists(mob->dropitem[i].nameid) == NULL )
+		if( !item_db.exists(mob->dropitem[i].nameid) )
 			continue;
 
 		mapreg_setreg(reference_uid(add_str("$@MobDrop_item"), j), mob->dropitem[i].nameid);
@@ -13167,7 +13187,7 @@ BUILDIN_FUNC(getareadropitem)
 	}else{
 		nameid = script_getnum(st, 7);
 
-		if( !itemdb_exists( nameid ) ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "buildin_getareadropitem: Unknown item id %u\n", nameid );
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -19326,7 +19346,7 @@ BUILDIN_FUNC(npcshopitem)
 	for (n = 0, i = 3; n < amount; n++, i+=offs) {
 		t_itemid nameid = script_getnum( st, i );
 
-		if( itemdb_exists( nameid ) == nullptr ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "builtin_npcshopitem: Item ID %u does not exist.\n", nameid );
 			script_pushint( st, 0 );
 			return SCRIPT_CMD_FAILURE;
@@ -19371,7 +19391,7 @@ BUILDIN_FUNC(npcshopadditem)
 			t_itemid nameid = script_getnum(st,i);
 			uint16 j;
 
-			if( itemdb_exists( nameid ) == nullptr ){
+			if( !item_db.exists( nameid ) ){
 				ShowError( "builtin_npcshopadditem: Item ID %u does not exist.\n", nameid );
 				script_pushint( st, 0 );
 				return SCRIPT_CMD_FAILURE;
@@ -19411,7 +19431,7 @@ BUILDIN_FUNC(npcshopadditem)
 	{
 		t_itemid nameid = script_getnum( st, i );
 
-		if( itemdb_exists( nameid ) == nullptr ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "builtin_npcshopadditem: Item ID %u does not exist.\n", nameid );
 			script_pushint( st, 0 );
 			return SCRIPT_CMD_FAILURE;
@@ -19674,6 +19694,52 @@ BUILDIN_FUNC(delmonsterdrop)
 		ShowWarning("delmonsterdrop: bad mob id given %d\n",script_getnum(st,2));
 		return SCRIPT_CMD_FAILURE;
 	}
+	return SCRIPT_CMD_SUCCESS;
+}
+
+
+
+/*==========================================
+ * Returns a random mob_id
+ * type: Where to fetch from (see enum e_random_monster)
+ * flag: Type of checks to apply (see enum e_random_monster_flags)
+ * lv: Mob level to check against
+ *------------------------------------------*/
+BUILDIN_FUNC(getrandmobid)
+{
+	int type = script_getnum(st, 2);
+
+	if (type < MOBG_BRANCH_OF_DEAD_TREE || type >= MOBG_MAX) {
+		ShowWarning("buildin_getrandmobid: Invalid type %d.\n", type);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int flag = script_hasdata(st, 3) ? script_getnum(st, 3) : RMF_MOB_NOT_BOSS;
+	if (flag < RMF_NONE || flag > RMF_ALL) {
+		ShowWarning("buildin_getrandmobid: Invalid flag %d.\n", flag);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int lv;
+	if ( script_hasdata(st, 4) ) {
+		lv = script_getnum(st, 4);
+		
+		if (lv <= 0) {
+			ShowWarning("buildin_getrandmobid: Invalid level %d.\n", lv);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+		
+		// If a level is provided, make sure it is respected
+		flag |= RMF_CHECK_MOB_LV;
+	} else {
+		lv = MAX_LEVEL;
+	}
+
+	script_pushint(st, mob_get_random_id(type, (enum e_random_monster_flags)flag, lv));
+
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -25218,7 +25284,7 @@ BUILDIN_FUNC(mergeitem2) {
 			nameid = id->nameid;
 		} else {// <item id>
 			nameid = script_getnum(st, 2);
-			if (!itemdb_exists(nameid)) {
+			if (!item_db.exists(nameid)) {
 				ShowError("buildin_mergeitem: Nonexistant item %u requested.\n", nameid);
 				script_pushint(st, count);
 				return SCRIPT_CMD_FAILURE;
@@ -25747,6 +25813,12 @@ BUILDIN_FUNC(minmax){
 
 	script_pushint( st, value );
 
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(cap_value)
+{
+	script_pushint64(st, cap_value(script_getnum64(st, 2), script_getnum64(st, 3), script_getnum64(st, 4)));
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -27264,7 +27336,7 @@ BUILDIN_FUNC(mail){
 			msg.item[i].nameid = (t_itemid)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 			msg.item[i].identify = 1;
 
-			if( !itemdb_exists(msg.item[i].nameid) ){
+			if( !item_db.exists(msg.item[i].nameid) ){
 				ShowError( "buildin_mail: invalid item id %u.\n", msg.item[i].nameid );
 				return SCRIPT_CMD_FAILURE;
 			}
@@ -27366,7 +27438,7 @@ BUILDIN_FUNC(mail){
 			for( k = 0; k < num_items && start < end; k++, start++ ){
 				msg.item[k].card[i] = (t_itemid)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 
-				if( msg.item[k].card[i] != 0 && !itemdb_exists(msg.item[k].card[i]) ){
+				if( !item_db.exists(msg.item[k].card[i]) ){
 					ShowError( "buildin_mail: invalid card id %u.\n", msg.item[k].card[i] );
 					return SCRIPT_CMD_FAILURE;
 				}
@@ -28361,6 +28433,42 @@ BUILDIN_FUNC(item_enchant){
 #endif
 }
 
+
+BUILDIN_FUNC(addfame) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(3, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	if (!pc_addfame(*sd, script_getnum(st, 2)))
+		return SCRIPT_CMD_FAILURE;
+	
+	return SCRIPT_CMD_SUCCESS;
+}
+
+
+BUILDIN_FUNC(getfame) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st, sd->status.fame);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(getfamerank) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st, pc_famerank(sd->status.char_id, sd->class_ & MAPID_UPPERMASK));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 #include "../custom/script.inc"
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -28486,24 +28594,6 @@ BUILDIN_FUNC(instance_users) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_InstanceUsers
-
-#ifdef Pandas_ScriptCommand_CapValue
-/* ===========================================================
- * 指令: cap
- * 描述: 确保数值不低于给定的最小值, 不超过给定的最大值
- * 用法: cap <要判断的数值>,<最小值>,<最大值>;
- * 返回: 低于最小值则直接返回最小值, 超过最大值则直接返回最大值, 如果在两者之间则原样返回数值
- * 作者: Sola丶小克
- * -----------------------------------------------------------*/
-BUILDIN_FUNC(cap) {
-	int val = script_getnum(st, 2);
-	int min = script_getnum(st, 3);
-	int max = script_getnum(st, 4);
-
-	script_pushint(st, cap_value(val, min, max));
-	return SCRIPT_CMD_SUCCESS;
-}
-#endif // Pandas_ScriptCommand_CapValue
 
 #ifdef Pandas_ScriptCommand_MobRemove
 /* ===========================================================
@@ -28648,7 +28738,7 @@ BUILDIN_FUNC(sethotkey) {
 
 	int hotkey_id = script_getnum(st, 4);
 	if (hotkey_type == 0) {	// 物品
-		if (!itemdb_exists(hotkey_id)) {
+		if (!item_db.exists(hotkey_id)) {
 			ShowError("buildin_sethotkey: Nonexistant item %d requested.\n", hotkey_id);
 			script_pushint(st, 0);
 			return SCRIPT_CMD_SUCCESS;
@@ -29169,7 +29259,7 @@ BUILDIN_FUNC(getinventoryinfo) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (!itemdb_exists(inventory[idx].nameid)) {
+	if (!item_db.exists(inventory[idx].nameid)) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -32809,6 +32899,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(petautobonus,"sii??"),
 	BUILDIN_DEF2(petautobonus,"petautobonus2","sii??"),
 	BUILDIN_DEF(petautobonus3,"siiv?"),
+	BUILDIN_DEF(skill_plagiarism, "ii"),
+	BUILDIN_DEF(skill_plagiarism_reset, "i"),
 	BUILDIN_DEF(skill,"vi?"),
 	BUILDIN_DEF2(skill,"addtoskill","vi?"), // [Valaris]
 	BUILDIN_DEF(guildskill,"vi"),
@@ -33065,6 +33157,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(minmax,"minimum", "*"),
 	BUILDIN_DEF2(minmax,"max", "*"),
 	BUILDIN_DEF2(minmax,"maximum", "*"),
+	BUILDIN_DEF(cap_value, "iii"),
 	// <--- [zBuffer] List of mathematics commands
 	BUILDIN_DEF(md5,"s"),
 	// [zBuffer] List of dynamic var commands --->
@@ -33082,6 +33175,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(setitemscript,"is?"), //Set NEW item bonus script. Lupus
 	BUILDIN_DEF(disguise,"i?"), //disguise player. Lupus
 	BUILDIN_DEF(undisguise,"?"), //undisguise player. Lupus
+	BUILDIN_DEF(getrandmobid, "i??"),
 	BUILDIN_DEF(getmonsterinfo,"vi"), //Lupus
 	BUILDIN_DEF(addmonsterdrop,"vii??"), //Akinari [Lupus]
 	BUILDIN_DEF(delmonsterdrop,"vi"), //Akinari [Lupus]
@@ -33404,6 +33498,9 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(get_reputation_points, "i?"),
 	BUILDIN_DEF(item_reform, "??"),
 	BUILDIN_DEF(item_enchant, "i?"),
+	BUILDIN_DEF(addfame, "i?"),
+	BUILDIN_DEF(getfame, "?"),
+	BUILDIN_DEF(getfamerank, "?"),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
@@ -33419,8 +33516,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(instance_users, "i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
 #endif // Pandas_ScriptCommand_InstanceUsers
 #ifdef Pandas_ScriptCommand_CapValue
-	BUILDIN_DEF(cap, "iii"),							// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
-	BUILDIN_DEF2(cap, "cap_value", "iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
+	BUILDIN_DEF2(cap_value, "cap", "iii"),				// 为 cap_value 指定一个别名, 以便兼容的老版本或其他服务端 [Sola丶小克]
 #endif // Pandas_ScriptCommand_CapValue
 #ifdef Pandas_ScriptCommand_MobRemove
 	BUILDIN_DEF(mobremove, "i"),						// 根据 GID 移除一个魔物单位 [Sola丶小克]

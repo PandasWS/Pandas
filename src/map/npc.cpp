@@ -4478,7 +4478,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 				ShowError("npc_parse_shop: Invalid item cost definition in file '%s', line '%d'. Ignoring the rest of the line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer,start-buffer), w1, w2, w3, w4);
 				return strchr(start,'\n'); // skip and continue
 			}
-			if (itemdb_exists(nameid) == NULL) {
+			if (!item_db.exists(nameid)) {
 				ShowWarning("npc_parse_shop: Invalid item ID cost in file '%s', line '%d' (id '%u').\n", filepath, strline(buffer,start-buffer), nameid);
 				return strchr(start,'\n'); // skip and continue
 			}
@@ -5274,7 +5274,7 @@ static int npc_market_checkall_sub(DBKey key, DBData *data, va_list ap) {
 		struct npc_item_list *list = &market->list[i];
 		uint16 j;
 
-		if (!list->nameid || !itemdb_exists(list->nameid)) {
+		if (!item_db.exists(list->nameid)) {
 			ShowError("npc_market_checkall_sub: NPC '%s' sells invalid item '%u', deleting...\n", nd->exname, list->nameid);
 			npc_market_delfromsql(nd->exname, list->nameid);
 			continue;
@@ -5627,7 +5627,7 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 {
 	int num, mob_id, mob_lv = -1, size = -1, w1count;
 	short m, x = 0, y = 0, xs = -1, ys = -1;
-	char mapname[MAP_NAME_LENGTH_EXT], mobname[NAME_LENGTH];
+	char mapname[MAP_NAME_LENGTH_EXT], mobname[NAME_LENGTH], sprite[NAME_LENGTH];
 	struct spawn_data mob, *data;
 	int ai = AI_NONE; // mob_ai
 
@@ -5640,7 +5640,7 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 	// w4=<mob id>,<amount>{,<delay1>{,<delay2>{,<event>{,<mob size>{,<mob ai>}}}}}
 	if( ( w1count = sscanf(w1, "%15[^,],%6hd,%6hd,%6hd,%6hd", mapname, &x, &y, &xs, &ys) ) < 1
 	||	sscanf(w3, "%23[^,],%11d", mobname, &mob_lv) < 1
-	||	sscanf(w4, "%11d,%11d,%11u,%11u,%77[^,],%11d,%11d[^\t\r\n]", &mob_id, &num, &mob.delay1, &mob.delay2, mob.eventname, &size, &ai) < 2 )
+	||	sscanf(w4, "%23[^,],%11d,%11u,%11u,%77[^,],%11d,%11d[^\t\r\n]", sprite, &num, &mob.delay1, &mob.delay2, mob.eventname, &size, &ai) < 2 )
 	{
 		ShowError("npc_parse_mob: Invalid mob definition in file '%s', line '%d'.\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer,start-buffer), w1, w2, w3, w4);
 		return strchr(start,'\n');// skip and continue
@@ -5663,9 +5663,21 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 		return strchr(start,'\n');// skip and continue
 	}
 
-	// check monster ID if exists!
-	if( mobdb_checkid(mob_id) == 0 )
-	{
+	// Check if sprite is the mob name or ID
+	char *pid;
+	sprite[NAME_LENGTH-1] = '\0';
+	mob_id = strtol(sprite, &pid, 0);
+
+	if (pid != nullptr && *pid != '\0') {
+		std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(sprite);
+
+		if (mob == nullptr) {
+			ShowError("npc_parse_mob: Unknown mob name %s (file '%s', line '%d').\n", sprite, filepath, strline(buffer,start-buffer));
+			return strchr(start,'\n');// skip and continue
+		}
+		mob_id = mob->id;
+	}
+	else if (mobdb_checkid(mob_id) == 0) {	// check monster ID if exists!
 		ShowError("npc_parse_mob: Unknown mob ID %d (file '%s', line '%d').\n", mob_id, filepath, strline(buffer,start-buffer));
 		return strchr(start,'\n');// skip and continue
 	}
@@ -5851,7 +5863,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 				if (!strcmpi(drop_arg1, "random"))
 					args.nightmaredrop.drop_id = -1;
-				else if (itemdb_exists((args.nightmaredrop.drop_id = strtol(drop_arg1, nullptr, 10))) == NULL) {
+				else if (!item_db.exists((args.nightmaredrop.drop_id = strtol(drop_arg1, nullptr, 10)))) {
 					args.nightmaredrop.drop_id = 0;
 					ShowWarning("npc_parse_mapflag: Invalid item ID '%d' supplied for mapflag 'pvp_nightmaredrop' (file '%s', line '%d'), removing.\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", args.nightmaredrop.drop_id, filepath, strline(buffer, start - buffer), w1, w2, w3, w4);
 					break;
