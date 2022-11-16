@@ -157,7 +157,7 @@ char* trim(char* str)
 // value must NOT be deallocated using free() etc.
 char *trim2(char *str,char flag) {
 	if(flag&1) { // Trim leading space
-		while(isspace(*str)) str++;
+		while(ISSPACE(*str)) str++;
 		if(*str == 0)  // All spaces?
 			return str;
 	}
@@ -165,7 +165,7 @@ char *trim2(char *str,char flag) {
 		char *end;
 
 		end = str + strlen(str) - 1;
-		while(end > str && isspace(*end)) end--;
+		while(end > str && ISSPACE(*end)) end--;
 		*(end+1) = 0; // Write new null terminator
 	}
 

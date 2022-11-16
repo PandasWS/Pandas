@@ -830,7 +830,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
  * @return 0 - Cannot be copied; 1 - Can be copied by Plagiarism 2 - Can be copied by Reproduce
  * @author Aru - for previous check; Jobbie for class restriction idea; Cydh expands the copyable skill
  */
-static int8 skill_isCopyable(struct map_session_data *sd, uint16 skill_id) {
+int8 skill_isCopyable(struct map_session_data *sd, uint16 skill_id) {
 	uint16 skill_idx = skill_get_index(skill_id);
 
 	if (!skill_idx)
@@ -1709,9 +1709,6 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 			break;
 		}
 	// Equipment breaking monster skills [Celest]
-	case NPC_WEAPONBRAKER:
-		skill_break_equip(src,bl, EQP_WEAPON, 150*skill_lv, BCT_ENEMY);
-		break;
 	case NPC_ARMORBRAKE:
 		skill_break_equip(src,bl, EQP_ARMOR, 150*skill_lv, BCT_ENEMY);
 		break;
@@ -2278,8 +2275,12 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 			rate = 0;
 			if( sd )
 				rate += sd->bonus.break_weapon_rate;
-			if( sc && sc->data[SC_MELTDOWN] )
-				rate += sc->data[SC_MELTDOWN]->val2;
+			if (sc) {
+				if (sc->data[SC_MELTDOWN])
+					rate += sc->data[SC_MELTDOWN]->val2;
+				if (sc->data[SC_WEAPONBREAKER])
+					rate += sc->data[SC_WEAPONBREAKER]->val2;
+			}
 			if( rate )
 				skill_break_equip(src,bl, EQP_WEAPON, rate, BCT_ENEMY);
 
@@ -5335,7 +5336,6 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 	case NPC_UNDEADATTACK:
 	case NPC_CHANGEUNDEAD:
 	case NPC_ARMORBRAKE:
-	case NPC_WEAPONBRAKER:
 	case NPC_HELMBRAKE:
 	case NPC_SHIELDBRAKE:
 	case NPC_BLINDATTACK:
@@ -7934,6 +7934,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 	case NPC_MAGICMIRROR:
 	case ST_PRESERVE:
 	case NPC_KEEPING:
+	case NPC_WEAPONBRAKER:
 	case NPC_BARRIER:
 	case NPC_INVINCIBLE:
 	case NPC_INVINCIBLEOFF:
@@ -21582,12 +21583,12 @@ void skill_unit_move_unit_group(std::shared_ptr<s_skill_unit_group> group, int16
  */
 short skill_can_produce_mix(struct map_session_data *sd, t_itemid nameid, int trigger, int qty)
 {
-	short i, j;
-
 	nullpo_ret(sd);
 
-	if (!nameid || !itemdb_exists(nameid))
+	if (!item_db.exists(nameid))
 		return 0;
+
+	short i, j;
 
 	for (i = 0; i < MAX_SKILL_PRODUCE_DB; i++) {
 		if (skill_produce_db[i].nameid == nameid) {
@@ -21751,9 +21752,9 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, t_itemid na
 
 	for (i = 0; i < MAX_PRODUCE_RESOURCE; i++) {
 		short x, j;
-		t_itemid id;
+		t_itemid id = skill_produce_db[idx].mat_id[i];
 
-		if (!(id = skill_produce_db[idx].mat_id[i]) || !itemdb_exists(id))
+		if (!item_db.exists(id))
 			continue;
 		num++;
 		x = (skill_id == RK_RUNEMASTERY ? 1 : qty) * skill_produce_db[idx].mat_amount[i];
@@ -24742,7 +24743,7 @@ uint64 ReadingSpellbookDatabase::parseBodyNode(const ryml::NodeRef& node) {
  * @return Spell data or nullptr otherwise
  */
 std::shared_ptr<s_skill_spellbook_db> ReadingSpellbookDatabase::findBook(t_itemid nameid) {
-	if (nameid == 0 || !itemdb_exists(nameid) || reading_spellbook_db.empty())
+	if (!item_db.exists(nameid) || reading_spellbook_db.empty())
 		return nullptr;
 
 	for (const auto &spell : reading_spellbook_db) {
@@ -24831,7 +24832,7 @@ static bool skill_parse_row_producedb(char* split[], int columns, int current)
 		return true;
 	}
 
-	if (!itemdb_exists(nameid)) {
+	if (!item_db.exists(nameid)) {
 		ShowError("skill_parse_row_producedb: Invalid item %u.\n", nameid);
 		return false;
 	}
