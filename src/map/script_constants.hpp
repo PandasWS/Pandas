@@ -786,6 +786,7 @@
 	export_constant(MF_NORENEWALEXPPENALTY);
 	export_constant(MF_NOPETCAPTURE);
 	export_constant(MF_NOBUYINGSTORE);
+	export_constant(MF_NODYNAMICNPC);
 
 #ifdef Pandas_MapFlag_Mobinfo
 	export_constant(MF_MOBINFO);
@@ -5149,6 +5150,7 @@
 	export_constant(UMOB_IGNORE_CELL_STACK_LIMIT);
 	export_constant(UMOB_RES);
 	export_constant(UMOB_MRES);
+	export_constant(UMOB_DAMAGETAKEN);
 
 	/* unit control - homunculus */
 	export_constant(UHOM_SIZE);
@@ -5373,10 +5375,9 @@
 	export_constant(UNPC_AURA);
 #endif // Pandas_Struct_Unit_CommonData_Aura
 
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-	export_constant(UMOB_DAMAGETAKEN);
+#ifdef Pandas_ScriptParams_DamageTaken_From_Database
 	export_constant(UMOB_DAMAGETAKEN_DB);
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
+#endif // Pandas_ScriptParams_DamageTaken_From_Database
 
 #ifdef Pandas_ScriptParams_UnitData_Experience
 	export_constant(UMOB_MOBBASEEXP);
@@ -6308,6 +6309,7 @@
 	export_constant(IG_S_ABSORB_WEAPON);
 	export_constant(IG_S_ABSORB_SHIELD);
 	export_constant(IG_PORINGSPRECIOUSBOX);
+	export_constant(IG_ENCHANT_STONE_BOX29);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
