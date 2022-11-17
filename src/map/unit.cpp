@@ -3477,6 +3477,19 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 				sd->npc_id = 0;
 			}
 
+			if( sd->npc_id_dynamic != 0 ){
+				struct npc_data* nd = map_id2nd( sd->npc_id_dynamic );
+
+				if( nd != nullptr ){
+					// Delete the NPC
+					npc_unload( nd, true );
+					// Update NPC event database
+					npc_read_event_script();
+				}
+
+				sd->npc_id_dynamic = 0;
+			}
+
 #ifdef Pandas_ScriptEngine_MutliStackBackup
 			while (!sd->previous_st.empty()) {
 				struct mutli_state val = sd->previous_st.back();

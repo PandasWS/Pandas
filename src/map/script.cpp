@@ -11167,7 +11167,7 @@ BUILDIN_FUNC(petautobonus3) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
-BUILDIN_FUNC(skill_plagiarism)
+BUILDIN_FUNC(plagiarizeskill)
 {
 	TBL_PC *sd;
 
@@ -11177,11 +11177,11 @@ BUILDIN_FUNC(skill_plagiarism)
 	return SCRIPT_CMD_SUCCESS;
 }
 
-BUILDIN_FUNC(skill_plagiarism_reset)
+BUILDIN_FUNC(plagiarizeskillreset)
 {
 	TBL_PC *sd;
 
-	if (!script_rid2sd(sd))
+	if (script_rid2sd(sd))
 		script_pushint(st, pc_skill_plagiarism_reset(*sd, script_getnum(st, 2)));
 
 	return SCRIPT_CMD_SUCCESS;
@@ -20244,13 +20244,13 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_IGNORE_CELL_STACK_LIMIT, md->ud.state.ignore_cell_stack_limit);
 			getunitdata_sub(UMOB_RES, md->status.res);
 			getunitdata_sub(UMOB_MRES, md->status.mres);
+			getunitdata_sub(UMOB_DAMAGETAKEN, md->damagetaken);
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
+#ifdef Pandas_ScriptParams_DamageTaken_From_Database
 			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
+#endif // Pandas_ScriptParams_DamageTaken_From_Database
 #ifdef Pandas_ScriptParams_UnitData_Experience
 			getunitdata_sub(UMOB_MOBBASEEXP, md->pandas.base_exp);
 			getunitdata_sub(UMOB_MOBBASEEXP_DB, md->db->base_exp);
@@ -20693,12 +20693,14 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_IGNORE_CELL_STACK_LIMIT: md->ud.state.ignore_cell_stack_limit = value > 0; break;
 			case UMOB_RES: md->base_status->res = (pec_short)value; calc_status = true; break;
 			case UMOB_MRES: md->base_status->mres = (pec_short)value; calc_status = true; break;
+#ifndef Pandas_ScriptParams_DamageTaken_Extend
+			case UMOB_DAMAGETAKEN: md->damagetaken = (unsigned short)value; break;
+#else
+			case UMOB_DAMAGETAKEN: md->damagetaken = cap_value(value, -1, UINT16_MAX); break;
+#endif // Pandas_ScriptParams_DamageTaken_Extend
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
 #ifdef Pandas_ScriptParams_UnitData_Experience
 			case UMOB_MOBBASEEXP: md->pandas.base_exp = cap_value(value64, -1, (int64)MAX_EXP); break;
 			case UMOB_MOBJOBEXP: md->pandas.job_exp = cap_value(value64, -1, (int64)MAX_EXP); break;
@@ -21451,29 +21453,6 @@ BUILDIN_FUNC(unittalk)
 		clif_disp_overhead_(bl, StringBuf_Value(&sbuf), target);
 		StringBuf_Destroy(&sbuf);
 	}
-
-	return SCRIPT_CMD_SUCCESS;
-}
-
-/// Makes the unit do an emotion.
-///
-/// unitemote <unit_id>,<emotion>;
-///
-/// @see ET_* in script_constants.hpp
-BUILDIN_FUNC(unitemote)
-{
-	int emotion;
-	struct block_list* bl;
-
-	emotion = script_getnum(st,3);
-
-	if (emotion < ET_SURPRISE || emotion >= ET_MAX) {
-		ShowWarning("buildin_emotion: Unknown emotion %d (min=%d, max=%d).\n", emotion, ET_SURPRISE, (ET_MAX-1));
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	if (script_rid2bl(2,bl))
-		clif_emotion(bl, emotion);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -26814,11 +26793,44 @@ BUILDIN_FUNC(duplicate)
 		ys = nd->u.scr.ys;
 	}
 
-	npc_data* dnd = npc_duplicate_npc( nd, name, mapid, x, y, class_, dir, xs, ys );
+	npc_data* dnd = npc_duplicate_npc( *nd, name, mapid, x, y, class_, dir, xs, ys );
 
 	if( dnd == nullptr ){
 		script_pushstrcopy( st, "" );
 		return SCRIPT_CMD_FAILURE;
+	}else{
+		script_pushstrcopy( st, dnd->exname );
+		return SCRIPT_CMD_SUCCESS;
+	}
+}
+
+/**
+ * Duplicate a NPC for a player.
+ * Return the duplicate Unique name on success or empty string on failure.
+ * duplicate_dynamic("<NPC name>"{,<character ID>});
+ */
+BUILDIN_FUNC(duplicate_dynamic){
+	const char* old_npcname = script_getstr( st, 2 );
+	struct npc_data* nd = npc_name2id( old_npcname );
+
+	if( nd == nullptr ){
+		ShowError( "buildin_duplicate_dynamic: No such NPC '%s'.\n", old_npcname );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct map_session_data* sd;
+
+	if( !script_charid2sd( 3, sd ) ){
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct npc_data* dnd = npc_duplicate_npc_for_player( *nd, *sd );
+
+	if( dnd == nullptr ){
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_SUCCESS;
 	}else{
 		script_pushstrcopy( st, dnd->exname );
 		return SCRIPT_CMD_SUCCESS;
@@ -28352,6 +28364,35 @@ BUILDIN_FUNC(get_reputation_points){
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(add_reputation_points)
+{
+	struct map_session_data* sd;
+
+	if( !script_charid2sd( 4, sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int64 type = script_getnum64( st, 2 );
+	std::shared_ptr<s_reputation> reputation = reputation_db.find( type );
+
+	if( reputation == nullptr ){
+		ShowError( "buildin_set_reputation_points: Unknown reputation type %" PRIi64 ".\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int64 points = pc_readreg2( sd, reputation->variable.c_str() ) + script_getnum64(st, 3);
+
+	points = cap_value( points, reputation->minimum, reputation->maximum );
+
+	if( !pc_setreg2( sd, reputation->variable.c_str(), points ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_reputation_type( *sd, type, points );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 BUILDIN_FUNC(item_reform){
 #if PACKETVER < 20211103
 	ShowError( "buildin_item_reform: This command requires packet version 2021-11-03 or newer.\n" );
@@ -28433,6 +28474,41 @@ BUILDIN_FUNC(item_enchant){
 #endif
 }
 
+/**
+* Generate item link string for client
+* itemlink(<item_id>,<refine>,<card0>,<card1>,<card2>,<card3>,<enchantgrade>{,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>});
+* @author [Cydh]
+**/
+BUILDIN_FUNC(itemlink)
+{
+	struct item item = {};
+
+	item.nameid = script_getnum(st, 2);
+	
+	if( !item_db.exists( item.nameid ) ){
+		ShowError( "buildin_itemlink: Item ID %u does not exists.\n", item.nameid );
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	FETCH(3, item.refine);
+	FETCH(4, item.card[0]);
+	FETCH(5, item.card[1]);
+	FETCH(6, item.card[2]);
+	FETCH(7, item.card[3]);
+	FETCH(8, item.enchantgrade);
+
+#if PACKETVER >= 20150225
+	if ( script_hasdata(st,9) && script_getitem_randomoption(st, nullptr, &item, "itemlink", 9) == false) {
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+#endif
+
+	std::string itemlstr = item_db.create_item_link(item);
+	script_pushstrcopy(st, itemlstr.c_str());
+	return SCRIPT_CMD_SUCCESS;
+}
 
 BUILDIN_FUNC(addfame) {
 	struct map_session_data *sd;
@@ -28465,6 +28541,17 @@ BUILDIN_FUNC(getfamerank) {
 		return SCRIPT_CMD_FAILURE;
 
 	script_pushint(st, pc_famerank(sd->status.char_id, sd->class_ & MAPID_UPPERMASK));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(isdead) {
+	struct map_session_data *sd;
+
+	if (!script_mapid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st, pc_isdead(sd));
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -32899,8 +32986,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(petautobonus,"sii??"),
 	BUILDIN_DEF2(petautobonus,"petautobonus2","sii??"),
 	BUILDIN_DEF(petautobonus3,"siiv?"),
-	BUILDIN_DEF(skill_plagiarism, "ii"),
-	BUILDIN_DEF(skill_plagiarism_reset, "i"),
+	BUILDIN_DEF(plagiarizeskill, "ii"),
+	BUILDIN_DEF(plagiarizeskillreset, "i"),
 	BUILDIN_DEF(skill,"vi?"),
 	BUILDIN_DEF2(skill,"addtoskill","vi?"), // [Valaris]
 	BUILDIN_DEF(guildskill,"vi"),
@@ -33219,7 +33306,6 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(unitstopattack,"i"),
 	BUILDIN_DEF(unitstopwalk,"i?"),
 	BUILDIN_DEF(unittalk,"is?"),
-	BUILDIN_DEF_DEPRECATED(unitemote,"ii","20170811"),
 	BUILDIN_DEF(unitskilluseid,"ivi????"), // originally by Qamera [Celest]
 	BUILDIN_DEF(unitskillusepos,"iviii???"), // [Celest]
 // <--- [zBuffer] List of unit control commands
@@ -33402,6 +33488,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(openstorage2,"ii?"),
 	BUILDIN_DEF(unloadnpc, "s"),
 	BUILDIN_DEF(duplicate, "ssii?????"),
+	BUILDIN_DEF(duplicate_dynamic, "s?"),
 
 	// WoE TE
 	BUILDIN_DEF(agitstart3,""),
@@ -33496,11 +33583,14 @@ struct script_function buildin_func[] = {
 
 	BUILDIN_DEF(set_reputation_points, "ii?"),
 	BUILDIN_DEF(get_reputation_points, "i?"),
+	BUILDIN_DEF(add_reputation_points, "ii?"),
 	BUILDIN_DEF(item_reform, "??"),
 	BUILDIN_DEF(item_enchant, "i?"),
+	BUILDIN_DEF(itemlink, "i?????????"),
 	BUILDIN_DEF(addfame, "i?"),
 	BUILDIN_DEF(getfame, "?"),
 	BUILDIN_DEF(getfamerank, "?"),
+	BUILDIN_DEF(isdead, "?"),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
