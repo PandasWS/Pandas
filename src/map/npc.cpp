@@ -2098,6 +2098,9 @@ int npc_event_sub(struct map_session_data* sd, struct event_data* ev, const char
 		}
 	}
 
+#ifdef Pandas_ScriptCommand_geteventlabel
+	strcpy(sd->pandas.eventlabel, eventname);	//返回<"NPC::OnLabel">名称
+#endif // Pandas_ScriptCommand_geteventlabel
 #ifndef Pandas_Struct_Map_Session_Data_WorkInEvent
 	run_script(ev->nd->u.scr.script,ev->pos,sd->bl.id,ev->nd->bl.id);
 #else
@@ -7390,6 +7393,7 @@ enum npce_event npc_get_script_event_type(const char* eventname) {
 	return NPCE_MAX;
 }
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
+
 
 #ifdef Pandas_Struct_Map_Session_Data_EventTrigger
 //************************************

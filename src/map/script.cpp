@@ -32581,6 +32581,28 @@ BUILDIN_FUNC(whodropitem) {
 }
 #endif // Pandas_ScriptCommand_WhoDropItem
 
+#ifdef Pandas_ScriptCommand_geteventlabel
+/* ===========================================================
+ * 指令: geteventlabel
+ * 描述: 在<"NPC::OnLabel">触发事件中使用本命令，使用方法 .@label$ = geteventlabel();
+ * 用法: geteventlabel;
+ * 返回: 返回<"NPC::OnLabel">名称
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(geteventlabel) {
+	TBL_PC* sd;
+
+	if (!script_charid2sd(2, sd)) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	char* eventname = sd->pandas.eventlabel;
+
+	script_pushstrcopy(st, eventname);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_geteventlabel
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -33556,6 +33578,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+#ifdef Pandas_ScriptCommand_geteventlabel
+	BUILDIN_DEF(geteventlabel,""),						// 返回<"NPC::OnLabel">名称 [聽風]
+#endif // Pandas_ScriptCommand_geteventlabel
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

@@ -3379,3 +3379,59 @@ NPC名称:
 	才能看到查询到那张地图的 BOSS 魔物信息.
 
 --------------------------------------------------------------
+
+*geteventlabel();
+
+在拥有玩家绑定<"NPC::OnLabel">触发事件中使用本命令  [聽風]
+服务器本身的OnEvent系列命令也生效，使用前请必须使用 playerattached() 判断是否绑定玩家
+
+返回值:
+	返回玩家当前触发的<"NPC::OnLabel">名称
+
+实例脚本:
+	prontera,154,179,4	script	测试geteventlabel	123,{
+		mes "[测试]";
+		mes "请选择测试项";
+		next;
+		switch(select(
+			"魔物死亡Event",
+			"addtimerEvent",
+			"doevent",
+			"生命体召唤Event"
+		)) {
+			case 1:	//魔物死亡Event
+				mes "[测试]";
+				mes "请击杀魔物";
+				close2;
+				monster "prontera",155,183,"--ja--",1002,1,strnpcinfo(0)+"::OnMobDead1";
+				monster "prontera",155,185,"--ja--",1002,1,strnpcinfo(0)+"::OnMobDead2";
+				end;
+			case 2:	//addtimerEvent
+				mes "[测试]";
+				mes "3秒后调试输出";
+				close2;
+				addtimer 3000,strnpcinfo(0)+"::OnTimerOut";
+				end;
+			case 3:	//doevent
+				mes "[测试]";
+				mes "关闭窗口后出现debug";
+				close2;
+				doevent strnpcinfo(0)+"::OnDoEvent";
+				end;
+		}
+		end;
+	
+	OnMobDead1:
+	OnMobDead2:
+	OnTimerOut:
+	OnDoEvent:
+	OnNPCKillEvent:
+	OnPCLoginEvent:
+		if ( playerattached() ) {
+			.@label$ = geteventlabel();
+			dispbottom "Debug : "+.@label$;
+		}
+		end;
+	}
+
+--------------------------------------------------------------
