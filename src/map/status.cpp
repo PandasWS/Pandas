@@ -11307,6 +11307,17 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			break;
 		case SC_BOSSMAPINFO:
 			if( sd != NULL ) {
+#ifdef Pandas_ScriptCommand_getmobmapinfo
+				if (val3 == 2) {
+					block_list* mdbl = map_id2bl(val1);
+					struct mob_data* mob_md = (struct mob_data*)mdbl;
+					clif_bossmapinfo(sd, mob_md, BOSS_INFO_ALIVE);
+					val1 = mob_md->bl.id;
+					tick_time = 1000; // [GodLesZ] tick time
+					val4 = tick / tick_time;
+					break;
+				}
+#endif // Pandas_ScriptCommand_getmobmapinfo
 				struct mob_data *boss_md = map_getmob_boss(bl->m); // Search for Boss on this Map
 
 				if( boss_md == NULL ) { // No MVP on this map
@@ -13293,6 +13304,10 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			}
 			break;
 		case SC_BOSSMAPINFO:
+#ifdef Pandas_ScriptCommand_getmobmapinfo
+			if (sce->val3 == 2)
+				break;
+#endif // Pandas_ScriptCommand_getmobmapinfo
 			if (sd)
 				clif_bossmapinfo(sd, map_id2boss(sce->val1), BOSS_INFO_ALIVE_WITHMSG); // First Message
 			break;
@@ -14448,6 +14463,18 @@ TIMER_FUNC(status_change_timer){
 		break;
 
 	case SC_BOSSMAPINFO:
+#ifdef Pandas_ScriptCommand_getmobmapinfo
+		if (sd && --(sce->val4) >= 0 && sce->val3 == 2) {
+			struct mob_data* mob_md = map_id2md(sce->val1);
+			if (mob_md != nullptr)
+				clif_bossmapinfo(sd, mob_md, BOSS_INFO_ALIVE);
+			else {
+				sce->val4 = 0;
+				clif_bossmapinfo_clear(sd);
+				status_change_end(bl, SC_BOSSMAPINFO);
+			}
+		}
+#endif // Pandas_ScriptCommand_getmobmapinfo
 		if( sd && --(sce->val4) >= 0 ) {
 			struct mob_data *boss_md = map_id2boss(sce->val1);
 
