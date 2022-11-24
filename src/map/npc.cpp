@@ -7576,7 +7576,7 @@ bool npc_script_filter(struct map_session_data* sd, const char* eventname) {
 	nullpo_retr(false, sd);
 	enum npce_event type = npc_get_script_event_type(eventname);
 	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
-	if (!npc_event_rightnow(sd, ev, eventname))
+	if (ev && !npc_event_rightnow(sd, ev, eventname))
 		return false;
 	return getProcessHalt(sd, type);
 }
