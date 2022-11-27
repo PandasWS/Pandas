@@ -18,6 +18,9 @@
 
 #ifdef _WIN32
 	#include <windows.h>
+
+	#define ftell _ftelli64
+	#define fseek _fseeki64
 #else
 	#include <errno.h>
 	#include <string.h>
@@ -27,6 +30,9 @@
 	#include <langinfo.h>
 
 	#include <iconv.h>
+
+	#define ftell ftello
+	#define fseek fseeko
 #endif // _WIN32
 
 #include <unordered_map>
@@ -816,23 +822,41 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 	}
 
 	// 记录目前游标所在的位置
-	long curpos = ftell(_Stream);
+	int64 curpos = ftell(_Stream);
 
 	// 将游标移动到文件末尾
 	fseek(_Stream, 0, SEEK_END);
 
 	// 读取文件的大小
-	size_t size = ftell(_Stream);
+	int64 size = ftell(_Stream);
+
+	// 文件超过 5 MB 看一下是不是 GRF 文件,
+	// 如果是那么就不进行编码猜测了, 直接返回 ANSI 编码
+	if (size > 5 * 1024 * 1024) {
+		// 读取文件头
+		char buf[16] = { 0 };
+		fseek(_Stream, 0, SEEK_SET);
+		size_t readsize = 0;
+		readsize = ::fread(buf, 1, 16, _Stream);
+		if (memcmp(buf, "Master of Magic", readsize) == 0) {
+			// 将指针设置回原来的位置, 避免影响后续的读写流程
+			fseek(_Stream, curpos, SEEK_SET);
+			return FILE_CHARSETMODE_ANSI;
+		}
+	}
+	
+	// 进行限制避免读取到超大文件, 最多读取 5 MB
+	size = min(size, 5 * 1024 * 1024);
 
 	// 申请容量足够的缓冲区, 用于存放一会儿要读取的内容
-	unsigned char* buf = (unsigned char*)aMalloc(size + 1);
+	unsigned char* buf = (unsigned char*)aMalloc((size_t)size + 1);
 
 	// 指针移动到开头, 准备读取整个文件的内容
 	fseek(_Stream, 0, SEEK_SET);
 
 	// 读取整个文件的内容
 	size_t extracted = 0;
-	extracted = ::fread(buf, sizeof(unsigned char), size, _Stream);
+	extracted = ::fread(buf, sizeof(unsigned char), (size_t)size, _Stream);
 
 	// 根据读取到的数据来判断文本的编码类型
 	enum e_file_charsetmode charset_mode = get_charsetmode(buf, extracted);
@@ -858,7 +882,7 @@ enum e_file_charsetmode fmode(FILE* _Stream) {
 //************************************
 enum e_file_charsetmode fmode(std::ifstream& ifs) {
 	// 记录目前游标所在的位置
-	long curpos = (long)ifs.tellg();
+	std::streampos curpos = (long)ifs.tellg();
 
 	// 将游标移动到文件末尾
 	ifs.seekg(0, std::ios::end);
@@ -955,7 +979,7 @@ char* fgets(char* _Buffer, int _MaxCount, FILE* _Stream, int flag/* = 0*/) {
 
 	// 使用 UTF8-BOM 编码时, 若指针在文件的前 3 个字节, 那么将指针移动到前 3 个字节的后面,
 	// 避免后续进行 fgets 的时候读取到前 3 个字节, 同时将当前位置记录到 curpos
-	long curpos = ftell(_Stream);
+	int64 curpos = ftell(_Stream);
 	if (mode == FILE_CHARSETMODE_UTF8_BOM && curpos < 3) fseek(_Stream, 3, SEEK_SET);
 
 	// 读取 _MaxCount 长度的内容并保存到 buffer 中
@@ -1026,7 +1050,7 @@ size_t fread(void* _Buffer, size_t _ElementSize, size_t _ElementCount, FILE* _St
 	}
 
 	size_t extracted = 0;
-	long curpos = ftell(_Stream);
+	int64 curpos = ftell(_Stream);
 	size_t elementlen = (_ElementSize * _ElementCount) + 1;
 	char* buffer = new char[elementlen];
 
