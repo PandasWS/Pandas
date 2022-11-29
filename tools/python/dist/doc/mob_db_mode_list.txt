@@ -19,36 +19,36 @@
 Bit Legend
 -------------------------------------------------------------------------------
 
-MD_CANMOVE            | 0x0000001 |         1	CanMove				可移动
-MD_LOOTER             | 0x0000002 |         2	Looter				捡拾道具(如：波利#1002)
-MD_AGGRESSIVE         | 0x0000004 |         4	Aggressive			主动攻击
-MD_ASSIST             | 0x0000008 |         8	Assist				协助同伴
-MD_CASTSENSORIDLE     | 0x0000010 |        16	CastSensorIdle		魔法反制
-MD_NORANDOMWALK       | 0x0000020 |        32	NoRandomWalk		无法随机移动
-MD_NOCAST             | 0x0000040 |        64	NoCast				无法使用技能
-MD_CANATTACK          | 0x0000080 |       128	CanAttack			可以攻击(未使用则受到攻击不还手 , 如：虫蛹#1008)
-FREE                  | 0x0000100 |       256	N/A
-MD_CASTSENSORCHASE    | 0x0000200 |       512	CastSensorChase		切换追逐目标
-MD_CHANGECHASE        | 0x0000400 |      1024	ChangeChase			攻击范围内改变目标(参考mob_db.yml - AttackRange\SkillRange\ChaseRange)
-MD_ANGRY              | 0x0000800 |      2048	Angry				可生气(魔物技能组使用差异 , 如：吸血蝙蝠#1005)
-MD_CHANGETARGETMELEE  | 0x0001000 |      4096	ChangeTargetMelee	被攻击时改变目标
-MD_CHANGETARGETCHASE  | 0x0002000 |      8192	ChangeTargetChase	追逐时改变目标(选择较近目标)
-MD_TARGETWEAK         | 0x0004000 |     16384	TargetWeak			不主动攻击等差5级以上目标(如：布托异竺#2155)
-MD_RANDOMTARGET       | 0x0008000 |     32768	RandomTarget		总是攻击随机目标(每次攻击随机选择一个新目标)
+MD_CANMOVE            | 0x0000001 |         1    CanMove            可移动
+MD_LOOTER             | 0x0000002 |         2    Looter             捡拾道具(如：波利#1002)
+MD_AGGRESSIVE         | 0x0000004 |         4    Aggressive         主动攻击
+MD_ASSIST             | 0x0000008 |         8    Assist             协助同伴
+MD_CASTSENSORIDLE     | 0x0000010 |        16    CastSensorIdle     魔法反制
+MD_NORANDOMWALK       | 0x0000020 |        32    NoRandomWalk       无法随机移动
+MD_NOCAST             | 0x0000040 |        64    NoCast             无法使用技能
+MD_CANATTACK          | 0x0000080 |       128    CanAttack          可以攻击(未使用则受到攻击不还手 , 如：虫蛹#1008)
+FREE                  | 0x0000100 |       256    N/A
+MD_CASTSENSORCHASE    | 0x0000200 |       512    CastSensorChase    切换追逐目标
+MD_CHANGECHASE        | 0x0000400 |      1024    ChangeChase        攻击范围内改变目标(参考mob_db.yml - AttackRange\SkillRange\ChaseRange)
+MD_ANGRY              | 0x0000800 |      2048    Angry              可生气(魔物技能组使用差异 , 如：吸血蝙蝠#1005)
+MD_CHANGETARGETMELEE  | 0x0001000 |      4096    ChangeTargetMelee  被攻击时改变目标
+MD_CHANGETARGETCHASE  | 0x0002000 |      8192    ChangeTargetChase  追逐时改变目标(选择较近目标)
+MD_TARGETWEAK         | 0x0004000 |     16384    TargetWeak         不主动攻击等差5级以上目标(如：布托异竺#2155)
+MD_RANDOMTARGET       | 0x0008000 |     32768    RandomTarget       总是攻击随机目标(每次攻击随机选择一个新目标)
 ---------------------------------------------
-MD_IGNOREMELEE        | 0x0010000 |     65536	IgnoreMelee			受物理攻击仅 -1 HP(不包含'远'距离物攻 , 通常与MD_IGNORERANGED共同使用来完全免疫物理伤害)
-MD_IGNOREMAGIC        | 0x0020000 |    131072	IgnoreMagic			受魔法攻击仅 -1 HP
-MD_IGNORERANGED       | 0x0040000 |    262144	IgnoreRanged		受远距离物理攻击仅 -1 HP(不包含'近'距离物攻 , 通常与MD_IGNOREMELEE共同使用来完全免疫物理伤害)
-MD_MVP                | 0x0080000 |    524288	MVP
-MD_IGNOREMISC         | 0x0100000 |   1048576	IgnoreMisc			受特殊攻击仅 -1 HP(如：陷井)
-MD_KNOCKBACKIMMUNE    | 0x0200000 |   2097152	KnockBackImmune		无法被击退
-MD_TELEPORTBLOCK      | 0x0400000 |   4194304	TeleportBlock		无法发送/瞬移(如：训练用龙蛋Lv.10#2408)
-FREE                  | 0x0800000 |   8388608	N/A
+MD_IGNOREMELEE        | 0x0010000 |     65536    IgnoreMelee        受物理攻击仅 -1 HP(不包含'远'距离物攻 , 通常与MD_IGNORERANGED共同使用来完全免疫物理伤害)
+MD_IGNOREMAGIC        | 0x0020000 |    131072    IgnoreMagic        受魔法攻击仅 -1 HP
+MD_IGNORERANGED       | 0x0040000 |    262144    IgnoreRanged       受远距离物理攻击仅 -1 HP(不包含'近'距离物攻 , 通常与MD_IGNOREMELEE共同使用来完全免疫物理伤害)
+MD_MVP                | 0x0080000 |    524288    MVP
+MD_IGNOREMISC         | 0x0100000 |   1048576    IgnoreMisc         受特殊攻击仅 -1 HP(如：陷井)
+MD_KNOCKBACKIMMUNE    | 0x0200000 |   2097152    KnockBackImmune    无法被击退
+MD_TELEPORTBLOCK      | 0x0400000 |   4194304    TeleportBlock      无法发送/瞬移(如：训练用龙蛋Lv.10#2408)
+FREE                  | 0x0800000 |   8388608    N/A
 ---------------------------------------------
-MD_FIXEDITEMDROP      | 0x1000000 |  16777216	FixedItemDrop		掉落不受任何掉宝相关道具影响
-MD_DETECTOR           | 0x2000000 |  33554432	Detector			发现隐匿
-MD_STATUSIMMUNE       | 0x4000000 |  67108864	StatusImmune		免疫负面异常状态(SC_)
-MD_SKILLIMMUNE        | 0x8000000 | 134217728	SkillImmune			免疫技能(如：海葵#3743)
+MD_FIXEDITEMDROP      | 0x1000000 |  16777216    FixedItemDrop      掉落不受任何掉宝相关道具影响
+MD_DETECTOR           | 0x2000000 |  33554432    Detector           发现隐匿
+MD_STATUSIMMUNE       | 0x4000000 |  67108864    StatusImmune       免疫负面异常状态(SC_)
+MD_SKILLIMMUNE        | 0x8000000 | 134217728    SkillImmune        免疫技能(如：海葵#3743)
 
 Pandas 备注说明
 -------------------------------------------------------------------------------
