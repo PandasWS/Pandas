@@ -2735,6 +2735,8 @@ bool npc_scriptcont(struct map_session_data* sd, int id, bool closing){
 			// close
 			case CLOSE:
 				sd->st->state = END;
+				if (sd->st->clear_cutin)
+					clif_cutin(sd,"",255);
 				break;
 			// close2
 			case STOP:
