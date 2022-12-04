@@ -4815,6 +4815,10 @@ int item_data::inventorySlotNeeded(int quantity)
 
 void itemdb_gen_itemmoveinfo()
 {
+#ifdef Pandas_UserExperience_AutoCreate_Generated_Directory
+	makeDirectories("generated/clientside/data/");
+#endif // Pandas_UserExperience_AutoCreate_Generated_Directory
+
 	ShowInfo("itemdb_gen_itemmoveinfo: Generating itemmoveinfov5.txt.\n");
 	auto starttime = std::chrono::system_clock::now();
 	auto os = std::ofstream("./generated/clientside/data/itemmoveinfov5.txt", std::ios::trunc);

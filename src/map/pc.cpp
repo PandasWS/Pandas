@@ -461,6 +461,11 @@ ReputationGroupDatabase reputationgroup_db;
 void pc_reputation_generate() {
 #ifdef MAP_GENERATOR
 	const std::string filePrefix = "generated/clientside/data/contentdata/";
+
+#ifdef Pandas_UserExperience_AutoCreate_Generated_Directory
+	makeDirectories(filePrefix);
+#endif // Pandas_UserExperience_AutoCreate_Generated_Directory
+
 	auto reputeInfo = nlohmann::json::object();
 	for (const auto& pair : reputation_db) {
 		auto id = pair.first;
