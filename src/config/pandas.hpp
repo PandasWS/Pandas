@@ -1276,6 +1276,9 @@
 
 	// 使 map-server-generator 能在运行时按需自动创建输出目录 [Sola丶小克]
 	#define Pandas_UserExperience_AutoCreate_Generated_Directory
+
+	// 改写 map-server-generator 的参数处理流程, 支持短参数以及输出帮助 [Sola丶小克]
+	#define Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 #endif // Pandas_UserExperience
 
 // ============================================================================
