@@ -466,6 +466,10 @@ void pc_reputation_generate() {
 	makeDirectories(filePrefix);
 #endif // Pandas_UserExperience_AutoCreate_Generated_Directory
 
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("Writing reputation file...\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
+
 	auto reputeInfo = nlohmann::json::object();
 	for (const auto& pair : reputation_db) {
 		auto id = pair.first;
@@ -505,6 +509,10 @@ void pc_reputation_generate() {
 
 	reputation_file.write((const char *)&bson[0], bson.size());
 
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("Writing reputation group file...\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
+	
 	auto reputeGroupInfo = nlohmann::json::object();
 	for (const auto& pair : reputationgroup_db) {
 		auto id = pair.first;

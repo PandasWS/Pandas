@@ -446,6 +446,9 @@ void write_object_lists() {
 	write_header(map_file, "Navi_Map");
 
 	for (int mapid = 0; mapid < map_num; mapid++) {
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+		ShowInfo("Object lists of the map %d/%d is writing..." CL_CLL "\r", mapid + 1, map_num);
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 		auto m = map_getmapdata(mapid);
 
 		// Warps/NPCs
@@ -551,6 +554,9 @@ void write_npc_distances() {
 	write_header(dist_npc_file, "Navi_NpcDistance");
 
 	for (int mapid = 0; mapid < map_num; mapid++) {
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+		int npc_processed = 0;
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 		auto m = map_getmapdata(mapid);
 		if (m->navi.npcs.size() == 0) {
 			// ShowStatus("Skipped %s NPC distance table, no NPCs in map (%d/%d)\n", map[m].name, m, map_num);
@@ -563,6 +569,10 @@ void write_npc_distances() {
 
 		write_map_header(dist_npc_file, m);
 		for (auto nd : m->navi.npcs) {
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+			ShowInfo("Distances of %d/%d NPC of the map %d/%d is writing... " CL_CLL "\r", npc_processed + 1, m->navi.npcs.size(),mapid + 1, map_num);
+			npc_processed++;
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 			write_npc_distance(dist_npc_file, nd, m);
 		}
 		dist_npc_file << "\t},\n";
@@ -618,6 +628,9 @@ void write_map_distances() {
 	write_header(dist_map_file, "Navi_Distance");
 
 	for (int mapid = 0; mapid < map_num; mapid++) {
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+		ShowInfo("Link distances of the map %d/%d is writing..." CL_CLL "\r", mapid + 1, map_num);
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 		const struct map_data * m = map_getmapdata(mapid);
 		write_mapdist_header(dist_map_file, m);
 		for (auto nd : m->navi.warps_outof) {
@@ -635,15 +648,29 @@ void navi_create_lists() {
 
 	auto starttime = std::chrono::system_clock::now();
 
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("Writing Object lists, this may take a while...\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
+	
 	npc_event_runall(script_config.navi_generate_name);
 
 	write_object_lists();
 	auto currenttime = std::chrono::system_clock::now();
 	ShowInfo("Object lists took %ums\n", std::chrono::duration_cast<std::chrono::milliseconds>(currenttime - starttime));
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("Writing NPC distances, this may take a while...\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 	starttime = std::chrono::system_clock::now();
 	write_npc_distances();
 	currenttime = std::chrono::system_clock::now();
 	ShowInfo("NPC Distances took %ums\n", std::chrono::duration_cast<std::chrono::milliseconds>(currenttime - starttime));
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("Writing Link Distances, this may take a while...\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 	starttime = std::chrono::system_clock::now();
 	write_map_distances();
 	currenttime = std::chrono::system_clock::now();

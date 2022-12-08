@@ -6275,6 +6275,13 @@ int do_init(int argc, char *argv[])
 		ShowStatus("The Map-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u, took %" PRIu64 " milliseconds).\n\n", map_port, performance_get_milliseconds("core_init"));
 	#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 #else
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("- MAP GENERATOR START WORKING\n");
+	ShowInfo("----------------------------------------------------------------------\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
+	
 	// depending on gen_options, generate the correct things
 	if (gen_options.navi)
 		navi_create_lists();
@@ -6283,6 +6290,12 @@ int do_init(int argc, char *argv[])
 	if (gen_options.reputation)
 		pc_reputation_generate();
 	runflag = CORE_ST_STOP;
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("- MAP GENERATOR WORK FINISHED\n");
+	ShowInfo("----------------------------------------------------------------------\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 #endif
 
 	if( runflag != CORE_ST_STOP )
