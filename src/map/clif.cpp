@@ -5323,7 +5323,7 @@ void clif_getareachar_unit( struct map_session_data* sd,struct block_list *bl ){
 			clif_progressbar_npc(nd, sd);
 #ifdef Pandas_ScriptCommand_ShowVend
 			if (sd && nd && nd->vendingboard.show)
-				clif_showvendingboard(&nd->bl, nd->vendingboard.message, AREA_WOS, &sd->bl);
+				clif_showvendingboard(&nd->bl, nd->vendingboard.message, SELF, &sd->bl);
 #endif // Pandas_ScriptCommand_ShowVend
 		}
 		break;
@@ -8018,7 +8018,7 @@ void clif_showvendingboard(struct block_list* bl, const char* name, enum send_ta
 
 	p.packetType = HEADER_ZC_STORE_ENTRY;
 	p.makerAID = bl->id;
-	safestrncpy(p.storeName, name, sizeof(name));
+	safestrncpy(p.storeName, name, sizeof(p.storeName));
 
 	clif_send(&p, sizeof(p), tbl, target);
 }
