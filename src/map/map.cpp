@@ -232,6 +232,11 @@ struct mapcell cell_template[7] = { 0 };
 #ifdef MAP_GENERATOR
 struct s_generator_options {
 	bool navi;
+	bool itemmoveinfo;
+	bool reputation;
+#ifdef Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
+	bool showhelp;
+#endif // Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 } gen_options;
 #endif
 
@@ -671,7 +676,7 @@ int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
 			if(bl->x == x && bl->y == y && bl->type&type) {
 				if (bl->type == BL_NPC) {	// Don't count hidden or invisible npc. Cloaked npc are counted
 					npc_data *nd = BL_CAST(BL_NPC, bl);
-					if (nd && (nd->bl.m < 0 || nd->sc.option && nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE)))
+					if (nd->bl.m < 0 || nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE) || nd->dynamicnpc.owner_char_id != 0)
 						continue;
 				}
 				if(flag&1) {
@@ -1479,7 +1484,7 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 	struct block_list *bl;
 	int bx, by;
 	int mx0, mx1, my0, my1, rx, ry;
-	uint8 dir = map_calc_dir_xy(x0, y0, x1, y1, 6);
+	uint8 dir = map_calc_dir_xy( x0, y0, x1, y1, DIR_EAST );
 	short dx = dirx[dir];
 	short dy = diry[dir];
 	va_list ap;
@@ -1495,7 +1500,7 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 		return 0;
 
 	//Special offset handling for diagonal paths
-	if (offset && (dir % 2)) {
+	if( offset && direction_diagonal( (directions)dir ) ){
 		//So that diagonal paths can attach to each other, we have to work with half-tile offsets
 		offset = (2 * offset) - 1;
 		//To get the half-tiles we need to increase length by one
@@ -1521,10 +1526,10 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 		SWAP(my0, my1);
 
 	//Apply width to the path by turning 90 degrees
-	mx0 -= abs(range*dirx[(dir + 2) % 8]);
-	my0 -= abs(range*diry[(dir + 2) % 8]);
-	mx1 += abs(range*dirx[(dir + 2) % 8]);
-	my1 += abs(range*diry[(dir + 2) % 8]);
+	mx0 -= abs( range * dirx[( dir + 2 ) % DIR_MAX] );
+	my0 -= abs( range * diry[( dir + 2 ) % DIR_MAX] );
+	mx1 += abs( range * dirx[( dir + 2 ) % DIR_MAX] );
+	my1 += abs( range * diry[( dir + 2 ) % DIR_MAX] );
 
 	mx0 = max(mx0, 0);
 	my0 = max(my0, 0);
@@ -1549,7 +1554,7 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 						rx *= dx;
 						ry *= dy;
 						//These checks only need to be done for diagonal paths
-						if (dir % 2) {
+						if( direction_diagonal( (directions)dir ) ){
 							//Check for length
 							if ((rx + ry < offset) || (rx + ry > 2 * (length + (offset/2) - 1)))
 								continue;
@@ -1585,7 +1590,7 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 						rx *= dx;
 						ry *= dy;
 						//These checks only need to be done for diagonal paths
-						if (dir % 2) {
+						if( direction_diagonal( (directions)dir ) ){
 							//Check for length
 							if ((rx + ry < offset) || (rx + ry > 2 * (length + (offset / 2) - 1)))
 								continue;
@@ -1873,7 +1878,7 @@ int map_search_freecell(struct block_list *src, int16 m, int16 *x,int16 *y, int1
  *------------------------------------------*/
 bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
 {
-	uint8 dir = 6;
+	uint8 dir = DIR_EAST;
 	int16 tx = *x;
 	int16 ty = *y;
 	int costrange = 10;
@@ -1887,7 +1892,7 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
 		short dy = diry[dir];
 
 		//Linear search
-		if(dir%2 == 0 && costrange%MOVE_COST == 0) {
+		if( !direction_diagonal( (directions)dir ) && costrange % MOVE_COST == 0 ){
 			tx = *x+dx*(costrange/MOVE_COST);
 			ty = *y+dy*(costrange/MOVE_COST);
 			if(!map_count_oncell(m, tx, ty, type, flag) && map_getcell(m,tx,ty,CELL_CHKPASS)) {
@@ -1897,7 +1902,7 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
 			}
 		} 
 		//Full diagonal search
-		else if(dir%2 == 1 && costrange%MOVE_DIAGONAL_COST == 0) {
+		else if( direction_diagonal( (directions)dir ) && costrange % MOVE_DIAGONAL_COST == 0 ){
 			tx = *x+dx*(costrange/MOVE_DIAGONAL_COST);
 			ty = *y+dy*(costrange/MOVE_DIAGONAL_COST);
 			if(!map_count_oncell(m, tx, ty, type, flag) && map_getcell(m,tx,ty,CELL_CHKPASS)) {
@@ -1907,7 +1912,7 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
 			}
 		}
 		//One cell diagonal, rest linear (TODO: Find a better algorithm for this)
-		else if(dir%2 == 1 && costrange%MOVE_COST == 4) {
+		else if( direction_diagonal( (directions)dir ) && costrange % MOVE_COST == 4 ){
 			tx = *x+dx*((dir%4==3)?(costrange/MOVE_COST):1);
 			ty = *y+dy*((dir%4==1)?(costrange/MOVE_COST):1);
 			if(!map_count_oncell(m, tx, ty, type, flag) && map_getcell(m,tx,ty,CELL_CHKPASS)) {
@@ -1925,17 +1930,17 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
 		}
 
 		//Get next direction
-		if (dir == 5) {
+		if( dir == DIR_SOUTHEAST ){
 			//Diagonal search complete, repeat with higher cost range
 			if(costrange == 14) costrange += 6;
 			else if(costrange == 28 || costrange >= 38) costrange += 2;
 			else costrange += 4;
-			dir = 6;
-		} else if (dir == 4) {
+			dir = DIR_EAST;
+		}else if( dir == DIR_SOUTH ){
 			//Linear search complete, switch to diagonal directions
-			dir = 7;
+			dir = DIR_NORTHEAST;
 		} else {
-			dir = (dir+2)%8;
+			dir = ( dir + 2 ) % DIR_MAX;
 		}
 	}
 
@@ -2366,6 +2371,7 @@ int map_quit(struct map_session_data *sd) {
 	pc_makesavestatus(sd);
 	pc_clean_skilltree(sd);
 	pc_crimson_marker_clear(sd);
+	pc_macro_detector_disconnect(*sd);
 	chrif_save(sd, CSAVE_QUIT|CSAVE_INVENTORY|CSAVE_CART);
 	unit_free_pc(sd);
 	return 0;
@@ -3259,14 +3265,14 @@ int map_check_dir(int s_dir,int t_dir)
 	if(s_dir == t_dir)
 		return 0;
 	switch(s_dir) {
-		case 0: if(t_dir == 7 || t_dir == 1 || t_dir == 0) return 0; break;
-		case 1: if(t_dir == 0 || t_dir == 2 || t_dir == 1) return 0; break;
-		case 2: if(t_dir == 1 || t_dir == 3 || t_dir == 2) return 0; break;
-		case 3: if(t_dir == 2 || t_dir == 4 || t_dir == 3) return 0; break;
-		case 4: if(t_dir == 3 || t_dir == 5 || t_dir == 4) return 0; break;
-		case 5: if(t_dir == 4 || t_dir == 6 || t_dir == 5) return 0; break;
-		case 6: if(t_dir == 5 || t_dir == 7 || t_dir == 6) return 0; break;
-		case 7: if(t_dir == 6 || t_dir == 0 || t_dir == 7) return 0; break;
+		case DIR_NORTH: if( t_dir == DIR_NORTHEAST || t_dir == DIR_NORTHWEST || t_dir == DIR_NORTH ) return 0; break;
+		case DIR_NORTHWEST: if( t_dir == DIR_NORTH || t_dir == DIR_WEST || t_dir == DIR_NORTHWEST ) return 0; break;
+		case DIR_WEST: if( t_dir == DIR_NORTHWEST || t_dir == DIR_SOUTHWEST || t_dir == DIR_WEST ) return 0; break;
+		case DIR_SOUTHWEST: if( t_dir == DIR_WEST || t_dir == DIR_SOUTH || t_dir == DIR_SOUTHWEST ) return 0; break;
+		case DIR_SOUTH: if( t_dir == DIR_SOUTHWEST || t_dir == DIR_SOUTHEAST || t_dir == DIR_SOUTH ) return 0; break;
+		case DIR_SOUTHEAST: if( t_dir == DIR_SOUTH || t_dir == DIR_EAST || t_dir == DIR_SOUTHEAST ) return 0; break;
+		case DIR_EAST: if( t_dir == DIR_SOUTHEAST || t_dir == DIR_NORTHEAST || t_dir == DIR_EAST ) return 0; break;
+		case DIR_NORTHEAST: if( t_dir == DIR_EAST || t_dir == DIR_NORTH || t_dir == DIR_NORTHEAST ) return 0; break;
 	}
 	return 1;
 }
@@ -3276,9 +3282,9 @@ int map_check_dir(int s_dir,int t_dir)
  *------------------------------------------*/
 uint8 map_calc_dir(struct block_list* src, int16 x, int16 y)
 {
-	uint8 dir = 0;
+	uint8 dir = DIR_NORTH;
 
-	nullpo_ret(src);
+	nullpo_retr( dir, src );
 
 	dir = map_calc_dir_xy(src->x, src->y, x, y, unit_getdir(src));
 
@@ -3290,7 +3296,7 @@ uint8 map_calc_dir(struct block_list* src, int16 x, int16 y)
  * Use this if you don't have a block list available to check against
  *------------------------------------------*/
 uint8 map_calc_dir_xy(int16 srcx, int16 srcy, int16 x, int16 y, uint8 srcdir) {
-	uint8 dir = 0;
+	uint8 dir = DIR_NORTH;
 	int dx, dy;
 
 	dx = x-srcx;
@@ -3299,31 +3305,31 @@ uint8 map_calc_dir_xy(int16 srcx, int16 srcy, int16 x, int16 y, uint8 srcdir) {
 	{	// both are standing on the same spot
 		// aegis-style, makes knockback default to the left
 		// athena-style, makes knockback default to behind 'src'
-		dir = (battle_config.knockback_left ? 6 : srcdir);
+		dir = ( battle_config.knockback_left ? DIR_EAST : srcdir );
 	}
 	else if( dx >= 0 && dy >=0 )
 	{	// upper-right
-		if( dx >= dy*3 )      dir = 6;	// right
-		else if( dx*3 < dy )  dir = 0;	// up
-		else                  dir = 7;	// up-right
+		if( dx >= dy*3 )      dir = DIR_EAST;	// right
+		else if( dx*3 < dy )  dir = DIR_NORTH;	// up
+		else                  dir = DIR_NORTHEAST;	// up-right
 	}
 	else if( dx >= 0 && dy <= 0 )
 	{	// lower-right
-		if( dx >= -dy*3 )     dir = 6;	// right
-		else if( dx*3 < -dy ) dir = 4;	// down
-		else                  dir = 5;	// down-right
+		if( dx >= -dy*3 )     dir = DIR_EAST;	// right
+		else if( dx*3 < -dy ) dir = DIR_SOUTH;	// down
+		else                  dir = DIR_SOUTHEAST;	// down-right
 	}
 	else if( dx <= 0 && dy <= 0 )
 	{	// lower-left
-		if( dx*3 >= dy )      dir = 4;	// down
-		else if( dx < dy*3 )  dir = 2;	// left
-		else                  dir = 3;	// down-left
+		if( dx*3 >= dy )      dir = DIR_SOUTH;	// down
+		else if( dx < dy*3 )  dir = DIR_WEST;	// left
+		else                  dir = DIR_SOUTHWEST;	// down-left
 	}
 	else
 	{	// upper-left
-		if( -dx*3 <= dy )     dir = 0;	// up
-		else if( -dx > dy*3 ) dir = 2;	// left
-		else                  dir = 1;	// up-left
+		if( -dx*3 <= dy )     dir = DIR_NORTH;	// up
+		else if( -dx > dy*3 ) dir = DIR_WEST;	// left
+		else                  dir = DIR_NORTHWEST;	// up-left
 	}
 	return dir;
 }
@@ -3541,16 +3547,16 @@ bool map_iwall_exist(const char* wall_name)
 
 void map_iwall_nextxy(int16 x, int16 y, int8 dir, int pos, int16 *x1, int16 *y1)
 {
-	if( dir == 0 || dir == 4 )
+	if( dir == DIR_NORTH || dir == DIR_SOUTH )
 		*x1 = x; // Keep X
-	else if( dir > 0 && dir < 4 )
+	else if( dir > DIR_NORTH && dir < DIR_SOUTH )
 		*x1 = x - pos; // Going left
 	else
 		*x1 = x + pos; // Going right
 
-	if( dir == 2 || dir == 6 )
+	if( dir == DIR_WEST || dir == DIR_EAST )
 		*y1 = y;
-	else if( dir > 2 && dir < 6 )
+	else if( dir > DIR_WEST && dir < DIR_EAST )
 		*y1 = y - pos;
 	else
 		*y1 = y + pos;
@@ -5948,6 +5954,24 @@ const char* map_msg_txt(struct map_session_data *sd, int msg_number){
 	return "??";
 }
 
+#if defined(Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process) && defined(MAP_GENERATOR)
+//************************************
+// Method:      mapgenerator_show_help
+// Description: 打印生成器的命令行帮助信息
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2022/12/04 18:56
+//************************************
+void mapgenerator_show_help() {
+	ShowInfo("Usage: %s [options]\n", "map-server-generator");
+	ShowInfo("Options:\n");
+	ShowInfo("  -?, -h [--help]\tShow this help message\n");
+	ShowInfo("  -n, -navi [--generate-navi]\tCreate navigation files\n");
+	ShowInfo("  -r, -repu [--generate-reputation]\tCreate reputation bson files\n");
+	ShowInfo("  -i, -imi [--generate-itemmoveinfo]\tCreate itemmoveinfov5.txt\n");
+	systemPause();
+}
+#endif // defined(Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process) && defined(MAP_GENERATOR)
+
 /**
  * Read the option specified in command line
  *  and assign the confs used by the different server.
@@ -5957,6 +5981,7 @@ const char* map_msg_txt(struct map_session_data *sd, int msg_number){
  */
 int mapgenerator_get_options(int argc, char** argv) {
 #ifdef MAP_GENERATOR
+#ifndef Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 	bool optionSet = false;
 	for (int i = 1; i < argc; i++) {
 		const char *arg = argv[i];
@@ -5966,6 +5991,10 @@ int mapgenerator_get_options(int argc, char** argv) {
 
 			if (strcmp(arg, "generate-navi") == 0) {
 				gen_options.navi = true;
+			} else if (strcmp(arg, "generate-itemmoveinfo") == 0) {
+				gen_options.itemmoveinfo = true;
+			} else if (strcmp(arg, "generate-reputation") == 0) {
+				gen_options.reputation = true;
 			} else {
 				// pass through to default get_options
 				continue;
@@ -5980,6 +6009,71 @@ int mapgenerator_get_options(int argc, char** argv) {
 		ShowError("No options passed to the map generator, you must set at least one.\n");
 		exit(1);
 	}
+#else
+	bool optionSet = false;
+	for (int i = 1; i < argc; i++) {
+		const char* arg = argv[i];
+		if (arg[0] != '-' && (arg[0] != '/' || arg[1] == '-')) {// -, -- and /
+			ShowError("Unknown option '%s'.\n", argv[i]);
+			exit(EXIT_FAILURE);
+		} else if (arg[0] == '/' || (++arg)[0] == '-') {// long option
+			arg++;
+
+			if (strcmp(arg, "help") == 0) {
+				gen_options.showhelp = optionSet = true;
+				argv[i] = nullptr;
+			} else if (strcmp(arg, "generate-navi") == 0 || strcmp(arg, "navi") == 0) {
+				gen_options.navi = optionSet = true;
+				argv[i] = nullptr;
+			} else if (strcmp(arg, "generate-itemmoveinfo") == 0 || strcmp(arg, "itemmoveinfo") == 0 || strcmp(arg, "imi") == 0) {
+				gen_options.itemmoveinfo = optionSet = true;
+				argv[i] = nullptr;
+			} else if (strcmp(arg, "generate-reputation") == 0 || strcmp(arg, "repu") == 0) {
+				gen_options.reputation = optionSet = true;
+				argv[i] = nullptr;
+			}
+			else {
+				ShowError("Unknown option '%s'.\n", argv[i]);
+				exit(EXIT_FAILURE);
+			}
+		}
+		else {
+			switch (arg[0]) {// short option
+			case '?':
+			case 'h':
+				gen_options.showhelp = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			case 'n':
+				gen_options.navi = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			case 'i':
+				gen_options.itemmoveinfo = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			case 'r':
+				gen_options.reputation = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			default:
+				ShowError("Unknown option '%s'.\n", argv[i]);
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	
+	if (!optionSet) {
+		ShowWarning("No options passed to the map generator, you must set at least one.\n");
+		mapgenerator_show_help();
+		exit(EXIT_FAILURE);
+	}
+	
+	if (gen_options.showhelp) {
+		mapgenerator_show_help();
+		exit(EXIT_SUCCESS);
+	}
+#endif // Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 #endif
 	return 1;
 }
@@ -6181,10 +6275,27 @@ int do_init(int argc, char *argv[])
 		ShowStatus("The Map-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u, took %" PRIu64 " milliseconds).\n\n", map_port, performance_get_milliseconds("core_init"));
 	#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 #else
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("- MAP GENERATOR START WORKING\n");
+	ShowInfo("----------------------------------------------------------------------\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
+	
 	// depending on gen_options, generate the correct things
 	if (gen_options.navi)
 		navi_create_lists();
+	if (gen_options.itemmoveinfo)
+		itemdb_gen_itemmoveinfo();
+	if (gen_options.reputation)
+		pc_reputation_generate();
 	runflag = CORE_ST_STOP;
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("- MAP GENERATOR WORK FINISHED\n");
+	ShowInfo("----------------------------------------------------------------------\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 #endif
 
 	if( runflag != CORE_ST_STOP )

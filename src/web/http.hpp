@@ -12,7 +12,7 @@
 
 #include <httplib.h>
 #include "../config/pandas.hpp"
-#include "../nlohmann_json/json.hpp"
+#include "webutils.hpp"	 // 其他引入了 http.hpp 的文件需要用到
 
 typedef httplib::Request Request;
 typedef httplib::Response Response;
@@ -70,10 +70,5 @@ typedef HANDLER_FUNC((*handler_func));
 		return; \
 	} \
 }
-
-#ifdef Pandas_WebServer_Rewrite_Controller_HandlerFunc
-void make_response(httplib::Response& res, int type, const std::string& errmes = "", int status_code = 200);
-void make_response(httplib::Response& res, nlohmann::json& content, int status_code = 200);
-#endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
 #endif

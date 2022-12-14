@@ -20,7 +20,7 @@ uint64 MobItemFixedRatioDB::parseBodyNode(const ryml::NodeRef& node) {
 		return 0;
 	}
 
-	if (!itemdb_exists(nameid)) {
+	if (!item_db.exists(nameid)) {
 		this->invalidWarning(node, "Unknown item ID %hu in MobItem Fixed Ratio Database.\n", nameid);
 		return 0;
 	}

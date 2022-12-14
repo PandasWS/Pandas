@@ -67,7 +67,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.18.0"
+	#define Pandas_Version "1.1.19.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -188,10 +188,6 @@
 
 	// 以下选项开关需要依赖 Pandas_Struct_Mob_Data_Pandas 的拓展
 	#ifdef Pandas_Struct_Mob_Data_Pandas
-		// 使 mob_data 结构体可记录此魔物的 damagetaken 承伤倍率 [Sola丶小克]
-		// 结构体修改定位 mob.hpp -> mob_data.pandas.damagetaken
-		#define Pandas_Struct_Mob_Data_DamageTaken
-
 		// 使 mob_data 结构体可记录此魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.special_setunitdata
 		#define Pandas_Struct_Mob_Data_Special_SetUnitData
@@ -1280,6 +1276,12 @@
 
 	// 使 map-server-generator 能在运行时按需自动创建输出目录 [Sola丶小克]
 	#define Pandas_UserExperience_AutoCreate_Generated_Directory
+
+	// 改写 map-server-generator 的参数处理流程, 支持短参数以及输出帮助 [Sola丶小克]
+	#define Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
+
+	// 优化 map-server-generator 的输出信息 [Sola丶小克]
+	#define Pandas_UserExperience_MapServerGenerator_Output
 #endif // Pandas_UserExperience
 
 // ============================================================================
@@ -1824,7 +1826,7 @@
 	#define Pandas_ScriptCommand_InstanceUsers
 
 	// 是否启用 cap 脚本指令 [Sola丶小克]
-	// 确保数值不低于给定的最小值, 不超过给定的最大值
+	// 由于 rAthena 已经实现 cap_value 指令, 这里兼容老版本 cap 指令
 	#define Pandas_ScriptCommand_CapValue
 
 	// 是否启用 mobremove 脚本指令 [Sola丶小克]
@@ -2222,12 +2224,14 @@
 	// 是否拓展 getiteminfo 脚本指令的可用参数 [Sola丶小克]
 	#define Pandas_ScriptParams_GetItemInfo
 
-	// 是否拓展 setunitdata / getunitdata 指令的参数
-	// 使之能设置或者读取指定魔物实例的承伤倍率 (DamageTaken) [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Mob_Data_DamageTaken 的拓展
-	#ifdef Pandas_Struct_Mob_Data_DamageTaken
-		#define Pandas_ScriptParams_UnitData_DamageTaken
-	#endif // Pandas_Struct_Mob_Data_DamageTaken
+	// 是否拓展 getunitdata 指令的参数
+	// 使之能读取指定魔物在 DB 中设置的承伤倍率 (UMOB_DAMAGETAKEN_DB) [Sola丶小克]
+	#define Pandas_ScriptParams_DamageTaken_From_Database
+
+	// 是否扩展 setunitdata / getunitdata 指令的参数
+	// 使 UMOB_DAMAGETAKEN 能支持 -1 的值, 表示采用 DB 中设置的承伤倍率 [Sola丶小克]
+	// 该选项主要为了兼容旧版本熊猫模拟器的用户可能已经使用了 -1 值的情况
+	#define Pandas_ScriptParams_DamageTaken_Extend
 
 	// 是否拓展 setunitdata / getunitdata 指令的参数
 	// 使之能设置或者读取指定魔物实例的经验值 (BASEEXP / JOBEXP) [人鱼姬的思念]

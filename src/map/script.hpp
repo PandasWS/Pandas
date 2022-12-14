@@ -536,6 +536,7 @@ struct script_state {
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
 	unsigned mes_active : 1;  // Store if invoking character has a NPC dialog box open.
+	unsigned clear_cutin : 1;
 	char* funcname; // Stores the current running function name
 	unsigned int id;
 	bool asyncSleep;
@@ -767,13 +768,13 @@ enum unitdata_mobtypes {
 	UMOB_IGNORE_CELL_STACK_LIMIT,
 	UMOB_RES,
 	UMOB_MRES,
+	UMOB_DAMAGETAKEN,
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	UMOB_AURA,
 #endif // Pandas_Struct_Unit_CommonData_Aura
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-	UMOB_DAMAGETAKEN,
+#ifdef Pandas_ScriptParams_DamageTaken_From_Database
 	UMOB_DAMAGETAKEN_DB,
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
+#endif // Pandas_ScriptParams_DamageTaken_From_Database
 #ifdef Pandas_ScriptParams_UnitData_Experience
 	UMOB_MOBBASEEXP,
 	UMOB_MOBBASEEXP_DB,

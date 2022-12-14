@@ -5890,7 +5890,7 @@ BUILDIN_FUNC(clear)
 	if (!script_rid2sd(sd))
 		return SCRIPT_CMD_FAILURE;
 
-	clif_scriptclear(sd, st->oid);
+	clif_scriptclear( *sd, st->oid );
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -5900,18 +5900,24 @@ BUILDIN_FUNC(clear)
 /// close;
 BUILDIN_FUNC(close)
 {
-	TBL_PC* sd;
+	struct map_session_data* sd;
 
 	if( !script_rid2sd(sd) )
 		return SCRIPT_CMD_SUCCESS;
 
+	const char* command = script_getfuncname( st );
+
 	if( !st->mes_active ) {
 		st->state = END; // Keep backwards compatibility.
-		ShowWarning("Incorrect use of 'close' command!\n");
+		ShowWarning("buildin_close: Incorrect use of '%s' command!\n", command);
 		script_reportsrc(st);
 	} else {
 		st->state = CLOSE;
 		st->mes_active = 0;
+	}
+
+	if( !strcmp(command, "close3") ){
+		st->clear_cutin = true;
 	}
 
 	clif_scriptclose(sd, st->oid);
@@ -8461,7 +8467,7 @@ BUILDIN_FUNC(checkweight2)
 		if(fail)
 			continue; //cpntonie to depop rest
 
-		if(itemdb_exists(nameid) == NULL ) {
+		if (!item_db.exists(nameid)) {
 			ShowError("buildin_checkweight2: Invalid item '%u'.\n", nameid);
 			fail=1;
 			continue;
@@ -8797,7 +8803,7 @@ BUILDIN_FUNC(rentitem) {
 	else
 	{
 		nameid = script_getnum(st, 2);
-		if( nameid == 0 || !itemdb_exists(nameid) )
+		if( !item_db.exists(nameid) )
 		{
 			ShowError("buildin_rentitem: Nonexistant item %u requested.\n", nameid);
 			return SCRIPT_CMD_FAILURE;
@@ -8966,7 +8972,7 @@ BUILDIN_FUNC(getnameditem)
 	}else
 		nameid = script_getnum(st, 2);
 
-	if(!itemdb_exists(nameid)/* || itemdb_isstackable(nameid)*/)
+	if(!item_db.exists(nameid)/* || itemdb_isstackable(nameid)*/)
 	{	//Even though named stackable items "could" be risky, they are required for certain quests.
 		script_pushint(st,0);
 		return SCRIPT_CMD_SUCCESS;
@@ -9050,7 +9056,7 @@ BUILDIN_FUNC(makeitem) {
 			nameid = (t_itemid)val;
 		}
 
-		if( !itemdb_exists( nameid ) ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "buildin_makeitem: Unknown item id %u\n", nameid );
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -9126,7 +9132,7 @@ BUILDIN_FUNC(makeitem2) {
 	}else{
 		nameid = (t_itemid)script_getnum( st, 2 );
 
-		if( !itemdb_exists( nameid ) ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "buildin_%s: Unknown item id %u\n", funcname, nameid );
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -9517,7 +9523,7 @@ BUILDIN_FUNC(delitem)
 	else
 	{
 		it.nameid = script_getnum(st, 2);// <item id>
-		if( !itemdb_exists( it.nameid ) )
+		if( !item_db.exists( it.nameid ) )
 		{
 			ShowError("buildin_%s: unknown item \"%u\".\n", command, it.nameid);
 			st->state = END;
@@ -9612,7 +9618,7 @@ BUILDIN_FUNC(delitem2)
 	else
 	{
 		it.nameid = script_getnum(st, 2);// <item id>
-		if( !itemdb_exists( it.nameid ) )
+		if( !item_db.exists( it.nameid ) )
 		{
 			ShowError("buildin_%s: unknown item \"%u\".\n", command, it.nameid);
 			st->state = END;
@@ -9799,6 +9805,7 @@ BUILDIN_FUNC(getcharid)
 
 /*==========================================
  * returns the GID of an NPC
+ * Returns 0 if the NPC name provided is not found.
  *------------------------------------------*/
 BUILDIN_FUNC(getnpcid)
 {
@@ -9809,9 +9816,9 @@ BUILDIN_FUNC(getnpcid)
 	{// unique npc name
 		if( ( nd = npc_name2id(script_getstr(st,3)) ) == NULL )
 		{
-			ShowError("buildin_getnpcid: No such NPC '%s'.\n", script_getstr(st,3));
+			//Npc not found.
 			script_pushint(st,0);
-			return SCRIPT_CMD_FAILURE;
+			return SCRIPT_CMD_SUCCESS;
 		}
 	}
 
@@ -11166,6 +11173,26 @@ BUILDIN_FUNC(petautobonus3) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(plagiarizeskill)
+{
+	TBL_PC *sd;
+
+	if (script_rid2sd(sd))
+		script_pushint(st, pc_skill_plagiarism(*sd, script_getnum(st, 2), script_getnum(st, 3)));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(plagiarizeskillreset)
+{
+	TBL_PC *sd;
+
+	if (script_rid2sd(sd))
+		script_pushint(st, pc_skill_plagiarism_reset(*sd, script_getnum(st, 2)));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /// Changes the level of a player skill.
 /// <flag> defaults to 1
 /// <flag>=0 : set the level of the skill
@@ -12159,7 +12186,7 @@ BUILDIN_FUNC(getmobdrops)
 	{
 		if( mob->dropitem[i].nameid == 0 )
 			continue;
-		if( itemdb_exists(mob->dropitem[i].nameid) == NULL )
+		if( !item_db.exists(mob->dropitem[i].nameid) )
 			continue;
 
 		mapreg_setreg(reference_uid(add_str("$@MobDrop_item"), j), mob->dropitem[i].nameid);
@@ -13166,7 +13193,7 @@ BUILDIN_FUNC(getareadropitem)
 	}else{
 		nameid = script_getnum(st, 7);
 
-		if( !itemdb_exists( nameid ) ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "buildin_getareadropitem: Unknown item id %u\n", nameid );
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -19325,7 +19352,7 @@ BUILDIN_FUNC(npcshopitem)
 	for (n = 0, i = 3; n < amount; n++, i+=offs) {
 		t_itemid nameid = script_getnum( st, i );
 
-		if( itemdb_exists( nameid ) == nullptr ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "builtin_npcshopitem: Item ID %u does not exist.\n", nameid );
 			script_pushint( st, 0 );
 			return SCRIPT_CMD_FAILURE;
@@ -19370,7 +19397,7 @@ BUILDIN_FUNC(npcshopadditem)
 			t_itemid nameid = script_getnum(st,i);
 			uint16 j;
 
-			if( itemdb_exists( nameid ) == nullptr ){
+			if( !item_db.exists( nameid ) ){
 				ShowError( "builtin_npcshopadditem: Item ID %u does not exist.\n", nameid );
 				script_pushint( st, 0 );
 				return SCRIPT_CMD_FAILURE;
@@ -19410,7 +19437,7 @@ BUILDIN_FUNC(npcshopadditem)
 	{
 		t_itemid nameid = script_getnum( st, i );
 
-		if( itemdb_exists( nameid ) == nullptr ){
+		if( !item_db.exists( nameid ) ){
 			ShowError( "builtin_npcshopadditem: Item ID %u does not exist.\n", nameid );
 			script_pushint( st, 0 );
 			return SCRIPT_CMD_FAILURE;
@@ -19677,6 +19704,52 @@ BUILDIN_FUNC(delmonsterdrop)
 }
 
 
+
+/*==========================================
+ * Returns a random mob_id
+ * type: Where to fetch from (see enum e_random_monster)
+ * flag: Type of checks to apply (see enum e_random_monster_flags)
+ * lv: Mob level to check against
+ *------------------------------------------*/
+BUILDIN_FUNC(getrandmobid)
+{
+	int type = script_getnum(st, 2);
+
+	if (type < MOBG_BRANCH_OF_DEAD_TREE || type >= MOBG_MAX) {
+		ShowWarning("buildin_getrandmobid: Invalid type %d.\n", type);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int flag = script_hasdata(st, 3) ? script_getnum(st, 3) : RMF_MOB_NOT_BOSS;
+	if (flag < RMF_NONE || flag > RMF_ALL) {
+		ShowWarning("buildin_getrandmobid: Invalid flag %d.\n", flag);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int lv;
+	if ( script_hasdata(st, 4) ) {
+		lv = script_getnum(st, 4);
+		
+		if (lv <= 0) {
+			ShowWarning("buildin_getrandmobid: Invalid level %d.\n", lv);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+		
+		// If a level is provided, make sure it is respected
+		flag |= RMF_CHECK_MOB_LV;
+	} else {
+		lv = MAX_LEVEL;
+	}
+
+	script_pushint(st, mob_get_random_id(type, (enum e_random_monster_flags)flag, lv));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+
 /*==========================================
  * Returns some values of a monster [Lupus]
  * Name, Level, race, size, etc...
@@ -19821,58 +19894,48 @@ BUILDIN_FUNC(checkidlemer)
 
 BUILDIN_FUNC(searchitem)
 {
-	struct script_data* data = script_getdata(st, 2);
-	const char *itemname = script_getstr(st,3);
-	std::map<t_itemid, std::shared_ptr<item_data>> items;
-	int count;
-
-	char* name;
-	int32 start;
-	int32 id;
-	int32 i;
-	TBL_PC* sd = NULL;
-
-	if ((items[0] = item_db.find(strtoul(itemname, nullptr, 10))))
-		count = 1;
-	else
-		count = itemdb_searchname_array(items, MAX_SEARCH, itemname);
-
-	if (!count) {
-		script_pushint(st, 0);
-		return SCRIPT_CMD_SUCCESS;
-	}
+	script_data* data = script_getdata(st, 2);
+	const char *name = reference_getname(data);
 
 	if( !data_isreference(data) )
 	{
-		ShowError("script:searchitem: not a variable\n");
+		ShowError("buildin_searchitem: Argument %s is not a variable.\n", name);
 		script_reportdata(data);
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;// not a variable
 	}
 
-	id = reference_getid(data);
-	start = reference_getindex(data);
-	name = reference_getname(data);
-
-	if( not_server_variable(*name) && !script_rid2sd(sd) )
-	{
-		return SCRIPT_CMD_SUCCESS;// no player attached
-	}
-
 	if( is_string_variable(name) )
 	{// string array
-		ShowError("script:searchitem: not an integer array reference\n");
+		ShowError("buildin_searchitem: Argument %s is not an integer array.\n", name);
 		script_reportdata(data);
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;// not supported
 	}
 
-	for( i = 0; i < count; ++start, ++i )
-	{// Set array
-		set_reg_num( st, sd, reference_uid( id, start ), name, items[i]->nameid, reference_getref( data ) );
+	map_session_data *sd = nullptr;
+
+	if (not_server_variable(*name) && !script_rid2sd(sd))
+	{
+		return SCRIPT_CMD_SUCCESS;// no player attached
 	}
 
-	script_pushint(st, count);
+	const char *itemname = script_getstr(st, 3);
+	std::map<t_itemid, std::shared_ptr<item_data>> items;
+
+	itemdb_searchname_array(items, MAX_SEARCH, itemname);
+
+	if (!items.empty()) {
+		int32 id = reference_getid(data);
+		int32 start = reference_getindex(data);
+
+		for (const auto &it : items) { // Set array
+			set_reg_num(st, sd, reference_uid(id, start), name, it.first, reference_getref(data));
+			start++;
+		}
+	}
+
+	script_pushint64(st, items.size());
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -20177,13 +20240,13 @@ BUILDIN_FUNC(getunitdata)
 			getunitdata_sub(UMOB_IGNORE_CELL_STACK_LIMIT, md->ud.state.ignore_cell_stack_limit);
 			getunitdata_sub(UMOB_RES, md->status.res);
 			getunitdata_sub(UMOB_MRES, md->status.mres);
+			getunitdata_sub(UMOB_DAMAGETAKEN, md->damagetaken);
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			getunitdata_sub(UMOB_AURA, md->ucd.aura.id);
 #endif // Pandas_Struct_Unit_CommonData_Aura
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-			getunitdata_sub(UMOB_DAMAGETAKEN, md->pandas.damagetaken);
+#ifdef Pandas_ScriptParams_DamageTaken_From_Database
 			getunitdata_sub(UMOB_DAMAGETAKEN_DB, md->db->damagetaken);
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
+#endif // Pandas_ScriptParams_DamageTaken_From_Database
 #ifdef Pandas_ScriptParams_UnitData_Experience
 			getunitdata_sub(UMOB_MOBBASEEXP, md->pandas.base_exp);
 			getunitdata_sub(UMOB_MOBBASEEXP_DB, md->db->base_exp);
@@ -20626,12 +20689,14 @@ BUILDIN_FUNC(setunitdata)
 			case UMOB_IGNORE_CELL_STACK_LIMIT: md->ud.state.ignore_cell_stack_limit = value > 0; break;
 			case UMOB_RES: md->base_status->res = (pec_short)value; calc_status = true; break;
 			case UMOB_MRES: md->base_status->mres = (pec_short)value; calc_status = true; break;
+#ifndef Pandas_ScriptParams_DamageTaken_Extend
+			case UMOB_DAMAGETAKEN: md->damagetaken = (unsigned short)value; break;
+#else
+			case UMOB_DAMAGETAKEN: md->damagetaken = cap_value(value, -1, UINT16_MAX); break;
+#endif // Pandas_ScriptParams_DamageTaken_Extend
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 			case UMOB_AURA: aura_make_effective(bl, value); break;
 #endif // Pandas_Struct_Unit_CommonData_Aura
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-			case UMOB_DAMAGETAKEN: md->pandas.damagetaken = cap_value(value, -1, UINT16_MAX); break;
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
 #ifdef Pandas_ScriptParams_UnitData_Experience
 			case UMOB_MOBBASEEXP: md->pandas.base_exp = cap_value(value64, -1, (int64)MAX_EXP); break;
 			case UMOB_MOBJOBEXP: md->pandas.job_exp = cap_value(value64, -1, (int64)MAX_EXP); break;
@@ -21384,29 +21449,6 @@ BUILDIN_FUNC(unittalk)
 		clif_disp_overhead_(bl, StringBuf_Value(&sbuf), target);
 		StringBuf_Destroy(&sbuf);
 	}
-
-	return SCRIPT_CMD_SUCCESS;
-}
-
-/// Makes the unit do an emotion.
-///
-/// unitemote <unit_id>,<emotion>;
-///
-/// @see ET_* in script_constants.hpp
-BUILDIN_FUNC(unitemote)
-{
-	int emotion;
-	struct block_list* bl;
-
-	emotion = script_getnum(st,3);
-
-	if (emotion < ET_SURPRISE || emotion >= ET_MAX) {
-		ShowWarning("buildin_emotion: Unknown emotion %d (min=%d, max=%d).\n", emotion, ET_SURPRISE, (ET_MAX-1));
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	if (script_rid2bl(2,bl))
-		clif_emotion(bl, emotion);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -25185,7 +25227,7 @@ BUILDIN_FUNC(mergeitem) {
 	if (!script_charid2sd(2, sd))
 		return SCRIPT_CMD_FAILURE;
 
-	clif_merge_item_open(sd);
+	clif_merge_item_open( *sd );
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -25217,7 +25259,7 @@ BUILDIN_FUNC(mergeitem2) {
 			nameid = id->nameid;
 		} else {// <item id>
 			nameid = script_getnum(st, 2);
-			if (!itemdb_exists(nameid)) {
+			if (!item_db.exists(nameid)) {
 				ShowError("buildin_mergeitem: Nonexistant item %u requested.\n", nameid);
 				script_pushint(st, count);
 				return SCRIPT_CMD_FAILURE;
@@ -25746,6 +25788,12 @@ BUILDIN_FUNC(minmax){
 
 	script_pushint( st, value );
 
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(cap_value)
+{
+	script_pushint64(st, cap_value(script_getnum64(st, 2), script_getnum64(st, 3), script_getnum64(st, 4)));
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -26644,6 +26692,148 @@ BUILDIN_FUNC(unloadnpc) {
 }
 
 /**
+ * Duplicate a NPC.
+ * Return the duplicate Unique name on success or empty string on failure.
+ * duplicate "<NPC name>","<map>",<x>,<y>{,"<Duplicate NPC name>"{,<sprite>{,<dir>{,<xs>{,<xy>}}}}};
+ */
+BUILDIN_FUNC(duplicate)
+{
+	const char* old_npcname = script_getstr( st, 2 );
+	npc_data* nd = npc_name2id( old_npcname );
+
+	if( nd == nullptr ){
+		ShowError( "buildin_duplicate: No such NPC '%s'.\n", old_npcname );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	const char* mapname = script_getstr( st, 3 );
+	int16 mapid = map_mapname2mapid( mapname );
+
+	if( mapid < 0 ){
+		ShowError( "buildin_duplicate: map '%s' in not found!\n", mapname );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct map_data* mapdata = map_getmapdata( mapid );
+
+	if( mapdata == nullptr ){
+		// Should not happen, but who knows...
+		ShowError( "buildin_duplicate: mapdata for '%s' is unavailable!\n", mapname );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int16 x = script_getnum( st, 4 );
+
+	if( x < 0 || x >= mapdata->xs ){
+		ShowError( "buildin_duplicate: x coordinate %hd is out of bounds for map %s[0-%hd]!\n", x, mapname, mapdata->xs );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int16 y = script_getnum( st, 5 );
+
+	if( y < 0 || y >= mapdata->ys ){
+		ShowError( "buildin_duplicate: y coordinate %hd is out of bounds for map %s[0-%hd]!\n", y, mapname, mapdata->ys );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	char name[NPC_NAME_LENGTH + 1];
+
+	if( script_hasdata( st, 6 ) ){
+		const char* new_name = script_getstr( st, 6 );
+
+		if( strlen( new_name ) > NPC_NAME_LENGTH ){
+			ShowError( "buildin_duplicate: new NPC name \"%s\" is too long!\n", new_name );
+			script_pushstrcopy( st, "" );
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		safestrncpy( name, new_name, sizeof( name ) );
+	}else{
+		safestrncpy( name, nd->name, sizeof( name ) );
+	}
+
+	int class_;
+
+	if( script_hasdata( st, 7 ) ){
+		class_ = script_getnum( st, 7 );
+	}else{
+		class_ = nd->class_;
+	}
+
+	uint8 dir;
+
+	if( script_hasdata( st, 8 ) ){
+		dir = script_getnum( st, 8 );
+	}else{
+		dir = nd->ud.dir;
+	}
+
+	int16 xs;
+
+	if( script_hasdata( st, 9 ) ){
+		xs = script_getnum( st, 9 );
+	}else{
+		xs = nd->u.scr.xs;
+	}
+
+	int16 ys;
+
+	if( script_hasdata( st, 10 ) ){
+		ys = script_getnum( st, 10 );
+	}else{
+		ys = nd->u.scr.ys;
+	}
+
+	npc_data* dnd = npc_duplicate_npc( *nd, name, mapid, x, y, class_, dir, xs, ys );
+
+	if( dnd == nullptr ){
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}else{
+		script_pushstrcopy( st, dnd->exname );
+		return SCRIPT_CMD_SUCCESS;
+	}
+}
+
+/**
+ * Duplicate a NPC for a player.
+ * Return the duplicate Unique name on success or empty string on failure.
+ * duplicate_dynamic("<NPC name>"{,<character ID>});
+ */
+BUILDIN_FUNC(duplicate_dynamic){
+	const char* old_npcname = script_getstr( st, 2 );
+	struct npc_data* nd = npc_name2id( old_npcname );
+
+	if( nd == nullptr ){
+		ShowError( "buildin_duplicate_dynamic: No such NPC '%s'.\n", old_npcname );
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct map_session_data* sd;
+
+	if( !script_charid2sd( 3, sd ) ){
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct npc_data* dnd = npc_duplicate_npc_for_player( *nd, *sd );
+
+	if( dnd == nullptr ){
+		script_pushstrcopy( st, "" );
+		return SCRIPT_CMD_SUCCESS;
+	}else{
+		script_pushstrcopy( st, dnd->exname );
+		return SCRIPT_CMD_SUCCESS;
+	}
+}
+
+/**
  * Add an achievement to the player's log
  * achievementadd(<achievement ID>{,<char ID>});
  */
@@ -27154,7 +27344,7 @@ BUILDIN_FUNC(mail){
 			msg.item[i].nameid = (t_itemid)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 			msg.item[i].identify = 1;
 
-			if( !itemdb_exists(msg.item[i].nameid) ){
+			if( !item_db.exists(msg.item[i].nameid) ){
 				ShowError( "buildin_mail: invalid item id %u.\n", msg.item[i].nameid );
 				return SCRIPT_CMD_FAILURE;
 			}
@@ -27256,7 +27446,7 @@ BUILDIN_FUNC(mail){
 			for( k = 0; k < num_items && start < end; k++, start++ ){
 				msg.item[k].card[i] = (t_itemid)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 
-				if( msg.item[k].card[i] != 0 && !itemdb_exists(msg.item[k].card[i]) ){
+				if( !item_db.exists(msg.item[k].card[i]) ){
 					ShowError( "buildin_mail: invalid card id %u.\n", msg.item[k].card[i] );
 					return SCRIPT_CMD_FAILURE;
 				}
@@ -28170,6 +28360,35 @@ BUILDIN_FUNC(get_reputation_points){
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(add_reputation_points)
+{
+	struct map_session_data* sd;
+
+	if( !script_charid2sd( 4, sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int64 type = script_getnum64( st, 2 );
+	std::shared_ptr<s_reputation> reputation = reputation_db.find( type );
+
+	if( reputation == nullptr ){
+		ShowError( "buildin_set_reputation_points: Unknown reputation type %" PRIi64 ".\n", type );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	int64 points = pc_readreg2( sd, reputation->variable.c_str() ) + script_getnum64(st, 3);
+
+	points = cap_value( points, reputation->minimum, reputation->maximum );
+
+	if( !pc_setreg2( sd, reputation->variable.c_str(), points ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_reputation_type( *sd, type, points );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 BUILDIN_FUNC(item_reform){
 #if PACKETVER < 20211103
 	ShowError( "buildin_item_reform: This command requires packet version 2021-11-03 or newer.\n" );
@@ -28249,6 +28468,88 @@ BUILDIN_FUNC(item_enchant){
 
 	return SCRIPT_CMD_SUCCESS;
 #endif
+}
+
+/**
+* Generate item link string for client
+* itemlink(<item_id>,<refine>,<card0>,<card1>,<card2>,<card3>,<enchantgrade>{,<RandomIDArray>,<RandomValueArray>,<RandomParamArray>});
+* @author [Cydh]
+**/
+BUILDIN_FUNC(itemlink)
+{
+	struct item item = {};
+
+	item.nameid = script_getnum(st, 2);
+	
+	if( !item_db.exists( item.nameid ) ){
+		ShowError( "buildin_itemlink: Item ID %u does not exists.\n", item.nameid );
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	FETCH(3, item.refine);
+	FETCH(4, item.card[0]);
+	FETCH(5, item.card[1]);
+	FETCH(6, item.card[2]);
+	FETCH(7, item.card[3]);
+	FETCH(8, item.enchantgrade);
+
+#if PACKETVER >= 20150225
+	if ( script_hasdata(st,9) && script_getitem_randomoption(st, nullptr, &item, "itemlink", 9) == false) {
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+#endif
+
+	std::string itemlstr = item_db.create_item_link(item);
+	script_pushstrcopy(st, itemlstr.c_str());
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(addfame) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(3, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	if (!pc_addfame(*sd, script_getnum(st, 2)))
+		return SCRIPT_CMD_FAILURE;
+	
+	return SCRIPT_CMD_SUCCESS;
+}
+
+
+BUILDIN_FUNC(getfame) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st, sd->status.fame);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(getfamerank) {
+	struct map_session_data *sd;
+
+	if (!script_charid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st, pc_famerank(sd->status.char_id, sd->class_ & MAPID_UPPERMASK));
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+BUILDIN_FUNC(isdead) {
+	struct map_session_data *sd;
+
+	if (!script_mapid2sd(2, sd))
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st, pc_isdead(sd));
+
+	return SCRIPT_CMD_SUCCESS;
 }
 
 #include "../custom/script.inc"
@@ -28376,24 +28677,6 @@ BUILDIN_FUNC(instance_users) {
 	return SCRIPT_CMD_SUCCESS;
 }
 #endif // Pandas_ScriptCommand_InstanceUsers
-
-#ifdef Pandas_ScriptCommand_CapValue
-/* ===========================================================
- * 指令: cap
- * 描述: 确保数值不低于给定的最小值, 不超过给定的最大值
- * 用法: cap <要判断的数值>,<最小值>,<最大值>;
- * 返回: 低于最小值则直接返回最小值, 超过最大值则直接返回最大值, 如果在两者之间则原样返回数值
- * 作者: Sola丶小克
- * -----------------------------------------------------------*/
-BUILDIN_FUNC(cap) {
-	int val = script_getnum(st, 2);
-	int min = script_getnum(st, 3);
-	int max = script_getnum(st, 4);
-
-	script_pushint(st, cap_value(val, min, max));
-	return SCRIPT_CMD_SUCCESS;
-}
-#endif // Pandas_ScriptCommand_CapValue
 
 #ifdef Pandas_ScriptCommand_MobRemove
 /* ===========================================================
@@ -28538,7 +28821,7 @@ BUILDIN_FUNC(sethotkey) {
 
 	int hotkey_id = script_getnum(st, 4);
 	if (hotkey_type == 0) {	// 物品
-		if (!itemdb_exists(hotkey_id)) {
+		if (!item_db.exists(hotkey_id)) {
 			ShowError("buildin_sethotkey: Nonexistant item %d requested.\n", hotkey_id);
 			script_pushint(st, 0);
 			return SCRIPT_CMD_SUCCESS;
@@ -29059,7 +29342,7 @@ BUILDIN_FUNC(getinventoryinfo) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (!itemdb_exists(inventory[idx].nameid)) {
+	if (!item_db.exists(inventory[idx].nameid)) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -32592,6 +32875,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(clear,""),
 	BUILDIN_DEF(close,""),
 	BUILDIN_DEF(close2,""),
+	BUILDIN_DEF2(close, "close3", ""),
 	BUILDIN_DEF(menu,"sl*"),
 	BUILDIN_DEF(select,"s*"), //for future jA script compatibility
 	BUILDIN_DEF(prompt,"s*"),
@@ -32699,6 +32983,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(petautobonus,"sii??"),
 	BUILDIN_DEF2(petautobonus,"petautobonus2","sii??"),
 	BUILDIN_DEF(petautobonus3,"siiv?"),
+	BUILDIN_DEF(plagiarizeskill, "ii"),
+	BUILDIN_DEF(plagiarizeskillreset, "i"),
 	BUILDIN_DEF(skill,"vi?"),
 	BUILDIN_DEF2(skill,"addtoskill","vi?"), // [Valaris]
 	BUILDIN_DEF(guildskill,"vi"),
@@ -32955,6 +33241,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(minmax,"minimum", "*"),
 	BUILDIN_DEF2(minmax,"max", "*"),
 	BUILDIN_DEF2(minmax,"maximum", "*"),
+	BUILDIN_DEF(cap_value, "iii"),
 	// <--- [zBuffer] List of mathematics commands
 	BUILDIN_DEF(md5,"s"),
 	// [zBuffer] List of dynamic var commands --->
@@ -32972,6 +33259,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(setitemscript,"is?"), //Set NEW item bonus script. Lupus
 	BUILDIN_DEF(disguise,"i?"), //disguise player. Lupus
 	BUILDIN_DEF(undisguise,"?"), //undisguise player. Lupus
+	BUILDIN_DEF(getrandmobid, "i??"),
 	BUILDIN_DEF(getmonsterinfo,"vi"), //Lupus
 	BUILDIN_DEF(addmonsterdrop,"vii??"), //Akinari [Lupus]
 	BUILDIN_DEF(delmonsterdrop,"vi"), //Akinari [Lupus]
@@ -33015,7 +33303,6 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(unitstopattack,"i"),
 	BUILDIN_DEF(unitstopwalk,"i?"),
 	BUILDIN_DEF(unittalk,"is?"),
-	BUILDIN_DEF_DEPRECATED(unitemote,"ii","20170811"),
 	BUILDIN_DEF(unitskilluseid,"ivi????"), // originally by Qamera [Celest]
 	BUILDIN_DEF(unitskillusepos,"iviii???"), // [Celest]
 // <--- [zBuffer] List of unit control commands
@@ -33197,6 +33484,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(jobcanentermap,"s?"),
 	BUILDIN_DEF(openstorage2,"ii?"),
 	BUILDIN_DEF(unloadnpc, "s"),
+	BUILDIN_DEF(duplicate, "ssii?????"),
+	BUILDIN_DEF(duplicate_dynamic, "s?"),
 
 	// WoE TE
 	BUILDIN_DEF(agitstart3,""),
@@ -33291,8 +33580,14 @@ struct script_function buildin_func[] = {
 
 	BUILDIN_DEF(set_reputation_points, "ii?"),
 	BUILDIN_DEF(get_reputation_points, "i?"),
+	BUILDIN_DEF(add_reputation_points, "ii?"),
 	BUILDIN_DEF(item_reform, "??"),
 	BUILDIN_DEF(item_enchant, "i?"),
+	BUILDIN_DEF(itemlink, "i?????????"),
+	BUILDIN_DEF(addfame, "i?"),
+	BUILDIN_DEF(getfame, "?"),
+	BUILDIN_DEF(getfamerank, "?"),
+	BUILDIN_DEF(isdead, "?"),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
@@ -33308,8 +33603,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(instance_users, "i"),					// 获取指定的副本实例中, 已经进入副本地图的人数 [Sola丶小克]
 #endif // Pandas_ScriptCommand_InstanceUsers
 #ifdef Pandas_ScriptCommand_CapValue
-	BUILDIN_DEF(cap, "iii"),							// 确保数值不低于给定的最小值, 不超过给定的最大值 [Sola丶小克]
-	BUILDIN_DEF2(cap, "cap_value", "iii"),				// 指定一个别名, 以便兼容的老版本或其他服务端
+	BUILDIN_DEF2(cap_value, "cap", "iii"),				// 为 cap_value 指定一个别名, 以便兼容的老版本或其他服务端 [Sola丶小克]
 #endif // Pandas_ScriptCommand_CapValue
 #ifdef Pandas_ScriptCommand_MobRemove
 	BUILDIN_DEF(mobremove, "i"),						// 根据 GID 移除一个魔物单位 [Sola丶小克]

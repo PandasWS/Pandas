@@ -51,6 +51,9 @@ enum e_bg_queue_apply_ack : uint16;
 enum e_instance_notify : uint8;
 struct s_laphine_synthesis;
 struct s_laphine_upgrade;
+struct s_captcha_data;
+enum e_macro_detect_status : uint8;
+enum e_macro_report_status : uint8;
 
 enum e_PacketDBVersion { // packet DB
 	MIN_PACKET_DB  = 0x064,
@@ -58,25 +61,6 @@ enum e_PacketDBVersion { // packet DB
 #if !defined(MAX_PACKET_POS)
 	MAX_PACKET_POS = 20,
 #endif
-};
-
-enum e_packet_ack : uint8_t{
-	ZC_ACK_OPEN_BANKING = 0,
-	ZC_ACK_CLOSE_BANKING,
-	ZC_ACK_BANKING_DEPOSIT,
-	ZC_ACK_BANKING_WITHDRAW,
-	ZC_BANKING_CHECK,
-	ZC_PERSONAL_INFOMATION,
-	ZC_PERSONAL_INFOMATION_CHN,
-	ZC_CLEAR_DIALOG,
-	ZC_C_MARKERINFO,
-	ZC_NOTIFY_BIND_ON_EQUIP,
-	ZC_WEAR_EQUIP_ACK,
-	ZC_MERGE_ITEM_OPEN,
-	ZC_ACK_MERGE_ITEM,
-	ZC_BROADCASTING_SPECIAL_ITEM_OBTAIN,
-	//add other here
-	MAX_ACK_FUNC //auto upd len
 };
 
 struct s_packet_db {
@@ -234,7 +218,6 @@ enum class e_purchase_result : uint8{
 
 #define packet_len(cmd) packet_db[cmd].len
 extern struct s_packet_db packet_db[MAX_PACKET_DB+1];
-extern int packet_db_ack[MAX_ACK_FUNC + 1];
 
 // local define
 enum send_target : uint8_t {
@@ -539,9 +522,15 @@ enum clif_messages : uint16_t {
 	ADDITEM_TO_CART_FAIL_COUNT = 0x1,
 
 	// clif_equipitemack flags
+#if PACKETVER_MAIN_NUM >= 20121205 || PACKETVER_RE_NUM >= 20121107 || defined(PACKETVER_ZERO)
 	ITEM_EQUIP_ACK_OK = 0,
-	ITEM_EQUIP_ACK_FAIL = 1,
-	ITEM_EQUIP_ACK_FAILLEVEL = 2,
+	ITEM_EQUIP_ACK_FAIL = 2,
+	ITEM_EQUIP_ACK_FAILLEVEL = 1,
+#else
+	ITEM_EQUIP_ACK_OK = 1,
+	ITEM_EQUIP_ACK_FAIL = 0,
+	ITEM_EQUIP_ACK_FAILLEVEL = 0,
+#endif
 	/* -end- */
 
 	//! NOTE: These values below need client version validation
@@ -579,6 +568,7 @@ enum clif_messages : uint16_t {
 	MSG_ATTENDANCE_DISABLED = 0xd92,
 
 	// Unofficial names
+	C_DYNAMICNPC_TWICE = 0xa47, /// <"Is already in service. Please try again in a few minutes."
 	C_ITEM_EQUIP_SWITCH = 0xbc7,
 	C_ITEM_NOEQUIP = 0x174,	/// <"You can't put this item on."
 	C_ENCHANT_OVERWEIGHT = 0xEFD,
@@ -632,6 +622,14 @@ enum e_memorial_dungeon_command : uint16 {
 	COMMAND_MEMORIALDUNGEON_DESTROY_FORCE = 0x3,
 };
 
+enum e_exitem_add_result : uint8 {
+	EXITEM_ADD_SUCCEED,
+	EXITEM_ADD_FAILED_OVERWEIGHT,
+	EXITEM_ADD_FAILED_CLOSED,
+	EXITEM_ADD_FAILED_OVERCOUNT,
+	EXITEM_ADD_FAILED_EACHITEM_OVERCOUNT,
+};
+
 #ifdef Pandas_ScriptCommand_Next_Dropitem_Special
 struct s_next_dropitem_special {
 	uint32 rent_duration = 0;		// 租赁时长, 单位: 秒 (租赁时间大于 0 的道具将会在时间到之后过期)
@@ -676,7 +674,7 @@ void clif_parse_NPCMarketPurchase(int fd, struct map_session_data *sd);
 void clif_scriptmes( struct map_session_data& sd, uint32 npcid, const char *mes );
 void clif_scriptnext( struct map_session_data& sd, uint32 npcid );
 void clif_scriptclose(struct map_session_data *sd, int npcid);	//self
-void clif_scriptclear(struct map_session_data *sd, int npcid);	//self
+void clif_scriptclear( struct map_session_data& sd, int npcid ); //self
 void clif_scriptmenu(struct map_session_data* sd, int npcid, const char* mes);	//self
 void clif_scriptinput(struct map_session_data *sd, int npcid);	//self
 void clif_scriptinputstr(struct map_session_data *sd, int npcid);	// self
@@ -700,7 +698,7 @@ void clif_arrowequip(struct map_session_data *sd,int val); //self
 void clif_arrow_fail(struct map_session_data *sd,int type); //self
 void clif_arrow_create_list(struct map_session_data *sd);	//self
 void clif_statusupack(struct map_session_data *sd,int type,int ok,int val);	// self
-void clif_equipitemack(struct map_session_data *sd,int n,int pos,uint8 flag);	// self
+void clif_equipitemack( struct map_session_data& sd, uint8 flag, int index, int pos = 0 ); // self
 void clif_unequipitemack(struct map_session_data *sd,int n,int pos,int ok);	// self
 void clif_misceffect(struct block_list* bl,int type);	// area
 void clif_changeoption_target(struct block_list* bl, struct block_list* target);
@@ -735,7 +733,7 @@ void clif_hotkeys_send(struct map_session_data *sd, int tab);
 void clif_traderequest(struct map_session_data* sd, const char* name);
 void clif_tradestart(struct map_session_data* sd, uint8 type);
 void clif_tradeadditem(struct map_session_data* sd, struct map_session_data* tsd, int index, int amount);
-void clif_tradeitemok(struct map_session_data* sd, int index, int fail);
+void clif_tradeitemok(struct map_session_data& sd, int index, e_exitem_add_result result);
 void clif_tradedeal_lock(struct map_session_data* sd, int fail);
 void clif_tradecancelled(struct map_session_data* sd);
 void clif_tradecompleted(struct map_session_data* sd, int fail);
@@ -996,6 +994,7 @@ void clif_equipcheckbox(struct map_session_data* sd);
 void clif_msg(struct map_session_data* sd, unsigned short id);
 void clif_msg_value(struct map_session_data* sd, unsigned short id, int value);
 void clif_msg_skill(struct map_session_data* sd, uint16 skill_id, int msg_id);
+void clif_msg_color( struct map_session_data* sd, uint16 msg_id, uint32 color );
 
 //quest system [Kevin] [Inkfish]
 void clif_quest_send_list(struct map_session_data * sd);
@@ -1078,8 +1077,6 @@ void clif_PartyBookingDeleteNotify(struct map_session_data* sd, int index);
 void clif_PartyBookingInsertNotify(struct map_session_data* sd, struct party_booking_ad_info* pb_ad);
 
 /* Bank System [Yommy/Hercules] */
-void clif_bank_deposit (struct map_session_data *sd, enum e_BANKING_DEPOSIT_ACK reason);
-void clif_bank_withdraw (struct map_session_data *sd,enum e_BANKING_WITHDRAW_ACK reason);
 void clif_parse_BankDeposit (int fd, struct map_session_data *sd);
 void clif_parse_BankWithdraw (int fd, struct map_session_data *sd);
 void clif_parse_BankCheck (int fd, struct map_session_data *sd);
@@ -1110,7 +1107,7 @@ void clif_search_store_info_click_ack(struct map_session_data* sd, short x, shor
 void clif_cashshop_result( struct map_session_data* sd, t_itemid item_id, uint16 result );
 void clif_cashshop_open( struct map_session_data* sd, int tab );
 
-void clif_display_pinfo(struct map_session_data *sd, int type);
+void clif_display_pinfo( struct map_session_data& sd );
 
 /// Roulette
 void clif_roulette_open(struct map_session_data* sd);
@@ -1164,6 +1161,7 @@ enum clif_colors {
 	COLOR_YELLOW,
 	COLOR_CYAN,
 	COLOR_LIGHT_GREEN,
+	COLOR_LIGHT_YELLOW,
 	COLOR_MAX
 };
 extern unsigned long color_table[COLOR_MAX];
@@ -1175,15 +1173,15 @@ void clif_channel_msg(struct Channel *channel, const char *msg, unsigned long co
 void clif_ranklist(struct map_session_data *sd, int16 rankingType);
 void clif_update_rankingpoint(map_session_data &sd, int rankingtype, int point);
 
-void clif_crimson_marker(struct map_session_data *sd, struct block_list *bl, bool remove);
+void clif_crimson_marker( struct map_session_data& sd, struct block_list& bl, bool remove );
 
 void clif_showscript(struct block_list* bl, const char* message, enum send_target flag);
 void clif_party_leaderchanged(struct map_session_data *sd, int prev_leader_aid, int new_leader_aid);
 
 void clif_account_name(int fd, uint32 account_id, const char* accname);
-void clif_notify_bindOnEquip(struct map_session_data *sd, int n);
+void clif_notify_bindOnEquip( struct map_session_data& sd, int16 index );
 
-void clif_merge_item_open(struct map_session_data *sd);
+void clif_merge_item_open( struct map_session_data& sd );
 
 void clif_broadcast_obtain_special_item(const char *char_name, t_itemid nameid, t_itemid container, enum BROADCASTING_SPECIAL_ITEM_OBTAIN type);
 
@@ -1198,12 +1196,16 @@ void clif_achievement_reward_ack(int fd, unsigned char result, int ach_id);
 
 /// Attendance System
 enum in_ui_type : int8 {
+	IN_UI_MACRO_REGISTER = 2,
+	IN_UI_MACRO_DETECTOR,
 	IN_UI_ATTENDANCE = 5
 };
 
 enum out_ui_type : int8 {
 	OUT_UI_BANK = 0,
 	OUT_UI_STYLIST,
+	OUT_UI_CAPTCHA,
+	OUT_UI_MACRO,
 	OUT_UI_QUEST = 6,
 	OUT_UI_ATTENDANCE,
 	OUT_UI_ENCHANTGRADE,
@@ -1255,6 +1257,24 @@ void clif_enchantwindow_open( struct map_session_data& sd, uint64 clientLuaIndex
 
 // Enchanting Shadow / Shadow Scar Spirit
 void clif_enchantingshadow_spirit(unit_data &ud);
+
+void clif_broadcast_refine_result(struct map_session_data& sd, t_itemid itemId, int8 level, bool success);
+
+// Captcha Register
+void clif_captcha_upload_request(map_session_data &sd);
+void clif_captcha_upload_end(map_session_data &sd);
+
+// Captcha Preview
+void clif_captcha_preview_response(map_session_data &sd, std::shared_ptr<s_captcha_data> cd);
+
+// Macro Detector
+void clif_macro_detector_request(map_session_data &sd);
+void clif_macro_detector_request_show(map_session_data &sd);
+void clif_macro_detector_status(map_session_data &sd, e_macro_detect_status stype);
+
+// Macro Reporter
+void clif_macro_reporter_select(map_session_data &sd, const std::vector<uint32> &aid_list);
+void clif_macro_reporter_status(map_session_data &sd, e_macro_report_status stype);
 
 #ifdef Pandas_Character_Title_Controller
 // 将 rAthena 官方编写的 clif_change_title_ack 暴露出来, 以便 npc.cpp 中的函数调用
