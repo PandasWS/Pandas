@@ -234,6 +234,9 @@ struct s_generator_options {
 	bool navi;
 	bool itemmoveinfo;
 	bool reputation;
+#ifdef Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
+	bool showhelp;
+#endif // Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 } gen_options;
 #endif
 
@@ -5951,6 +5954,24 @@ const char* map_msg_txt(struct map_session_data *sd, int msg_number){
 	return "??";
 }
 
+#if defined(Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process) && defined(MAP_GENERATOR)
+//************************************
+// Method:      mapgenerator_show_help
+// Description: 打印生成器的命令行帮助信息
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2022/12/04 18:56
+//************************************
+void mapgenerator_show_help() {
+	ShowInfo("Usage: %s [options]\n", "map-server-generator");
+	ShowInfo("Options:\n");
+	ShowInfo("  -?, -h [--help]\tShow this help message\n");
+	ShowInfo("  -n, -navi [--generate-navi]\tCreate navigation files\n");
+	ShowInfo("  -r, -repu [--generate-reputation]\tCreate reputation bson files\n");
+	ShowInfo("  -i, -imi [--generate-itemmoveinfo]\tCreate itemmoveinfov5.txt\n");
+	systemPause();
+}
+#endif // defined(Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process) && defined(MAP_GENERATOR)
+
 /**
  * Read the option specified in command line
  *  and assign the confs used by the different server.
@@ -5960,6 +5981,7 @@ const char* map_msg_txt(struct map_session_data *sd, int msg_number){
  */
 int mapgenerator_get_options(int argc, char** argv) {
 #ifdef MAP_GENERATOR
+#ifndef Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 	bool optionSet = false;
 	for (int i = 1; i < argc; i++) {
 		const char *arg = argv[i];
@@ -5987,6 +6009,71 @@ int mapgenerator_get_options(int argc, char** argv) {
 		ShowError("No options passed to the map generator, you must set at least one.\n");
 		exit(1);
 	}
+#else
+	bool optionSet = false;
+	for (int i = 1; i < argc; i++) {
+		const char* arg = argv[i];
+		if (arg[0] != '-' && (arg[0] != '/' || arg[1] == '-')) {// -, -- and /
+			ShowError("Unknown option '%s'.\n", argv[i]);
+			exit(EXIT_FAILURE);
+		} else if (arg[0] == '/' || (++arg)[0] == '-') {// long option
+			arg++;
+
+			if (strcmp(arg, "help") == 0) {
+				gen_options.showhelp = optionSet = true;
+				argv[i] = nullptr;
+			} else if (strcmp(arg, "generate-navi") == 0 || strcmp(arg, "navi") == 0) {
+				gen_options.navi = optionSet = true;
+				argv[i] = nullptr;
+			} else if (strcmp(arg, "generate-itemmoveinfo") == 0 || strcmp(arg, "itemmoveinfo") == 0 || strcmp(arg, "imi") == 0) {
+				gen_options.itemmoveinfo = optionSet = true;
+				argv[i] = nullptr;
+			} else if (strcmp(arg, "generate-reputation") == 0 || strcmp(arg, "repu") == 0) {
+				gen_options.reputation = optionSet = true;
+				argv[i] = nullptr;
+			}
+			else {
+				ShowError("Unknown option '%s'.\n", argv[i]);
+				exit(EXIT_FAILURE);
+			}
+		}
+		else {
+			switch (arg[0]) {// short option
+			case '?':
+			case 'h':
+				gen_options.showhelp = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			case 'n':
+				gen_options.navi = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			case 'i':
+				gen_options.itemmoveinfo = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			case 'r':
+				gen_options.reputation = optionSet = true;
+				argv[i] = nullptr;
+				break;
+			default:
+				ShowError("Unknown option '%s'.\n", argv[i]);
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	
+	if (!optionSet) {
+		ShowWarning("No options passed to the map generator, you must set at least one.\n");
+		mapgenerator_show_help();
+		exit(EXIT_FAILURE);
+	}
+	
+	if (gen_options.showhelp) {
+		mapgenerator_show_help();
+		exit(EXIT_SUCCESS);
+	}
+#endif // Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
 #endif
 	return 1;
 }
@@ -6188,6 +6275,13 @@ int do_init(int argc, char *argv[])
 		ShowStatus("The Map-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u, took %" PRIu64 " milliseconds).\n\n", map_port, performance_get_milliseconds("core_init"));
 	#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 #else
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("- MAP GENERATOR START WORKING\n");
+	ShowInfo("----------------------------------------------------------------------\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
+	
 	// depending on gen_options, generate the correct things
 	if (gen_options.navi)
 		navi_create_lists();
@@ -6196,6 +6290,12 @@ int do_init(int argc, char *argv[])
 	if (gen_options.reputation)
 		pc_reputation_generate();
 	runflag = CORE_ST_STOP;
+
+#ifdef Pandas_UserExperience_MapServerGenerator_Output
+	ShowInfo("----------------------------------------------------------------------\n");
+	ShowInfo("- MAP GENERATOR WORK FINISHED\n");
+	ShowInfo("----------------------------------------------------------------------\n");
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 #endif
 
 	if( runflag != CORE_ST_STOP )
