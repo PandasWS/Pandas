@@ -1228,6 +1228,42 @@ int mob_spawn (struct mob_data *md)
 	batrec_reset(&md->bl);
 #endif // Pandas_BattleRecord
 
+// =======================================================================
+// 非 md->base_status 中的数据但可以被 setunitdata 修改的属性重置 - 以下开始
+// =======================================================================
+
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+	memset(&md->ucd.aura, 0, sizeof(md->ucd.aura));
+#endif // Pandas_Struct_Unit_CommonData_Aura
+
+#ifdef Pandas_ScriptParams_DamageTaken_Extend
+	md->damagetaken = md->db->damagetaken;
+#endif // Pandas_ScriptParams_DamageTaken_Extend
+
+#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+	md->pandas.base_exp = -1;
+	md->pandas.job_exp = -1;
+#endif // Pandas_Struct_Mob_Data_SpecialExperience
+
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+	if (md->pandas.special_setunitdata) {
+		md->pandas.special_setunitdata->clear();
+	}
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
+#ifdef Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+	if (md->db) {
+		if (battle_config.override_mob_names == 1)
+			memcpy(md->name, md->db->name.c_str(), NAME_LENGTH);
+		else
+			memcpy(md->name, md->db->jname.c_str(), NAME_LENGTH);
+	}
+#endif // Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+
+// =======================================================================
+// 非 md->base_status 中的数据但可以被 setunitdata 修改的属性重置 - 到此结束
+// =======================================================================
+
 	if (md->lootitems)
 		memset(md->lootitems, 0, sizeof(*md->lootitems));
 
