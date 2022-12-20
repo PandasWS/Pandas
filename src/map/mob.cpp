@@ -1254,9 +1254,15 @@ int mob_spawn (struct mob_data *md)
 #ifdef Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
 	if (md->db) {
 		if (battle_config.override_mob_names == 1)
-			memcpy(md->name, md->db->name.c_str(), NAME_LENGTH);
-		else
-			memcpy(md->name, md->db->jname.c_str(), NAME_LENGTH);
+			memcpy(md->name, md->db->name.c_str(), sizeof(md->name));
+		else if (battle_config.override_mob_names == 2)
+			memcpy(md->name, md->db->jname.c_str(), sizeof(md->name));
+		else {
+			if (md->spawn)
+				memcpy(md->name, md->spawn->name, sizeof(md->name));
+			else
+				memcpy(md->name, md->db->jname.c_str(), sizeof(md->name));
+		}
 	}
 #endif // Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
 
