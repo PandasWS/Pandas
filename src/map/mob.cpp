@@ -1237,7 +1237,9 @@ int mob_spawn (struct mob_data *md)
 #endif // Pandas_Struct_Unit_CommonData_Aura
 
 #ifdef Pandas_ScriptParams_DamageTaken_Extend
-	md->damagetaken = md->db->damagetaken;
+	if (md->db) {
+		md->damagetaken = md->db->damagetaken;
+	}
 #endif // Pandas_ScriptParams_DamageTaken_Extend
 
 #ifdef Pandas_Struct_Mob_Data_SpecialExperience
@@ -1252,17 +1254,27 @@ int mob_spawn (struct mob_data *md)
 #endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 
 #ifdef Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+	status_set_viewdata(&md->bl, md->mob_id);
+	md->ud.immune_attack = false;
+	md->ud.canmove_tick = gettick();
+	md->ud.group_id = 0;
+	md->ud.state.ignore_cell_stack_limit = 0;
+
 	if (md->db) {
-		if (battle_config.override_mob_names == 1)
-			memcpy(md->name, md->db->name.c_str(), sizeof(md->name));
-		else if (battle_config.override_mob_names == 2)
-			memcpy(md->name, md->db->jname.c_str(), sizeof(md->name));
-		else {
-			if (md->spawn)
-				memcpy(md->name, md->spawn->name, sizeof(md->name));
-			else
-				memcpy(md->name, md->db->jname.c_str(), sizeof(md->name));
-		}
+		md->level = md->db->lv;
+	}
+
+	if (md->spawn) {
+		safestrncpy(md->name, md->spawn->name, sizeof(md->name));
+
+		if (md->spawn->level > 0)
+			md->level = md->spawn->level;
+
+		if (md->spawn->state.ai)
+			md->special_state.ai = md->spawn->state.ai;
+
+		if (md->spawn->state.size)
+			md->special_state.size = md->spawn->state.size;
 	}
 #endif // Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
 

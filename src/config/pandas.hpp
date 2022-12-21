@@ -1009,6 +1009,11 @@
 	// 因此, 若魔物的某个属性可以在 setunitdata 中被修改,
 	// 且保存其值的变量不在 md->base_status 结构体中, 那么需要手动重置一下.
 	//
+	// 备注: md->base_status 结构体中的属性在魔物重生时在 status_calc_mob_ 中被重置,
+	// 因此我们不需要手动重置 md->base_status 结构体中的这些属性.
+	//
+	// 已知 UMOB_MASTERAID 在 mob_spawn 中故意不重置
+	//
 	// 特别感谢 "差记性的小北" 指出此问题
 	#define Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
 	
