@@ -1228,6 +1228,60 @@ int mob_spawn (struct mob_data *md)
 	batrec_reset(&md->bl);
 #endif // Pandas_BattleRecord
 
+// =======================================================================
+// 非 md->base_status 中的数据但可以被 setunitdata 修改的属性重置 - 以下开始
+// =======================================================================
+
+#ifdef Pandas_Struct_Unit_CommonData_Aura
+	memset(&md->ucd.aura, 0, sizeof(md->ucd.aura));
+#endif // Pandas_Struct_Unit_CommonData_Aura
+
+#ifdef Pandas_ScriptParams_DamageTaken_Extend
+	if (md->db) {
+		md->damagetaken = md->db->damagetaken;
+	}
+#endif // Pandas_ScriptParams_DamageTaken_Extend
+
+#ifdef Pandas_Struct_Mob_Data_SpecialExperience
+	md->pandas.base_exp = -1;
+	md->pandas.job_exp = -1;
+#endif // Pandas_Struct_Mob_Data_SpecialExperience
+
+#ifdef Pandas_Struct_Mob_Data_Special_SetUnitData
+	if (md->pandas.special_setunitdata) {
+		md->pandas.special_setunitdata->clear();
+	}
+#endif // Pandas_Struct_Mob_Data_Special_SetUnitData
+
+#ifdef Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+	status_set_viewdata(&md->bl, md->mob_id);
+	md->ud.immune_attack = false;
+	md->ud.canmove_tick = gettick();
+	md->ud.group_id = 0;
+	md->ud.state.ignore_cell_stack_limit = 0;
+
+	if (md->db) {
+		md->level = md->db->lv;
+	}
+
+	if (md->spawn) {
+		safestrncpy(md->name, md->spawn->name, sizeof(md->name));
+
+		if (md->spawn->level > 0)
+			md->level = md->spawn->level;
+
+		if (md->spawn->state.ai)
+			md->special_state.ai = md->spawn->state.ai;
+
+		if (md->spawn->state.size)
+			md->special_state.size = md->spawn->state.size;
+	}
+#endif // Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+
+// =======================================================================
+// 非 md->base_status 中的数据但可以被 setunitdata 修改的属性重置 - 到此结束
+// =======================================================================
+
 	if (md->lootitems)
 		memset(md->lootitems, 0, sizeof(*md->lootitems));
 

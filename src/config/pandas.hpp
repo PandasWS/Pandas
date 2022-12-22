@@ -1001,6 +1001,22 @@
 	// 修正 sprintf 脚本指令无法格式化 int64 数值的问题 [Sola丶小克]
 	// 注意: 即使启用此选项, 当你需要格式化 int64 的数值时依然需要使用 %lld 而不是 %d
 	#define Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
+
+	// 修正 setunitdata 对魔物的部分属性调整会继承到魔物下一次重生的问题 [Sola丶小克]
+	// 
+	// 当一个魔物是由自然刷怪点刷新出来的话, 杀死它并不会导致 md 的数据被清空,
+	// 而是会被设置一个重生时间 (spawn_timer), 下次重生的时候还会携带上次 setunitdata 时候的信息.
+	// 因此, 若魔物的某个属性可以在 setunitdata 中被修改,
+	// 且保存其值的变量不在 md->base_status 结构体中, 那么需要手动重置一下.
+	//
+	// 备注: md->base_status 结构体中的属性在魔物重生时在 status_calc_mob_ 中被重置,
+	// 因此我们不需要手动重置 md->base_status 结构体中的这些属性.
+	//
+	// 已知 UMOB_MASTERAID 在 mob_spawn 中故意不重置
+	//
+	// 特别感谢 "差记性的小北" 指出此问题
+	#define Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+	
 #endif // Pandas_Bugfix
 
 // ============================================================================
