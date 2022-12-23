@@ -9,7 +9,7 @@
 <div align="center">
   <!-- Build Status -->
   <a href="https://github.com/PandasWS/Pandas/actions/workflows/build-and-test.yml">
-    <img alt="Build Status" src="https://img.shields.io/github/workflow/status/PandasWS/Pandas/Build%20And%20Test?style=flat-square">
+    <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/PandasWS/Pandas/build-and-test.yml?style=flat-square">
   </a>
   <!-- GitHub contributors -->
   <a href="https://github.com/PandasWS/Pandas/graphs/contributors">
