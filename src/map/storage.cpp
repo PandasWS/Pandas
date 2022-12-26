@@ -869,19 +869,20 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
  * @return True : success, False : fail
  */
 bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amount) {
-	struct item_data *id;
 	int i;
 
 	nullpo_ret(stor);
 	nullpo_ret(item);
 
-	if (item->nameid == 0 || amount <= 0 || !(id = itemdb_exists(item->nameid)))
+	if (item->nameid == 0 || amount <= 0)
 		return false;
 
-	if (item->expire_time)
+	std::shared_ptr<item_data> id = item_db.find(item->nameid);
+
+	if (id == nullptr || item->expire_time)
 		return false;
 
-	if (itemdb_isstackable2(id)) { // Stackable
+	if (itemdb_isstackable2(id.get())) { // Stackable
 		for (i = 0; i < stor->max_amount; i++) {
 			if (compare_item(&stor->u.items_guild[i], item)) {
 				// Set the amount, make it fit with max amount
@@ -1230,12 +1231,18 @@ void storage_premiumStorage_open(struct map_session_data *sd) {
 	nullpo_retv(sd);
 
 #ifdef Pandas_ScriptCommand_GetInventoryList
+	if (sd->state.connect_new) {
+		// 避免 GM 在角色能力重算事件中使用 getstoragelist 来查询扩充仓库信息
+		// 会导致仓库界面会由于 sd->st 为空指针而绕过拦截直接被打开的问题
+		return;
+	}
+
 	if (sd->st && sd->npc_id) {
 		// 正常的流程中 intif_parse_StorageReceived 和 storage_premiumStorage_load
 		// 都会调用 storage_premiumStorage_open 来打开客户端的仓库界面
 		//
 		// 但如果本次查询是为了响应 getstoragelist 的请求, 那么就没必要打开客户端的仓库界面
-		if (sd->st->wating_premium_storage && sd->st->state == RERUNLINE) {
+		if (sd->st->waiting_premium_storage && sd->st->state == RERUNLINE) {
 			return;
 		}
 	}

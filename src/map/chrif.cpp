@@ -1428,10 +1428,8 @@ int chrif_skillcooldown_save(struct map_session_data *sd) {
 		if (!sd->scd[i])
 			continue;
 
-#ifndef RENEWAL
-		if (!battle_config.guild_skill_relog_delay && (sd->scd[i]->skill_id >= GD_BATTLEORDER && sd->scd[i]->skill_id <= GD_EMERGENCYCALL))
+		if (battle_config.guild_skill_relog_type == 1 && SKILL_CHK_GUILD(sd->scd[i]->skill_id))
 			continue;
-#endif
 
 		timer = get_timer(sd->scd[i]->timer);
 		if (timer == NULL || timer->func != skill_blockpc_end || DIFF_TICK(timer->tick, tick) < 0)
@@ -1673,8 +1671,7 @@ void chrif_parse_ack_vipActive(int fd) {
 	}
 	// Show info if status changed
 	if (((flag&0x4) || changed) && !sd->vip.disableshowrate) {
-		clif_display_pinfo(sd,ZC_PERSONAL_INFOMATION);
-		//clif_vip_display_info(sd,ZC_PERSONAL_INFOMATION_CHN);
+		clif_display_pinfo( *sd );
 	}
 #endif
 }
@@ -1794,6 +1791,18 @@ int chrif_bsdata_received(int fd) {
 
 			if (bs->script_str[0] == '\0' || !bs->tick)
 				continue;
+
+#ifdef Pandas_Fix_Bonus_Script_Effective_Timing_Exception
+			if ((bs->flag & BSF_REM_ON_LOGOUT) == BSF_REM_ON_LOGOUT) {
+				// 若 bonus_script 被打上了 BSF_REM_ON_LOGOUT 标记位, 那么它不应该再被加载.
+				//
+				// 目前看应该只有在玩家进入游戏的时候,
+				// 地图服务器在 intif_parse_Registers 收到角色服务器发来的全部变量数据之后,
+				// 才会触发 pc_reg_received -> chrif_bsdata_request -> 来请求 bonus_script 数据,
+				// 最终落到本函数 chrif_bsdata_received 进行处理.
+				continue;
+			}
+#endif // Pandas_Fix_Bonus_Script_Effective_Timing_Exception
 
 #ifndef Pandas_BonusScript_Unique_ID
 			if (!(entry = pc_bonus_script_add(sd, bs->script_str, bs->tick, (enum efst_type)bs->icon, bs->flag, bs->type)))

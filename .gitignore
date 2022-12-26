@@ -41,6 +41,7 @@ Thumbs.db
 /Makefile
 /Makefile.cache
 /map-server
+/map-server-generator
 /mapcache
 /nbproject
 /web-server
@@ -138,6 +139,7 @@ Thumbs.db
 /webserv.bat
 /yaml2sql.bat
 /yamlupgrade.bat
+/navigenerator.bat
 
 # dlls
 /libmysql.dll
@@ -146,6 +148,9 @@ Thumbs.db
 
 # CMakeFiles
 /CMakeFiles/
+
+# generated files
+generated
 
 # ====================================================
 # Pandas Project

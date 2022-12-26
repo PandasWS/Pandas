@@ -188,8 +188,8 @@ void amulet_status_calc(struct map_session_data *sd, uint8 opt) {
 		if (!amulet_is(sd->inventory_data[i]->nameid))
 			continue;
 
-		struct item_data *id = itemdb_exists(sd->inventory_data[i]->nameid);
-		if (id && itemdb_isNoEquip(id, sd->bl.m))
+		std::shared_ptr<item_data> id = item_db.find(sd->inventory_data[i]->nameid);
+		if (id && itemdb_isNoEquip(id.get(), sd->bl.m))
 			continue;
 
 		current_equip_item_index = i;

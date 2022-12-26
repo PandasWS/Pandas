@@ -22,20 +22,34 @@ import shutil
 import platform
 import oss2
 import glob
+import git
 
 from dotenv import load_dotenv
-from libs import Common, Inputer, Message
+from libs import Common, Inputer, Message, ConfigParser
 
 # 切换工作目录为脚本所在目录
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
 
 # 工程文件的主目录相对此脚本文件的位置
 project_slndir = '../../'
+slndir_path = os.path.abspath(project_slndir)
 
-# 符号仓库工程路径 (在 main 函数中赋值)
-project_symstoredir = ''
+# 使程序加载 config.yml 中的相关数据
+parser = ConfigParser.Parser(Common.is_commercial_ver(slndir_path))
 
-def deploy_file(filepath):
+# Git 仓库对象
+repo = None
+try:
+    repo = git.Repo(project_slndir)
+except Exception as _err:
+    pass
+
+# 符号归档目录的路径
+project_symstoredir = parser.get_symbols('archive_path')
+project_symstoredir = '../Symbols' if len(project_symstoredir) == 0 else project_symstoredir
+project_symstoredir = os.path.abspath(project_slndir + project_symstoredir) if project_symstoredir.startswith('..') else project_symstoredir
+
+def deploy_file(filepath, savedir = project_symstoredir):
     basename = os.path.basename(filepath)
     extname = Common.get_file_ext(basename)
 
@@ -48,20 +62,22 @@ def deploy_file(filepath):
         filehash = Common.get_pe_hash(filepath)
 
     target_filepath = '{symstore}/{filename}/{hash}/{filename}'.format(
-        symstore = project_symstoredir, hash = filehash,
+        symstore = savedir, hash = filehash,
         filename = basename.replace('-pre', '')
     )
     os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
     shutil.copyfile(filepath, target_filepath)
 
-def deploy_symbols(sourcedir):
+def deploy_symbols(sourcedir, ask_for_deploy = True):
     # 要排除的目录或者文件 (小写)
     exclude_dirs = ['3rdparty', '.vs']
     exclude_files = [
         'libmysql.dll', 'dbghelp.dll', 'pcre8.dll', 'zlib.dll',
-        'vmprotectsdk32.dll', 'vmprotectsdk64.dll'
+        'vmprotectsdk32.dll', 'vmprotectsdk64.dll',
+        'map-server.protected.exe', 'map-server-pre.protected.exe'
     ]
 
+    waiting_deploy_files = []
     for dirpath, dirnames, filenames in os.walk(sourcedir):
         dirnames[:] = [d for d in dirnames if d.lower() not in exclude_dirs]
         filenames[:] = [f for f in filenames if f.lower() not in exclude_files]
@@ -70,14 +86,45 @@ def deploy_symbols(sourcedir):
             if extname not in ['.exe', '.dll', '.pdb']:
                 continue
             fullpath = os.path.join(dirpath, filename)
-            deploy_file(fullpath)
+            waiting_deploy_files.append(fullpath)
+    
+    if ask_for_deploy:
+        confirm = Inputer().requireBool({
+            'tips' : '找到 %d 个可归档的文件, 是否归档?' % len(waiting_deploy_files),
+            'default' : False
+        })
+
+        if not confirm:
+            Message.ShowStatus('放弃归档, 符号归档辅助脚本执行完毕...')
+            Common.exit_with_pause()
+        
+        Message.ShowStatus('开始执行归档操作...')
+    else:
+        Message.ShowStatus('找到 %d 个可归档的文件, 开始执行归档操作...' % len(waiting_deploy_files))
+
+    for filepath in waiting_deploy_files:
+        deploy_file(filepath)
+
+    # 若处于 Jenkins 环境下, 则将制品复制到指定的目录中去
+    if Common.is_jenkins():
+        os.makedirs(os.path.join(
+            os.environ['WORKSPACE'], 'artifacts', 'symbols'
+        ), exist_ok = True)
+
+        for filepath in waiting_deploy_files:
+            deploy_file(filepath, os.path.abspath(os.path.join(os.environ['WORKSPACE'], 'artifacts', 'symbols')))
+        Message.ShowStatus('已将符号文件复制到制品输出目录中.')
+    
+    Message.ShowStatus('符号文件已经归档完毕...')
 
 def upload_symbols(symstoredir, only_upload_new = False):
     try:
         # 初始化阿里云 OSS
-        auth = oss2.Auth(os.getenv('OSS_SYMBOLS_FULL_ACCESS_KEY_ID'), os.getenv('OSS_SYMBOLS_FULL_ACCESS_KEY_SECRET'))
-        endpoint = os.getenv('OSS_SYMBOLS_ENDPOINT')
-        bucket_name = os.getenv('OSS_SYMBOLS_BUCKET_NAME')
+        key_id = parser.get_symbols('access_key_id')
+        key_secret = parser.get_symbols('access_key_secret')
+        auth = oss2.Auth(key_id, key_secret)
+        endpoint = parser.get_symbols('endpoint')
+        bucket_name = parser.get_symbols('bucket_name')
         bucket = oss2.Bucket(auth, endpoint, bucket_name)
 
         if (symstoredir.endswith('/')):
@@ -153,65 +200,54 @@ def upload_symbols(symstoredir, only_upload_new = False):
 
     return True
 
-def main():
-    # 加载 .env 中的配置信息
-    load_dotenv(dotenv_path='.config.env', encoding='UTF-8')
-    
-    # 若无配置信息则自动复制一份文件出来
-    if not Common.is_file_exists('.config.env'):
-        shutil.copyfile('.config.env.sample', '.config.env')
+def do_symstore(compile_mode, ask_for_deploy = True, ask_for_upload = True):
+    '''
+    执行归档和上传任务
+    '''
+    # 处于 Jenkins 环境下则不需要进行确认
+    if Common.is_jenkins():
+        ask_for_deploy = False
+        ask_for_upload = False
 
-    # 显示欢迎信息
-    Common.welcome('符号归档辅助脚本')
-    print('')
+    # 读取并展现当前熊猫模拟器的版本号
+    project_name = parser.get('name')
+    Message.ShowInfo('当前输出的项目名称为: %s' % project_name)
+    Common.display_version_info(slndir_path, repo)
+    Message.ShowInfo('符号归档目录: %s' % project_symstoredir)
     
-    # 由于 pdbparse 只能在 Windows 环境下安装, 此处进行限制
-    if platform.system() != 'Windows':
-        Message.ShowWarning('该脚本只能在 Windows 环境下运行, 程序终止.')
-        Common.exit_with_pause(-1)
-    
-    # 若环境变量为空则设置个默认值
-    if not os.getenv('DEFINE_PROJECT_NAME'):
-        os.environ["DEFINE_PROJECT_NAME"] = "Pandas"
-
-    if not os.getenv('DEFINE_COMPILE_MODE'):
-        os.environ["DEFINE_COMPILE_MODE"] = "re,pre"
-    
-    # 符号仓库工程路径
-    global project_symstoredir
-    project_symstoredir = os.path.abspath(project_slndir + '../Symbols')
-    Message.ShowInfo('当前输出的项目名称为: %s' % os.getenv('DEFINE_PROJECT_NAME'))
-
     # 检查是否已经完成了编译
-    if 're' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+    if 're' in compile_mode:
         if not Common.is_compiled(project_slndir, checkmodel='re'):
             Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
             Common.exit_with_pause(-1)
 
-    if 'pre' in os.getenv('DEFINE_COMPILE_MODE').split(','):
+    if 'pre' in compile_mode:
         if not Common.is_compiled(project_slndir, checkmodel='pre'):
             Message.ShowWarning('检测到打包需要的编译产物不完整, 请重新编译. 程序终止.')
             Common.exit_with_pause(-1)
 
     # 搜索工程目录全部 pdb 文件和 exe 文件, 进行归档
-    deploy_symbols(project_slndir)
-    Message.ShowStatus('符号文件已经归档完毕...')
+    deploy_symbols(project_slndir, ask_for_deploy)
 
     # 检查条件是否具备
-    if not os.getenv('OSS_SYMBOLS_FULL_ACCESS_KEY_ID') or not os.getenv('OSS_SYMBOLS_FULL_ACCESS_KEY_SECRET'):
-        Message.ShowWarning('尚未配置 OSS 的 Access Key ID 和 Access Key Secret, 因此无法将符号文件同步到服务器.')
-        Common.exit_with_pause()
+    key_id = parser.get_symbols('access_key_id')
+    key_secret = parser.get_symbols('access_key_secret')
+    if not key_id or not key_secret:
+        Message.ShowWarning('尚未配置 OSS 的 Access Key ID 和 Access Key Secret, 无法同步.')
+        Common.exit_with_pause(-1)
+
+    print('')
 
     # 询问是否进行同步
-    print('')
-    confirm = Inputer().requireBool({
-        'tips' : '是否需要将符号文件目录同步到服务器?',
-        'default' : False
-    })
+    if ask_for_upload:
+        confirm = Inputer().requireBool({
+            'tips' : '是否需要将符号文件目录同步到服务器?',
+            'default' : False
+        })
 
-    if not confirm:
-        Message.ShowStatus('放弃同步, 符号归档辅助脚本执行完毕...')
-        Common.exit_with_pause()
+        if not confirm:
+            Message.ShowStatus('放弃同步, 符号归档辅助脚本执行完毕...')
+            Common.exit_with_pause()
     
     Message.ShowStatus('开始执行同步操作...')
 
@@ -220,6 +256,23 @@ def main():
         Message.ShowStatus('符号文件已经同步完毕.')
     else:
         Message.ShowStatus('同步过程中发生错误, 符号同步任务终止.')
+
+def main():
+    # 显示欢迎信息
+    Common.welcome('符号归档辅助脚本')
+    
+    # 由于 pdbparse 只能在 Windows 环境下安装, 此处进行限制
+    if platform.system() != 'Windows':
+        Message.ShowWarning('该脚本只能在 Windows 环境下运行, 程序终止.')
+        Common.exit_with_pause(-1)
+
+    print('')
+    
+    # 读取当前的编译模式配置
+    compile_mode = parser.get('compile_mode')
+
+    # 根据配置执行符号归档
+    do_symstore(compile_mode, True, True)
 
     # 友好退出, 主要是在 Windows 环境里给予暂停
     Common.exit_with_pause()

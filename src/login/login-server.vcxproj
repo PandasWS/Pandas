@@ -128,7 +128,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -145,7 +145,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,7 +166,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
@@ -188,7 +188,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>

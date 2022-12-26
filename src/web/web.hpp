@@ -14,7 +14,6 @@
 #include "../config/core.hpp"
 
 #include "../common/utf8.hpp"
-#include "../../3rdparty/nlohmann_json/json.hpp"
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 	// Utf8 to Ansi with Web Encoding
@@ -40,6 +39,10 @@
 	#define A2UCE(x) x
 #endif // Pandas_WebServer_Console_EncodingAdaptive
 
+#ifndef SQL_BUFFER_SIZE
+	#define SQL_BUFFER_SIZE 65535
+#endif
+
 enum E_WEBSERVER_ST {
 	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
 	WEBSERVER_ST_STARTING,
@@ -54,20 +57,27 @@ struct Web_Config {
 
 	char webconf_name[256];						/// name of main config file
 	char msgconf_name[256];							/// name of msg_conf config file
-	int emblem_transparency_limit;                  // Emblem transparency limit
 	bool allow_gifs;
 };
 
+struct Inter_Config {
+	int emblem_transparency_limit;					// Emblem transparency limit
+	bool emblem_woe_change;							// allow emblem change during woe
+};
+
+enum e_http_status{
+	HTTP_BAD_REQUEST = 400,
+	HTTP_NOT_FOUND = 404,
+};
 
 extern struct Web_Config web_config;
+extern struct Inter_Config inter_config;
 
 extern char login_table[32];
 extern char guild_emblems_table[32];
 extern char user_configs_table[32];
 extern char char_configs_table[32];
-#ifdef Pandas_WebServer_Implement_MerchantStore
 extern char merchant_configs_table[32];
-#endif // Pandas_WebServer_Implement_MerchantStore
 #ifdef Pandas_WebServer_Implement_PartyRecruitment
 extern char recruitment_table[32];
 extern char party_table[32];

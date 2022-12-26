@@ -262,6 +262,22 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	const char* storage_del_filter_name;	// NPCF_STORAGE_DEL	// OnPCStorageDelFilter	// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
+
+#ifdef Pandas_NpcFilter_CART_ADD
+	const char* cart_add_filter_name;	// NPCF_CART_ADD	// OnPCCartAddFilter	// 当玩家准备将道具从背包存入手推车时触发过滤器
+#endif // Pandas_NpcFilter_CART_ADD
+
+#ifdef Pandas_NpcFilter_CART_DEL
+	const char* cart_del_filter_name;	// NPCF_CART_DEL	// OnPCCartDelFilter	// 当玩家准备将道具从手推车取回背包时触发过滤器
+#endif // Pandas_NpcFilter_CART_DEL
+
+#ifdef Pandas_NpcFilter_FAVORITE_ADD
+	const char* favorite_add_filter_name;	// NPCF_FAVORITE_ADD	// OnPCFavoriteAddFilter	// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_ADD
+
+#ifdef Pandas_NpcFilter_FAVORITE_DEL
+	const char* favorite_del_filter_name;	// NPCF_FAVORITE_DEL	// OnPCFavoriteDelFilter	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -394,6 +410,9 @@ struct Script_Config {
 	// Instance related
 	const char* instance_init_event_name;
 	const char* instance_destroy_event_name;
+
+	// Navigation related
+	const char* navi_generate_name;
 };
 extern struct Script_Config script_config;
 
@@ -511,11 +530,13 @@ struct script_state {
 	unsigned unlockcmd : 1;
 #endif // Pandas_ScriptCommand_UnlockCmd
 #ifdef Pandas_ScriptCommand_GetInventoryList
-	unsigned wating_premium_storage : 1;
+	unsigned waiting_premium_storage : 1;
+	unsigned waiting_guild_storage : 1;
 #endif // Pandas_ScriptCommand_GetInventoryList
 	unsigned op2ref : 1;// used by op_2
 	unsigned npc_item_flag : 1;
 	unsigned mes_active : 1;  // Store if invoking character has a NPC dialog box open.
+	unsigned clear_cutin : 1;
 	char* funcname; // Stores the current running function name
 	unsigned int id;
 	bool asyncSleep;
@@ -575,7 +596,8 @@ enum monsterinfo_types {
 	MOB_RACE,
 	MOB_ELEMENT,
 	MOB_MODE,
-	MOB_MVPEXP
+	MOB_MVPEXP,
+	MOB_ID,
 };
 
 enum petinfo_types {
@@ -746,13 +768,13 @@ enum unitdata_mobtypes {
 	UMOB_IGNORE_CELL_STACK_LIMIT,
 	UMOB_RES,
 	UMOB_MRES,
+	UMOB_DAMAGETAKEN,
 #ifdef Pandas_Struct_Unit_CommonData_Aura
 	UMOB_AURA,
 #endif // Pandas_Struct_Unit_CommonData_Aura
-#ifdef Pandas_ScriptParams_UnitData_DamageTaken
-	UMOB_DAMAGETAKEN,
+#ifdef Pandas_ScriptParams_DamageTaken_From_Database
 	UMOB_DAMAGETAKEN_DB,
-#endif // Pandas_ScriptParams_UnitData_DamageTaken
+#endif // Pandas_ScriptParams_DamageTaken_From_Database
 #ifdef Pandas_ScriptParams_UnitData_Experience
 	UMOB_MOBBASEEXP,
 	UMOB_MOBBASEEXP_DB,
@@ -2482,6 +2504,7 @@ void script_free_state(struct script_state* st);
 struct DBMap* script_get_label_db(void);
 struct DBMap* script_get_userfunc_db(void);
 void script_run_autobonus(const char *autobonus, struct map_session_data *sd, unsigned int pos);
+void script_run_petautobonus(const std::string &autobonus, map_session_data &sd);
 
 const char* script_get_constant_str(const char* prefix, int64 value);
 bool script_get_parameter(const char* name, int64* value);

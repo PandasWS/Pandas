@@ -9,12 +9,18 @@
       <UniqueIdentifier>{82d5c708-a60f-4ae1-8b0d-0aafaa8da273}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e34f9d1f-a376-4478-9730-596e7b1b51dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="yaml.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="yamlupgrade.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="yamlupgrade_resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -30,5 +36,10 @@
     <ClInclude Include="..\common\database.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="yamlupgrade.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

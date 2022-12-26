@@ -107,6 +107,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018;4200</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -115,7 +116,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,6 +128,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -135,7 +137,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,6 +151,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -157,7 +160,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
@@ -172,6 +175,7 @@
       <PreprocessorDefinitions>$(DefineConstants);WIN32;FD_SETSIZE=4096;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\httplib\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\json\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -180,7 +184,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\httplib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\libconfig.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir)3rdparty\pcre\lib\$(Platform)\pcre8.lib;$(SolutionDir)3rdparty\mysql\lib\$(Platform)\libmysql.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
@@ -188,11 +192,11 @@
     <ClCompile Include="auth.cpp" />
     <ClCompile Include="charconfig_controller.cpp" />
     <ClCompile Include="emblem_controller.cpp" />
-    <ClCompile Include="http.cpp" />
     <ClCompile Include="merchantstore_controller.cpp" />
     <ClCompile Include="recruitment_controller.cpp" />
     <ClCompile Include="sqllock.cpp" />
     <ClCompile Include="userconfig_controller.cpp" />
+    <ClCompile Include="webutils.cpp" />
     <ClCompile Include="web.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +209,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="sqllock.hpp" />
     <ClInclude Include="userconfig_controller.hpp" />
+    <ClInclude Include="webutils.hpp" />
     <ClInclude Include="web.hpp" />
     <ClInclude Include="webcnslif.hpp" />
   </ItemGroup>

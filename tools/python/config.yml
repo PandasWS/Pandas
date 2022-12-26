@@ -1,0 +1,68 @@
+# ===================================================================
+# 默认值配置
+# ===================================================================
+default:
+  compile_mode:
+    - re
+    - pre
+  publish_lang:
+    - gbk
+    - big5
+
+# ===================================================================
+# 社区版默认值配置
+# ===================================================================
+community:
+  name: Pandas
+  enable_protect: false
+
+# ===================================================================
+# 专业版默认值配置
+# ===================================================================
+commercial:
+  name: Commercial
+  enable_protect: true
+  compile_mode:
+    - re
+
+# ===================================================================
+# 强制覆盖配置 (若存在配置, 则直接以此作为最终采纳值)
+# ===================================================================
+# override:
+#   name: SomeProject
+#   enable_protect: true
+#   compile_mode:
+#     - re
+#   publish_lang:
+#     - gbk
+
+# ===================================================================
+# 崩溃上报机制的相关配置
+# ===================================================================
+crashrpt:
+  appid: $SECRET{'CRASHRPT_APPID'}
+  pubkey: $SECRET{'CRASHRPT_PUBLICKEY'}
+
+# ===================================================================
+# 符号文件归档上传配置
+# ===================================================================
+symbols:
+  archive_path: $SECRET{'SYMBOLS_ARCHIVE_DIRPATH'}
+  endpoint: $SECRET{'SYMBOLS_OSS_ENDPOINT'}
+  bucket_name: $SECRET{'SYMBOLS_OSS_BUCKET_NAME'}
+  access_key_id: $SECRET{'SYMBOLS_OSS_FULL_ACCESS_KEY_ID'}
+  access_key_secret: $SECRET{'SYMBOLS_OSS_FULL_ACCESS_KEY_SECRET'}
+
+# ===================================================================
+# 保护程序相关配置
+# ===================================================================
+protect:
+  execute_path: $SECRET{'PROTECT_EXECUTE_PATH'}
+  profile_dir: $SECRET{'PROTECT_PROFILE_DIRPATH'}
+
+# ===================================================================
+# 打包发布相关配置
+# ===================================================================
+publish:
+  publish_path: $SECRET{'PUBLISH_OUTPUT_DIRPATH'}
+  zip_password: $SECRET{'PUBLISH_ZIP_PASSWORD'}

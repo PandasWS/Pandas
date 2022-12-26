@@ -645,6 +645,7 @@ struct mmo_charstatus {
 	short shield; // view-id
 	short head_top,head_mid,head_bottom;
 	short robe;
+	uint8 body_direction;
 
 	char name[NAME_LENGTH];
 	unsigned int base_level,job_level;
@@ -662,7 +663,7 @@ struct mmo_charstatus {
 #ifdef HOTKEY_SAVING
 	struct hotkey hotkeys[MAX_HOTKEYS_DB];
 #endif
-	bool show_equip,allow_party;
+	bool show_equip,allow_party, disable_call;
 	short rename;
 
 	time_t delete_date;
@@ -1208,11 +1209,8 @@ struct clan{
 #error MAX_PARTY is too small, you need at least 2 players for a party
 #endif
 
-#ifndef VIP_ENABLE
-	#define MIN_STORAGE MAX_STORAGE // If the VIP system is disabled the min = max.
-	#define MIN_CHARS MAX_CHARS // Default number of characters per account.
-	#define MAX_CHAR_BILLING 0
-	#define MAX_CHAR_VIP 0
+#ifndef MIN_CHARS
+	#define MIN_CHARS ( MAX_CHARS - MAX_CHAR_VIP - MAX_CHAR_BILLING ) // Default number of characters per account.
 #endif
 
 #if (MIN_CHARS + MAX_CHAR_VIP + MAX_CHAR_BILLING) > MAX_CHARS

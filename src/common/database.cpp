@@ -139,39 +139,36 @@ bool YamlDatabase::load(const std::string& path) {
 	}
 	fseek(f, 0, SEEK_END);
 	size_t size = ftell(f);
-#ifndef Pandas_Support_Read_UTF8BOM_Configure
+#ifndef Pandas_Support_UTF8BOM_Files
 	char* buf = (char *)aMalloc(size+1);
 	rewind(f);
 	size_t real_size = fread(buf, sizeof(char), size, f);
 #else
-	// 潜在的编码转换需要, 将缓冲区的大小扩大三倍
-	char* buf = (char *)aMalloc(size*3+1);
+	// 潜在的编码转换需要, 将字节数与 wchar_t 的大小相乘
+	size = size * sizeof(wchar_t) + 1;
+	char* buf = (char *)aMalloc(size);
 	rewind(f);
-	size_t real_size = fread(buf, sizeof(char), size*3, f);
-#endif // Pandas_Support_Read_UTF8BOM_Configure
+	// 加载终端翻译数据库的时候标记位需要传递为 0x2
+	// 表示在将其 UTF8 内容转换成 BIG5 编码的时候需要在低字节位为 0x5C 的字符后追加反斜杠
+	// 这样处理后在终端显示出对应的汉字，比如：連線成功 最末尾的【功】才能正常显示
+	int flag = (this->type == "CONSOLE_TRANSLATE_DB" ? 0x2 : 0);
+	size_t real_size = _fread(buf, sizeof(char), size, f, flag);
+#endif // Pandas_Support_UTF8BOM_Files
 	// Zero terminate
 	buf[real_size] = '\0';
 	fclose(f);
 
 	parser = {};
-#ifndef Pandas_UserExperience_Yaml_Error
-	ryml::Tree tree = parser.parse_in_arena(c4::to_csubstr(path), c4::to_csubstr(buf));
-#else
-	// - 在 item_db_equip.yml 随便找个道具的 Name 字段, 把它的值换成三个小数点: ...
-	// - 然后启动地图服务器, 当加载到 item_db_equip.yml 文件就会直接崩溃
-	
 	ryml::Tree tree;
-	try {
+
+	try{
 		tree = parser.parse_in_arena(c4::to_csubstr(path), c4::to_csubstr(buf));
-	}
-	catch (std::runtime_error const& err) {
-		ShowWarning("The following error occurred while loading the '%s': \n", path.c_str());
-		ShowWarning("Press any key to continue reading other files, but it usually means a lot of errors.\n");
-		ShowError("%s\n", err.what());
-		systemPause();
+	}catch( const std::runtime_error& e ){
+		ShowError( "Failed to load %s database file from '" CL_WHITE "%s" CL_RESET "'.\n", this->type.c_str(), path.c_str() );
+		ShowError( "There is likely a syntax error in the file.\n" );
+		ShowError( "Error message: %s\n", e.what() );
 		return false;
 	}
-#endif // Pandas_UserExperience_Yaml_Error
 
 	// Required here already for header error reporting
 	this->currentFile = path;
@@ -226,6 +223,18 @@ void YamlDatabase::parse( const ryml::Tree& tree ){
 		ShowStatus( "Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "' (took %" PRIu64 " milliseconds)" CL_CLL "\n", count, fileName, performance_get_milliseconds("yamldatabase_load"));
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	}
+#ifdef Pandas_UserExperience_Output_Ending_Even_Body_Node_Is_Not_Exists
+	else {
+		// 当数据文件中不存在 Body 节点时也依然输出结尾信息
+		const char* fileName = this->currentFile.c_str();
+#ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+		ShowStatus("Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\n", count, fileName);
+#else
+		performance_stop("yamldatabase_load");
+		ShowStatus("Done reading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "' (took %" PRIu64 " milliseconds)" CL_CLL "\n", count, fileName, performance_get_milliseconds("yamldatabase_load"));
+#endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
+	}
+#endif // Pandas_UserExperience_Output_Ending_Even_Body_Node_Is_Not_Exists
 }
 
 void YamlDatabase::parseImports( const ryml::Tree& rootNode ){
@@ -259,7 +268,16 @@ void YamlDatabase::parseImports( const ryml::Tree& rootNode ){
 						// Skip this import
 						continue;
 					}
-				}				
+				}
+
+				if (this->nodeExists(node, "Generator")) {
+					bool isGenerator;
+					if (!this->asBool(node, "Generator", isGenerator)) {
+						continue;
+					}
+					if (!(shouldLoadGenerator && isGenerator))
+						continue; // skip import
+				}
 
 				this->load( importFile );
 			}
@@ -392,13 +410,33 @@ int32 YamlDatabase::getLineNumber(const ryml::NodeRef& node) {
 #ifndef Pandas_UserExperience_Yaml_Error
 	return parser.source().has_str() ? (int32)parser.location(node).line : 0;
 #else
-	// 读取到的行号应该 + 1 才是正确的行号
-	return parser.source().has_str() ? (int32)parser.location(node).line + 1 : 0;
+	try {
+		// 读取到的行号应该 + 1 才是正确的行号
+		return parser.source().has_str() ? (int32)parser.location(node).line + 1 : 0;
+	}
+	catch (std::runtime_error) {
+#ifdef DEBUG
+		std::cout << node;
+#endif // DEBUG
+		return 0;
+	}
 #endif // Pandas_UserExperience_Yaml_Error
 }
 
 int32 YamlDatabase::getColumnNumber(const ryml::NodeRef& node) {
+#ifndef Pandas_UserExperience_Yaml_Error
 	return parser.source().has_str() ? (int32)parser.location(node).col : 0;
+#else
+	try {
+		return parser.source().has_str() ? (int32)parser.location(node).col : 0;
+	}
+	catch (std::runtime_error) {
+#ifdef DEBUG
+		std::cout << node;
+#endif // DEBUG
+		return 0;
+	}
+#endif // Pandas_UserExperience_Yaml_Error
 }
 
 void YamlDatabase::invalidWarning( const ryml::NodeRef& node, const char* fmt, ... ){
@@ -422,6 +460,10 @@ void YamlDatabase::invalidWarning( const ryml::NodeRef& node, const char* fmt, .
 
 std::string YamlDatabase::getCurrentFile(){
 	return this->currentFile;
+}
+
+void YamlDatabase::setGenerator(bool shouldLoad) {
+	shouldLoadGenerator = shouldLoad;
 }
 
 void on_yaml_error( const char* msg, size_t len, ryml::Location loc, void *user_data ){
