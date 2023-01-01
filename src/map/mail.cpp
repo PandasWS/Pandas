@@ -18,7 +18,7 @@
 #include "pc.hpp"
 #include "pet.hpp"
 
-void mail_clear(struct map_session_data *sd)
+void mail_clear(map_session_data *sd)
 {
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd) return;
@@ -39,7 +39,7 @@ void mail_clear(struct map_session_data *sd)
 	return;
 }
 
-int mail_removeitem(struct map_session_data *sd, short flag, int idx, int amount)
+int mail_removeitem(map_session_data *sd, short flag, int idx, int amount)
 {
 	int i;
 
@@ -112,7 +112,7 @@ int mail_removeitem(struct map_session_data *sd, short flag, int idx, int amount
 	return 1;
 }
 
-bool mail_removezeny( struct map_session_data *sd, bool flag ){
+bool mail_removezeny( map_session_data *sd, bool flag ){
 	nullpo_retr( false, sd );
 
 	if( sd->mail.zeny > 0 ){
@@ -139,7 +139,7 @@ bool mail_removezeny( struct map_session_data *sd, bool flag ){
 * @param amount : amout of zeny or number of item
 * @return see enum mail_attach_result in mail.hpp
 */
-enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uint32 amount) {
+enum mail_attach_result mail_setitem(map_session_data *sd, short idx, uint32 amount) {
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd) return MAIL_ATTACH_ERROR;
 #endif // Pandas_Crashfix_FunctionParams_Verify
@@ -300,7 +300,7 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 	}
 }
 
-bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
+bool mail_setattachment(map_session_data *sd, struct mail_message *msg)
 {
 	int i, amount;
 
@@ -349,7 +349,7 @@ bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
 	return true;
 }
 
-void mail_getattachment(struct map_session_data* sd, struct mail_message* msg, int zeny, struct item* item){
+void mail_getattachment(map_session_data* sd, struct mail_message* msg, int zeny, struct item* item){
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd || !msg || !item) return;
 #endif // Pandas_Crashfix_FunctionParams_Verify
@@ -423,7 +423,7 @@ void mail_getattachment(struct map_session_data* sd, struct mail_message* msg, i
 	}
 }
 
-int mail_openmail(struct map_session_data *sd)
+int mail_openmail(map_session_data *sd)
 {
 	nullpo_ret(sd);
 
@@ -441,7 +441,7 @@ int mail_openmail(struct map_session_data *sd)
 	return 1;
 }
 
-void mail_deliveryfail(struct map_session_data *sd, struct mail_message *msg){
+void mail_deliveryfail(map_session_data *sd, struct mail_message *msg){
 	int i, zeny = 0;
 
 	nullpo_retv(sd);
@@ -463,7 +463,7 @@ void mail_deliveryfail(struct map_session_data *sd, struct mail_message *msg){
 }
 
 // This function only check if the mail operations are valid
-bool mail_invalid_operation(struct map_session_data *sd)
+bool mail_invalid_operation(map_session_data *sd)
 {
 #ifdef Pandas_Crashfix_FunctionParams_Verify
 	if (!sd) return false;
@@ -500,7 +500,7 @@ bool mail_invalid_operation(struct map_session_data *sd)
 * @param body_msg Mail message
 * @param body_len Message's length
 */
-void mail_send(struct map_session_data *sd, const char *dest_name, const char *title, const char *body_msg, int body_len) {
+void mail_send(map_session_data *sd, const char *dest_name, const char *title, const char *body_msg, int body_len) {
 	struct mail_message msg;
 
 	nullpo_retv(sd);
@@ -605,7 +605,7 @@ void mail_send(struct map_session_data *sd, const char *dest_name, const char *t
 	sd->cansendmail_tick = gettick() + battle_config.mail_delay; // Flood Protection
 }
 
-void mail_refresh_remaining_amount( struct map_session_data* sd ){
+void mail_refresh_remaining_amount( map_session_data* sd ){
 	int doy = date_get_dayofyear();
 
 	nullpo_retv(sd);

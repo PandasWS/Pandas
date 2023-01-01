@@ -8,6 +8,7 @@
 #include "../common/timer.hpp"
 
 #ifdef Pandas_Player_Suspend_System
+class map_session_data;
 
 enum e_suspend_mode : uint8 {
 	SUSPEND_MODE_NONE     = 0x0000,
@@ -28,7 +29,7 @@ struct s_suspender {
 	enum e_suspend_mode mode;			// 模式
 	t_tick tick;						// 离线挂机 或 离开模式 的起始时间
 	long val1, val2, val3, val4;		// 附加参数
-	struct map_session_data* sd;
+	map_session_data* sd;
 };
 
 #define suspend_mode_valid(x) (x == SUSPEND_MODE_OFFLINE || x == SUSPEND_MODE_AFK || x == SUSPEND_MODE_NORMAL)
@@ -38,11 +39,11 @@ bool suspend_recall(uint32 charid,
 	unsigned char head_dir = 0, unsigned char sit = 0);
 void suspend_recall_all();
 
-void suspend_recall_postfix(struct map_session_data* sd);
-void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit* p);
-void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_walking* p);
-void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode);
-void suspend_deactive(struct map_session_data* sd, bool keep_database);
+void suspend_recall_postfix(map_session_data* sd);
+void suspend_set_unit_idle(map_session_data* sd, struct packet_idle_unit* p);
+void suspend_set_unit_walking(map_session_data* sd, struct packet_unit_walking* p);
+void suspend_active(map_session_data* sd, enum e_suspend_mode smode);
+void suspend_deactive(map_session_data* sd, bool keep_database);
 
 void do_final_suspend(void);
 void do_init_suspend(void);

@@ -126,12 +126,12 @@ struct inter_conf inter_config {};
 
 // DBMap declaration
 static DBMap* id_db=NULL; /// int id -> struct block_list*
-static DBMap* pc_db=NULL; /// int id -> struct map_session_data*
+static DBMap* pc_db=NULL; /// int id -> map_session_data*
 static DBMap* mobid_db=NULL; /// int id -> struct mob_data*
 static DBMap* bossid_db=NULL; /// int id -> struct mob_data* (MVP db)
 static DBMap* map_db=NULL; /// unsigned int mapindex -> struct map_data*
 static DBMap* nick_db=NULL; /// uint32 char_id -> struct charid2nick* (requested names of offline characters)
-static DBMap* charid_db=NULL; /// uint32 char_id -> struct map_session_data*
+static DBMap* charid_db=NULL; /// uint32 char_id -> map_session_data*
 static DBMap* regen_db=NULL; /// int id -> struct block_list* (status_natural_heal processing)
 static DBMap* map_msg_db=NULL;
 
@@ -540,7 +540,7 @@ int map_delblock(struct block_list* bl)
 int map_moveblock(struct block_list *bl, int x1, int y1, t_tick tick)
 {
 	int x0 = bl->x, y0 = bl->y;
-	struct status_change *sc = NULL;
+	status_change *sc = NULL;
 	int moveblock = ( x0/BLOCK_SIZE != x1/BLOCK_SIZE || y0/BLOCK_SIZE != y1/BLOCK_SIZE);
 
 	if (!bl->prev) {
@@ -1966,7 +1966,7 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
 int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect)
 #else
-int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect, struct map_session_data *sd)
+int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect, map_session_data *sd)
 #endif // Pandas_Fix_Item_Trade_FloorDropable
 {
 	int r;
@@ -2053,7 +2053,7 @@ void map_addnickdb(int charid, const char* nick)
 	safestrncpy(p->nick, nick, sizeof(p->nick));
 
 	while( p->requests ) {
-		struct map_session_data* sd;
+		map_session_data* sd;
 		struct charid_request* req;
 		req = p->requests;
 		p->requests = req->next;
@@ -2076,7 +2076,7 @@ void map_delnickdb(int charid, const char* name)
 
 	while( p->requests ) {
 		struct charid_request* req;
-		struct map_session_data* sd;
+		map_session_data* sd;
 		req = p->requests;
 		p->requests = req->next;
 		sd = map_charid2sd(req->charid);
@@ -2090,11 +2090,11 @@ void map_delnickdb(int charid, const char* name)
 /// Notifies sd of the nick of charid.
 /// Uses the name in the character if online.
 /// Uses the name in nick_db if offline.
-void map_reqnickdb(struct map_session_data * sd, int charid)
+void map_reqnickdb(map_session_data * sd, int charid)
 {
 	struct charid2nick* p;
 	struct charid_request* req;
-	struct map_session_data* tsd;
+	map_session_data* tsd;
 
 	nullpo_retv(sd);
 
@@ -2183,10 +2183,10 @@ void map_mobiddb(struct block_list* bl, int new_blockid) {
 		idb_put(bossid_db, bl->id, bl);
 
 		struct s_mapiterator* iter = nullptr;
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		iter = mapit_getallusers();
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
-			struct status_change* const sc = status_get_sc(&pl_sd->bl);
+			status_change* const sc = status_get_sc(&pl_sd->bl);
 			if (!sc) continue;
 
 			struct status_change_entry* const sce = sc->getSCE(SC_BOSSMAPINFO);
@@ -2245,7 +2245,7 @@ void map_deliddb(struct block_list *bl)
 /*==========================================
  * Standard call when a player connection is closed.
  *------------------------------------------*/
-int map_quit(struct map_session_data *sd) {
+int map_quit(map_session_data *sd) {
 	int i;
 
 	if (sd->state.keepshop == false) { // Close vending/buyingstore
@@ -2380,9 +2380,9 @@ int map_quit(struct map_session_data *sd) {
 /*==========================================
  * Lookup, id to session (player,mob,npc,homon,merc..)
  *------------------------------------------*/
-struct map_session_data * map_id2sd(int id){
+map_session_data * map_id2sd(int id){
 	if (id <= 0) return NULL;
-	return (struct map_session_data*)idb_get(pc_db,id);
+	return (map_session_data*)idb_get(pc_db,id);
 }
 
 struct mob_data * map_id2md(int id){
@@ -2424,7 +2424,7 @@ struct chat_data* map_id2cd(int id){
 const char* map_charid2nick(int charid)
 {
 	struct charid2nick *p;
-	struct map_session_data* sd;
+	map_session_data* sd;
 
 	sd = map_charid2sd(charid);
 	if( sd )
@@ -2438,10 +2438,10 @@ const char* map_charid2nick(int charid)
 	return NULL;
 }
 
-/// Returns the struct map_session_data of the charid or NULL if the char is not online.
-struct map_session_data* map_charid2sd(int charid)
+/// Returns the map_session_data of the charid or NULL if the char is not online.
+map_session_data* map_charid2sd(int charid)
 {
-	return (struct map_session_data*)uidb_get(charid_db, charid);
+	return (map_session_data*)uidb_get(charid_db, charid);
 }
 
 /*==========================================
@@ -2449,10 +2449,10 @@ struct map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
+map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 {
-	struct map_session_data* sd;
-	struct map_session_data* found_sd;
+	map_session_data* sd;
+	map_session_data* found_sd;
 	struct s_mapiterator* iter;
 	size_t nicklen;
 	int qty = 0;
@@ -2577,13 +2577,13 @@ DBMap* get_bossid_db() {
 
 /// Applies func to all the players in the db.
 /// Stops iterating if func returns -1.
-void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...)
+void map_foreachpc(int (*func)(map_session_data* sd, va_list args), ...)
 {
 	DBIterator* iter;
-	struct map_session_data* sd;
+	map_session_data* sd;
 
 	iter = db_iterator(pc_db);
-	for( sd = (struct map_session_data*)dbi_first(iter); dbi_exists(iter); sd = (struct map_session_data*)dbi_next(iter) )
+	for( sd = (map_session_data*)dbi_first(iter); dbi_exists(iter); sd = (map_session_data*)dbi_next(iter) )
 	{
 		va_list args;
 		int ret;
@@ -2987,10 +2987,10 @@ int map_addinstancemap(int src_m, int instance_id, bool no_mapflag)
  *------------------------------------------*/
 static int map_instancemap_leave(struct block_list *bl, va_list ap)
 {
-	struct map_session_data* sd;
+	map_session_data* sd;
 
 	nullpo_retr(0, bl);
-	nullpo_retr(0, sd = (struct map_session_data *)bl);
+	nullpo_retr(0, sd = (map_session_data *)bl);
 
 	pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
 
@@ -3006,7 +3006,7 @@ static int map_instancemap_clean(struct block_list *bl, va_list ap)
 	switch(bl->type) {
 		/*case BL_PC:
 		// BL_PET, BL_HOM, BL_MER, and BL_ELEM are moved when BL_PC warped out in map_instancemap_leave
-			map_quit((struct map_session_data *) bl);
+			map_quit((map_session_data *) bl);
 			break;*/
 		case BL_NPC:
 			npc_unload((struct npc_data *)bl,true);
@@ -3607,7 +3607,7 @@ bool map_iwall_set(int16 m, int16 x, int16 y, int size, int8 dir, bool shootable
 	return true;
 }
 
-void map_iwall_get(struct map_session_data *sd) {
+void map_iwall_get(map_session_data *sd) {
 	struct iwall_data *iwall;
 	DBIterator* iter;
 	int16 x1, y1;
@@ -4174,7 +4174,7 @@ int parse_console(const char* buf){
 	int16 x = 0;
 	int16 y = 0;
 	int n;
-	struct map_session_data sd;
+	map_session_data sd;
 
 	strcpy(sd.status.name, "console");
 
@@ -4716,7 +4716,7 @@ int cleanup_sub(struct block_list *bl, va_list ap)
 
 	switch(bl->type) {
 		case BL_PC:
-			map_quit((struct map_session_data *) bl);
+			map_quit((map_session_data *) bl);
 			break;
 		case BL_NPC:
 			npc_unload((struct npc_data *)bl,false);
@@ -4783,7 +4783,7 @@ void map_skill_duration_add(struct map_data *mapd, uint16 skill_id, uint16 per) 
 //************************************
 static int map_mapflag_gvg_start_sub(struct block_list* bl, va_list ap)
 {
-	struct map_session_data* sd = map_id2sd(bl->id);
+	map_session_data* sd = map_id2sd(bl->id);
 	nullpo_retr(0, sd);
 
 	// 由于扩展了 max_aspd_for_gvg 选项, 在开启了 GVG 之后
@@ -4803,7 +4803,7 @@ static int map_mapflag_gvg_start_sub(struct block_list* bl, va_list ap)
 //************************************
 static int map_mapflag_gvg_stop_sub(struct block_list* bl, va_list ap)
 {
-	struct map_session_data* sd = map_id2sd(bl->id);
+	map_session_data* sd = map_id2sd(bl->id);
 	nullpo_retr(0, sd);
 
 	// 由于扩展了 max_aspd_for_gvg 选项, 在停止了 GVG 之后
@@ -4822,7 +4822,7 @@ static int map_mapflag_gvg_stop_sub(struct block_list* bl, va_list ap)
  */
 static int map_mapflag_pvp_start_sub(struct block_list *bl, va_list ap)
 {
-	struct map_session_data *sd = map_id2sd(bl->id);
+	map_session_data *sd = map_id2sd(bl->id);
 
 	nullpo_retr(0, sd);
 
@@ -4854,7 +4854,7 @@ static int map_mapflag_pvp_start_sub(struct block_list *bl, va_list ap)
  */
 static int map_mapflag_pvp_stop_sub(struct block_list *bl, va_list ap)
 {
-	struct map_session_data* sd = map_id2sd(bl->id);
+	map_session_data* sd = map_id2sd(bl->id);
 
 	clif_pvpset(sd, 0, 0, 2);
 
@@ -5551,7 +5551,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_HIDEGUILDINFO:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
@@ -5565,7 +5565,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_HIDEPARTYINFO:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
@@ -5579,7 +5579,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_NOPET:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
@@ -5602,7 +5602,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_NOHOMUN:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
@@ -5620,7 +5620,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_NOMERC:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
@@ -5638,7 +5638,7 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 	case MF_NOAURA:
 	{
 		struct s_mapiterator* iter = mapit_getallusers();
-		struct map_session_data* pl_sd = nullptr;
+		map_session_data* pl_sd = nullptr;
 		for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
 			if (!pl_sd || pl_sd->bl.m != m)
 				continue;
@@ -5685,7 +5685,7 @@ void do_final(void){
 
 	//Ladies and babies first.
 	struct s_mapiterator* iter = mapit_getallusers();
-	for( struct map_session_data* sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
+	for( map_session_data* sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 		map_quit(sd);
 	mapit_free(iter);
 
@@ -5787,7 +5787,7 @@ void do_final(void){
 	ShowStatus("Finished.\n");
 }
 
-static int map_abort_sub(struct map_session_data* sd, va_list ap)
+static int map_abort_sub(map_session_data* sd, va_list ap)
 {
 	chrif_save(sd, CSAVE_QUIT|CSAVE_INVENTORY|CSAVE_CART);
 	return 1;
@@ -5924,7 +5924,7 @@ int map_msg_config_read(const char *cfgName, int lang){
 	}
 	return 0;
 }
-const char* map_msg_txt(struct map_session_data *sd, int msg_number){
+const char* map_msg_txt(map_session_data *sd, int msg_number){
 	struct msg_data *mdb;
 	uint8 lang = 0; //default
 	if(sd && sd->langtype) lang = sd->langtype;
@@ -6088,7 +6088,7 @@ void do_shutdown(void)
 		if (pc_db)
 #endif // Pandas_Crashfix_Prevent_NullPointer
 		{
-			struct map_session_data* sd;
+			map_session_data* sd;
 			struct s_mapiterator* iter = mapit_getallusers();
 			for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 				clif_GM_kick(NULL, sd);

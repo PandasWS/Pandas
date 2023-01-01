@@ -42,12 +42,12 @@ int amulet_pandas_type(t_itemid nameid) {
 //************************************
 // Method:		amulet_is_firstone
 // Description:	给定的 item 是否为该角色身上同类型护身符中的第一个
-// Parameter:	struct map_session_data * sd
+// Parameter:	map_session_data * sd
 // Parameter:	struct item * item
 // Parameter:	int amount
 // Returns:		bool 返回 true 表示这是同类护身符中的第一个
 //************************************
-bool amulet_is_firstone(struct map_session_data *sd, struct item *item, int amount) {
+bool amulet_is_firstone(map_session_data *sd, struct item *item, int amount) {
  	nullpo_retr(false, sd);
  	nullpo_retr(false, item);
 
@@ -83,12 +83,12 @@ bool amulet_is_firstone(struct map_session_data *sd, struct item *item, int amou
 //************************************
 // Method:		amulet_is_lastone
 // Description: 判断删除掉指定数量的护身符道具后, 角色身上就不存在其他同类护身符了
-// Parameter:	struct map_session_data * sd
+// Parameter:	map_session_data * sd
 // Parameter:	int n
 // Parameter:	int amount
 // Returns:		bool 返回 true 表示这次删除后，角色身上就不存在同类的护身符道具了
 //************************************
-bool amulet_is_lastone(struct map_session_data *sd, int n, int amount) {
+bool amulet_is_lastone(map_session_data *sd, int n, int amount) {
 	nullpo_retr(false, sd);
 
 	amount = cap_value(amount, 0, MAX_AMOUNT);
@@ -105,12 +105,12 @@ bool amulet_is_lastone(struct map_session_data *sd, int n, int amount) {
 //************************************
 // Method:		amulet_apply_additem
 // Description:	添加新的护身符道具时, 根据需要重算角色的能力
-// Parameter:	struct map_session_data * sd
+// Parameter:	map_session_data * sd
 // Parameter:	int n
 // Parameter:	bool is_firstone
 // Returns:		void
 //************************************
-void amulet_apply_additem(struct map_session_data *sd, int n, bool is_firstone) {
+void amulet_apply_additem(map_session_data *sd, int n, bool is_firstone) {
 	nullpo_retv(sd);
 
 	if (!sd || !sd->inventory_data[n])
@@ -134,12 +134,12 @@ void amulet_apply_additem(struct map_session_data *sd, int n, bool is_firstone) 
 //************************************
 // Method:		amulet_apply_delitem
 // Description:	删除老的护身符道具时, 根据需要重算角色的能力
-// Parameter:	struct map_session_data * sd
+// Parameter:	map_session_data * sd
 // Parameter:	int n
 // Parameter:	bool is_lastone
 // Returns:		void
 //************************************
-void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone) {
+void amulet_apply_delitem(map_session_data *sd, int n, bool is_lastone) {
 	nullpo_retv(sd);
 
 	if (!sd || !sd->inventory_data[n])
@@ -166,12 +166,12 @@ void amulet_apply_delitem(struct map_session_data *sd, int n, bool is_lastone) {
 //************************************
 // Method:      amulet_status_calc
 // Description: 重新应用角色身上全部护身符道具的脚本效果
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Parameter:   uint8 opt
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2022/04/04 18:03
 //************************************ 
-void amulet_status_calc(struct map_session_data *sd, uint8 opt) {
+void amulet_status_calc(map_session_data *sd, uint8 opt) {
 	nullpo_retv(sd);
 
 	if (!sd || sd->pandas.amulet_calculating)
