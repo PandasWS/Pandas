@@ -10455,6 +10455,7 @@ static const struct _battle_data {
 	{ "homunculus_evo_intimacy_reset",      &battle_config.homunculus_evo_intimacy_reset,   1000,   0,      INT_MAX,        },
 	{ "monster_loot_search_type",           &battle_config.monster_loot_search_type,        1,      0,      1,              },
 	{ "feature.roulette",                   &battle_config.feature_roulette,                1,      0,      1,              },
+	{ "feature.roulette_bonus_reward",      &battle_config.feature_roulette_bonus_reward,   1,      0,      1,              },
 	{ "monster_hp_bars_info",               &battle_config.monster_hp_bars_info,            1,      0,      1,              },
 	{ "min_body_style",                     &battle_config.min_body_style,                  0,      0,      SHRT_MAX,       },
 	{ "max_body_style",                     &battle_config.max_body_style,                  1,      0,      SHRT_MAX,       },
@@ -10565,6 +10566,8 @@ static const struct _battle_data {
 	{ "feature.dynamicnpc_direction",       &battle_config.feature_dynamicnpc_direction,    0,      0,      1,              },
 
 	{ "mob_respawn_time",                   &battle_config.mob_respawn_time,                1000,   1000,   INT_MAX,        },
+
+	{ "feature.stylist",                    &battle_config.feature_stylist,                 1,      0,      1,              },
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
@@ -10845,6 +10848,13 @@ void battle_adjust_conf()
 		ShowWarning("conf/battle/feature.conf achievement is enabled but it requires PACKETVER 2015-05-13 or newer, disabling...\n");
 #endif
 		battle_config.feature_achievement = 0;
+	}
+#endif
+
+#if PACKETVER < 20151104
+	if( battle_config.feature_stylist ){
+		ShowWarning("conf/battle/feature.conf stylist is enabled but it requires PACKETVER 2015-11-04 or newer, disabling...\n");
+		battle_config.feature_stylist = 0;
 	}
 #endif
 

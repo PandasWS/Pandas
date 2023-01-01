@@ -4002,7 +4002,8 @@ ACMD_FUNC(mapexit)
 {
 	nullpo_retr(-1, sd);
 
-	do_shutdown();
+	global_core->signal_shutdown();
+
 	return 0;
 }
 
@@ -11050,6 +11051,10 @@ ACMD_FUNC( stylist ){
 	clif_displaymessage( fd, msg_txt( sd, 798 ) ); // This command requires packet version 2015-11-04 or newer.
 	return -1;
 #else
+	if( !battle_config.feature_stylist ){
+		clif_displaymessage( fd, msg_txt( sd, 774 ) ); // This command is disabled via configuration.
+		return -1;
+	}
 
 	if( sd->state.stylist_open ){
 		clif_displaymessage( fd, msg_txt( sd, 799 ) ); // You have already opened the stylist UI.

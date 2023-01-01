@@ -16646,19 +16646,24 @@ BUILDIN_FUNC(specialeffect)
 
 	if( script_hasdata(st,4) )
 	{
-		TBL_NPC *nd = npc_name2id(script_getstr(st,4));
+		const char* name = script_getstr( st, 4 );
+		npc_data* nd = npc_name2id( name );
 		if(nd)
-			clif_specialeffect(&nd->bl, type, target);
-	}
-	else
-	{
-		if (target == SELF) {
-			TBL_PC *sd;
-			if (script_rid2sd(sd))
-				clif_specialeffect_single(bl,type,sd->fd);
-		} else {
-			clif_specialeffect(bl, type, target);
+			bl = &nd->bl;
+		else{
+			ShowError( "buildin_specialeffect: Unknown NPC \"%s\"\n", name );
+			return SCRIPT_CMD_FAILURE;
 		}
+	}
+
+	if (target == SELF) {
+		map_session_data* sd;
+		if (!script_rid2sd(sd)){
+			return SCRIPT_CMD_FAILURE;
+		}
+		clif_specialeffect_single(bl,type,sd->fd);
+	} else {
+		clif_specialeffect(bl, type, target);
 	}
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -17466,19 +17471,19 @@ BUILDIN_FUNC(getmapxy)
 				bl = map_id2bl(st->oid);
 			break;
 		case BL_PET:	//Get Pet Position
-			if (sd->pd && ((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)))
+			if (((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)) && sd->pd)
 				bl = &sd->pd->bl;
 			break;
 		case BL_HOM:	//Get Homun Position
-			if (sd->hd && ((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)))
+			if (((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)) && sd->hd)
 				bl = &sd->hd->bl;
 			break;
 		case BL_MER: //Get Mercenary Position
-			if (sd->md && ((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)))
+			if (((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)) && sd->md)
 				bl = &sd->md->bl;
 			break;
 		case BL_ELEM: //Get Elemental Position
-			if (sd->ed && ((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)))
+			if (((script_isstring(st, 6) && script_nick2sd(6, sd)) || script_mapid2sd(6, sd)) && sd->ed)
 				bl = &sd->ed->bl;
 			break;
 		default:
@@ -27456,7 +27461,7 @@ BUILDIN_FUNC(mail){
 			for( k = 0; k < num_items && start < end; k++, start++ ){
 				msg.item[k].card[i] = (t_itemid)get_val2_num( st, reference_uid( id, start ), reference_getref( data ) );
 
-				if( !item_db.exists(msg.item[k].card[i]) ){
+				if( msg.item[k].card[i] > 0 && !item_db.exists(msg.item[k].card[i]) ){
 					ShowError( "buildin_mail: invalid card id %u.\n", msg.item[k].card[i] );
 					return SCRIPT_CMD_FAILURE;
 				}
@@ -27960,6 +27965,11 @@ BUILDIN_FUNC(mob_setidleevent){
 
 BUILDIN_FUNC( openstylist ){
 #if PACKETVER >= 20151104
+	if( !battle_config.feature_stylist ){
+		ShowError( "buildin_openstylist: stylist is disabled.\n" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
 	map_session_data* sd;
 
 	if( !script_charid2sd( 2, sd ) ){
