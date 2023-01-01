@@ -196,8 +196,8 @@ bool aura_need_hiding(struct block_list* bl, struct block_list* observer_bl) {
 
 	struct status_change* sc = status_get_sc(bl);
 	if (!sc) return true;
-
-	return status_ishiding(bl, observer_bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
+	
+	return status_ishiding(bl, observer_bl) || status_isinvisible(bl) || sc->getSCE(SC_CAMOUFLAGE);
 }
 
 //************************************

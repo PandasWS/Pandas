@@ -580,11 +580,7 @@ void mob_add_spawn(uint16 mob_id, const struct spawn_info& new_spawn);
 const std::vector<spawn_info> mob_get_spawns(uint16 mob_id);
 bool mob_has_spawn(uint16 mob_id);
 
-#ifndef Pandas_FuncParams_Mob_GetDroprate
-int mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier);
-#else
-int mob_getdroprate(struct block_list* src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier, struct mob_data* md = nullptr);
-#endif // Pandas_FuncParams_Mob_GetDroprate
+int mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int base_rate, int drop_modifier, mob_data* md = nullptr);
 
 // MvP Tomb System
 int mvptomb_setdelayspawn(struct npc_data *nd);

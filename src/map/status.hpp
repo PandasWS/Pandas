@@ -168,7 +168,8 @@ struct s_enchantgradelevel{
 	uint16 refine;
 	uint16 chance;
 	uint16 bonus;
-	bool announce;
+	bool announceSuccess;
+	bool announceFail;
 	struct{
 		t_itemid item;
 		uint16 amountPerStep;
@@ -185,7 +186,7 @@ struct s_enchantgrade{
 
 class EnchantgradeDatabase : public TypesafeYamlDatabase<uint16, s_enchantgrade>{
 public:
-	EnchantgradeDatabase() : TypesafeYamlDatabase( "ENCHANTGRADE_DB", 1 ){
+	EnchantgradeDatabase() : TypesafeYamlDatabase( "ENCHANTGRADE_DB", 2, 1 ){
 
 	}
 
@@ -3136,7 +3137,8 @@ struct status_change_entry {
 };
 
 ///Status change
-struct status_change {
+class status_change {
+public:
 	unsigned int option;// effect state (bitfield)
 	unsigned int opt3;// skill state (bitfield)
 	unsigned short opt1;// body state
@@ -3170,7 +3172,16 @@ struct status_change {
 #ifndef RENEWAL
 	unsigned char sg_counter; //Storm gust counter (previous hits from storm gust)
 #endif
+private:
 	struct status_change_entry *data[SC_MAX];
+	std::pair<enum sc_type, struct status_change_entry *> lastStatus; // last-fetched status
+
+public:
+	status_change_entry * getSCE(enum sc_type type);
+	status_change_entry * getSCE(uint32 type);
+	status_change_entry * createSCE(enum sc_type type);
+	void deleteSCE(enum sc_type type);
+	void clearSCE(enum sc_type type);
 };
 
 int status_damage( struct block_list *src, struct block_list *target, int64 dhp, int64 dsp, int64 dap, t_tick walkdelay, int flag, uint16 skill_id );

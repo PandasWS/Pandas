@@ -481,7 +481,7 @@ static int clif_send_sub(struct block_list *bl, va_list ap)
 
 	/* unless visible, hold it here */
 	if (!battle_config.update_enemy_position && clif_ally_only && !sd->special_state.intravision &&
-		!sd->sc.data[SC_INTRAVISION] && battle_check_target(src_bl,&sd->bl,BCT_ENEMY) > 0)
+		!sd->sc.getSCE(SC_INTRAVISION) && battle_check_target(src_bl,&sd->bl,BCT_ENEMY) > 0)
 		return 0;
 
 	WFIFOHEAD(fd, len);
@@ -1771,13 +1771,13 @@ static void clif_millenniumshield_single(int fd, map_session_data *sd)
 {
 	nullpo_retv(sd);
 
-	if (sd->sc.data[SC_MILLENNIUMSHIELD] == nullptr)
+	if (sd->sc.getSCE(SC_MILLENNIUMSHIELD) == nullptr)
 		return;
 
 	WFIFOHEAD(fd, packet_len(0x440));
 	WFIFOW(fd, 0) = 0x440;
 	WFIFOL(fd, 2) = sd->bl.id;
-	WFIFOW(fd, 6) = sd->sc.data[SC_MILLENNIUMSHIELD]->val2;
+	WFIFOW(fd, 6) = sd->sc.getSCE(SC_MILLENNIUMSHIELD)->val2;
 	WFIFOW(fd, 8) = 0;
 	WFIFOSET(fd, packet_len(0x440));
 }
@@ -1917,8 +1917,8 @@ int clif_spawn( struct block_list *bl, bool walking ){
 
 			if (sd->spiritball > 0)
 				clif_spiritball(&sd->bl);
-			if (sd->sc.data[SC_MILLENNIUMSHIELD])
-				clif_millenniumshield(&sd->bl, sd->sc.data[SC_MILLENNIUMSHIELD]->val2);
+			if (sd->sc.getSCE(SC_MILLENNIUMSHIELD))
+				clif_millenniumshield(&sd->bl, sd->sc.getSCE(SC_MILLENNIUMSHIELD)->val2);
 			if (sd->soulball > 0)
 				clif_soulball(sd);
 			if (sd->servantball > 0)
@@ -4562,8 +4562,8 @@ void clif_changeoption_target( struct block_list* bl, struct block_list* target 
 
 		//Whenever we send "changeoption" to the client, the provoke icon is lost
 		//There is probably an option for the provoke icon, but as we don't know it, we have to do this for now
-		if( sc->data[SC_PROVOKE] ){
-			const struct TimerData *td = get_timer( sc->data[SC_PROVOKE]->timer );
+		if( sc->getSCE(SC_PROVOKE) ){
+			const struct TimerData *td = get_timer( sc->getSCE(SC_PROVOKE)->timer );
 
 			clif_status_change( bl, status_db.getIcon(SC_PROVOKE), 1, ( !td ? INFINITE_TICK : DIFF_TICK( td->tick, gettick() ) ), 0, 0, 0 );
 		}
@@ -5226,7 +5226,7 @@ static void clif_getareachar_pc(struct map_session_data* sd,struct map_session_d
 
 	if(dstsd->spiritball > 0)
 		clif_spiritball( &dstsd->bl, &sd->bl, SELF );
-	if (dstsd->sc.data[SC_MILLENNIUMSHIELD])
+	if (dstsd->sc.getSCE(SC_MILLENNIUMSHIELD))
 		clif_millenniumshield_single(sd->fd, dstsd);
 	if (dstsd->spiritcharm_type != CHARM_TYPE_NONE && dstsd->spiritcharm > 0)
 		clif_spiritcharm_single(sd->fd, dstsd);
@@ -5251,7 +5251,7 @@ static void clif_getareachar_pc(struct map_session_data* sd,struct map_session_d
 	if( i < MAX_DEVOTION )
 		clif_devotion(&dstsd->bl, sd);
 	// display link (dstsd - crusader) to sd
-	if( dstsd->sc.data[SC_DEVOTION] && (d_bl = map_id2bl(dstsd->sc.data[SC_DEVOTION]->val1)) != NULL )
+	if( dstsd->sc.getSCE(SC_DEVOTION) && (d_bl = map_id2bl(dstsd->sc.getSCE(SC_DEVOTION)->val1)) != NULL )
 		clif_devotion(d_bl, sd);
 }
 
@@ -5442,7 +5442,7 @@ int clif_damage(struct block_list* src, struct block_list* dst, t_tick tick, int
 		type = clif_calc_delay(type,div,damage+damage2,ddelay);
 	sc = status_get_sc(dst);
 	if(sc && sc->count) {
-		if(sc->data[SC_HALLUCINATION]) {
+		if(sc->getSCE(SC_HALLUCINATION)) {
 			damage = clif_hallucination_damage();
 			if(damage2) damage2 = clif_hallucination_damage();
 		}
@@ -6276,7 +6276,7 @@ int clif_skill_damage(struct block_list *src,struct block_list *dst,t_tick tick,
 	type = clif_calc_delay(type,div,damage,ddelay);
 
 	if( ( sc = status_get_sc(dst) ) && sc->count ) {
-		if(sc->data[SC_HALLUCINATION] && damage)
+		if(sc->getSCE(SC_HALLUCINATION) && damage)
 			damage = clif_hallucination_damage();
 	}
 
@@ -6385,7 +6385,7 @@ int clif_skill_damage2(struct block_list *src,struct block_list *dst,t_tick tick
 	sc = status_get_sc(dst);
 
 	if(sc && sc->count) {
-		if(sc->data[SC_HALLUCINATION] && damage)
+		if(sc->getSCE(SC_HALLUCINATION) && damage)
 			damage = clif_hallucination_damage();
 	}
 
@@ -6855,7 +6855,7 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 	for (i = 0; i < sc_display_count; i++) {
 		enum sc_type type = sc_display[i]->type;
 		struct status_change *sc = status_get_sc(bl);
-		const struct TimerData *td = (sc && sc->data[type] ? get_timer(sc->data[type]->timer) : NULL);
+		const struct TimerData *td = (sc && sc->getSCE(type) ? get_timer(sc->getSCE(type)->timer) : NULL);
 		t_tick tick = 0;
 
 		if (td)
@@ -6873,8 +6873,8 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 				}
 				break;
 			case SC_HELLS_PLANT:
-				if( sc && sc->data[type] ){
-					tick = sc->data[type]->val4;
+				if( sc && sc->getSCE(type) ){
+					tick = sc->getSCE(type)->val4;
 				}
 				break;
 		}
@@ -7386,7 +7386,7 @@ void clif_use_card(struct map_session_data *sd,int idx)
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
 	// 当玩家双击卡片时先判定是否乘坐了“商城坐骑”,
 	// 如果是那么再根据 cashmount_useitem_limit 设置决定是否拒绝 [Sola丶小克]
-	if (sd && sd->sc.count && sd->sc.data[SC_ALL_RIDING]) {
+	if (sd && sd->sc.count && sd->sc.getSCE(SC_ALL_RIDING)) {
 		bool isblocked = false;
 
 		switch (sd->inventory_data[idx]->type) {
@@ -9872,26 +9872,23 @@ void clif_wedding_effect(struct block_list *bl)
 
 /// Notifies the client of the name of the partner character (ZC_COUPLENAME).
 /// 01e6 <partner name>.24B
-void clif_callpartner(struct map_session_data *sd)
+void clif_callpartner(struct map_session_data& sd)
 {
-	unsigned char buf[26];
+	PACKET_ZC_COUPLENAME p = { 0 };
 
-	nullpo_retv(sd);
+	p.packetType = HEADER_ZC_COUPLENAME;
 
-	WBUFW(buf,0) = 0x1e6;
-
-	if( sd->status.partner_id ) {
-		const char *p = map_charid2nick(sd->status.partner_id);
-		struct map_session_data *p_sd = pc_get_partner(sd);
-		if( p != NULL && p_sd != NULL && !p_sd->state.autotrade )
-			safestrncpy(WBUFCP(buf,2), p, NAME_LENGTH);
+	if( sd.status.partner_id ) {
+		struct map_session_data *p_sd = pc_get_partner(&sd);
+		if (p_sd != nullptr && !p_sd->state.autotrade)
+			safestrncpy(p.name, p_sd->status.name, NAME_LENGTH);
 		else
-			WBUFB(buf,2) = 0;
+			p.name[0] = 0;
 	} else {// Send zero-length name if no partner, to initialize the client buffer.
-		WBUFB(buf,2) = 0;
+		p.name[0] = 0;
 	}
 
-	clif_send(buf, packet_len(0x1e6), &sd->bl, AREA);
+	clif_send(&p, sizeof(p), &sd.bl, AREA);
 }
 
 
@@ -10313,7 +10310,7 @@ void clif_refresh(struct map_session_data *sd)
 #endif
 	if (sd->spiritball)
 		clif_spiritball( &sd->bl, &sd->bl, SELF );
-	if (sd->sc.data[SC_MILLENNIUMSHIELD])
+	if (sd->sc.getSCE(SC_MILLENNIUMSHIELD))
 		clif_millenniumshield_single(sd->fd, sd);
 	if (sd->spiritcharm_type != CHARM_TYPE_NONE && sd->spiritcharm > 0)
 		clif_spiritcharm_single(sd->fd, sd);
@@ -11365,6 +11362,8 @@ void clif_parse_WantToConnection(int fd, struct map_session_data* sd)
 	}
 
 	CREATE(sd, TBL_PC, 1);
+	// placement new
+	new(sd) map_session_data();
 	sd->fd = fd;
 #ifdef PACKET_OBFUSCATION
 	sd->cryptKey = (((((clif_cryptKey[0] * clif_cryptKey[1]) + clif_cryptKey[2]) & 0xFFFFFFFF) * clif_cryptKey[1]) + clif_cryptKey[2]) & 0xFFFFFFFF;
@@ -11608,7 +11607,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 			clif_status_load(&sd->bl, EFST_RIDING, 1);
 		else if (sd->sc.option&OPTION_WUGRIDER)
 			clif_status_load(&sd->bl, EFST_WUGRIDER, 1);
-		else if (sd->sc.data[SC_ALL_RIDING])
+		else if (sd->sc.getSCE(SC_ALL_RIDING))
 			clif_status_load(&sd->bl, EFST_ALL_RIDING, 1);
 
 		if(sd->status.manner < 0)
@@ -11826,7 +11825,7 @@ void clif_parse_LoadEndAck(int fd,struct map_session_data *sd)
 	if (sd->sc.opt2) //Client loses these on warp.
 		clif_changeoption(&sd->bl);
 
-	if ((sd->sc.data[SC_MONSTER_TRANSFORM] || sd->sc.data[SC_ACTIVE_MONSTER_TRANSFORM]) && battle_config.mon_trans_disable_in_gvg && mapdata_flag_gvg2(mapdata)) {
+	if ((sd->sc.getSCE(SC_MONSTER_TRANSFORM) || sd->sc.getSCE(SC_ACTIVE_MONSTER_TRANSFORM)) && battle_config.mon_trans_disable_in_gvg && mapdata_flag_gvg2(mapdata)) {
 		status_change_end(&sd->bl, SC_MONSTER_TRANSFORM);
 		status_change_end(&sd->bl, SC_ACTIVE_MONSTER_TRANSFORM);
 		clif_displaymessage(sd->fd, msg_txt(sd,731)); // Transforming into monster is not allowed in Guild Wars.
@@ -12088,7 +12087,7 @@ void clif_parse_WalkToXY(int fd, struct map_session_data *sd)
 	} else if (pc_cant_act(sd))
 		return;
 
-	if(sd->sc.data[SC_RUN] || sd->sc.data[SC_WUGDASH])
+	if(sd->sc.getSCE(SC_RUN) || sd->sc.getSCE(SC_WUGDASH))
 		return;
 
 	RFIFOPOS(fd, packet_db[RFIFOW(fd,0)].pos[0], &x, &y, NULL);
@@ -12100,8 +12099,8 @@ void clif_parse_WalkToXY(int fd, struct map_session_data *sd)
 
 	// Cloaking wall check is actually updated when you click to process next movement
 	// not when you move each cell.  This is official behaviour.
-	if (sd->sc.data[SC_CLOAKING])
-		skill_check_cloaking(&sd->bl, sd->sc.data[SC_CLOAKING]);
+	if (sd->sc.getSCE(SC_CLOAKING))
+		skill_check_cloaking(&sd->bl, sd->sc.getSCE(SC_CLOAKING));
 	status_change_end(&sd->bl, SC_ROLLINGCUTTER); // If you move, you lose your counters. [malufett]
 	status_change_end(&sd->bl, SC_CRESCIVEBOLT);
 
@@ -12144,7 +12143,7 @@ void clif_parse_QuitGame(int fd, struct map_session_data *sd)
 {
 	/*	Rovert's prevent logout option fixed [Valaris]	*/
 	//int type = RFIFOW(fd,packet_db[RFIFOW(fd,0)].pos[0]);
-	if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] && !sd->sc.data[SC_CLOAKINGEXCEED] && !sd->sc.data[SC_SUHIDE] && !sd->sc.data[SC_NEWMOON] &&
+	if( !sd->sc.getSCE(SC_CLOAKING) && !sd->sc.getSCE(SC_HIDING) && !sd->sc.getSCE(SC_CHASEWALK) && !sd->sc.getSCE(SC_CLOAKINGEXCEED) && !sd->sc.getSCE(SC_SUHIDE) && !sd->sc.getSCE(SC_NEWMOON) &&
 		(!battle_config.prevent_logout || sd->canlog_tick == 0 || DIFF_TICK(gettick(), sd->canlog_tick) > battle_config.prevent_logout) )
 	{
 		pc_damage_log_clear(sd,0);
@@ -12431,8 +12430,8 @@ void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, 
 			break;
 
 		if (sd->sc.count && (
-			sd->sc.data[SC_DANCING] ||
-			(sd->sc.data[SC_GRAVITATION] && sd->sc.data[SC_GRAVITATION]->val3 == BCT_SELF)
+			sd->sc.getSCE(SC_DANCING) ||
+			(sd->sc.getSCE(SC_GRAVITATION) && sd->sc.getSCE(SC_GRAVITATION)->val3 == BCT_SELF)
 		)) //No sitting during these states either.
 			break;
 
@@ -12517,7 +12516,7 @@ void clif_parse_Restart(int fd, struct map_session_data *sd)
 		break;
 	case 0x01:
 		/*	Rovert's Prevent logout option - Fixed [Valaris]	*/
-		if( !sd->sc.data[SC_CLOAKING] && !sd->sc.data[SC_HIDING] && !sd->sc.data[SC_CHASEWALK] && !sd->sc.data[SC_CLOAKINGEXCEED] && !sd->sc.data[SC_SUHIDE] && !sd->sc.data[SC_NEWMOON] &&
+		if( !sd->sc.getSCE(SC_CLOAKING) && !sd->sc.getSCE(SC_HIDING) && !sd->sc.getSCE(SC_CHASEWALK) && !sd->sc.getSCE(SC_CLOAKINGEXCEED) && !sd->sc.getSCE(SC_SUHIDE) && !sd->sc.getSCE(SC_NEWMOON) &&
 			(!battle_config.prevent_logout || sd->canlog_tick == 0 || DIFF_TICK(gettick(), sd->canlog_tick) > battle_config.prevent_logout) )
 		{	//Send to char-server for character selection.
 			pc_damage_log_clear(sd,0);
@@ -13066,7 +13065,7 @@ void clif_parse_CreateChatRoom(int fd, struct map_session_data* sd)
 	char s_password[CHATROOM_PASS_SIZE];
 	char s_title[CHATROOM_TITLE_SIZE];
 
-	if (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOROOM)
+	if (sd->sc.getSCE(SC_NOCHAT) && sd->sc.getSCE(SC_NOCHAT)->val1&MANNER_NOROOM)
 		return;
 	if(battle_config.basic_skill_check && pc_checkskill(sd,NV_BASIC) < 4 && pc_checkskill(sd, SU_BASIC_SKILL) < 1) {
 		clif_skill_fail(sd,1,USESKILL_FAIL_LEVEL,3);
@@ -13306,7 +13305,7 @@ void clif_parse_RemoveOption(int fd,struct map_session_data *sd)
 {
 	if( !(sd->sc.option&(OPTION_RIDING|OPTION_FALCON|OPTION_DRAGON|OPTION_MADOGEAR))
 #ifdef NEW_CARTS
-		&& sd->sc.data[SC_PUSH_CART] )
+		&& sd->sc.getSCE(SC_PUSH_CART) )
 		pc_setcart(sd,0);
 #else
 		)
@@ -13488,9 +13487,9 @@ static void clif_parse_UseSkillToPos_homun(struct homun_data *hd, struct map_ses
 	}
 
 #ifdef RENEWAL
-	if (hd->sc.data[SC_BASILICA_CELL])
+	if (hd->sc.getSCE(SC_BASILICA_CELL))
 #else
-	if (hd->sc.data[SC_BASILICA])
+	if (hd->sc.getSCE(SC_BASILICA))
 #endif
 		return;
 	lv = hom_checkskill(hd, skill_id);
@@ -13541,9 +13540,9 @@ static void clif_parse_UseSkillToPos_mercenary(s_mercenary_data *md, struct map_
 	}
 
 #ifdef RENEWAL
-	if (md->sc.data[SC_BASILICA_CELL])
+	if (md->sc.getSCE(SC_BASILICA_CELL))
 #else
-	if (md->sc.data[SC_BASILICA])
+	if (md->sc.getSCE(SC_BASILICA))
 #endif
 		return;
 	lv = mercenary_checkskill(md, skill_id);
@@ -13648,7 +13647,7 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
 		return;
 
 #ifndef RENEWAL
-	if( sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id) )
+	if( sd->sc.getSCE(SC_BASILICA) && (skill_id != HP_BASILICA || sd->sc.getSCE(SC_BASILICA)->val4 != sd->bl.id) )
 		return; // On basilica only caster can use Basilica again to stop it.
 #endif
 
@@ -13781,7 +13780,7 @@ static void clif_parse_UseSkillToPosSub(int fd, struct map_session_data *sd, uin
 		return;
 
 #ifndef RENEWAL
-	if( sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id) )
+	if( sd->sc.getSCE(SC_BASILICA) && (skill_id != HP_BASILICA || sd->sc.getSCE(SC_BASILICA)->val4 != sd->bl.id) )
 		return; // On basilica only caster can use Basilica again to stop it.
 #endif
 
@@ -14940,7 +14939,7 @@ void clif_parse_OpenVending(int fd, struct map_session_data* sd){
 		}
 	}
 
-	if( sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOROOM )
+	if( sd->sc.getSCE(SC_NOCHAT) && sd->sc.getSCE(SC_NOCHAT)->val1&MANNER_NOROOM )
 		return;
 	if( map_getmapflag(sd->bl.m, MF_NOVENDING) ) {
 		clif_displaymessage (sd->fd, msg_txt(sd,276)); // "You can't open a shop on this map"
@@ -24795,12 +24794,12 @@ void clif_parse_enchantgrade_start( int fd, struct map_session_data* sd ){
 		clif_enchantgrade_result( *sd, index, ENCHANTGRADE_UPGRADE_SUCCESS );
 
 		// Check if it has to be announced
-		if( enchantgradelevel->announce ){
+		if( enchantgradelevel->announceSuccess ){
 			clif_enchantgrade_announce( *sd, sd->inventory.u.items_inventory[index], true );
 		}
 	}else{
 		// Check if it has to be announced (has to be done before deleting the item from inventory)
-		if( enchantgradelevel->announce ){
+		if( enchantgradelevel->announceFail ){
 			clif_enchantgrade_announce( *sd, sd->inventory.u.items_inventory[index], false );
 		}
 
@@ -25938,7 +25937,7 @@ void clif_parse_macro_reporter_ack(int fd, map_session_data *sd) {
 		return;
 	}
 
-	pc_macro_reporter_process(*sd, *tsd);
+	pc_macro_reporter_process(*tsd, sd->status.account_id);
 	clif_macro_reporter_status(*sd, MCR_MONITORING);
 #endif
 }

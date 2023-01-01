@@ -6984,16 +6984,16 @@ BUILDIN_FUNC(percentheal)
 		return SCRIPT_CMD_SUCCESS;
 
 #ifdef RENEWAL
-	if( sd->sc.data[SC_EXTREMITYFIST2] )
+	if( sd->sc.getSCE(SC_EXTREMITYFIST2) )
 		sp = 0;
 #endif
 
-	if (sd->sc.data[SC_NORECOVER_STATE]) {
+	if (sd->sc.getSCE(SC_NORECOVER_STATE)) {
 		hp = 0;
 		sp = 0;
 	}
 
-	if (sd->sc.data[SC_BITESCAR])
+	if (sd->sc.getSCE(SC_BITESCAR))
 		hp = 0;
 
 	pc_percentheal(sd,hp,sp);
@@ -13366,7 +13366,7 @@ BUILDIN_FUNC(sc_end)
 		if (sc == nullptr)
 			return SCRIPT_CMD_SUCCESS;
 
-		struct status_change_entry *sce = sc->data[type];
+		struct status_change_entry *sce = sc->getSCE(type);
 
 		if (sce == nullptr)
 			return SCRIPT_CMD_SUCCESS;
@@ -13463,7 +13463,7 @@ BUILDIN_FUNC(getstatus)
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if( sd->sc.count == 0 || !sd->sc.data[id] )
+	if( sd->sc.count == 0 || !sd->sc.getSCE(id) )
 	{// no status is active
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
@@ -13471,13 +13471,13 @@ BUILDIN_FUNC(getstatus)
 
 	switch( type )
 	{
-		case 1:	 script_pushint(st, sd->sc.data[id]->val1);	break;
-		case 2:  script_pushint(st, sd->sc.data[id]->val2);	break;
-		case 3:  script_pushint(st, sd->sc.data[id]->val3);	break;
-		case 4:  script_pushint(st, sd->sc.data[id]->val4);	break;
+		case 1:	 script_pushint(st, sd->sc.getSCE(id)->val1);	break;
+		case 2:  script_pushint(st, sd->sc.getSCE(id)->val2);	break;
+		case 3:  script_pushint(st, sd->sc.getSCE(id)->val3);	break;
+		case 4:  script_pushint(st, sd->sc.getSCE(id)->val4);	break;
 		case 5:
 			{
-				struct TimerData* timer = (struct TimerData*)get_timer(sd->sc.data[id]->timer);
+				struct TimerData* timer = (struct TimerData*)get_timer(sd->sc.getSCE(id)->timer);
 
 				if( timer )
 				{// return the amount of time remaining
@@ -23996,7 +23996,7 @@ BUILDIN_FUNC(ismounting) {
 	
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
-	if( sd->sc.data[SC_ALL_RIDING] )
+	if( sd->sc.getSCE(SC_ALL_RIDING) )
 		script_pushint(st,1);
 	else
 		script_pushint(st,0);
@@ -24017,11 +24017,11 @@ BUILDIN_FUNC(setmounting) {
 	if( sd->sc.option&(OPTION_WUGRIDER|OPTION_RIDING|OPTION_DRAGON|OPTION_MADOGEAR) ) {
 		clif_msg(sd, NEED_REINS_OF_MOUNT);
 		script_pushint(st,0); //can't mount with one of these
-	} else if (sd->sc.data[SC_CLOAKING] || sd->sc.data[SC_CHASEWALK] || sd->sc.data[SC_CLOAKINGEXCEED] || sd->sc.data[SC_CAMOUFLAGE] || sd->sc.data[SC_STEALTHFIELD] || sd->sc.data[SC__FEINTBOMB]) {
+	} else if (sd->sc.getSCE(SC_CLOAKING) || sd->sc.getSCE(SC_CHASEWALK) || sd->sc.getSCE(SC_CLOAKINGEXCEED) || sd->sc.getSCE(SC_CAMOUFLAGE) || sd->sc.getSCE(SC_STEALTHFIELD) || sd->sc.getSCE(SC__FEINTBOMB)) {
 		// SC_HIDING, SC__INVISIBILITY, SC__SHADOWFORM, SC_SUHIDE already disable item usage
 		script_pushint(st, 0); // Silent failure
 	} else {
-		if( sd->sc.data[SC_ALL_RIDING] )
+		if( sd->sc.getSCE(SC_ALL_RIDING) )
 			status_change_end(&sd->bl, SC_ALL_RIDING); //release mount
 		else
 			sc_start(NULL, &sd->bl, SC_ALL_RIDING, 10000, 1, INFINITE_TICK); //mount
@@ -28552,6 +28552,25 @@ BUILDIN_FUNC(isdead) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(macro_detector) {
+	map_session_data *sd;
+
+	if (script_hasdata(st, 2) && script_isstring(st, 2)) { // Character Name
+		if (!script_nick2sd(2, sd)) {
+			return SCRIPT_CMD_FAILURE;
+		}
+	} else { // Account ID
+		if (!script_accid2sd(2, sd)) {
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	// Reporter Account ID as -1 for server.
+	pc_macro_reporter_process(*sd);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 #include "../custom/script.inc"
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -28699,7 +28718,7 @@ BUILDIN_FUNC(mobremove) {
 		unit_free(bl, CLR_OUTSIGHT);
 	else {
 		unit_remove_map(bl, CLR_OUTSIGHT);
-		if (!(md->sc.data[SC_KAIZEL] || (md->sc.data[SC_REBIRTH] && !md->state.rebirth)))
+		if (!(md->sc.getSCE(SC_KAIZEL) || (md->sc.getSCE(SC_REBIRTH) && !md->state.rebirth)))
 			mob_setdelayspawn(md);
 #ifdef Pandas_BattleRecord
 		map_mobiddb(bl, npc_get_new_npc_id());
@@ -29409,20 +29428,20 @@ BUILDIN_FUNC(statuscheck) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (sd->sc.count == 0 || !sd->sc.data[id]) {
+	if (sd->sc.count == 0 || !sd->sc.getSCE(id)) {
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	pc_setreg(sd, add_str("@sc_val1"), sd->sc.data[id]->val1);
-	pc_setreg(sd, add_str("@sc_val2"), sd->sc.data[id]->val2);
-	pc_setreg(sd, add_str("@sc_val3"), sd->sc.data[id]->val3);
-	pc_setreg(sd, add_str("@sc_val4"), sd->sc.data[id]->val4);
+	pc_setreg(sd, add_str("@sc_val1"), sd->sc.getSCE(id)->val1);
+	pc_setreg(sd, add_str("@sc_val2"), sd->sc.getSCE(id)->val2);
+	pc_setreg(sd, add_str("@sc_val3"), sd->sc.getSCE(id)->val3);
+	pc_setreg(sd, add_str("@sc_val4"), sd->sc.getSCE(id)->val4);
 
 	// 这种返回方式若剩余时间过长的话 @sc_tickleft 保存的数值会被截断, 不可靠
 	// 建议还是多使用 rAthena 自带的 getstatus 指令来替代 statuscheck / sc_check
 	// 之所以实现 statuscheck / sc_check 完全出于兼容目的考虑
-	struct TimerData* timer = (struct TimerData*)get_timer(sd->sc.data[id]->timer);
+	struct TimerData* timer = (struct TimerData*)get_timer(sd->sc.getSCE(id)->timer);
 	t_tick tickleft = (timer ? DIFF_TICK(timer->tick, gettick()) : -1);
 	pc_setreg(sd, add_str("@sc_tickleft"), tickleft);
 
@@ -33588,6 +33607,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getfame, "?"),
 	BUILDIN_DEF(getfamerank, "?"),
 	BUILDIN_DEF(isdead, "?"),
+	BUILDIN_DEF(macro_detector, "?"),
 
 	// -----------------------------------------------------------------
 	// 熊猫模拟器拓展脚本指令 - 开始
