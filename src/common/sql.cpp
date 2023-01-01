@@ -18,7 +18,9 @@
 
 #ifdef Pandas_SQL_Configure_Optimization
 #include "db.hpp" // ARR_FIND, ARRAYLENGTH
-#include "core.hpp" // SERVER_TYPE
+#include "core.hpp" // rathena::server_core
+
+using namespace rathena::server_core;
 #endif // Pandas_SQL_Configure_Optimization
 
 // MySQL 8.0 or later removed my_bool typedef.
@@ -255,7 +257,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		}
 
 		// 如果使用的编码是 utf8 或 utf8mb4 中的任何一个, 则进行特殊处理 (WEB 接口服务器除外)
-		if (SERVER_TYPE != ATHENA_SERVER_WEB) {
+		if (global_core->get_type() != e_core_type::WEB) {
 			size_t i = 0;
 			const char* non_ansi[] = { "utf8", "utf8mb4" };
 			ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);

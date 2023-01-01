@@ -30,16 +30,29 @@
 	extern int pandas_inter_hide_server_ipaddress;
 #endif // Pandas_InterConfig_HideServerIpAddress
 
+using rathena::server_core::Core;
+using rathena::server_core::e_core_type;
+
+namespace rathena{
+	namespace server_map{
+		class MapServer : public Core{
+			protected:
+				bool initialize( int argc, char* argv[] ) override;
+				void finalize() override;
+				void handle_crash() override;
+				void handle_shutdown() override;
+
+			public:
+				MapServer() : Core( e_core_type::MAP ){
+
+				}
+		};
+	}
+}
+
 struct npc_data;
 struct item_data;
 struct Channel;
-
-enum E_MAPSERVER_ST {
-	MAPSERVER_ST_RUNNING = CORE_ST_LAST,
-	MAPSERVER_ST_STARTING,
-	MAPSERVER_ST_SHUTDOWN,
-	MAPSERVER_ST_LAST
-};
 
 struct map_data *map_getmapdata(int16 m);
 #define msg_config_read(cfgName,isnew) map_msg_config_read(cfgName,isnew)
@@ -51,7 +64,7 @@ struct map_data *map_getmapdata(int16 m);
 #endif // Pandas_Message_Conf
 #define do_final_msg() map_do_final_msg()
 int map_msg_config_read(const char *cfgName,int lang);
-const char* map_msg_txt(struct map_session_data *sd,int msg_number);
+const char* map_msg_txt(map_session_data *sd,int msg_number);
 void map_do_final_msg(void);
 void map_msg_reload(void);
 
@@ -1245,7 +1258,7 @@ int map_get_new_object_id(void);
 int map_search_freecell(struct block_list *src, int16 m, int16 *x, int16 *y, int16 rx, int16 ry, int flag);
 bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag);
 //
-int map_quit(struct map_session_data *);
+int map_quit(map_session_data *);
 // npc
 bool map_addnpc(int16 m,struct npc_data *);
 
@@ -1256,7 +1269,7 @@ void map_clearflooritem(struct block_list* bl);
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
 int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect = false);
 #else
-int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect = false, struct map_session_data *sd = nullptr);
+int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect = false, map_session_data *sd = nullptr);
 #endif // Pandas_Fix_Item_Trade_FloorDropable
 
 // instances
@@ -1268,11 +1281,11 @@ void map_data_copy(struct map_data *dst_map, struct map_data *src_map);
 // player to map session
 void map_addnickdb(int charid, const char* nick);
 void map_delnickdb(int charid, const char* nick);
-void map_reqnickdb(struct map_session_data* sd,int charid);
+void map_reqnickdb(map_session_data* sd,int charid);
 const char* map_charid2nick(int charid);
-struct map_session_data* map_charid2sd(int charid);
+map_session_data* map_charid2sd(int charid);
 
-struct map_session_data * map_id2sd(int id);
+map_session_data * map_id2sd(int id);
 struct mob_data * map_id2md(int id);
 struct npc_data * map_id2nd(int id);
 struct homun_data* map_id2hd(int id);
@@ -1296,12 +1309,12 @@ void map_addiddb(struct block_list *);
 void map_mobiddb(struct block_list* bl, int new_blockid);
 #endif // Pandas_BattleRecord
 void map_deliddb(struct block_list* bl);
-void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...);
+void map_foreachpc(int (*func)(map_session_data* sd, va_list args), ...);
 void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...);
 void map_foreachregen(int (*func)(struct block_list* bl, va_list args), ...);
 void map_foreachiddb(int (*func)(struct block_list* bl, va_list args), ...);
-struct map_session_data * map_nick2sd(const char* nick, bool allow_partial);
+map_session_data * map_nick2sd(const char* nick, bool allow_partial);
 #ifndef Pandas_FuncDefine_Mob_Getmob_Boss
 struct mob_data * map_getmob_boss(int16 m);
 #else
@@ -1350,7 +1363,7 @@ void map_flags_init(void);
 
 bool map_iwall_exist(const char* wall_name);
 bool map_iwall_set(int16 m, int16 x, int16 y, int size, int8 dir, bool shootable, const char* wall_name);
-void map_iwall_get(struct map_session_data *sd);
+void map_iwall_get(map_session_data *sd);
 bool map_iwall_remove(const char *wall_name);
 
 int map_addmobtolist(unsigned short m, struct spawn_data *spawn);	// [Wizputer]
@@ -1392,7 +1405,7 @@ extern const char* MSG_CONF_NAME_CHT;	// 繁体中文
 #endif // Pandas_Message_Reorganize
 
 //Useful typedefs from jA [Skotlex]
-typedef struct map_session_data TBL_PC;
+typedef map_session_data TBL_PC;
 typedef struct npc_data         TBL_NPC;
 typedef struct mob_data         TBL_MOB;
 typedef struct flooritem_data   TBL_ITEM;
@@ -1426,6 +1439,7 @@ extern char mob_skill2_table[32];
 extern char vendings_table[32];
 extern char vending_items_table[32];
 extern char market_table[32];
+extern char partybookings_table[32];
 extern char roulette_table[32];
 extern char guild_storage_log_table[32];
 

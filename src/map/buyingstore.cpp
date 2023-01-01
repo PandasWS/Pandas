@@ -19,7 +19,7 @@
 #include "clif.hpp"  // clif_buyingstore_*
 #include "log.hpp"  // log_pick_pc, log_zeny
 #include "npc.hpp"
-#include "pc.hpp"  // struct map_session_data
+#include "pc.hpp"  // map_session_data
 
 //Autotrader
 static DBMap *buyingstore_autotrader_db; /// Holds autotrader info: char_id -> struct s_autotrader
@@ -66,14 +66,14 @@ static unsigned int buyingstore_getuid(void)
 * @param slots Number of item on the list
 * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction
 */
-int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots){
+int8 buyingstore_setup(map_session_data* sd, unsigned char slots){
 	nullpo_retr(1, sd);
 
 	if (!battle_config.feature_buying_store || sd->state.vending || sd->state.buyingstore || sd->state.trading || slots == 0) {
 		return 1;
 	}
 
-	if( sd->sc.data[SC_NOCHAT] && (sd->sc.data[SC_NOCHAT]->val1&MANNER_NOROOM) )
+	if( sd->sc.getSCE(SC_NOCHAT) && (sd->sc.getSCE(SC_NOCHAT)->val1&MANNER_NOROOM) )
 	{// custom: mute limitation
 		return 2;
 	}
@@ -113,7 +113,7 @@ int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots){
 * @param at Autotrader info, or NULL if requetsed not from autotrade persistance
 * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction, 5 - Invalid count/result, 6 - Cannot give item, 7 - Will be overweight
 */
-int8 buyingstore_create( struct map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const struct PACKET_CZ_REQ_OPEN_BUYING_STORE_sub* itemlist, unsigned int count, struct s_autotrader *at ){
+int8 buyingstore_create( map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const struct PACKET_CZ_REQ_OPEN_BUYING_STORE_sub* itemlist, unsigned int count, struct s_autotrader *at ){
 	unsigned int i, weight, listidx;
 	char message_sql[MESSAGE_SIZE*2];
 	StringBuf buf;
@@ -140,7 +140,7 @@ int8 buyingstore_create( struct map_session_data* sd, int zenylimit, unsigned ch
 		return 6;
 	}
 
-	if( sd->sc.data[SC_NOCHAT] && (sd->sc.data[SC_NOCHAT]->val1&MANNER_NOROOM) )
+	if( sd->sc.getSCE(SC_NOCHAT) && (sd->sc.getSCE(SC_NOCHAT)->val1&MANNER_NOROOM) )
 	{// custom: mute limitation
 		return 2;
 	}
@@ -263,7 +263,7 @@ int8 buyingstore_create( struct map_session_data* sd, int zenylimit, unsigned ch
 * Close buying store and clear buying store data from tables
 * @param sd
 */
-void buyingstore_close(struct map_session_data* sd) {
+void buyingstore_close(map_session_data* sd) {
 	nullpo_retv(sd);
 
 	if( sd->state.buyingstore ) {
@@ -289,9 +289,9 @@ void buyingstore_close(struct map_session_data* sd) {
 * @param sd Player
 * @param account_id Buyer account ID
 */
-void buyingstore_open(struct map_session_data* sd, uint32 account_id)
+void buyingstore_open(map_session_data* sd, uint32 account_id)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 
 	nullpo_retv(sd);
 
@@ -327,10 +327,10 @@ void buyingstore_open(struct map_session_data* sd, uint32 account_id)
 * @param *itemlist List of sold items { <index>.W, <nameid>.W, <amount>.W }*
 * @param count Number of item on the itemlist
 */
-void buyingstore_trade( struct map_session_data* sd, uint32 account_id, unsigned int buyer_id, const struct PACKET_CZ_REQ_TRADE_BUYING_STORE_sub* itemlist, unsigned int count ){
+void buyingstore_trade( map_session_data* sd, uint32 account_id, unsigned int buyer_id, const struct PACKET_CZ_REQ_TRADE_BUYING_STORE_sub* itemlist, unsigned int count ){
 	int zeny = 0;
 	unsigned int weight;
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 
 	nullpo_retv(sd);
 
@@ -512,7 +512,7 @@ void buyingstore_trade( struct map_session_data* sd, uint32 account_id, unsigned
 
 
 /// Checks if an item is being bought in given player's buying store.
-bool buyingstore_search(struct map_session_data* sd, t_itemid nameid)
+bool buyingstore_search(map_session_data* sd, t_itemid nameid)
 {
 	unsigned int i;
 
@@ -535,7 +535,7 @@ bool buyingstore_search(struct map_session_data* sd, t_itemid nameid)
 
 /// Searches for all items in a buyingstore, that match given ids, price and possible cards.
 /// @return Whether or not the search should be continued.
-bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_store_search* s)
+bool buyingstore_searchall(map_session_data* sd, const struct s_search_store_search* s)
 {
 	unsigned int i, idx;
 	struct s_buyingstore_item* it;
@@ -600,7 +600,7 @@ bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_st
 * Open buyingstore for Autotrader
 * @param sd Player as autotrader
 */
-void buyingstore_reopen( struct map_session_data* sd ){
+void buyingstore_reopen( map_session_data* sd ){
 	struct s_autotrader *at = NULL;
 	int8 fail = -1;
 
@@ -730,7 +730,7 @@ void do_init_buyingstore_autotrade( void ) {
 					at->sit = battle_config.feature_autotrade_sit;
 
 				// initialize player
-				CREATE(at->sd, struct map_session_data, 1);
+				CREATE(at->sd, map_session_data, 1); // TODO: Dont use Memory Manager allocation anymore and rely on the C++ container
 				pc_setnewpc(at->sd, at->account_id, at->char_id, 0, gettick(), at->sex, 0);
 				at->sd->state.autotrade = 1|4;
 				if (battle_config.autotrade_monsterignore)
@@ -805,11 +805,11 @@ void do_init_buyingstore_autotrade( void ) {
 // Method:      buyingstore_autotrader_cleardb
 // Description: 移除指定角色在数据库中的采购商店挂机记录
 // Access:      public 
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/03/02 21:13
 //************************************ 
-void buyingstore_autotrader_cleardb(struct map_session_data* sd) {
+void buyingstore_autotrader_cleardb(map_session_data* sd) {
 	nullpo_retv(sd);
 
 	// 清理 buyingstores_table 表中账号编号与 sd 一致的记录
