@@ -70,6 +70,9 @@ std::string map_server_ip = "127.0.0.1";
 std::string map_server_id = "ragnarok";
 std::string map_server_pw = "";
 std::string map_server_db = "ragnarok";
+#ifdef Pandas_SQL_Configure_Optimization
+char map_codepage[32] = "";
+#endif // Pandas_SQL_Configure_Optimization
 
 int web_server_port = 3306;
 std::string web_server_ip = "127.0.0.1";
@@ -280,6 +283,8 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(login_codepage, w2, sizeof(login_codepage));
 		else if (!strcmpi(w1, "char_codepage"))
 			safestrncpy(char_codepage, w2, sizeof(char_codepage));
+		else if (!strcmpi(w1, "map_codepage"))
+			safestrncpy(map_codepage, w2, sizeof(map_codepage));
 		else if (!strcmpi(w1, "web_codepage"))
 			safestrncpy(web_codepage, w2, sizeof(web_codepage));
 #endif // Pandas_SQL_Configure_Optimization
@@ -387,6 +392,8 @@ int web_sql_init(void) {
 		Sql_ShowDebug(login_handle);
 	if (SQL_ERROR == Sql_SetEncoding(char_handle, char_codepage, default_codepage.c_str(), "Char-Server"))
 		Sql_ShowDebug(char_handle);
+	if (SQL_ERROR == Sql_SetEncoding(map_handle, map_codepage, default_codepage.c_str(), "Map-Server"))
+		Sql_ShowDebug(map_handle);
 	if (SQL_ERROR == Sql_SetEncoding(web_handle, web_codepage, default_codepage.c_str(), "Web-Server"))
 		Sql_ShowDebug(web_handle);
 #endif // Pandas_SQL_Configure_Optimization
