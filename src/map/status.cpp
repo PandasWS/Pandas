@@ -89,9 +89,9 @@ static pec_defType status_calc_def(struct block_list *bl, status_change *sc, int
 static pec_short status_calc_def2(struct block_list *,status_change *,int);
 static pec_defType status_calc_mdef(struct block_list *bl, status_change *sc, int);
 static pec_short status_calc_mdef2(struct block_list *,status_change *,int);
-static unsigned short status_calc_speed(struct block_list *,status_change *,int);
+static pec_ushort status_calc_speed(struct block_list *,status_change *,int);
 static short status_calc_aspd_rate(struct block_list *,status_change *,int);
-static unsigned short status_calc_dmotion(struct block_list *bl, status_change *sc, int dmotion);
+static pec_ushort status_calc_dmotion(struct block_list *bl, status_change *sc, int dmotion);
 #ifdef RENEWAL_ASPD
 static short status_calc_aspd(struct block_list *bl, status_change *sc, bool fixed);
 #endif
@@ -7240,12 +7240,12 @@ static pec_ushort status_calc_luk(struct block_list *bl, status_change *sc, int 
 static pec_ushort status_calc_pow(struct block_list *bl, status_change *sc, int pow)
 {
 	if (!sc || !sc->count)
-		return cap_value(pow, 0, USHRT_MAX);
+		return cap_value(pow, 0, PEC_USHRT_MAX);
 
 	if (sc->getSCE(SC_BENEDICTUM))
 		pow += sc->getSCE(SC_BENEDICTUM)->val2;
 
-	return (unsigned short)cap_value(pow, 0, USHRT_MAX);
+	return (pec_ushort)cap_value(pow, 0, PEC_USHRT_MAX);
 }
 
 /**
@@ -7258,12 +7258,12 @@ static pec_ushort status_calc_pow(struct block_list *bl, status_change *sc, int 
 static pec_ushort status_calc_sta(struct block_list *bl, status_change *sc, int sta)
 {
 	if (!sc || !sc->count)
-		return cap_value(sta, 0, USHRT_MAX);
+		return cap_value(sta, 0, PEC_USHRT_MAX);
 
 	if (sc->getSCE(SC_RELIGIO))
 		sta += sc->getSCE(SC_RELIGIO)->val2;
 
-	return (unsigned short)cap_value(sta, 0, USHRT_MAX);
+	return (pec_ushort)cap_value(sta, 0, PEC_USHRT_MAX);
 }
 
 /**
@@ -7276,12 +7276,12 @@ static pec_ushort status_calc_sta(struct block_list *bl, status_change *sc, int 
 static pec_ushort status_calc_wis(struct block_list *bl, status_change *sc, int wis)
 {
 	if (!sc || !sc->count)
-		return cap_value(wis, 0, USHRT_MAX);
+		return cap_value(wis, 0, PEC_USHRT_MAX);
 
 	if (sc->getSCE(SC_RELIGIO))
 		wis += sc->getSCE(SC_RELIGIO)->val2;
 
-	return (unsigned short)cap_value(wis, 0, USHRT_MAX);
+	return (pec_ushort)cap_value(wis, 0, PEC_USHRT_MAX);
 }
 
 /**
@@ -7294,12 +7294,12 @@ static pec_ushort status_calc_wis(struct block_list *bl, status_change *sc, int 
 static pec_ushort status_calc_spl(struct block_list *bl, status_change *sc, int spl)
 {
 	if (!sc || !sc->count)
-		return cap_value(spl, 0, USHRT_MAX);
+		return cap_value(spl, 0, PEC_USHRT_MAX);
 
 	if (sc->getSCE(SC_RELIGIO))
 		spl += sc->getSCE(SC_RELIGIO)->val2;
 
-	return (unsigned short)cap_value(spl, 0, USHRT_MAX);
+	return (pec_ushort)cap_value(spl, 0, PEC_USHRT_MAX);
 }
 
 /**
@@ -7312,12 +7312,12 @@ static pec_ushort status_calc_spl(struct block_list *bl, status_change *sc, int 
 static pec_ushort status_calc_con(struct block_list *bl, status_change *sc, int con)
 {
 	if (!sc || !sc->count)
-		return cap_value(con, 0, USHRT_MAX);
+		return cap_value(con, 0, PEC_USHRT_MAX);
 
 	if (sc->getSCE(SC_BENEDICTUM))
 		con += sc->getSCE(SC_BENEDICTUM)->val2;
 
-	return (unsigned short)cap_value(con, 0, USHRT_MAX);
+	return (pec_ushort)cap_value(con, 0, PEC_USHRT_MAX);
 }
 
 /**
@@ -7330,12 +7330,12 @@ static pec_ushort status_calc_con(struct block_list *bl, status_change *sc, int 
 static pec_ushort status_calc_crt(struct block_list *bl, status_change *sc, int crt)
 {
 	if (!sc || !sc->count)
-		return cap_value(crt, 0, USHRT_MAX);
+		return cap_value(crt, 0, PEC_USHRT_MAX);
 
 	if (sc->getSCE(SC_BENEDICTUM))
 		crt += sc->getSCE(SC_BENEDICTUM)->val2;
 
-	return (unsigned short)cap_value(crt, 0, USHRT_MAX);
+	return (pec_ushort)cap_value(crt, 0, PEC_USHRT_MAX);
 }
 
 /**
@@ -8253,13 +8253,13 @@ static pec_short status_calc_mdef2(struct block_list *bl, status_change *sc, int
  * @param speed: Initial speed
  * @return modified speed with cap_value(speed,10,USHRT_MAX)
  */
-static unsigned short status_calc_speed(struct block_list *bl, status_change *sc, int speed)
+static pec_ushort status_calc_speed(struct block_list *bl, status_change *sc, int speed)
 {
 	TBL_PC* sd = BL_CAST(BL_PC, bl);
 	int speed_rate = 100;
 
 	if (sc == NULL || (sd && sd->state.permanent_speed))
-		return (unsigned short)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
+		return (pec_ushort)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
 
 	if (sd && pc_ismadogear(sd)) { // Mado speed is not affected by other statuses
 		int val = 0;
@@ -8272,7 +8272,7 @@ static unsigned short status_calc_speed(struct block_list *bl, status_change *sc
 			val -= 25;
 		speed += speed * val / 100;
 
-		return (unsigned short)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
+		return (pec_ushort)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
 	}
 
 	if( sd && sd->ud.skilltimer != INVALID_TIMER && (pc_checkskill(sd,SA_FREECAST) > 0 || sd->ud.skill_id == LG_EXEEDBREAK) ) {
@@ -8452,7 +8452,7 @@ static unsigned short status_calc_speed(struct block_list *bl, status_change *sc
 	if( sc->getSCE(SC_WALKSPEED) && sc->getSCE(SC_WALKSPEED)->val1 > 0 ) // ChangeSpeed
 		speed = speed * 100 / sc->getSCE(SC_WALKSPEED)->val1;
 
-	return (unsigned short)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
+	return (pec_ushort)cap_value(speed, MIN_WALK_SPEED, MAX_WALK_SPEED);
 }
 
 #ifdef RENEWAL_ASPD
@@ -8818,7 +8818,7 @@ static short status_calc_aspd_rate(struct block_list *bl, status_change *sc, int
  * @param dmotion: Object's current damage delay
  * @return modified delay rate
  */
-static unsigned short status_calc_dmotion(struct block_list *bl, status_change *sc, int dmotion)
+static pec_ushort status_calc_dmotion(struct block_list *bl, status_change *sc, int dmotion)
 {
 	/// It has been confirmed on official servers that MvP mobs have no dmotion even without endure
 	if( bl->type == BL_MOB && status_get_class_(bl) == CLASS_BOSS )
@@ -8826,7 +8826,7 @@ static unsigned short status_calc_dmotion(struct block_list *bl, status_change *
 
 	if (bl->type == BL_PC) {
 		if (map_flag_gvg2(bl->m) || map_getmapflag(bl->m, MF_BATTLEGROUND))
-			return (unsigned short)cap_value(dmotion, 0, USHRT_MAX);
+			return (pec_ushort)cap_value(dmotion, 0, PEC_USHRT_MAX);
 
 		if (((TBL_PC *)bl)->special_state.no_walk_delay)
 			return 0;
@@ -8835,7 +8835,7 @@ static unsigned short status_calc_dmotion(struct block_list *bl, status_change *
 	if (sc && sc->count > 0 && (sc->getSCE(SC_ENDURE) || sc->getSCE(SC_RUN) || sc->getSCE(SC_WUGDASH) || sc->getSCE(SC_SPARKCANDY)))
 		return 0;
 
-	return (unsigned short)cap_value(dmotion,0,USHRT_MAX);
+	return (pec_ushort)cap_value(dmotion,0,PEC_USHRT_MAX);
 }
 
 /**
