@@ -130,7 +130,7 @@ void doQuery(dbJob& job) {
 
 // DB Thread Function
 void db_runtime(void) {
-	while (global_core->get_status() == e_core_status::RUNNING) {
+	while (global_core->get_status() != e_core_status::SERVER_FINALIZING) {
 		// 此线程函数每 50 毫秒执行一次 dbJobs.Run 方法
 		this_thread::sleep_for(chrono::milliseconds(50));
 
