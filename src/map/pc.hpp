@@ -804,9 +804,6 @@ public:
 	bool party_creating; // whether the char is requesting party creation
 	bool party_joining; // whether the char is accepting party invitation
 	int party_invite, party_invite_account; // for handling party invitation (holds party id and account id)
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-	int party_applicant, party_applicant_char;
-#endif // Pandas_PacketFunction_PartyJoinRequest
 	int adopt_invite; // Adoption
 
 	struct guild *guild; // [Ind] speed everything up

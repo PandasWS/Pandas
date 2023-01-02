@@ -438,11 +438,7 @@ int party_invite(map_session_data *sd,map_session_data *tsd)
 	}
 
 	if(!battle_config.invite_request_check) {
-#ifndef Pandas_PacketFunction_PartyJoinRequest
 		if (tsd->guild_invite>0 || tsd->trade_partner || tsd->adopt_invite) {
-#else
-		if (tsd->guild_invite > 0 || tsd->trade_partner || tsd->adopt_invite || tsd->party_applicant) {
-#endif // Pandas_PacketFunction_PartyJoinRequest
 			clif_party_invite_reply( *sd, tsd->status.name, PARTY_REPLY_JOIN_OTHER_PARTY );
 			return 0;
 		}
@@ -616,199 +612,6 @@ int party_reply_invite(map_session_data *sd,int party_id,int flag)
 	return 0;
 }
 
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-//************************************
-// Method:      party_join
-// Description: 玩家希望加入以 leader_aid / leader_cid 作为队长的队伍
-// Access:      public 
-// Parameter:   map_session_data * sd
-// Parameter:   uint32 leader_aid
-// Parameter:   uint32 leader_cid
-// Returns:     bool
-// Author:      Sola丶小克(CairoLee)  2021/10/17 19:53
-//************************************ 
-bool party_join(map_session_data* sd, uint32 leader_aid, uint32 leader_cid)
-{
-	nullpo_retr(false, sd);
-
-	// 申请者所在地图是否允许申请入队
-	if (map_getmapflag(sd->bl.m, MF_PARTYLOCK)) {
-		clif_party_invite_reply(*sd, "", PARTY_REPLY_INVALID_MAPPROPERTY_ME);
-		return false;
-	}
-
-	// 申请者的基础技能等级判断, 至少要 5 级才能进组
-	if (battle_config.basic_skill_check && pc_checkskill(sd, NV_BASIC) < 5 && pc_checkskill(sd, SU_BASIC_SKILL) < 1) {
-		clif_party_join_reply(sd, sd->status.name, "", PARTY_JOIN_REPLY_JOBLEAVEL_TO_LOW);
-		return false;
-	}
-
-	// 判断队长是否在线 (此时的队长不一定完全可靠)
-	map_session_data* leader_sd = map_id2sd(leader_aid);
-	if (!leader_sd || leader_sd->status.char_id != leader_cid || !leader_sd->fd) {
-		clif_party_join_reply(sd, sd->status.name, "", PARTY_JOIN_REPLY_LEADER_OFFLINE);
-		return false;
-	}
-
-	// 确认队长所在的队伍是否存在 (此时的队长不一定完全可靠)
-	struct party_data* p = nullptr;
-	if ((p = party_search(leader_sd->status.party_id)) == nullptr) {
-		clif_party_join_reply(sd, sd->status.name, "", PARTY_JOIN_REPLY_PARTY_NOT_EXISTS);
-		return false;
-	}
-
-	// 二次确保指定角色真的是队伍的队长 (通过之后队长才变得可靠)
-	int i = 0;
-	ARR_FIND(0, MAX_PARTY, i, p->data[i].sd == leader_sd);
-	if (i == MAX_PARTY || !p->party.member[i].leader) {
-		// 玩家指定的队长已经无效, 但队伍还在, 因此我们可以重新尝试确定新的队长
-
-		i = 0;
-		ARR_FIND(0, MAX_PARTY, i, p->party.member[i].leader == 1);
-		if (i == MAX_PARTY) {
-			// 居然找不到队长, 理论上这种情况不存在, 如果出现则终止流程
-			return false;
-		}
-
-		// 重新请求可靠队长的确认
-		return party_join(sd, p->party.member[i].account_id, p->party.member[i].char_id);
-	}
-
-	// 确认队长在可以获得进组申请的地图
-	if (map_getmapflag(leader_sd->bl.m, MF_PARTYLOCK)) {
-		clif_party_join_reply(leader_sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_AUTO_REJECTED_NOTIFY);
-		clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_LEADER_INVALID_MAPPROPERTY);
-		return false;
-	}
-
-	// 如果有其他申请正在等待队长处理, 那么根据选项自动拒绝
-	if (!battle_config.invite_request_check) {
-		if (leader_sd->guild_invite > 0 || leader_sd->trade_partner || leader_sd->adopt_invite || leader_sd->party_applicant) {
-			clif_party_join_reply(leader_sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_AUTO_REJECTED_NOTIFY);
-			clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_REJECTED);
-			return false;
-		}
-	}
-
-	// 让队长记住当前有哪个玩家正在等待审批
-	leader_sd->party_applicant = p->party.party_id;
-	leader_sd->party_applicant_char = sd->status.char_id;
-
-	// 发送请求让队长进行确认
-	clif_party_join_ask_approval(leader_sd, sd);
-	return true;
-}
-
-//************************************
-// Method:      party_join_approval
-// Description: 队长已经做出了审批选择, 在此执行后续的操作
-// Access:      public 
-// Parameter:   map_session_data * leader_sd
-// Parameter:   uint8 approval
-// Returns:     void
-// Author:      Sola丶小克(CairoLee)  2021/10/17 19:53
-//************************************ 
-void party_join_approval(map_session_data* leader_sd, uint8 approval)
-{
-	nullpo_retv(leader_sd);
-
-	// 当前并没有需要处理的操作
-	if (leader_sd->status.party_id == 0 || leader_sd->party_applicant != leader_sd->status.party_id) {
-		leader_sd->party_applicant = 0;
-		leader_sd->party_applicant_char = 0;
-		return;
-	}
-
-	// 判断申请者是否还在线
-	map_session_data* sd = nullptr;
-	sd = map_charid2sd(leader_sd->party_applicant_char);
-	if (!sd) {
-		clif_party_join_reply(leader_sd, "", "", PARTY_JOIN_REPLY_CHARACTER_NOTFOUND);
-		return;
-	}
-
-	// 申请者是否已经加入到了其他的队伍
-	if (sd->status.party_id > 0 || sd->party_invite > 0) {
-		clif_party_join_reply(leader_sd, sd->status.name, "", PARTY_JOIN_REPLY_MEMBER_JOIN_OTHER_PARTY);
-		return;
-	}
-
-	// 申请者是否在无法加入队伍的地区
-	if (map_getmapflag(sd->bl.m, MF_PARTYLOCK)) {
-		clif_party_join_reply(leader_sd, sd->status.name, "", PARTY_JOIN_REPLY_MEMBER_INVALID_MAPPROPERTY);
-		return;
-	}
-
-	// 确认队长所在的队伍是否存在
-	struct party_data* p = nullptr;
-	if ((p = party_search(leader_sd->status.party_id)) == nullptr) {
-		clif_party_join_reply(sd, sd->status.name, "", PARTY_JOIN_REPLY_PARTY_NOT_EXISTS);
-		return;
-	}
-
-	// 如果队长拒绝了申请则告知申请者
-	if (approval == 0) {
-		clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_REJECTED);
-		return;
-	}
-
-	// 根据设置, 禁止相同账号的角色加入到同一个队伍
-	int i = 0;
-	if (sd && battle_config.block_account_in_same_party) {
-		ARR_FIND(0, MAX_PARTY, i, p->party.member[i].account_id == sd->status.account_id);
-		if (i < MAX_PARTY) {
-			clif_party_join_reply(leader_sd, "", "", PARTY_JOIN_REPLY_DUAL);
-			clif_party_join_reply(sd, "", "", PARTY_JOIN_REPLY_DUAL);
-			return;
-		}
-	}
-
-	// 检查队伍中是否还有空余位置
-	ARR_FIND(0, MAX_PARTY, i, p->party.member[i].account_id == 0);
-	if (i == MAX_PARTY) {
-		clif_party_join_reply(leader_sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_FULL);
-		clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_FULL);
-		return;
-	}
-
-	// 检查队长是否有权限组建或加入队伍
-	if (leader_sd && !pc_has_permission(leader_sd, PC_PERM_PARTY)) {
-		clif_displaymessage(leader_sd->fd, msg_txt(leader_sd, 81));
-		return;
-	}
-
-	// 检查申请者是否有权限组建或加入队伍
-	if (sd && !pc_has_permission(sd, PC_PERM_PARTY)) {
-		clif_displaymessage(sd->fd, msg_txt(sd, 81));
-		return;
-	}
-
-#ifdef Pandas_NpcFilter_PARTYJOIN
-	if (sd && leader_sd) {
-		pc_setreg(sd, add_str("@join_party_id"), sd->party_invite);
-		pc_setreg(sd, add_str("@join_party_aid"), leader_sd->status.account_id);
-		if (npc_script_filter(sd, NPCF_PARTYJOIN)) {
-			sd->party_invite = 0;
-			sd->party_invite_account = 0;
-			sd->party_applicant = 0;
-			sd->party_applicant_char = 0;
-			return;
-		}
-	}
-#endif // Pandas_NpcFilter_PARTYJOIN
-
-	// 通知角色服务器来执行加入队伍的过程
-	sd->party_invite = p->party.party_id;
-	sd->party_invite_account = leader_sd->status.account_id;
-
-	struct party_member member = { 0 };
-	sd->party_joining = true;
-	party_fill_member(&member, sd, 0);
-	intif_party_addmember(sd->party_invite, &member);
-};
-
-#endif // Pandas_PacketFunction_PartyJoinRequest
-
 //Invoked when a player joins:
 //- Loads up party data if not in server
 //- Sets up the pointer to him
@@ -860,14 +663,6 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 	if( flag ) { // failed
 		if( sd2 != NULL )
 			clif_party_invite_reply( *sd2, sd->status.name, PARTY_REPLY_FULL );
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-		// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉队长队伍满了 (其实是异常了)
-		if (sd && sd2 && sd2->party_applicant_char == sd->status.char_id) {
-			sd2->party_applicant = 0;
-			sd2->party_applicant_char = 0;
-			clif_party_join_reply(sd2, sd->status.name, p->party.name, PARTY_JOIN_REPLY_FULL);
-		}
-#endif // Pandas_PacketFunction_PartyJoinRequest
 		return 0;
 	}
 
@@ -879,15 +674,6 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 
 	if( sd2 != NULL )
 		clif_party_invite_reply( *sd2, sd->status.name, PARTY_REPLY_ACCEPTED );
-
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-	// 如果 sd2 队长记录着希望通过此玩家加入队伍的审批, 那么在此告诉 sd 申请者加入成功
-	if (sd && sd2 && sd2->party_applicant_char == sd->status.char_id) {
-		sd2->party_applicant = 0;
-		sd2->party_applicant_char = 0;
-		clif_party_join_reply(sd, sd->status.name, p->party.name, PARTY_JOIN_REPLY_ACCEPTED);
-	}
-#endif // Pandas_PacketFunction_PartyJoinRequest
 
 	for( i = 0; i < ARRAYLENGTH(p->data); ++i ) { // hp of the other party members
 		sd2 = p->data[i].sd;

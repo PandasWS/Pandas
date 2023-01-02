@@ -76,10 +76,6 @@ bool party_isleader( map_session_data* sd );
 void party_join( map_session_data* sd, int party_id );
 bool party_booking_load( uint32 account_id, uint32 char_id, struct s_party_booking_requirement* booking );
 int party_reply_invite(map_session_data *sd,int party_id,int flag);
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-bool party_join(map_session_data* sd, uint32 leader_aid, uint32 leader_cid);
-void party_join_approval(map_session_data* leader_sd, uint8 approval);
-#endif // Pandas_PacketFunction_PartyJoinRequest
 #define party_add_member(party_id,sd) party_reply_invite(sd,party_id,1)
 int party_recv_noinfo(int party_id, uint32 char_id);
 int party_recv_info(struct party* sp, uint32 char_id);

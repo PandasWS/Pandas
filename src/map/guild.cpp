@@ -751,11 +751,7 @@ int guild_invite(map_session_data *sd, map_session_data *tsd) {
 		return 0; //Invite permission.
 
 	if(!battle_config.invite_request_check) {
-#ifndef Pandas_PacketFunction_PartyJoinRequest
 	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite) { //checking if there no other invitation pending
-#else
-	if (tsd->party_invite > 0 || tsd->trade_partner || tsd->adopt_invite || tsd->party_applicant) {
-#endif // Pandas_PacketFunction_PartyJoinRequest
 			clif_guild_inviteack(sd,0);
 			return 0;
 		}
