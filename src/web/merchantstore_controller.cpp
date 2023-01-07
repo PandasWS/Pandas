@@ -198,7 +198,7 @@ HANDLER_FUNC(merchantstore_save) {
 	auto data = GET_STRING_FIELD("data", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, 3, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, 3, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 
@@ -272,7 +272,7 @@ HANDLER_FUNC(merchantstore_load) {
 	auto store_type = GET_NUMBER_FIELD("Type", 0);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 

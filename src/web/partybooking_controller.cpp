@@ -580,20 +580,162 @@ using namespace nlohmann;
 
 #define RECRUITMENT_PAGESIZE 10
 
-struct s_recruitment {
-	uint32 account_id = 0;
-	uint32 char_id = 0;
-	char world_name[32] = { 0 };
-	char char_name[NAME_LENGTH] = { 0 };
-	char comment[255] = { 0 };
-	uint32 min_level = 0;
-	uint32 max_level = 0;
-	uint8 tanker = 1;
-	uint8 healer = 1;
-	uint8 dealer = 1;
-	uint8 assist = 1;
-	uint8 adventure_type = 0;
+const size_t WORLD_NAME_LENGTH = 32;
+const size_t COMMENT_LENGTH = 255;
+
+struct s_party_booking_entry {
+	uint32 account_id;
+	uint32 char_id;
+	std::string char_name;
+	uint16 purpose;
+	bool assist;
+	bool damagedealer;
+	bool healer;
+	bool tanker;
+	uint16 minimum_level;
+	uint16 maximum_level;
+	std::string comment;
+
+public:
+	std::string to_json(std::string& world_name);
+	json to_json_object(std::string& world_name);
 };
+
+std::string s_party_booking_entry::to_json(std::string& world_name) {
+	return
+		"{ \"AID\": " + std::to_string(this->account_id) +
+		", \"GID\": " + std::to_string(this->char_id) +
+		", \"CharName\": \"" + this->char_name + "\""
+		", \"WorldName\": \"" + world_name + "\""
+		", \"Tanker\": " + (this->tanker ? "1" : "0") +
+		", \"Healer\": " + (this->healer ? "1" : "0") +
+		", \"Dealer\": " + (this->damagedealer ? "1" : "0") +
+		", \"Assist\": " + (this->assist ? "1" : "0") +
+		", \"MinLV\": " + std::to_string(this->minimum_level) +
+		", \"MaxLV\": " + std::to_string(this->maximum_level) +
+		", \"Memo\": \"" + this->comment + "\""
+		", \"Type\": " + std::to_string(this->purpose) +
+		"}";
+}
+
+json s_party_booking_entry::to_json_object(std::string& world_name) {
+	std::string json_string = this->to_json(world_name);
+	return json::parse(json_string);
+}
+
+bool party_booking_read(std::string& world_name, std::vector<s_party_booking_entry>& output,
+	const std::string& condition, const std::string& order = "", const std::string& limit = ""
+) {
+	s_party_booking_entry entry;
+	char world_name_escaped[WORLD_NAME_LENGTH * 2 + 1] = { 0 };
+	char char_name[NAME_LENGTH] = { 0 };
+	char comment[COMMENT_LENGTH + 1] = { 0 };
+	
+	SQLLock maplock(MAP_SQL_LOCK);
+	maplock.lock();
+	auto handle = maplock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
+	Sql_EscapeString(nullptr, world_name_escaped, world_name.c_str());
+
+	std::string query = "SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, `damagedealer`, `healer`, "
+		"`tanker`, `minimum_level`, `maximum_level`, `comment` FROM `" + std::string(partybookings_table) +
+		"` WHERE `world_name` = ? AND " + condition + order + limit;
+
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, query.c_str())
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name_escaped, strlen(world_name_escaped))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &entry.account_id, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 1, SQLDT_UINT32, &entry.char_id, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, (void*)char_name, sizeof(char_name), NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 3, SQLDT_UINT16, &entry.purpose, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &entry.assist, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &entry.damagedealer, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &entry.healer, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &entry.tanker, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 8, SQLDT_UINT16, &entry.minimum_level, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 9, SQLDT_UINT16, &entry.maximum_level, 0, NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 10, SQLDT_STRING, (void*)comment, sizeof(comment), NULL, NULL)
+		) {
+		SqlStmt_ShowDebug(stmt);
+		SqlStmt_Free(stmt);
+		maplock.unlock();
+		return false;
+	}
+
+	while (SQL_SUCCESS == SqlStmt_NextRow(stmt)) {
+		char_name[NAME_LENGTH - 1] = '\0';
+		comment[COMMENT_LENGTH - 1] = '\0';
+		
+		entry.char_name = A2UWE(char_name);
+		entry.comment = A2UWE(comment);
+
+		output.push_back(entry);
+	}
+
+	SqlStmt_Free(stmt);
+	maplock.unlock();
+
+	return true;
+}
+
+std::string party_booking_class_condition(bool tanker, bool healer, bool damagedealer, bool assist) {
+	std::string condition;
+
+	if (assist || damagedealer || healer || tanker) {
+		bool or_required = false;
+
+		condition += " AND ( ";
+
+		if (assist) {
+			if (or_required) {
+				condition += " OR ";
+			}
+			else {
+				or_required = true;
+			}
+
+			condition += "`assist` = '1'";
+		}
+
+		if (damagedealer) {
+			if (or_required) {
+				condition += " OR ";
+			}
+			else {
+				or_required = true;
+			}
+
+			condition += "`damagedealer` = '1'";
+		}
+
+		if (healer) {
+			if (or_required) {
+				condition += " OR ";
+			}
+			else {
+				or_required = true;
+			}
+
+			condition += "`healer` = '1'";
+		}
+
+		if (tanker) {
+			if (or_required) {
+				condition += " OR ";
+			}
+			else {
+				or_required = true;
+			}
+
+			condition += "`tanker` = '1'";
+		}
+
+		condition += " )";
+	}
+
+	return condition;
+}
 
 HANDLER_FUNC(partybooking_add) {
 	if (!isAuthorized(req, false)) {
@@ -619,16 +761,16 @@ HANDLER_FUNC(partybooking_add) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto char_name = GET_STRING_FIELD("CharName", "");
 	auto memo = GET_STRING_FIELD("Memo", "");
-	auto min_level = GET_NUMBER_FIELD("MinLV", 0);
-	auto max_level = GET_NUMBER_FIELD("MaxLV", 0);
+	auto minimum_level = GET_NUMBER_FIELD("MinLV", 0);
+	auto maximum_level = GET_NUMBER_FIELD("MaxLV", 0);
 	auto tanker = GET_NUMBER_FIELD("Tanker", 0);
 	auto healer = GET_NUMBER_FIELD("Healer", 0);
-	auto dealer = GET_NUMBER_FIELD("Dealer", 0);
+	auto damagedealer = GET_NUMBER_FIELD("Dealer", 0);
 	auto assist = GET_NUMBER_FIELD("Assist", 0);
-	auto adventure_type = GET_NUMBER_FIELD("Type", 0);
+	auto purpose = GET_NUMBER_FIELD("Type", 0);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 
@@ -636,7 +778,7 @@ HANDLER_FUNC(partybooking_add) {
 		make_response(res, FAILURE_RET, "The character specified by the \"GID\" must be the party leader.");
 		return;
 	}
-
+	
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
@@ -648,16 +790,16 @@ HANDLER_FUNC(partybooking_add) {
 		") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		partybookings_table)
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_UINT32, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_UINT32, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void*)char_name.c_str(), strlen(char_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_INT, &adventure_type, sizeof(adventure_type))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_INT, &assist, sizeof(assist))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_INT, &dealer, sizeof(dealer))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_INT, &healer, sizeof(healer))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_INT, &tanker, sizeof(tanker))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, SQLDT_INT, &min_level, sizeof(min_level))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_INT, &max_level, sizeof(max_level))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_UINT16, &purpose, sizeof(purpose))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_UINT8, &assist, sizeof(assist))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_UINT8, &damagedealer, sizeof(damagedealer))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_UINT8, &healer, sizeof(healer))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_UINT8, &tanker, sizeof(tanker))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, SQLDT_UINT16, &minimum_level, sizeof(minimum_level))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_UINT16, &maximum_level, sizeof(maximum_level))
 		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING, (void*)memo.c_str(), strlen(memo.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		) {
@@ -665,10 +807,8 @@ HANDLER_FUNC(partybooking_add) {
 		RETURN_STMT_FAILURE(stmt, maplock);
 	}
 
-	SqlStmt_Free(stmt);
-	maplock.unlock();
-
 	make_response(res, SUCCESS_RET);
+	RETURN_STMT_SUCCESS(stmt, maplock);
 }
 
 HANDLER_FUNC(partybooking_delete) {
@@ -720,77 +860,30 @@ HANDLER_FUNC(partybooking_get) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 
-	SQLLock maplock(MAP_SQL_LOCK);
-	maplock.lock();
-	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-		"SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, "
-		"`damagedealer`, `healer`, `tanker`, `minimum_level`, `maximum_level`, `comment`, `world_name` "
-		"FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
-		partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-		) {
+	std::vector<s_party_booking_entry> bookings;
+
+	if (!party_booking_read(world_name, bookings, "`account_id` = '" + std::to_string(account_id) + "'")) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
-		RETURN_STMT_FAILURE(stmt, maplock);
+		return;
 	}
+	
+	json response;
+	response["Type"] = SUCCESS_RET;
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
-		make_response(res, SUCCESS_RET);
-		RETURN_STMT_SUCCESS(stmt, maplock);
+	if (!bookings.empty()) {
+		response["data"] = bookings.at(0).to_json_object(world_name);
 	}
-
-	s_recruitment p;
-
-	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 8, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_STRING, &p.comment, sizeof(p.comment), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_NextRow(stmt)
-		) {
-		make_response(res, FAILURE_RET, "An error occurred while binding column.");
-		RETURN_STMT_SUCCESS(stmt, maplock);
-	}
-
-	safestrncpy(p.char_name, A2UWE(p.char_name).c_str(), NAME_LENGTH);
-	safestrncpy(p.world_name, A2UWE(p.world_name).c_str(), 32);
-	safestrncpy(p.comment, A2UWE(p.comment).c_str(), 255);
-
-	json response = {
-		{"Type", SUCCESS_RET},
-		{"data", {
-			{"AID", p.account_id},
-			{"GID", p.char_id},
-			{"CharName", p.char_name},
-			{"WorldName", p.world_name},
-			{"Tanker", p.tanker},
-			{"Dealer", p.dealer},
-			{"Healer", p.healer},
-			{"Assist", p.assist},
-			{"MinLV", p.min_level},
-			{"MaxLV", p.max_level},
-			{"Type", p.adventure_type},
-			{"Memo", p.comment},
-		}}
-	};
 
 	make_response(res, response);
-	RETURN_STMT_SUCCESS(stmt, maplock);
 }
 
 HANDLER_FUNC(partybooking_info) {
@@ -805,73 +898,31 @@ HANDLER_FUNC(partybooking_info) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto account_id = GET_NUMBER_FIELD("QueryAID", 0);
 
-	SQLLock maplock(MAP_SQL_LOCK);
-	maplock.lock();
-	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	if (!isVaildAccount(account_id)) {
+		make_response(res, FAILURE_RET, "The account specified by the \"QueryAID\" does not exist.");
+		return;
+	}
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-		"SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, "
-		"`damagedealer`, `healer`, `tanker`, `minimum_level`, `maximum_level`, `comment`, `world_name` "
-		"FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?) LIMIT 1",
-		partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-		) {
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
+	std::vector<s_party_booking_entry> bookings;
+
+	if (!party_booking_read(world_name, bookings, "`account_id` = '" + std::to_string(account_id) + "'")) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
-		RETURN_STMT_FAILURE(stmt, maplock);
+		return;
 	}
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
-		make_response(res, SUCCESS_RET);
-		RETURN_STMT_SUCCESS(stmt, maplock);
+	json response;
+	response["Type"] = SUCCESS_RET;
+
+	if (!bookings.empty()) {
+		response["data"] = bookings.at(0).to_json_object(world_name);
 	}
-
-	s_recruitment p;
-
-	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 8, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_STRING, &p.comment, sizeof(p.comment), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_NextRow(stmt)
-		) {
-		make_response(res, FAILURE_RET, "An error occurred while binding column.");
-		RETURN_STMT_SUCCESS(stmt, maplock);
-	}
-
-	safestrncpy(p.char_name, A2UWE(p.char_name).c_str(), NAME_LENGTH);
-	safestrncpy(p.world_name, A2UWE(p.world_name).c_str(), 32);
-	safestrncpy(p.comment, A2UWE(p.comment).c_str(), 255);
-
-	json response = {
-		{"Type", SUCCESS_RET},
-		{"data", {
-			{"AID", p.account_id},
-			{"GID", p.char_id},
-			{"CharName", p.char_name},
-			{"WorldName", p.world_name},
-			{"Tanker", p.tanker},
-			{"Dealer", p.dealer},
-			{"Healer", p.healer},
-			{"Assist", p.assist},
-			{"MinLV", p.min_level},
-			{"MaxLV", p.max_level},
-			{"Type", p.adventure_type},
-			{"Memo", p.comment},
-		}}
-	};
 
 	make_response(res, response);
-	RETURN_STMT_SUCCESS(stmt, maplock);
 }
 
 HANDLER_FUNC(partybooking_list) {
@@ -891,18 +942,18 @@ HANDLER_FUNC(partybooking_list) {
 	auto page = GET_NUMBER_FIELD("page", 1);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
+
+	// ============================================================
+	// 查询总记录数, 用于计算最大页数
+	// ============================================================
 
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
-
-	// ============================================================
-	// 查询总记录数, 用于计算最大页数
-	// ============================================================
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 		"SELECT COUNT(*) FROM `%s` WHERE `account_id` != ? AND `world_name` = ?",
@@ -923,40 +974,21 @@ HANDLER_FUNC(partybooking_list) {
 	
 	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
 
+	if (stmt) {
+		SqlStmt_Free(stmt);
+	}
+	maplock.unlock();
+
 	// ============================================================
 	// 根据客户端提供的 page 参数来查询指定页数的结果
 	// ============================================================
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-		"SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, "
-		"`damagedealer`, `healer`, `tanker`, `minimum_level`, `maximum_level`, `comment`, `world_name` "
-		"FROM `%s` WHERE (`account_id` != ? AND `world_name` = ?) LIMIT %d, %d",
-		partybookings_table, (page - 1) * RECRUITMENT_PAGESIZE, RECRUITMENT_PAGESIZE)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-		) {
+	std::vector<s_party_booking_entry> bookings;
+	std::string limit = " LIMIT " + std::to_string((page - 1) * RECRUITMENT_PAGESIZE) + ", " + std::to_string(RECRUITMENT_PAGESIZE);
+
+	if (!party_booking_read(world_name, bookings, "`account_id` != '" + std::to_string(account_id) + "'", " ORDER BY `created` DESC", limit)) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
-		RETURN_STMT_FAILURE(stmt, maplock);
-	}
-
-	s_recruitment p;
-
-	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 8, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_STRING, &p.comment, sizeof(p.comment), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL)
-		) {
-		make_response(res, FAILURE_RET, "An error occurred while binding column.");
-		RETURN_STMT_FAILURE(stmt, maplock);
+		return;
 	}
 
 	json response;
@@ -966,31 +998,13 @@ HANDLER_FUNC(partybooking_list) {
 		response["totalPage"] = max_page;
 		response["data"] = json::array();
 
-		while (SQL_SUCCESS == SqlStmt_NextRow(stmt)) {
-			safestrncpy(p.char_name, A2UWE(p.char_name).c_str(), NAME_LENGTH);
-			safestrncpy(p.world_name, A2UWE(p.world_name).c_str(), 32);
-			safestrncpy(p.comment, A2UWE(p.comment).c_str(), 255);
-
-			json record = {
-				{"AID", p.account_id},
-				{"GID", p.char_id},
-				{"CharName", p.char_name},
-				{"WorldName", p.world_name},
-				{"Tanker", p.tanker},
-				{"Dealer", p.dealer},
-				{"Healer", p.healer},
-				{"Assist", p.assist},
-				{"MinLV", p.min_level},
-				{"MaxLV", p.max_level},
-				{"Type", p.adventure_type},
-				{"Memo", p.comment},
-			};
-			response["data"].push_back(record);
+		for (size_t i = 0; i < bookings.size(); i++) {
+			s_party_booking_entry& booking = bookings.at(i);
+			response["data"].push_back(booking.to_json_object(world_name));
 		}
 	}
 
 	make_response(res, response);
-	RETURN_STMT_SUCCESS(stmt, maplock);
 }
 
 HANDLER_FUNC(partybooking_search) {
@@ -1002,58 +1016,58 @@ HANDLER_FUNC(partybooking_search) {
 	REQUIRE_FIELD_EXISTS("AID");
 	REQUIRE_FIELD_EXISTS("GID");
 	REQUIRE_FIELD_EXISTS("WorldName");
-	//	REQUIRE_FIELD_EXISTS("Memo");	// 玩家不选则客户端不传, 不做校验
+	//	REQUIRE_FIELD_EXISTS("Memo");	// 该字段若玩家不选, 那么客户端不会上传, 因此不做校验
 	REQUIRE_FIELD_EXISTS("MinLV");
 	REQUIRE_FIELD_EXISTS("MaxLV");
-	// 	REQUIRE_FIELD_EXISTS("Tanker");	// 玩家不选则客户端不传, 不做校验
-	// 	REQUIRE_FIELD_EXISTS("Healer");	// 玩家不选则客户端不传, 不做校验
-	// 	REQUIRE_FIELD_EXISTS("Dealer");	// 玩家不选则客户端不传, 不做校验
-	// 	REQUIRE_FIELD_EXISTS("Assist");	// 玩家不选则客户端不传, 不做校验
-	//	REQUIRE_FIELD_EXISTS("Type");	// 玩家不选则客户端不传, 不做校验
+	// 	REQUIRE_FIELD_EXISTS("Tanker");	// 该字段若玩家不选, 那么客户端不会上传, 因此不做校验
+	// 	REQUIRE_FIELD_EXISTS("Healer");	// 该字段若玩家不选, 那么客户端不会上传, 因此不做校验
+	// 	REQUIRE_FIELD_EXISTS("Dealer");	// 该字段若玩家不选, 那么客户端不会上传, 因此不做校验
+	// 	REQUIRE_FIELD_EXISTS("Assist");	// 该字段若玩家不选, 那么客户端不会上传, 因此不做校验
+	//	REQUIRE_FIELD_EXISTS("Type");	// 该字段若玩家不选, 那么客户端不会上传, 因此不做校验
 	REQUIRE_FIELD_EXISTS("page");
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto keyword = GET_STRING_FIELD("Memo", "");
-	auto min_level = GET_NUMBER_FIELD("MinLV", 0);
-	auto max_level = GET_NUMBER_FIELD("MaxLV", 0);
+	auto minimum_level = GET_NUMBER_FIELD("MinLV", 0);
+	auto maximum_level = GET_NUMBER_FIELD("MaxLV", 0);
 	auto tanker = GET_NUMBER_FIELD("Tanker", 0);
 	auto healer = GET_NUMBER_FIELD("Healer", 0);
-	auto dealer = GET_NUMBER_FIELD("Dealer", 0);
+	auto damagedealer = GET_NUMBER_FIELD("Dealer", 0);
 	auto assist = GET_NUMBER_FIELD("Assist", 0);
-	auto adventure_type = GET_NUMBER_FIELD("Type", 0);
+	auto purpose = GET_NUMBER_FIELD("Type", 0);
 	auto page = GET_NUMBER_FIELD("page", 1);
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
+
+	// ============================================================
+	// 查询总记录数, 用于计算最大页数
+	// ============================================================
 
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
-	// ============================================================
-	// 查询总记录数, 用于计算最大页数
-	// ============================================================
-
 	std::string sqlcmd = "SELECT COUNT(*) FROM `%s` "
-		"WHERE `minimum_level` <= %d AND `maximum_level` >= %d AND `account_id` != %d ";
-	if (adventure_type) {
+		"WHERE `minimum_level` <= %d AND `maximum_level` >= %d AND `account_id` != %d";
+
+	if (purpose) {
 		char buf[128] = { 0 };
-		sprintf(buf, " AND `purpose` = %d ", adventure_type);
+		sprintf(buf, " AND `purpose` = %d ", purpose);
 		sqlcmd += buf;
 	}
-	if (tanker) sqlcmd += " AND `tanker` = 1 ";
-	if (healer) sqlcmd += " AND `healer` = 1 ";
-	if (dealer) sqlcmd += " AND `damagedealer` = 1 ";
-	if (assist) sqlcmd += " AND `assist` = 1 ";
-	if (keyword.length()) sqlcmd += "AND (`char_name` LIKE '%%%s%%' OR `comment` LIKE '%%%s%%')";
+	sqlcmd += party_booking_class_condition(tanker, healer, damagedealer, assist);
+	if (keyword.length()) {
+		sqlcmd += "AND (`char_name` LIKE '%%%s%%' OR `comment` LIKE '%%%s%%')";
+	}
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(), partybookings_table,
-		min_level, max_level, account_id, keyword.c_str(), keyword.c_str())
+		minimum_level, maximum_level, account_id, keyword.c_str(), keyword.c_str())
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, maplock);
@@ -1068,71 +1082,35 @@ HANDLER_FUNC(partybooking_search) {
 	
 	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
 
+	if (stmt) {
+		SqlStmt_Free(stmt);
+	}
+	maplock.unlock();
+
 	// ============================================================
 	// 根据客户端提供的 page 参数来查询指定页数的结果
 	// ============================================================
 
-	sqlcmd = "SELECT `account_id`, `char_id`, `char_name`, `world_name`, `purpose`, "
-		"`tanker`, `damagedealer`, `healer`, `assist`, `minimum_level`, `maximum_level`, `comment` "
-		"FROM `%s` WHERE `world_name` = ? AND `minimum_level` <= %d AND `maximum_level` >= %d AND `account_id` != %d ";
-	if (adventure_type) {
+	std::vector<s_party_booking_entry> bookings;
+	std::string condition = "`account_id` != '" + std::to_string(account_id) + "'";
+	std::string limit = " LIMIT " + std::to_string((page - 1) * RECRUITMENT_PAGESIZE) + ", " + std::to_string(RECRUITMENT_PAGESIZE);
+
+	if (purpose) {
 		char buf[128] = { 0 };
-		sprintf(buf, " AND `purpose` = %d ", adventure_type);
-		sqlcmd += buf;
+		sprintf(buf, " AND `purpose` = %d", purpose);
+		condition += buf;
 	}
-	if (tanker) sqlcmd += " AND `tanker` = 1 ";
-	if (healer) sqlcmd += " AND `healer` = 1 ";
-	if (dealer) sqlcmd += " AND `damagedealer` = 1 ";
-	if (assist) sqlcmd += " AND `assist` = 1 ";
-	if (keyword.length()) sqlcmd += "AND (`char_name` LIKE '%%%s%%' OR `comment` LIKE '%%%s%%')";
-	sqlcmd += "LIMIT %d, %d";
-
+	condition += party_booking_class_condition(tanker, healer, damagedealer, assist);
 	if (keyword.length()) {
-		if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(),
-			partybookings_table, min_level, max_level, account_id,
-			keyword.c_str(), keyword.c_str(), // 若关键字不为空, 则而外需要多两个参数
-			(page - 1) * RECRUITMENT_PAGESIZE, RECRUITMENT_PAGESIZE)
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-			) {
-			make_response(res, FAILURE_RET, "An error occurred while executing query.");
-			RETURN_STMT_FAILURE(stmt, maplock);
-		}
+		condition += " AND (`char_name` LIKE '%" + keyword + "%' OR `comment` LIKE '%" + keyword + "%')";
 	}
-	else {
-		if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(),
-			partybookings_table, min_level, max_level, account_id,
-			page - 1, RECRUITMENT_PAGESIZE)
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-			) {
-			make_response(res, FAILURE_RET, "An error occurred while executing query.");
-			RETURN_STMT_FAILURE(stmt, maplock);
-		}
-	}
-
-	if (SqlStmt_NumRows(stmt) <= 0) {
-		make_response(res, SUCCESS_RET);
-		RETURN_STMT_SUCCESS(stmt, maplock);
-	}
-
-	s_recruitment p;
-
-	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &p.account_id, sizeof(p.account_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 1, SQLDT_INT, &p.char_id, sizeof(p.char_id), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, &p.char_name, sizeof(p.char_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 3, SQLDT_STRING, &p.world_name, sizeof(p.world_name), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &p.adventure_type, sizeof(p.adventure_type), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &p.tanker, sizeof(p.tanker), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &p.dealer, sizeof(p.dealer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &p.healer, sizeof(p.healer), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 8, SQLDT_UINT8, &p.assist, sizeof(p.assist), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 9, SQLDT_UINT32, &p.min_level, sizeof(p.min_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 10, SQLDT_UINT32, &p.max_level, sizeof(p.max_level), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_BindColumn(stmt, 11, SQLDT_STRING, &p.comment, sizeof(p.comment), NULL, NULL)
-		) {
-		make_response(res, FAILURE_RET, "An error occurred while binding column.");
-		RETURN_STMT_FAILURE(stmt, maplock);
+	
+	condition += " AND `minimum_level` <= " + std::to_string(minimum_level);
+	condition += " AND `maximum_level` >= " + std::to_string(maximum_level);
+	
+	if (!party_booking_read(world_name, bookings, condition, " ORDER BY `created` DESC", limit)) {
+		make_response(res, FAILURE_RET, "An error occurred while executing query.");
+		return;
 	}
 
 	json response;
@@ -1142,31 +1120,13 @@ HANDLER_FUNC(partybooking_search) {
 		response["totalPage"] = max_page;
 		response["data"] = json::array();
 
-		while (SQL_SUCCESS == SqlStmt_NextRow(stmt)) {
-			safestrncpy(p.char_name, A2UWE(p.char_name).c_str(), NAME_LENGTH);
-			safestrncpy(p.world_name, A2UWE(p.world_name).c_str(), 32);
-			safestrncpy(p.comment, A2UWE(p.comment).c_str(), 255);
-
-			json record = {
-				{"AID", p.account_id},
-				{"GID", p.char_id},
-				{"CharName", p.char_name},
-				{"WorldName", p.world_name},
-				{"Tanker", p.tanker},
-				{"Dealer", p.dealer},
-				{"Healer", p.healer},
-				{"Assist", p.assist},
-				{"MinLV", p.min_level},
-				{"MaxLV", p.max_level},
-				{"Type", p.adventure_type},
-				{"Memo", p.comment},
-			};
-			response["data"].push_back(record);
+		for (size_t i = 0; i < bookings.size(); i++) {
+			s_party_booking_entry& booking = bookings.at(i);
+			response["data"].push_back(booking.to_json_object(world_name));
 		}
 	}
 
 	make_response(res, response);
-	RETURN_STMT_SUCCESS(stmt, maplock);
 }
 
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

@@ -205,7 +205,7 @@ HANDLER_FUNC(charconfig_save) {
 	auto data = GET_STRING_FIELD("data", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 
@@ -295,7 +295,7 @@ HANDLER_FUNC(charconfig_load) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 
