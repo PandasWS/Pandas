@@ -578,7 +578,9 @@ using namespace nlohmann;
 #define FAILURE_RET -3
 #define REQUIRE_FIELD_EXISTS(x) REQUIRE_FIELD_EXISTS_R(x)
 
-#define RECRUITMENT_PAGESIZE 10
+// 设置冒险者中介所每个页面能显示的最大记录数
+// 经过测试 20211117 客户端并不支持滚动条, 所以每个页面最多显示 10 条记录
+const size_t SINGLE_PAGESIZE = 10;
 
 const size_t WORLD_NAME_LENGTH = 32;
 const size_t COMMENT_LENGTH = 255;
@@ -972,7 +974,7 @@ HANDLER_FUNC(partybooking_list) {
 		RETURN_STMT_FAILURE(stmt, maplock);
 	}
 	
-	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
+	int max_page = (int)ceil((double)record_cnt / SINGLE_PAGESIZE);
 
 	if (stmt) {
 		SqlStmt_Free(stmt);
@@ -984,7 +986,7 @@ HANDLER_FUNC(partybooking_list) {
 	// ============================================================
 
 	std::vector<s_party_booking_entry> bookings;
-	std::string limit = " LIMIT " + std::to_string((page - 1) * RECRUITMENT_PAGESIZE) + ", " + std::to_string(RECRUITMENT_PAGESIZE);
+	std::string limit = " LIMIT " + std::to_string((page - 1) * SINGLE_PAGESIZE) + ", " + std::to_string(SINGLE_PAGESIZE);
 
 	if (!party_booking_read(world_name, bookings, "`account_id` != '" + std::to_string(account_id) + "'", " ORDER BY `created` DESC", limit)) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
@@ -1080,7 +1082,7 @@ HANDLER_FUNC(partybooking_search) {
 		RETURN_STMT_FAILURE(stmt, maplock);
 	}
 	
-	int max_page = (int)ceil((double)record_cnt / RECRUITMENT_PAGESIZE);
+	int max_page = (int)ceil((double)record_cnt / SINGLE_PAGESIZE);
 
 	if (stmt) {
 		SqlStmt_Free(stmt);
@@ -1093,7 +1095,7 @@ HANDLER_FUNC(partybooking_search) {
 
 	std::vector<s_party_booking_entry> bookings;
 	std::string condition = "`account_id` != '" + std::to_string(account_id) + "'";
-	std::string limit = " LIMIT " + std::to_string((page - 1) * RECRUITMENT_PAGESIZE) + ", " + std::to_string(RECRUITMENT_PAGESIZE);
+	std::string limit = " LIMIT " + std::to_string((page - 1) * SINGLE_PAGESIZE) + ", " + std::to_string(SINGLE_PAGESIZE);
 
 	if (purpose) {
 		char buf[128] = { 0 };
