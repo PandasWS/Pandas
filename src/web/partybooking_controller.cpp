@@ -582,7 +582,6 @@ using namespace nlohmann;
 // 经过测试 20211117 客户端并不支持滚动条, 所以每个页面最多显示 10 条记录
 const size_t SINGLE_PAGESIZE = 10;
 
-const size_t WORLD_NAME_LENGTH = 32;
 const size_t COMMENT_LENGTH = 255;
 
 struct s_party_booking_entry {
@@ -599,37 +598,31 @@ struct s_party_booking_entry {
 	std::string comment;
 
 public:
-	std::string to_json(std::string& world_name);
-	json to_json_object(std::string& world_name);
+	json to_json(std::string& world_name);
 };
 
-std::string s_party_booking_entry::to_json(std::string& world_name) {
-	return
-		"{ \"AID\": " + std::to_string(this->account_id) +
-		", \"GID\": " + std::to_string(this->char_id) +
-		", \"CharName\": \"" + this->char_name + "\""
-		", \"WorldName\": \"" + world_name + "\""
-		", \"Tanker\": " + (this->tanker ? "1" : "0") +
-		", \"Healer\": " + (this->healer ? "1" : "0") +
-		", \"Dealer\": " + (this->damagedealer ? "1" : "0") +
-		", \"Assist\": " + (this->assist ? "1" : "0") +
-		", \"MinLV\": " + std::to_string(this->minimum_level) +
-		", \"MaxLV\": " + std::to_string(this->maximum_level) +
-		", \"Memo\": \"" + this->comment + "\""
-		", \"Type\": " + std::to_string(this->purpose) +
-		"}";
-}
-
-json s_party_booking_entry::to_json_object(std::string& world_name) {
-	std::string json_string = this->to_json(world_name);
-	return json::parse(json_string);
+json s_party_booking_entry::to_json(std::string& world_name) {
+	json content = {
+		{"AID", this->account_id},
+		{"GID", this->char_id},
+		{"CharName", A2UWE(this->char_name)},
+		{"WorldName", A2UWE(world_name)},
+		{"Tanker", (this->tanker ? 1 : 0)},
+		{"Healer", (this->healer ? 1 : 0)},
+		{"Dealer", (this->damagedealer ? 1 : 0)},
+		{"Assist", (this->assist ? 1 : 0)},
+		{"MinLV", this->minimum_level},
+		{"MaxLV", this->maximum_level},
+		{"Memo", A2UWE(this->comment)},
+		{"Type", this->purpose},
+	};
+	return content;
 }
 
 bool party_booking_read(std::string& world_name, std::vector<s_party_booking_entry>& output,
 	const std::string& condition, const std::string& order = "", const std::string& limit = ""
 ) {
 	s_party_booking_entry entry;
-	char world_name_escaped[WORLD_NAME_LENGTH * 2 + 1] = { 0 };
 	char char_name[NAME_LENGTH] = { 0 };
 	char comment[COMMENT_LENGTH + 1] = { 0 };
 	
@@ -638,14 +631,12 @@ bool party_booking_read(std::string& world_name, std::vector<s_party_booking_ent
 	auto handle = maplock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
-	Sql_EscapeString(nullptr, world_name_escaped, world_name.c_str());
-
 	std::string query = "SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, `damagedealer`, `healer`, "
 		"`tanker`, `minimum_level`, `maximum_level`, `comment` FROM `" + std::string(partybookings_table) +
 		"` WHERE `world_name` = ? AND " + condition + order + limit;
 
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, query.c_str())
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name_escaped, strlen(world_name_escaped))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &entry.account_id, 0, NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 1, SQLDT_UINT32, &entry.char_id, 0, NULL, NULL)
@@ -669,8 +660,8 @@ bool party_booking_read(std::string& world_name, std::vector<s_party_booking_ent
 		char_name[NAME_LENGTH - 1] = '\0';
 		comment[COMMENT_LENGTH - 1] = '\0';
 		
-		entry.char_name = A2UWE(char_name);
-		entry.comment = A2UWE(comment);
+		entry.char_name = char_name;
+		entry.comment = comment;
 
 		output.push_back(entry);
 	}
@@ -682,7 +673,6 @@ bool party_booking_read(std::string& world_name, std::vector<s_party_booking_ent
 }
 
 int party_booking_count(std::string& world_name, const std::string& condition) {
-	char world_name_escaped[WORLD_NAME_LENGTH * 2 + 1] = { 0 };
 	uint32 record_count = 0;
 
 	SQLLock maplock(MAP_SQL_LOCK);
@@ -690,12 +680,10 @@ int party_booking_count(std::string& world_name, const std::string& condition) {
 	auto handle = maplock.getHandle();
 	SqlStmt* stmt = SqlStmt_Malloc(handle);
 
-	Sql_EscapeString(nullptr, world_name_escaped, world_name.c_str());
-
 	std::string query = "SELECT COUNT(*) FROM `%s` WHERE `world_name` = ? AND " + condition;
 	
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, query.c_str(), partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name_escaped, strlen(world_name_escaped))
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
 		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &record_count, sizeof(record_count), NULL, NULL)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)) {
@@ -908,7 +896,7 @@ HANDLER_FUNC(partybooking_get) {
 	response["Type"] = SUCCESS_RET;
 
 	if (!bookings.empty()) {
-		response["data"] = bookings.at(0).to_json_object(world_name);
+		response["data"] = bookings.at(0).to_json(world_name);
 	}
 
 	make_response(res, response);
@@ -947,7 +935,7 @@ HANDLER_FUNC(partybooking_info) {
 	response["Type"] = SUCCESS_RET;
 
 	if (!bookings.empty()) {
-		response["data"] = bookings.at(0).to_json_object(world_name);
+		response["data"] = bookings.at(0).to_json(world_name);
 	}
 
 	make_response(res, response);
@@ -1005,7 +993,7 @@ HANDLER_FUNC(partybooking_list) {
 
 		for (size_t i = 0; i < bookings.size(); i++) {
 			s_party_booking_entry& booking = bookings.at(i);
-			response["data"].push_back(booking.to_json_object(world_name));
+			response["data"].push_back(booking.to_json(world_name));
 		}
 	}
 
@@ -1093,7 +1081,7 @@ HANDLER_FUNC(partybooking_search) {
 
 		for (size_t i = 0; i < bookings.size(); i++) {
 			s_party_booking_entry& booking = bookings.at(i);
-			response["data"].push_back(booking.to_json_object(world_name));
+			response["data"].push_back(booking.to_json(world_name));
 		}
 	}
 
