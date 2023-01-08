@@ -586,16 +586,16 @@ const size_t WORLD_NAME_LENGTH = 32;
 const size_t COMMENT_LENGTH = 255;
 
 struct s_party_booking_entry {
-	uint32 account_id;
-	uint32 char_id;
+	uint32 account_id = 0;
+	uint32 char_id = 0;
 	std::string char_name;
-	uint16 purpose;
-	bool assist;
-	bool damagedealer;
-	bool healer;
-	bool tanker;
-	uint16 minimum_level;
-	uint16 maximum_level;
+	uint16 purpose = 0;
+	bool assist = false;
+	bool damagedealer = false;
+	bool healer = false;
+	bool tanker = false;
+	uint16 minimum_level = 0;
+	uint16 maximum_level = 0;
 	std::string comment;
 
 public:
@@ -679,6 +679,32 @@ bool party_booking_read(std::string& world_name, std::vector<s_party_booking_ent
 	maplock.unlock();
 
 	return true;
+}
+
+int party_booking_count(std::string& world_name, const std::string& condition) {
+	char world_name_escaped[WORLD_NAME_LENGTH * 2 + 1] = { 0 };
+	uint32 record_count = 0;
+
+	SQLLock maplock(MAP_SQL_LOCK);
+	maplock.lock();
+	auto handle = maplock.getHandle();
+	SqlStmt* stmt = SqlStmt_Malloc(handle);
+
+	Sql_EscapeString(nullptr, world_name_escaped, world_name.c_str());
+
+	std::string query = "SELECT COUNT(*) FROM `%s` WHERE `world_name` = ? AND " + condition;
+	
+	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, query.c_str(), partybookings_table)
+		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name_escaped, strlen(world_name_escaped))
+		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &record_count, sizeof(record_count), NULL, NULL)
+		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)) {
+		SqlStmt_ShowDebug(stmt);
+	}
+	
+	SqlStmt_Free(stmt);
+	maplock.unlock();
+	return record_count;
 }
 
 std::string party_booking_class_condition(bool tanker, bool healer, bool damagedealer, bool assist) {
@@ -948,55 +974,32 @@ HANDLER_FUNC(partybooking_list) {
 		return;
 	}
 
-	// ============================================================
-	// 查询总记录数, 用于计算最大页数
-	// ============================================================
+	// 构建查询条件
+	std::string condition = "`account_id` != '" + std::to_string(account_id) + "'";
 
-	SQLLock maplock(MAP_SQL_LOCK);
-	maplock.lock();
-	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	// 获取能查到的总记录数
+	int record_count = party_booking_count(world_name, condition);
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
-		"SELECT COUNT(*) FROM `%s` WHERE `account_id` != ? AND `world_name` = ?",
-		partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
-		make_response(res, FAILURE_RET, "An error occurred while executing query.");
-		RETURN_STMT_FAILURE(stmt, maplock);
-	}
+	// 计算最大页数
+	int max_page = (int)ceil((double)record_count / SINGLE_PAGESIZE);
 
-	int record_cnt = 0;
-	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &record_cnt, sizeof(record_cnt), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_NextRow(stmt)) {
-		make_response(res, FAILURE_RET, "An error occurred while binding column.");
-		RETURN_STMT_FAILURE(stmt, maplock);
-	}
-	
-	int max_page = (int)ceil((double)record_cnt / SINGLE_PAGESIZE);
-
-	if (stmt) {
-		SqlStmt_Free(stmt);
-	}
-	maplock.unlock();
-
-	// ============================================================
-	// 根据客户端提供的 page 参数来查询指定页数的结果
-	// ============================================================
-
-	std::vector<s_party_booking_entry> bookings;
+	// 构建 LIMIT 翻页限制
 	std::string limit = " LIMIT " + std::to_string((page - 1) * SINGLE_PAGESIZE) + ", " + std::to_string(SINGLE_PAGESIZE);
 
-	if (!party_booking_read(world_name, bookings, "`account_id` != '" + std::to_string(account_id) + "'", " ORDER BY `created` DESC", limit)) {
+	// 用于承接结果的 vector 容器
+	std::vector<s_party_booking_entry> bookings;
+
+	// 执行查询
+	if (!party_booking_read(world_name, bookings, condition, " ORDER BY `created` DESC", limit)) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		return;
 	}
 
+	// 构建 HTTP 响应内容
 	json response;
 	response["Type"] = SUCCESS_RET;
 
-	if (record_cnt) {
+	if (!bookings.empty()) {
 		response["totalPage"] = max_page;
 		response["data"] = json::array();
 
@@ -1046,56 +1049,8 @@ HANDLER_FUNC(partybooking_search) {
 		return;
 	}
 
-	// ============================================================
-	// 查询总记录数, 用于计算最大页数
-	// ============================================================
-
-	SQLLock maplock(MAP_SQL_LOCK);
-	maplock.lock();
-	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
-
-	std::string sqlcmd = "SELECT COUNT(*) FROM `%s` "
-		"WHERE `minimum_level` <= %d AND `maximum_level` >= %d AND `account_id` != %d";
-
-	if (purpose) {
-		char buf[128] = { 0 };
-		sprintf(buf, " AND `purpose` = %d ", purpose);
-		sqlcmd += buf;
-	}
-	sqlcmd += party_booking_class_condition(tanker, healer, damagedealer, assist);
-	if (keyword.length()) {
-		sqlcmd += "AND (`char_name` LIKE '%%%s%%' OR `comment` LIKE '%%%s%%')";
-	}
-
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, sqlcmd.c_str(), partybookings_table,
-		minimum_level, maximum_level, account_id, keyword.c_str(), keyword.c_str())
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)) {
-		make_response(res, FAILURE_RET, "An error occurred while executing query.");
-		RETURN_STMT_FAILURE(stmt, maplock);
-	}
-
-	int record_cnt = 0;
-	if (SQL_ERROR == SqlStmt_BindColumn(stmt, 0, SQLDT_INT, &record_cnt, sizeof(record_cnt), NULL, NULL)
-		|| SQL_ERROR == SqlStmt_NextRow(stmt)) {
-		make_response(res, FAILURE_RET, "An error occurred while binding column.");
-		RETURN_STMT_FAILURE(stmt, maplock);
-	}
-	
-	int max_page = (int)ceil((double)record_cnt / SINGLE_PAGESIZE);
-
-	if (stmt) {
-		SqlStmt_Free(stmt);
-	}
-	maplock.unlock();
-
-	// ============================================================
-	// 根据客户端提供的 page 参数来查询指定页数的结果
-	// ============================================================
-
-	std::vector<s_party_booking_entry> bookings;
+	// 构建查询条件
 	std::string condition = "`account_id` != '" + std::to_string(account_id) + "'";
-	std::string limit = " LIMIT " + std::to_string((page - 1) * SINGLE_PAGESIZE) + ", " + std::to_string(SINGLE_PAGESIZE);
 
 	if (purpose) {
 		char buf[128] = { 0 };
@@ -1106,19 +1061,33 @@ HANDLER_FUNC(partybooking_search) {
 	if (keyword.length()) {
 		condition += " AND (`char_name` LIKE '%" + keyword + "%' OR `comment` LIKE '%" + keyword + "%')";
 	}
-	
+
 	condition += " AND `minimum_level` <= " + std::to_string(minimum_level);
 	condition += " AND `maximum_level` >= " + std::to_string(maximum_level);
-	
+
+	// 获取能查到的总记录数
+	int record_count = party_booking_count(world_name, condition);
+
+	// 计算最大页数
+	int max_page = (int)ceil((double)record_count / SINGLE_PAGESIZE);
+
+	// 构建 LIMIT 翻页限制
+	std::string limit = " LIMIT " + std::to_string((page - 1) * SINGLE_PAGESIZE) + ", " + std::to_string(SINGLE_PAGESIZE);
+
+	// 用于承接结果的 vector 容器
+	std::vector<s_party_booking_entry> bookings;
+
+	// 执行查询
 	if (!party_booking_read(world_name, bookings, condition, " ORDER BY `created` DESC", limit)) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		return;
 	}
 
+	// 构建 HTTP 响应内容
 	json response;
 	response["Type"] = SUCCESS_RET;
 
-	if (record_cnt) {
+	if (!bookings.empty()) {
 		response["totalPage"] = max_page;
 		response["data"] = json::array();
 
