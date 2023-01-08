@@ -125,7 +125,7 @@ enum e_aura_special aura_special(uint16 effect_id) {
 // Author:      Sola丶小克(CairoLee)  2021/12/29 21:27
 //************************************ 
 int aura_effects_timer_sub(struct block_list* bl, va_list ap) {
-	struct map_session_data* sd = nullptr;
+	map_session_data* sd = nullptr;
 	struct block_list* effect_unit_bl = va_arg(ap, struct block_list*);
 	unsigned int effect_id = va_arg(ap, unsigned int);
 
@@ -194,10 +194,10 @@ bool aura_need_hiding(struct block_list* bl, struct block_list* observer_bl) {
 	// 因此如果是宠物的话, 就默认为无需隐藏.
 	if (bl->type == BL_PET) return false;
 
-	struct status_change* sc = status_get_sc(bl);
+	status_change* sc = status_get_sc(bl);
 	if (!sc) return true;
-
-	return status_ishiding(bl, observer_bl) || status_isinvisible(bl) || sc->data[SC_CAMOUFLAGE];
+	
+	return status_ishiding(bl, observer_bl) || status_isinvisible(bl) || sc->getSCE(SC_CAMOUFLAGE);
 }
 
 //************************************
@@ -328,7 +328,7 @@ void aura_make_effective(struct block_list* bl, uint32 aura_id, bool pc_saved) {
 	switch (bl->type)
 	{
 	case BL_PC: {
-		struct map_session_data* sd = BL_CAST(BL_PC, bl);
+		map_session_data* sd = BL_CAST(BL_PC, bl);
 		if (sd && pc_saved) {
 			pc_setglobalreg(sd, add_str(AURA_VARIABLE), aura_id);
 		}

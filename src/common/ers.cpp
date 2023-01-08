@@ -193,11 +193,7 @@ static void *ers_obj_alloc_entry(ERS *self)
 		instance->Cache->ReuseList = instance->Cache->ReuseList->Next;
 	} else if (instance->Cache->Free > 0) {
 		instance->Cache->Free--;
-#ifndef Pandas_LGTM_Optimization
-		ret = &instance->Cache->Blocks[instance->Cache->Used - 1][instance->Cache->Free * instance->Cache->ObjectSize + sizeof(struct ers_list)];
-#else
-		ret = &instance->Cache->Blocks[instance->Cache->Used - 1][(unsigned long)instance->Cache->Free * instance->Cache->ObjectSize + sizeof(struct ers_list)];
-#endif // Pandas_LGTM_Optimization
+		ret = &instance->Cache->Blocks[instance->Cache->Used - 1][static_cast<size_t>( instance->Cache->Free ) * static_cast<size_t>( instance->Cache->ObjectSize ) + sizeof( struct ers_list )];
 	} else {
 		if (instance->Cache->Used == instance->Cache->Max) {
 			instance->Cache->Max = (instance->Cache->Max * 4) + 3;
@@ -208,11 +204,7 @@ static void *ers_obj_alloc_entry(ERS *self)
 		instance->Cache->Used++;
 
 		instance->Cache->Free = instance->Cache->ChunkSize -1;
-#ifndef Pandas_LGTM_Optimization
-		ret = &instance->Cache->Blocks[instance->Cache->Used - 1][instance->Cache->Free * instance->Cache->ObjectSize + sizeof(struct ers_list)];
-#else
-		ret = &instance->Cache->Blocks[instance->Cache->Used - 1][(unsigned long)instance->Cache->Free * instance->Cache->ObjectSize + sizeof(struct ers_list)];
-#endif // Pandas_LGTM_Optimization
+		ret = &instance->Cache->Blocks[instance->Cache->Used - 1][static_cast<size_t>( instance->Cache->Free ) * static_cast<size_t>( instance->Cache->ObjectSize ) + sizeof( struct ers_list )];
 	}
 
 	instance->Count++;

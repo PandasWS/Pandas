@@ -153,7 +153,7 @@ bool suspend_recall(uint32 charid, e_suspend_mode mode,
 		}
 
 		// 初始化一个玩家对象
-		CREATE(sp->sd, struct map_session_data, 1);
+		CREATE(sp->sd, map_session_data, 1);
 		pc_setnewpc(sp->sd, sp->account_id, sp->char_id, 0, gettick(), sp->sex, 0);
 
 		sp->mode = mode;
@@ -232,7 +232,7 @@ void suspend_recall_all() {
 			}
 
 			// 初始化一个玩家对象
-			CREATE(sp->sd, struct map_session_data, 1);
+			CREATE(sp->sd, map_session_data, 1);
 			pc_setnewpc(sp->sd, sp->account_id, sp->char_id, 0, gettick(), sp->sex, 0);
 			suspend_set_status(sp);
 
@@ -254,11 +254,11 @@ void suspend_recall_all() {
 //************************************
 // Method:      suspend_recall_postfix
 // Description: 被召回的角色成功上线后需要做的后置处理
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/8 10:14
 //************************************
-void suspend_recall_postfix(struct map_session_data* sd) {
+void suspend_recall_postfix(map_session_data* sd) {
 	nullpo_retv(sd);
 
 	struct s_suspender* sp = NULL;
@@ -284,12 +284,12 @@ void suspend_recall_postfix(struct map_session_data* sd) {
 //************************************
 // Method:      suspend_set_unit_idle
 // Description: 在 clif_set_unit_idle 函数中对发送给客户端的封包进行修改
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Parameter:   struct packet_idle_unit * p
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/7/20 22:32
 //************************************
-void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit* p) {
+void suspend_set_unit_idle(map_session_data* sd, struct packet_idle_unit* p) {
 	nullpo_retv(sd);
 	nullpo_retv(p);
 
@@ -311,12 +311,12 @@ void suspend_set_unit_idle(struct map_session_data* sd, struct packet_idle_unit*
 //************************************
 // Method:      suspend_set_unit_walking
 // Description: 在 clif_set_unit_walking 函数中对发送给客户端的封包进行修改
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Parameter:   struct packet_unit_walking * p
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/7/20 22:34
 //************************************
-void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_walking* p) {
+void suspend_set_unit_walking(map_session_data* sd, struct packet_unit_walking* p) {
 	nullpo_retv(sd);
 	nullpo_retv(p);
 
@@ -338,12 +338,12 @@ void suspend_set_unit_walking(struct map_session_data* sd, struct packet_unit_wa
 //************************************
 // Method:      suspend_active
 // Description: 激活某个角色的某种挂起模式, 并使其断开与客户端的连接
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Parameter:   enum e_suspend_mode smode
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2020/4/5 23:05
 //************************************
-void suspend_active(struct map_session_data* sd, enum e_suspend_mode smode) {
+void suspend_active(map_session_data* sd, enum e_suspend_mode smode) {
 	nullpo_retv(sd);
 	long val[4] = { 0 };
 	int sitting = -1, headdirection = -1, bodydirection = -1;
@@ -544,12 +544,12 @@ static int suspend_suspender_free(DBKey key, DBData* data, va_list ap) {
 // Method:      suspend_deactive
 // Description: 反激活某个角色的挂起模式, 下次地图服务器启动将不再自动上线
 // Access:      public 
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Parameter:   bool keep_database
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/02/21 22:32
 //************************************ 
-void suspend_deactive(struct map_session_data* sd, bool keep_database) {
+void suspend_deactive(map_session_data* sd, bool keep_database) {
 	nullpo_retv(sd);
 
 	// 若希望保留下次地图服务器开启能自动上线的话, 那么不移除数据库中的记录

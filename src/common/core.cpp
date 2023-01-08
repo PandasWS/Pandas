@@ -46,19 +46,18 @@
 #include "utf8.hpp"
 #endif // Pandas_Setup_Console_Output_Codepage
 
-/// Called when a terminate signal is received.
-void (*shutdown_callback)(void) = NULL;
+using namespace rathena::server_core;
+
+Core* global_core = nullptr;
 
 #if defined(BUILDBOT)
 	int buildbotflag = 0;
 #endif
 
-int runflag = CORE_ST_RUN;
 char db_path[12] = "db"; /// relative path for db from server
 char conf_path[12] = "conf"; /// relative path for conf from server
 
 char *SERVER_NAME = NULL;
-char SERVER_TYPE = ATHENA_SERVER_NONE;
 
 #ifndef MINICORE	// minimalist Core
 // Added by Gabuzomeu
@@ -100,10 +99,9 @@ static BOOL WINAPI console_handler(DWORD c_event) {
     case CTRL_CLOSE_EVENT:
     case CTRL_LOGOFF_EVENT:
     case CTRL_SHUTDOWN_EVENT:
-		if( shutdown_callback != NULL )
-			shutdown_callback();
-		else
-			runflag = CORE_ST_STOP;// auto-shutdown
+		if( global_core != nullptr ){
+			global_core->signal_shutdown();
+		}
         break;
 	default:
 		return FALSE;
@@ -128,14 +126,15 @@ static void sig_proc(int sn) {
 	case SIGTERM:
 		if (++is_called > 3)
 			exit(EXIT_SUCCESS);
-		if( shutdown_callback != NULL )
-			shutdown_callback();
-		else
-			runflag = CORE_ST_STOP;// auto-shutdown
+		if( global_core != nullptr ){
+			global_core->signal_shutdown();
+		}
 		break;
 	case SIGSEGV:
 	case SIGFPE:
-		do_abort();
+		if( global_core != nullptr ){
+			global_core->signal_crash();
+		}
 #ifndef Pandas_Google_Breakpad
 		// 在 Windows 环境下, 若启用了 Google Breakpad 模块
 		// 那么它将在初始化的时候调用 SetUnhandledExceptionFilter 设置了未处理的错误回调函数.
@@ -409,11 +408,14 @@ void usercheck(void)
 #endif
 }
 
-/*======================================
- *	CORE : MAINROUTINE
- *--------------------------------------*/
-int main (int argc, char **argv)
-{
+int Core::start( int argc, char **argv ){
+	if( this->get_status() != e_core_status::NOT_STARTED) {
+		ShowFatalError( "Core was already started and cannot be started again!\n" );
+		return EXIT_FAILURE;
+	}
+
+	this->set_status( e_core_status::CORE_INITIALIZING );
+
 #ifdef Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
 	isaAvailableHotfix();
 #endif // Pandas_Crashfix_VisualStudio_UnorderedMap_AVX512
@@ -458,17 +460,10 @@ int main (int argc, char **argv)
 #endif // Pandas_Console_Translate
 
 	malloc_init();// needed for Show* in display_title() [FlavioJS]
-
-#ifdef MINICORE // minimalist Core
-	display_title();
-	usercheck();
-	do_init(argc,argv);
-	do_final();
-#else// not MINICORE
-	set_server_type();
 	display_title();
 	usercheck();
 
+#ifndef MINICORE
 	Sql_Init();
 	db_init();
 #if (!defined(Pandas_Google_Breakpad) || defined(_WIN32))
@@ -480,34 +475,49 @@ int main (int argc, char **argv)
 #ifdef _WIN32
 	cevents_init();
 #endif
-
 	timer_init();
 	socket_init();
+#endif
 
 #ifdef Pandas_Google_Breakpad
 	breakpad_status();
 #endif // Pandas_Google_Breakpad
 
-	do_init(argc,argv);
+	this->set_status( e_core_status::CORE_INITIALIZED );
+
+	this->set_status( e_core_status::SERVER_INITIALIZING );
+	if( !this->initialize( argc, argv ) ){
+		return EXIT_FAILURE;
+	}
 
 #ifdef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	performance_destory("core_init");
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
-	// Main runtime cycle
-	while (runflag != CORE_ST_STOP) { 
-		t_tick next = do_timer(gettick_nocache());
+	// If initialization did not trigger shutdown
+	if( this->status != e_core_status::STOPPING ){
+		this->set_status( e_core_status::SERVER_INITIALIZED );
 
-		if (SERVER_TYPE != ATHENA_SERVER_WEB) {
-			do_sockets(next);
-			do_future();
+		this->set_status( e_core_status::RUNNING );
+#ifndef MINICORE
+		if( !this->run_once ){
+			// Main runtime cycle
+			while( this->get_status() == e_core_status::RUNNING ){
+				t_tick next = do_timer( gettick_nocache() );
+
+				this->handle_main( next );
+			}
 		}
-		else
-			do_wait(next);
+#endif
+		this->set_status( e_core_status::STOPPING );
 	}
 
-	do_final();
+	this->set_status( e_core_status::SERVER_FINALIZING );
+	this->finalize();
+	this->set_status( e_core_status::SERVER_FINALIZED );
 
+	this->set_status( e_core_status::CORE_FINALIZING );
+#ifndef MINICORE
 	timer_final();
 	socket_final();
 	db_final();
@@ -515,6 +525,7 @@ int main (int argc, char **argv)
 #endif
 
 	malloc_final();
+	this->set_status( e_core_status::CORE_FINALIZED );
 
 #ifdef Pandas_Console_Translate
 	do_final_translate();
@@ -526,5 +537,76 @@ int main (int argc, char **argv)
 	}
 #endif
 
-	return 0;
+	this->set_status( e_core_status::STOPPED );
+
+	return EXIT_SUCCESS;
+}
+
+bool Core::initialize( int argc, char* argv[] ){
+	// Do nothing
+	return true;
+}
+
+void Core::handle_main( t_tick next ){
+#ifndef MINICORE
+	// By default we handle all socket packets
+	do_sockets( next );
+
+	// 如果是地图服务器的话那么顺带需要执行异步任务
+	if (this->type == e_core_type::MAP) {
+		do_future();
+	}
+#endif
+}
+
+void Core::handle_crash(){
+	// Do nothing
+}
+
+void Core::handle_shutdown(){
+	// Do nothing
+}
+
+void Core::finalize(){
+	// Do nothing
+}
+
+void Core::set_status( e_core_status status ){
+	this->status = status;
+}
+
+e_core_status Core::get_status(){
+	return this->status;
+}
+
+e_core_type Core::get_type(){
+	return this->type;
+}
+
+bool Core::is_running(){
+	return this->get_status() == e_core_status::RUNNING;
+}
+
+void Core::set_run_once( bool run_once ){
+	this->run_once = run_once;
+}
+
+void Core::signal_crash(){
+	this->set_status( e_core_status::STOPPING );
+
+	if( this->crashed ){
+		ShowFatalError( "Received another crash signal, while trying to handle the last crash!\n" );
+	}else{
+		ShowFatalError( "Received a crash signal, trying to handle it as good as possible!\n" );
+		this->crashed = true;
+		this->handle_crash();
+	}
+
+	// Now stop the process
+	exit( EXIT_FAILURE );
+}
+
+void Core::signal_shutdown(){
+	this->set_status( e_core_status::STOPPING );
+	this->handle_shutdown();
 }

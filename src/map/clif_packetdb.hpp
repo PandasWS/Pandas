@@ -2409,6 +2409,11 @@
 	parseable_packet( HEADER_CZ_REQ_ITEMREPAIR2, sizeof( struct PACKET_CZ_REQ_ITEMREPAIR2 ), clif_parse_RepairItem, 0 );
 #endif
 
+#if PACKETVER >= 20191204
+	parseable_packet( HEADER_CZ_PARTY_REQ_MASTER_TO_JOIN, sizeof( struct PACKET_CZ_PARTY_REQ_MASTER_TO_JOIN ), clif_parse_partybooking_join, 0 );
+	parseable_packet( HEADER_CZ_PARTY_REQ_ACK_MASTER_TO_JOIN, sizeof( struct PACKET_CZ_PARTY_REQ_ACK_MASTER_TO_JOIN ), clif_parse_partybooking_reply, 0 );
+#endif
+
 #if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
 	parseable_packet( HEADER_CZ_UNCONFIRMED_TSTATUS_UP, sizeof( PACKET_CZ_UNCONFIRMED_TSTATUS_UP ), clif_parse_traitstatus_up, 0 );
 	parseable_packet( HEADER_CZ_GRADE_ENCHANT_SELECT_EQUIPMENT, sizeof( struct PACKET_CZ_GRADE_ENCHANT_SELECT_EQUIPMENT ), clif_parse_enchantgrade_add, 0 );
@@ -2437,14 +2442,5 @@
 #if PACKETVER_MAIN_NUM >= 20220216 || PACKETVER_ZERO_NUM >= 20220316
 	parseable_packet( HEADER_CZ_USE_PACKAGEITEM, sizeof( struct PACKET_CZ_USE_PACKAGEITEM ), clif_parse_itempackage_select, 0 );
 #endif
-
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-#if PACKETVER >= 20200300
-	parseable_packet(HEADER_CZ_PARTY_REQUEST_TO_JOIN, sizeof(struct PACKET_CZ_PARTY_REQUEST_TO_JOIN), clif_parse_party_request_to_join, 0);
-	packet(HEADER_ZC_PARTY_REQUEST_APPROVAL, sizeof(PACKET_ZC_PARTY_REQUEST_APPROVAL));
-	parseable_packet(HEADER_CZ_PARTY_APPROVAL_RESULT, sizeof(struct PACKET_CZ_PARTY_APPROVAL_RESULT), clif_parse_party_approval_result, 0);
-	packet(HEADER_ZC_JOIN_PARTY_REPLY, sizeof(PACKET_ZC_JOIN_PARTY_REPLY));
-#endif
-#endif // Pandas_PacketFunction_PartyJoinRequest
 
 #endif /* CLIF_PACKETDB_HPP */

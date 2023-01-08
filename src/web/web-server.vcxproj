@@ -194,6 +194,7 @@
     <ClCompile Include="emblem_controller.cpp" />
     <ClCompile Include="merchantstore_controller.cpp" />
     <ClCompile Include="recruitment_controller.cpp" />
+    <ClCompile Include="partybooking_controller.cpp" />
     <ClCompile Include="sqllock.cpp" />
     <ClCompile Include="userconfig_controller.cpp" />
     <ClCompile Include="webutils.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="merchantstore_controller.hpp" />
     <ClInclude Include="recruitment_controller.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="partybooking_controller.hpp" />
     <ClInclude Include="sqllock.hpp" />
     <ClInclude Include="userconfig_controller.hpp" />
     <ClInclude Include="webutils.hpp" />

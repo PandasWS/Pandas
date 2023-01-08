@@ -5702,42 +5702,6 @@ struct PACKET_ZC_DISAPPEAR_BUYING_STORE_ENTRY {
 DEFINE_PACKET_HEADER(ZC_DISAPPEAR_BUYING_STORE_ENTRY, 0x0816);
 #endif
 
-#ifdef Pandas_PacketFunction_PartyJoinRequest
-struct PACKET_CZ_PARTY_REQUEST_TO_JOIN {
-	int16 packetType;
-	uint32 partyleader_char_id;				// 申请者角色编号
-	uint32 partyleader_account_id;			// 申请者账号编号
-} __attribute__((packed));
-DEFINE_PACKET_HEADER(CZ_PARTY_REQUEST_TO_JOIN, 0x0ae6);
-
-struct PACKET_ZC_PARTY_REQUEST_APPROVAL {
-	int16 packetType;
-	uint32 applicant_account_id;			// 申请者账号编号
-	uint32 applicant_char_id;				// 申请者角色编号
-	char applicant_name[NAME_LENGTH];		// 申请者角色名称
-	int16 applicant_level;					// 申请者基础等级
-	int16 applicant_jobid;					// 申请者职业编号
-} __attribute__((packed));
-DEFINE_PACKET_HEADER(ZC_PARTY_REQUEST_APPROVAL, 0x0ae7);
-
-struct PACKET_CZ_PARTY_APPROVAL_RESULT {
-	int16 packetType;
-	uint32 partyleader_account_id;			// 队长账号编号
-	uint32 partyleader_char_id;				// 队长角色编号
-	int8 result;							// 返回值 (1 - 接受 | 0 - 拒绝/关闭)
-} __attribute__((packed));
-DEFINE_PACKET_HEADER(CZ_PARTY_APPROVAL_RESULT, 0x0af8);
-
-struct PACKET_ZC_JOIN_PARTY_REPLY {
-	int16 packetType;
-	char player_name[NAME_LENGTH];			// 申请者角色名称
-	char party_name[NAME_LENGTH];			// 队伍名称
-	uint32 unknow = 0;						// 占位字段, 用途暂未可知. 当 result 为 9 的时候客户端会使用它
-	uint32 result;							// 响应信息的类型编号, 信息定义请参考 e_party_join_reply
-} __attribute__((packed));
-DEFINE_PACKET_HEADER(ZC_JOIN_PARTY_REPLY, 0x0afa);
-#endif // Pandas_PacketFunction_PartyJoinRequest
-
 #if !defined(sun) && (!defined(__NETBSD__) || __NetBSD_Version__ >= 600000000) // NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
 #pragma pack(pop)
 #endif // not NetBSD < 6 / Solaris

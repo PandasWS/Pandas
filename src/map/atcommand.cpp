@@ -72,7 +72,7 @@ extern bool g_crashByTestCommand;
 using namespace rathena;
 
 #define ATCOMMAND_LENGTH 50
-#define ACMD_FUNC(x) static int atcommand_ ## x (const int fd, struct map_session_data* sd, const char* command, const char* message)
+#define ACMD_FUNC(x) static int atcommand_ ## x (const int fd, map_session_data* sd, const char* command, const char* message)
 
 typedef struct AtCommandInfo AtCommandInfo;
 
@@ -209,8 +209,8 @@ const char *parent_cmd;
 struct atcmd_binding_data** atcmd_binding;
 
 static AtCommandInfo* get_atcommandinfo_byname(const char *name); // @help
-static void atcommand_get_suggestions(struct map_session_data* sd, const char *name, bool atcommand); // @help
-static void warp_get_suggestions(struct map_session_data* sd, const char *name); // @rura, @warp, @mapmove
+static void atcommand_get_suggestions(map_session_data* sd, const char *name, bool atcommand); // @help
+static void warp_get_suggestions(map_session_data* sd, const char *name); // @rura, @warp, @mapmove
 
 // @commands (script-based)
 struct atcmd_binding_data* get_atcommandbind_byname(const char* name) {
@@ -508,7 +508,7 @@ ACMD_FUNC(send)
  *
  * @author Euphy
  */
-static void warp_get_suggestions(struct map_session_data* sd, const char *name) {
+static void warp_get_suggestions(map_session_data* sd, const char *name) {
 	// Minimum length for suggestions is 2 characters
 	if( strlen( name ) < 2 ){
 		return;
@@ -667,7 +667,7 @@ ACMD_FUNC(mapmove)
  *------------------------------------------*/
 ACMD_FUNC(where)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 
 	nullpo_retr(-1, sd);
 	memset(atcmd_player_name, '\0', sizeof atcmd_player_name);
@@ -697,7 +697,7 @@ ACMD_FUNC(where)
  *------------------------------------------*/
 ACMD_FUNC(jumpto)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 
 	nullpo_retr(-1, sd);
 
@@ -781,7 +781,7 @@ ACMD_FUNC(jump)
  * various info.
  *------------------------------------------*/
 ACMD_FUNC(who) {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	struct s_mapiterator *iter = NULL;	
 	char player_name[NAME_LENGTH] = "";
 	int count = 0;
@@ -885,7 +885,7 @@ ACMD_FUNC(who) {
  *------------------------------------------*/
 ACMD_FUNC(whogm)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	int j, count;
 	int level;
@@ -3279,7 +3279,7 @@ ACMD_FUNC(petrename)
  *
  *------------------------------------------*/
 ACMD_FUNC(recall) {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 
 	nullpo_retr(-1, sd);
 
@@ -3509,7 +3509,7 @@ ACMD_FUNC(day)
  *------------------------------------------*/
 ACMD_FUNC(doom)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 
 	nullpo_retr(-1, sd);
@@ -3536,7 +3536,7 @@ ACMD_FUNC(doom)
  *------------------------------------------*/
 ACMD_FUNC(doommap)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 
 	nullpo_retr(-1, sd);
@@ -3561,7 +3561,7 @@ ACMD_FUNC(doommap)
 /*==========================================
  *
  *------------------------------------------*/
-static void atcommand_raise_sub(struct map_session_data* sd) {
+static void atcommand_raise_sub(map_session_data* sd) {
 
 	status_revive(&sd->bl, 100, 100);
 
@@ -3574,7 +3574,7 @@ static void atcommand_raise_sub(struct map_session_data* sd) {
  *------------------------------------------*/
 ACMD_FUNC(raise)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 
 	nullpo_retr(-1, sd);
@@ -3595,7 +3595,7 @@ ACMD_FUNC(raise)
  *------------------------------------------*/
 ACMD_FUNC(raisemap)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 
 	nullpo_retr(-1, sd);
@@ -3616,7 +3616,7 @@ ACMD_FUNC(raisemap)
  *------------------------------------------*/
 ACMD_FUNC(kick)
 {
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -3648,7 +3648,7 @@ ACMD_FUNC(kick)
  *------------------------------------------*/
 ACMD_FUNC(kickall)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	nullpo_retr(-1, sd);
 
@@ -4002,7 +4002,8 @@ ACMD_FUNC(mapexit)
 {
 	nullpo_retr(-1, sd);
 
-	do_shutdown();
+	global_core->signal_shutdown();
+
 	return 0;
 }
 
@@ -4051,7 +4052,7 @@ ACMD_FUNC(idsearch)
  *------------------------------------------*/
 ACMD_FUNC(recallall)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	int count;
 	nullpo_retr(-1, sd);
@@ -4099,7 +4100,7 @@ ACMD_FUNC(recallall)
  *------------------------------------------*/
 ACMD_FUNC(guildrecall)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	int count;
 	char guild_name[NAME_LENGTH];
@@ -4164,7 +4165,7 @@ ACMD_FUNC(guildrecall)
  *------------------------------------------*/
 ACMD_FUNC(partyrecall)
 {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	char party_name[NAME_LENGTH];
 	struct party_data *p;
@@ -4237,10 +4238,10 @@ ACMD_FUNC(partyrecall)
 //************************************
 static void atcommand_status_recalc_pc() {
 	struct s_mapiterator* iter = nullptr;
-	struct map_session_data* sd = nullptr;
+	map_session_data* sd = nullptr;
 
 	iter = mapit_geteachpc();
-	for (sd = (struct map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (struct map_session_data*)mapit_next(iter)) {
+	for (sd = (map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (map_session_data*)mapit_next(iter)) {
 		status_calc_pc(sd, SCO_FORCE);
 	}
 	mapit_free(iter);
@@ -4341,7 +4342,7 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt(sd,268)); // Reloaded the Message of the Day.
 	} else if (strstr(command, "script") || strncmp(message, "script", 3) == 0) {
 		struct s_mapiterator* iter;
-		struct map_session_data* pl_sd;
+		map_session_data* pl_sd;
 		//atcommand_broadcast( fd, sd, "@broadcast", "Server is reloading scripts..." );
 		//atcommand_broadcast( fd, sd, "@broadcast", "You will feel a bit of lag at this point !" );
 
@@ -4461,7 +4462,7 @@ ACMD_FUNC(partysharelvl) {
  * 3 = Shows the chats in that map
  *------------------------------------------*/
 ACMD_FUNC(mapinfo) {
-	struct map_session_data* pl_sd;
+	map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	struct chat_data *cd = NULL;
 	char direction[12];
@@ -5144,7 +5145,7 @@ ACMD_FUNC(repairall)
  *------------------------------------------*/
 ACMD_FUNC(nuke)
 {
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -5453,9 +5454,8 @@ ACMD_FUNC(servertime)
  *------------------------------------------*/
 ACMD_FUNC(jail)
 {
-	struct map_session_data *pl_sd;
-	int x, y;
-	unsigned short m_index;
+	map_session_data *pl_sd;
+
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -5475,26 +5475,12 @@ ACMD_FUNC(jail)
 		return -1;
 	}
 
-	if (pl_sd->sc.data[SC_JAILED]) {
+	if (pl_sd->sc.getSCE(SC_JAILED)) {
 		clif_displaymessage(fd, msg_txt(sd,118)); // Player warped in jails.
 		return -1;
 	}
 
-	switch(rnd() % 2) { //Jail Locations
-	case 0:
-		m_index = mapindex_name2id(MAP_JAIL);
-		x = 24;
-		y = 75;
-		break;
-	default:
-		m_index = mapindex_name2id(MAP_JAIL);
-		x = 49;
-		y = 75;
-		break;
-	}
-
-	//Duration of INT_MAX to specify infinity.
-	sc_start4(NULL,&pl_sd->bl,SC_JAILED,100,INT_MAX,m_index,x,y,1000);
+	pc_jail(*pl_sd);
 	clif_displaymessage(pl_sd->fd, msg_txt(sd,117)); // GM has send you in jails.
 	clif_displaymessage(fd, msg_txt(sd,118)); // Player warped in jails.
 	return 0;
@@ -5506,7 +5492,7 @@ ACMD_FUNC(jail)
  *------------------------------------------*/
 ACMD_FUNC(unjail)
 {
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
 
@@ -5526,23 +5512,23 @@ ACMD_FUNC(unjail)
 		return -1;
 	}
 
-	if (!pl_sd->sc.data[SC_JAILED]) {
+	if (!pl_sd->sc.getSCE(SC_JAILED)) {
 		clif_displaymessage(fd, msg_txt(sd,119)); // This player is not in jails.
 		return -1;
 	}
 
 	//Reset jail time to 1 sec.
-	sc_start(NULL,&pl_sd->bl,SC_JAILED,100,1,1000);
+	pc_jail(*pl_sd, 0);
 	clif_displaymessage(pl_sd->fd, msg_txt(sd,120)); // A GM has discharged you from jail.
 	clif_displaymessage(fd, msg_txt(sd,121)); // Player unjailed.
 	return 0;
 }
 
 ACMD_FUNC(jailfor) {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	char * modif_p;
-	int jailtime = 0,x,y;
-	short m_index = 0;
+	int jailtime = 0;
+
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -5574,8 +5560,8 @@ ACMD_FUNC(jailfor) {
 	}
 
 	// Added by Coltaro
-	if(pl_sd->sc.data[SC_JAILED] && pl_sd->sc.data[SC_JAILED]->val1 != INT_MAX) { // Update the player's jail time
-		jailtime += pl_sd->sc.data[SC_JAILED]->val1;
+	if(pl_sd->sc.getSCE(SC_JAILED) && pl_sd->sc.getSCE(SC_JAILED)->val1 != INT_MAX) { // Update the player's jail time
+		jailtime += pl_sd->sc.getSCE(SC_JAILED)->val1;
 		if (jailtime <= 0) {
 			jailtime = 0;
 			clif_displaymessage(pl_sd->fd, msg_txt(sd,120)); // GM has discharge you.
@@ -5599,19 +5585,8 @@ ACMD_FUNC(jailfor) {
 		return -1;
 	}
 
-	// Jail locations, add more as you wish.
-	switch(rnd()%2) {
-		case 1: // Jail #1
-			m_index = mapindex_name2id(MAP_JAIL);
-			x = 49; y = 75;
-			break;
-		default: // Default Jail
-			m_index = mapindex_name2id(MAP_JAIL);
-			x = 24; y = 75;
-			break;
-	}
+	pc_jail(*pl_sd, jailtime);
 
-	sc_start4(NULL,&pl_sd->bl,SC_JAILED,100,jailtime,m_index,x,y,jailtime?60000:1000); //jailtime = 0: Time was reset to 0. Wait 1 second to warp player out (since it's done in status_change_timer).
 	return 0;
 }
 
@@ -5623,26 +5598,26 @@ ACMD_FUNC(jailtime){
 
 	nullpo_retr(-1, sd);
 
-	if (!sd->sc.data[SC_JAILED]) {
+	if (!sd->sc.getSCE(SC_JAILED)) {
 		clif_displaymessage(fd, msg_txt(sd,1139)); // You are not in jail.
 		return -1;
 	}
 
-	if (sd->sc.data[SC_JAILED]->val1 == INT_MAX) {
+	if (sd->sc.getSCE(SC_JAILED)->val1 == INT_MAX) {
 		clif_displaymessage(fd, msg_txt(sd,1140)); // You have been jailed indefinitely.
 		return 0;
 	}
 
-	if (sd->sc.data[SC_JAILED]->val1 <= 0) { // Was not jailed with @jailfor (maybe @jail? or warped there? or got recalled?)
+	if (sd->sc.getSCE(SC_JAILED)->val1 <= 0) { // Was not jailed with @jailfor (maybe @jail? or warped there? or got recalled?)
 		clif_displaymessage(fd, msg_txt(sd,1141)); // You have been jailed for an unknown amount of time.
 		return -1;
 	}
 
 	// Get remaining jail time
-	split_time(sd->sc.data[SC_JAILED]->val1*60,&year,&month,&day,&hour,&minute,&second);
+	split_time(sd->sc.getSCE(SC_JAILED)->val1*60,&year,&month,&day,&hour,&minute,&second);
 	sprintf(atcmd_output,msg_txt(sd,402),msg_txt(sd,1142),year,month,day,hour,minute); // You will remain in jail for %d years, %d months, %d days, %d hours and %d minutes
 	clif_displaymessage(fd, atcmd_output);
-	timestamp2string(timestr,20,now+sd->sc.data[SC_JAILED]->val1*60,"%Y-%m-%d %H:%M");
+	timestamp2string(timestr,20,now+sd->sc.getSCE(SC_JAILED)->val1*60,"%Y-%m-%d %H:%M");
 	sprintf(atcmd_output,"Release date is: %s",timestr);
 	clif_displaymessage(fd, atcmd_output);
 
@@ -5687,7 +5662,7 @@ ACMD_FUNC(disguise)
 		return -1;
 	}
 
-	if (sd->sc.data[SC_MONSTER_TRANSFORM] || sd->sc.data[SC_ACTIVE_MONSTER_TRANSFORM]) {
+	if (sd->sc.getSCE(SC_MONSTER_TRANSFORM) || sd->sc.getSCE(SC_ACTIVE_MONSTER_TRANSFORM)) {
 		clif_displaymessage(fd, msg_txt(sd,730)); // Character cannot be disguised while in monster transform.
 		return -1;
 	}
@@ -5704,7 +5679,7 @@ ACMD_FUNC(disguise)
 ACMD_FUNC(disguiseall)
 {
 	int mob_id=0;
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	struct s_mapiterator* iter;
 	nullpo_retr(-1, sd);
 
@@ -5770,7 +5745,7 @@ ACMD_FUNC(disguiseguild)
 	}
 
 	for( i = 0; i < g->max_member; i++ ){
-		struct map_session_data *pl_sd;
+		map_session_data *pl_sd;
 		if( (pl_sd = g->member[i].sd) && !pc_isriding(pl_sd) )
 			pc_disguise(pl_sd, id);
 	}
@@ -5802,7 +5777,7 @@ ACMD_FUNC(undisguise)
  *------------------------------------------*/
 ACMD_FUNC(undisguiseall)
 {
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	struct s_mapiterator* iter;
 	nullpo_retr(-1, sd);
 
@@ -5840,7 +5815,7 @@ ACMD_FUNC(undisguiseguild)
 	}
 
 	for(i = 0; i < g->max_member; i++){
-		struct map_session_data *pl_sd;
+		map_session_data *pl_sd;
 		if( (pl_sd = g->member[i].sd) && pl_sd->disguise )
 			pc_disguise(pl_sd, 0);
 	}
@@ -6111,7 +6086,7 @@ ACMD_FUNC(addwarp)
  *------------------------------------------*/
 ACMD_FUNC(follow)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -6379,7 +6354,7 @@ ACMD_FUNC(skillid) {
  *------------------------------------------*/
 ACMD_FUNC(useskill)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	struct block_list *bl;
 	uint16 skill_id;
 	uint16 skill_lv;
@@ -6516,7 +6491,7 @@ ACMD_FUNC(displayskillunit)
  *------------------------------------------*/
 ACMD_FUNC(skilltree)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	uint16 skill_id;
 	nullpo_retr(-1, sd);
 
@@ -6563,7 +6538,7 @@ ACMD_FUNC(skilltree)
 }
 
 // Hand a ring with partners name on it to this char
-void getring (struct map_session_data* sd)
+void getring (map_session_data* sd)
 {
 	char flag = 0;
 	t_itemid item_id;
@@ -6589,7 +6564,7 @@ void getring (struct map_session_data* sd)
  *------------------------------------------*/
 ACMD_FUNC(marry)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 
 	nullpo_retr(-1, sd);
 
@@ -6739,7 +6714,7 @@ ACMD_FUNC(autotrade) {
 ACMD_FUNC(changegm)
 {
 	struct guild *g;
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -7501,7 +7476,7 @@ ACMD_FUNC(users)
 	iter = mapit_getallusers();
 	for(;;)
 	{
-		struct map_session_data* sd2 = (struct map_session_data*)mapit_next(iter);
+		map_session_data* sd2 = (map_session_data*)mapit_next(iter);
 		if( sd2 == NULL )
 			break;// no more users
 
@@ -7624,7 +7599,7 @@ ACMD_FUNC(adjgroup)
  *------------------------------------------*/
 ACMD_FUNC(trade)
 {
-    struct map_session_data *pl_sd = NULL;
+    map_session_data* pl_sd = nullptr;;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -7678,7 +7653,7 @@ ACMD_FUNC(setbattleflag)
  *------------------------------------------*/
 ACMD_FUNC(unmute)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
@@ -7694,7 +7669,7 @@ ACMD_FUNC(unmute)
 		return -1;
 	}
 
-	if(!pl_sd->sc.data[SC_NOCHAT]) {
+	if(!pl_sd->sc.getSCE(SC_NOCHAT)) {
 		clif_displaymessage(sd->fd,msg_txt(sd,1235)); // Player is not muted.
 		return -1;
 	}
@@ -7776,7 +7751,7 @@ ACMD_FUNC(changecharsex)
  *------------------------------------------------*/
 ACMD_FUNC(mute)
 {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	int manner;
 	nullpo_retr(-1, sd);
 
@@ -7827,7 +7802,7 @@ ACMD_FUNC(refresh)
 
 ACMD_FUNC(refreshall)
 {
-	struct map_session_data* iter_sd;
+	map_session_data* iter_sd;
 	struct s_mapiterator* iter;
 	nullpo_retr(-1, sd);
 
@@ -8695,7 +8670,7 @@ static int atcommand_mutearea_sub(struct block_list *bl,va_list ap)
 {
 
 	int time, id;
-	struct map_session_data *pl_sd = (struct map_session_data *)bl;
+	map_session_data *pl_sd = (map_session_data *)bl;
 	if (pl_sd == NULL)
 		return 0;
 
@@ -8829,7 +8804,7 @@ ACMD_FUNC(size)
 ACMD_FUNC(sizeall)
 {
 	int size;
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	struct s_mapiterator* iter;
 
 	size = atoi(message);
@@ -8860,7 +8835,7 @@ ACMD_FUNC(sizeguild)
 {
 	int size = SZ_SMALL, i;
 	char guild[NAME_LENGTH];
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 	struct guild *g;
 	nullpo_retr(-1, sd);
 
@@ -9131,7 +9106,7 @@ ACMD_FUNC(showdelay)
 ACMD_FUNC(invite)
 {
 	unsigned int did = sd->duel_group;
-	struct map_session_data *target_sd = NULL;
+	map_session_data *target_sd = NULL;
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -9203,7 +9178,7 @@ ACMD_FUNC(duel)
 			}
 			duel_create(sd, maxpl);
 		} else {
-			struct map_session_data *target_sd = NULL;
+			map_session_data *target_sd = NULL;
 
 			memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
 			memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -9360,7 +9335,7 @@ ACMD_FUNC(cash)
 ACMD_FUNC(clone)
 {
 	int x=0,y=0,flag=0,master=0,i=0;
-	struct map_session_data *pl_sd=NULL;
+	map_session_data *pl_sd=NULL;
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
 
@@ -9938,7 +9913,7 @@ ACMD_FUNC(font)
 /*==========================================
  * type: 1 = commands (@), 2 = charcommands (#)
  *------------------------------------------*/
-static void atcommand_commands_sub(struct map_session_data* sd, const int fd, AtCommandType type)
+static void atcommand_commands_sub(map_session_data* sd, const int fd, AtCommandType type)
 {
 	char line_buff[CHATBOX_SIZE];
 	char* cur = line_buff;
@@ -10040,7 +10015,7 @@ ACMD_FUNC(charcommands) {
 /* for new mounts */
 ACMD_FUNC(mount2) {
 	clif_displaymessage(sd->fd,msg_txt(sd,1362)); // NOTICE: If you crash with mount your LUA is outdated.
-	if (!sd->sc.data[SC_ALL_RIDING]) {
+	if (!sd->sc.getSCE(SC_ALL_RIDING)) {
 		clif_displaymessage(sd->fd,msg_txt(sd,1363)); // You have mounted.
 		sc_start(NULL, &sd->bl, SC_ALL_RIDING, 10000, 1, INFINITE_TICK);
 	} else {
@@ -10325,7 +10300,7 @@ ACMD_FUNC(join){
  * Display available option for @channel command
  * @command : the name of used command (for alias case)
  */
-static inline void atcmd_channel_help(struct map_session_data *sd, const char *command)
+static inline void atcmd_channel_help(map_session_data *sd, const char *command)
 {
 	int fd = sd->fd;
 	bool can_delete = pc_has_permission(sd, PC_PERM_CHANNEL_ADMIN);
@@ -10533,7 +10508,7 @@ ACMD_FUNC(langtype)
 
 #ifdef VIP_ENABLE
 ACMD_FUNC(vip) {
-	struct map_session_data *pl_sd = NULL;
+	map_session_data* pl_sd = nullptr;;
 	char * modif_p;
 	int32 vipdifftime = 0;
 	time_t now=time(NULL);
@@ -10645,7 +10620,7 @@ ACMD_FUNC(changedress){
 	};
 
 	for( sc_type type : name2id ) {
-		if( sd->sc.data[type] ) {
+		if( sd->sc.getSCE(type) ) {
 			status_change_end( &sd->bl, type );
 			// You should only be able to have one - so we cancel here
 			break;
@@ -10676,7 +10651,7 @@ ACMD_FUNC(costume) {
 
 	if( !message || !*message ) {
 		for( k = 0; k < len; k++ ) {
-			if( sd->sc.data[name2id[k]] ) {
+			if( sd->sc.getSCE(name2id[k]) ) {
 				sprintf(atcmd_output, msg_txt(sd, 727), names[k]); // '%s' Costume removed.
 				clif_displaymessage(sd->fd, atcmd_output);
 				status_change_end(&sd->bl, (sc_type)name2id[k]);
@@ -10693,7 +10668,7 @@ ACMD_FUNC(costume) {
 	}
 
 	for( k = 0; k < len; k++ ) {
-		if( sd->sc.data[name2id[k]] ) {
+		if( sd->sc.getSCE(name2id[k]) ) {
 			sprintf(atcmd_output, msg_txt(sd, 724), names[k]); // You're already wearing a(n) '%s' costume, type '@costume' to remove it.
 			clif_displaymessage(sd->fd, atcmd_output);
 			return -1;
@@ -10722,7 +10697,7 @@ ACMD_FUNC(costume) {
 * @author [Cydh], [Antares]
 */
 ACMD_FUNC(cloneequip) {
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 
 	nullpo_retr(-1, sd);
 
@@ -10795,7 +10770,7 @@ ACMD_FUNC(cloneequip) {
 * @author [Cydh], [Antares]
 */
 ACMD_FUNC(clonestat) {
-	struct map_session_data *pl_sd;
+	map_session_data *pl_sd;
 
 	nullpo_retr(-1, sd);
 
@@ -11076,6 +11051,10 @@ ACMD_FUNC( stylist ){
 	clif_displaymessage( fd, msg_txt( sd, 798 ) ); // This command requires packet version 2015-11-04 or newer.
 	return -1;
 #else
+	if( !battle_config.feature_stylist ){
+		clif_displaymessage( fd, msg_txt( sd, 774 ) ); // This command is disabled via configuration.
+		return -1;
+	}
 
 	if( sd->state.stylist_open ){
 		clif_displaymessage( fd, msg_txt( sd, 799 ) ); // You have already opened the stylist UI.
@@ -11162,7 +11141,7 @@ ACMD_FUNC( roulette ){
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 ACMD_FUNC(recallmap) {
-	struct map_session_data* pl_sd = nullptr;
+	map_session_data* pl_sd = nullptr;
 	struct s_mapiterator* iter = nullptr;
 	int count = 0;
 	char mapname[MAP_NAME_LENGTH_EXT] = { 0 };
@@ -11232,7 +11211,7 @@ ACMD_FUNC(recallmap) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 ACMD_FUNC(crashtest) {
-	struct map_session_data* pl_sd = nullptr;
+	map_session_data* pl_sd = nullptr;
 	struct s_mapiterator* iter = nullptr;
 	int count = 0;
 
@@ -11783,7 +11762,7 @@ static AtCommandInfo* get_atcommandinfo_byname(const char *name)
 }
 
 /// AtCommand suggestion
-static void atcommand_get_suggestions(struct map_session_data* sd, const char *name, bool atcommand) {
+static void atcommand_get_suggestions(map_session_data* sd, const char *name, bool atcommand) {
 	DBIterator* atcommand_iter;
 	AtCommandInfo* command_info = NULL;
 	AtCommandType type = atcommand ? COMMAND_ATCOMMAND : COMMAND_CHARCOMMAND;
@@ -11864,14 +11843,14 @@ static void atcommand_get_suggestions(struct map_session_data* sd, const char *n
 // Method:      atcommand_noperm_halt
 // Description: 判断当前角色是否无权执行 GM 指令, 并根据 atcmd_no_permission 设置进行处理
 // Parameter:   const int fd
-// Parameter:   struct map_session_data * sd
+// Parameter:   map_session_data * sd
 // Parameter:   const char * command
 // Parameter:   int fromtype
 // Parameter:   bool is_atcommand
 // Returns:     bool 返回 true 表示应该立刻中断后续流程
 // Author:      Sola丶小克(CairoLee)  2020/03/01 11:11
 //************************************
-static bool atcommand_noperm_halt(const int fd, struct map_session_data* sd, const char* command, int fromtype, bool is_atcommand) {
+static bool atcommand_noperm_halt(const int fd, map_session_data* sd, const char* command, int fromtype, bool is_atcommand) {
 	AtCommandInfo* info;
 
 	nullpo_retr(false, sd);
@@ -11905,7 +11884,7 @@ static bool atcommand_noperm_halt(const int fd, struct map_session_data* sd, con
  *  2 : console (admin:@atcommand)
  *  3 : script call (useatcmd)
  */
-bool is_atcommand(const int fd, struct map_session_data* sd, const char* message, int type)
+bool is_atcommand(const int fd, map_session_data* sd, const char* message, int type)
 {
 	char command[CHAT_SIZE_MAX], params[CHAT_SIZE_MAX];
 	char output[CHAT_SIZE_MAX];
@@ -11929,7 +11908,7 @@ bool is_atcommand(const int fd, struct map_session_data* sd, const char* message
 		return false;
 
 	//Block NOCHAT but do not display it as a normal message
-	if ( sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1&MANNER_NOCOMMAND )
+	if ( sd->sc.getSCE(SC_NOCHAT) && sd->sc.getSCE(SC_NOCHAT)->val1&MANNER_NOCOMMAND )
 		return true;
 
 	// skip 10/11-langtype's codepage indicator, if detected

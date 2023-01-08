@@ -39,16 +39,29 @@
 	#define A2UCE(x) x
 #endif // Pandas_WebServer_Console_EncodingAdaptive
 
+using rathena::server_core::Core;
+using rathena::server_core::e_core_type;
+
+namespace rathena{
+	namespace server_web{
+		class WebServer : public Core{
+			protected:
+				bool initialize( int argc, char* argv[] ) override;
+				void handle_main( t_tick next ) override;
+				void finalize() override;
+				void handle_crash() override;
+
+			public:
+				WebServer() : Core( e_core_type::WEB ){
+
+				}
+		};
+	}
+}
+
 #ifndef SQL_BUFFER_SIZE
 	#define SQL_BUFFER_SIZE 65535
 #endif
-
-enum E_WEBSERVER_ST {
-	WEBSERVER_ST_RUNNING = CORE_ST_LAST,
-	WEBSERVER_ST_STARTING,
-	WEBSERVER_ST_SHUTDOWN,
-	WEBSERVER_ST_LAST
-};
 
 struct Web_Config {
 	std::string web_ip;								// the address to bind to
@@ -77,13 +90,14 @@ extern char login_table[32];
 extern char guild_emblems_table[32];
 extern char user_configs_table[32];
 extern char char_configs_table[32];
-extern char merchant_configs_table[32];
 #ifdef Pandas_WebServer_Implement_PartyRecruitment
 extern char recruitment_table[32];
-extern char party_table[32];
 #endif // Pandas_WebServer_Implement_PartyRecruitment
 extern char guild_db_table[32];
 extern char char_db_table[32];
+extern char merchant_configs_table[32];
+extern char party_table[32];
+extern char partybookings_table[32];
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 extern char web_connection_encoding[32];

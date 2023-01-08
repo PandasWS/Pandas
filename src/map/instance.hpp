@@ -113,7 +113,7 @@ extern InstanceDatabase instance_db;
 extern std::unordered_map<int, std::shared_ptr<s_instance_data>> instances;
 
 std::shared_ptr<s_instance_db> instance_search_db_name(const char* name);
-void instance_getsd(int instance_id, struct map_session_data *&sd, enum send_target *target);
+void instance_getsd(int instance_id, map_session_data *&sd, enum send_target *target);
 
 int instance_create(int owner_id, const char *name, e_instance_mode mode);
 
@@ -128,8 +128,8 @@ void instance_refresh_status(int instance_id);
 #endif // Pandas_Fix_Dungeon_Command_Status_Refresh
 
 void instance_destroy_command(map_session_data *sd);
-e_instance_enter instance_enter(struct map_session_data *sd, int instance_id, const char *name, short x, short y);
-bool instance_reqinfo(struct map_session_data *sd, int instance_id);
+e_instance_enter instance_enter(map_session_data *sd, int instance_id, const char *name, short x, short y);
+bool instance_reqinfo(map_session_data *sd, int instance_id);
 bool instance_addusers(int instance_id);
 bool instance_delusers(int instance_id);
 void instance_generate_mapname(int map_id, int instance_id, char outname[MAP_NAME_LENGTH]);

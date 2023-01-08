@@ -260,7 +260,7 @@ int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id)
 #endif // Pandas_FuncDefine_UnitDead_With_ExtendInfo
 {
 	//There's no intimacy penalties on death (from Tharis)
-	struct map_session_data *sd = hd->master;
+	map_session_data *sd = hd->master;
 
 	clif_emotion(&hd->bl, ET_KEK);
 
@@ -298,7 +298,7 @@ int hom_dead(struct homun_data *hd, struct block_list *src, uint16 skill_id)
 * @param sd
 * @param flag 1: then HP needs to be 80% or above. 2: then set to morph state.
 */
-int hom_vaporize(struct map_session_data *sd, int flag)
+int hom_vaporize(map_session_data *sd, int flag)
 {
 	struct homun_data *hd;
 
@@ -344,7 +344,7 @@ int hom_vaporize(struct map_session_data *sd, int flag)
 */
 int hom_delete(struct homun_data *hd, int emote)
 {
-	struct map_session_data *sd;
+	map_session_data *sd;
 	nullpo_ret(hd);
 	sd = hd->master;
 
@@ -650,7 +650,7 @@ int hom_evolution(struct homun_data *hd)
 {
 	struct s_homunculus *hom;
 	struct h_stats *max, *min;
-	struct map_session_data *sd;
+	map_session_data *sd;
 	nullpo_ret(hd);
 
 	if(!hd->homunculusDB->evo_class || hd->homunculus.class_ == hd->homunculusDB->evo_class) {
@@ -708,7 +708,7 @@ int hom_evolution(struct homun_data *hd)
 int hom_mutate(struct homun_data *hd, int homun_id)
 {
 	struct s_homunculus *hom;
-	struct map_session_data *sd;
+	map_session_data *sd;
 	int m_class, m_id, prev_class = 0;
 	nullpo_ret(hd);
 
@@ -872,7 +872,7 @@ void hom_save(struct homun_data *hd)
 * @param sd
 * @param type
 */
-void hom_menu(struct map_session_data *sd, int type)
+void hom_menu(map_session_data *sd, int type)
 {
 	nullpo_retv(sd);
 	if (sd->hd == NULL)
@@ -898,7 +898,7 @@ void hom_menu(struct map_session_data *sd, int type)
 * @param sd
 * @param hd
 */
-int hom_food(struct map_session_data *sd, struct homun_data *hd)
+int hom_food(map_session_data *sd, struct homun_data *hd)
 {
 	int i, foodID, emotion;
 
@@ -955,7 +955,7 @@ int hom_food(struct map_session_data *sd, struct homun_data *hd)
 * Timer to reduce hunger level
 */
 static TIMER_FUNC(hom_hungry){
-	struct map_session_data *sd;
+	map_session_data *sd;
 	struct homun_data *hd;
 
 	sd = map_id2sd(id);
@@ -1018,7 +1018,7 @@ int hom_hungry_timer_delete(struct homun_data *hd)
 /**
 * Change homunculus name
 */
-int hom_change_name(struct map_session_data *sd,char *name)
+int hom_change_name(map_session_data *sd,char *name)
 {
 	int i;
 	struct homun_data *hd;
@@ -1044,7 +1044,7 @@ int hom_change_name(struct map_session_data *sd,char *name)
 * @param name
 * @param flag
 */
-void hom_change_name_ack(struct map_session_data *sd, char* name, int flag)
+void hom_change_name_ack(map_session_data *sd, char* name, int flag)
 {
 	struct homun_data *hd = sd->hd;
 	if (!hom_is_active(hd))
@@ -1097,7 +1097,7 @@ int hom_search(int key, int type)
 * @param sd
 * @param hom
 */
-void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
+void hom_alloc(map_session_data *sd, struct s_homunculus *hom)
 {
 	struct homun_data *hd;
 	int i = 0;
@@ -1171,7 +1171,7 @@ void hom_init_timers(struct homun_data * hd)
  * @param sd
  * @return False:failure, True:sucess
  */
-bool hom_call(struct map_session_data *sd)
+bool hom_call(map_session_data *sd)
 {
 	struct homun_data *hd;
 
@@ -1234,7 +1234,7 @@ bool hom_call(struct map_session_data *sd)
  */
 int hom_recv_data(uint32 account_id, struct s_homunculus *sh, int flag)
 {
-	struct map_session_data *sd;
+	map_session_data *sd;
 	struct homun_data *hd;
 	bool created = false;
 
@@ -1291,7 +1291,7 @@ int hom_recv_data(uint32 account_id, struct s_homunculus *sh, int flag)
 * @param class_
 * @return True:Success; False:Failed
 */
-bool hom_create_request(struct map_session_data *sd, int class_)
+bool hom_create_request(map_session_data *sd, int class_)
 {
 	struct s_homunculus homun;
 	struct h_stats *base;
@@ -1336,7 +1336,7 @@ bool hom_create_request(struct map_session_data *sd, int class_)
  * @param y : Y map coordinate
  * @return 0:failure, 1:success
  */
-int hom_ressurect(struct map_session_data* sd, unsigned char per, short x, short y)
+int hom_ressurect(map_session_data* sd, unsigned char per, short x, short y)
 {
 	struct homun_data* hd;
 	nullpo_ret(sd);
@@ -1384,7 +1384,7 @@ int hom_ressurect(struct map_session_data* sd, unsigned char per, short x, short
 */
 void hom_revive(struct homun_data *hd, unsigned int hp, unsigned int sp)
 {
-	struct map_session_data *sd = hd->master;
+	map_session_data *sd = hd->master;
 	hd->homunculus.hp = hd->battle_status.hp;
 	if (!sd)
 		return;
@@ -1430,7 +1430,7 @@ void hom_reset_stats(struct homun_data *hd)
 */
 int hom_shuffle(struct homun_data *hd)
 {
-	struct map_session_data *sd;
+	map_session_data *sd;
 	int lv, i, skillpts;
 	struct s_skill b_skill[MAX_HOMUNSKILL];
 

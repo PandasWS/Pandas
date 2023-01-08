@@ -437,10 +437,6 @@
 	// 新增的 caller 参数用来标记调用这个函数的调用者是谁, 以便在必要情况下能够调整返回给客户端的字段值
 	#define Pandas_FuncParams_Clif_Item_Equip
 
-	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
-	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
-	#define Pandas_FuncParams_Mob_GetDroprate
-
 	// 在 mob.cpp 中的 mob_once_spawn_sub 增加 spawn_flag 参数 [Sola丶小克]
 	// 新增的 spawn_flag 参数可以用来控制召唤出来的魔物是不是 BOSS (可以被 BOSS 雷达探测)
 	#define Pandas_FuncDefine_Mob_Once_Spawn_Sub
@@ -466,11 +462,7 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 是否实现冒险家中介所相关的封包处理函数 [Sola丶小克]
-	// 用于响应客户端中冒险者中介所的加入队伍请求, 包含了队长进行确认的相关逻辑
-	#if PACKETVER >= 20200300
-		#define Pandas_PacketFunction_PartyJoinRequest
-	#endif // PACKETVER >= 20200300
+	// 没有什么需要修改
 #endif // Pandas_PacketFunction
 
 // ============================================================================
