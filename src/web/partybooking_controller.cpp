@@ -785,6 +785,11 @@ HANDLER_FUNC(partybooking_add) {
 	auto assist = GET_NUMBER_FIELD("Assist", 0);
 	auto purpose = GET_NUMBER_FIELD("Type", 0);
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	if (!isVaildCharacter(account_id, char_id)) {
 		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
@@ -841,6 +846,11 @@ HANDLER_FUNC(partybooking_delete) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto leader_account_id = GET_NUMBER_FIELD("MasterAID", 0);
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
@@ -874,6 +884,11 @@ HANDLER_FUNC(partybooking_get) {
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	if (!isVaildCharacter(account_id, char_id)) {
 		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
@@ -913,6 +928,11 @@ HANDLER_FUNC(partybooking_info) {
 
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto account_id = GET_NUMBER_FIELD("QueryAID", 0);
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	if (!isVaildAccount(account_id)) {
 		make_response(res, FAILURE_RET, "The account specified by the \"QueryAID\" does not exist.");
@@ -956,6 +976,11 @@ HANDLER_FUNC(partybooking_list) {
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto page = GET_NUMBER_FIELD("page", 1);
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	if (!isVaildCharacter(account_id, char_id)) {
 		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
@@ -1031,6 +1056,11 @@ HANDLER_FUNC(partybooking_search) {
 	auto assist = GET_NUMBER_FIELD("Assist", 0);
 	auto purpose = GET_NUMBER_FIELD("Type", 0);
 	auto page = GET_NUMBER_FIELD("page", 1);
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	if (!isVaildCharacter(account_id, char_id)) {
 		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
