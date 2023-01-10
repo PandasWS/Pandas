@@ -895,11 +895,6 @@ HANDLER_FUNC(partybooking_get) {
 		return;
 	}
 
-	if (world_name.length() > WORLD_NAME_LENGTH) {
-		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
-		return;
-	}
-
 	std::vector<s_party_booking_entry> bookings;
 
 	if (!party_booking_read(world_name, bookings, "`account_id` = '" + std::to_string(account_id) + "'")) {
@@ -924,29 +919,33 @@ HANDLER_FUNC(partybooking_info) {
 	}
 	
 	REQUIRE_FIELD_EXISTS("WorldName");
+	REQUIRE_FIELD_EXISTS("AID");
+	REQUIRE_FIELD_EXISTS("GID");
 	REQUIRE_FIELD_EXISTS("QueryAID");
 
 	auto world_name = GET_STRING_FIELD("WorldName", "");
-	auto account_id = GET_NUMBER_FIELD("QueryAID", 0);
+	auto account_id = GET_NUMBER_FIELD("AID", 0);
+	auto char_id = GET_NUMBER_FIELD("GID", 0);
+	auto leader_account_id = GET_NUMBER_FIELD("QueryAID", 0);
 
 	if (world_name.length() > WORLD_NAME_LENGTH) {
 		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
 		return;
 	}
 
-	if (!isVaildAccount(account_id)) {
+	if (!isVaildCharacter(account_id, char_id)) {
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
+		return;
+	}
+
+	if (!isVaildAccount(leader_account_id)) {
 		make_response(res, FAILURE_RET, "The account specified by the \"QueryAID\" does not exist.");
-		return;
-	}
-
-	if (world_name.length() > WORLD_NAME_LENGTH) {
-		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
 		return;
 	}
 
 	std::vector<s_party_booking_entry> bookings;
 
-	if (!party_booking_read(world_name, bookings, "`account_id` = '" + std::to_string(account_id) + "'")) {
+	if (!party_booking_read(world_name, bookings, "`account_id` = '" + std::to_string(leader_account_id) + "'")) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		return;
 	}
@@ -955,7 +954,8 @@ HANDLER_FUNC(partybooking_info) {
 	response["Type"] = SUCCESS_RET;
 
 	if (!bookings.empty()) {
-		response["data"] = bookings.at(0).to_json(world_name);
+		response["data"] = json::array();
+		response["data"].push_back(bookings.at(0).to_json(world_name));
 	}
 
 	make_response(res, response);
