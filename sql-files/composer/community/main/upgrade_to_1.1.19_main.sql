@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `party_bookings` (
   `world_name` varchar(32) NOT NULL,
   `account_id` int(11) unsigned NOT NULL,
   `char_id` int(11) unsigned NOT NULL,
-  `char_name` varchar(30) NOT NULL,	-- Pandas modify for sync with `char` table
+  `char_name` varchar(30) NOT NULL,	-- Pandas modify for sync to `char` table field length
   `purpose` smallint(5) unsigned NOT NULL DEFAULT '0',
   `assist` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `damagedealer` tinyint(3) unsigned NOT NULL DEFAULT '0',
