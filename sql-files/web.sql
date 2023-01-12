@@ -48,23 +48,3 @@ CREATE TABLE IF NOT EXISTS `merchant_configs` (
   `data` longtext NOT NULL,
   PRIMARY KEY (`world_name`, `account_id`, `char_id`, `store_type`)
 ) ENGINE=MyISAM;
-
---
--- Table structure for table `recruitment`
---
-
-CREATE TABLE IF NOT EXISTS `recruitment` (
-  `account_id` int(11) unsigned NOT NULL,
-  `char_id` INT(11) UNSIGNED NOT NULL,
-  `char_name` varchar(32) NOT NULL DEFAULT '',
-  `world_name` varchar(32) NOT NULL,
-  `adventure_type` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
-  `tanker` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
-  `dealer` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
-  `healer` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
-  `assist` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
-  `min_level` INT(11) UNSIGNED NOT NULL,
-  `max_level` INT(11) UNSIGNED NOT NULL,
-  `memo` varchar(32) NOT NULL DEFAULT '',
-  PRIMARY KEY (`account_id`, `char_id`, `world_name`)
-) ENGINE=MyISAM;

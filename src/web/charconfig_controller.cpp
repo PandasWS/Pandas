@@ -204,8 +204,13 @@ HANDLER_FUNC(charconfig_save) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto data = GET_STRING_FIELD("data", "");
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 
@@ -294,8 +299,13 @@ HANDLER_FUNC(charconfig_load) {
 	auto char_id = GET_NUMBER_FIELD("GID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	if (!isVaildCharacter(account_id, char_id)) {
-		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist in the account.");
+		make_response(res, FAILURE_RET, "The character specified by the \"GID\" does not exist.");
 		return;
 	}
 

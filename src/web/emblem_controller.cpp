@@ -310,6 +310,11 @@ HANDLER_FUNC(emblem_download) {
 	auto guild_emblem_version = GET_NUMBER_FIELD("Version", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
@@ -397,6 +402,11 @@ HANDLER_FUNC(emblem_upload) {
 	auto imgtype = GET_STRING_FIELD("ImgType", "");
 	auto img = GET_RAWSTR_FIELD("Img", "");
 	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	if (imgtype != "BMP" && imgtype != "GIF") {
 		ShowError("Invalid image type %s, rejecting!\n", imgtype.c_str());

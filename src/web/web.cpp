@@ -32,10 +32,6 @@
 #include "partybooking_controller.hpp"
 #include "userconfig_controller.hpp"
 
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-#include "recruitment_controller.hpp"
-#endif // Pandas_WebServer_Implement_PartyRecruitment
-
 using namespace rathena;
 using namespace rathena::server_core;
 using namespace rathena::server_web;
@@ -97,9 +93,6 @@ char char_configs_table[32] = "char_configs";
 char merchant_configs_table[32] = "merchant_configs";
 char party_table[32] = "party";
 char partybookings_table[32] = "party_bookings";
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-char recruitment_table[32] = "recruitment";
-#endif // Pandas_WebServer_Implement_PartyRecruitment
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
@@ -288,10 +281,6 @@ int inter_config_read(const char* cfgName)
 		else if (!strcmpi(w1, "web_codepage"))
 			safestrncpy(web_codepage, w2, sizeof(web_codepage));
 #endif // Pandas_SQL_Configure_Optimization
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-		else if (!strcmpi(w1, "recruitment"))
-			safestrncpy(recruitment_table, w2, sizeof(recruitment_table));
-#endif // Pandas_WebServer_Implement_PartyRecruitment
 		else if(!strcmpi(w1,"import"))
 			inter_config_read(w2);
 	}
@@ -529,13 +518,6 @@ bool WebServer::initialize( int argc, char* argv[] ){
 	http_server->Post("/emblem/upload", emblem_upload);
 	http_server->Post("/MerchantStore/load", merchantstore_load);
 	http_server->Post("/MerchantStore/save", merchantstore_save);
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-	//http_server->Post("/party/add", party_recruitment_add);
-	//http_server->Post("/party/del", party_recruitment_del);
-	//http_server->Post("/party/get", party_recruitment_get);
-	//http_server->Post("/party/list", party_recruitment_list);
-	//http_server->Post("/party/search", party_recruitment_search);
-#endif // Pandas_WebServer_Implement_PartyRecruitment
 	http_server->Post("/party/add", partybooking_add);
 	http_server->Post("/party/del", partybooking_delete);
 	http_server->Post("/party/get", partybooking_get);

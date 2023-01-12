@@ -2278,10 +2278,6 @@
 		#define Pandas_WebServer_Rewrite_Controller_HandlerFunc
 	#endif // Pandas_WebServer_Database_EncodingAdaptive
 
-	// 实现用于冒险家中介所的 party 接口 [Sola丶小克]
-	// 启用后将支持 /party/{list|get|add|del|search} 这几个相关接口
-	#define Pandas_WebServer_Implement_PartyRecruitment
-
 	// 在执行 logger 日志函数时是否在内部进行互斥处理 [Sola丶小克]
 	// 
 	// 如果不进行互斥操作的话, 在打开 print_req_res 的情况下，
