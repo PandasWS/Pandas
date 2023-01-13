@@ -1721,10 +1721,6 @@
 	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]
 	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
 	#define Pandas_AtCommand_ReloadLaphineDB
-
-	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
-	// 重新加载 Barters 以物易物数据库 (barters.yml)
-	#define Pandas_AtCommand_ReloadBarterDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 

@@ -241,10 +241,6 @@ def arrange_common(packagedir):
     shutil.move(packagedir + 'sql-files/main.sql', packagedir + 'sql-files/main/creation/01.main.sql')
     shutil.move(packagedir + 'sql-files/roulette_default_data.sql', packagedir + 'sql-files/main/creation/02.roulette_default_data.sql')
     
-    os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db/common')
-    shutil.move(packagedir + 'sql-files/item_cash_db.sql', packagedir + 'sql-files/main/creation/use_sql_db/common/01.item_cash_db.sql')
-    shutil.move(packagedir + 'sql-files/item_cash_db2.sql', packagedir + 'sql-files/main/creation/use_sql_db/common/02.item_cash_db2.sql')
-    
     os.makedirs(packagedir + 'sql-files/main/creation/use_sql_db/renewal')
     shutil.move(packagedir + 'sql-files/item_db_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/01.item_db_re.sql')
     shutil.move(packagedir + 'sql-files/item_db2_re.sql', packagedir + 'sql-files/main/creation/use_sql_db/renewal/02.item_db2_re.sql')

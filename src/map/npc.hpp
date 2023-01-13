@@ -104,6 +104,9 @@ struct s_npc_barter{
 	uint8 dir;
 	int16 sprite;
 	std::map<uint16, std::shared_ptr<s_npc_barter_item>> items;
+	int32 npcid;
+
+	~s_npc_barter();
 };
 
 class BarterDatabase : public TypesafeYamlDatabase<std::string, s_npc_barter>{
@@ -115,10 +118,6 @@ public:
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode( const ryml::NodeRef& node );
 	void loadingFinished();
-
-#ifdef Pandas_AtCommand_ReloadBarterDB
-	void clear() override;
-#endif // Pandas_AtCommand_ReloadBarterDB
 };
 
 extern BarterDatabase barter_db;
@@ -1465,24 +1464,40 @@ enum e_job_types
 	JT_4_RAGFES_16,
 	JT_4_RAGFES_16_M,
 	JT_4_EXJOB_NINJA2,
-
-	JT_ROZ_MQ_LUCIAN = 10510,
+	JT_4_VR_BOOK_FAIRY,
+	JT_ROZ_MQ_LUCIAN,
 	JT_ROZ_MQ_BRITIA,
 	JT_ROZ_MQ_ASSASIN01,
 	JT_STRANGE_B_SMITH1,
 	JT_STRONGER_B_SMTIH,
+	JT_4_VR_BOOK_RED,
+	JT_4_VR_BOOK_BLUE,
+	JT_4_VR_BOOK_YELLOW,
+	JT_4_VR_BOOK_GREEN,
+	JT_4_VR_BOOK_WHITE,
+	JT_4_VR_YGNIZEM,
+
+	JT_4_JP_19TH = 10524,
+	JT_4_KING_PORING,
+	JT_4_VR_SWORDMAN_DEAD,
+	JT_GATE_SKYBLUE,
+	JT_4_CS_RIGEL,
+	JT_4_M_NILLEM,
+	JT_4_LARVA_RED,
+	JT_4_LARVA_YELLOW,
+	JT_4_LARVA_BLACK,
+	JT_4_LARVA_VIOLET,
+	JT_4_HERO_SAUSAGE,
+	JT_4_PRINCESS_SAUSAGE,
+
+	JT_ROZ_MQ_XAVIER = 13000,
+	JT_ROZ_MQ_MOCLORD,
+	JT_ROZ_MQ_SKULD,
 
 #ifndef Pandas_Update_NPC_Identity_Information
 	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
 #else
-	JT_4_VR_BOOK_FAIRY = 10509,
-	JT_4_VR_BOOK_RED = 10515,
-	JT_4_VR_BOOK_BLUE = 10516,
-	JT_4_VR_BOOK_YELLOW = 10517,
-	JT_4_VR_BOOK_GREEN = 10518,
-	JT_4_VR_BOOK_WHITE = 10519,
-	JT_4_VR_YGNIZEM = 10520,
 	JT_EVT_BAPHOMET = 20061,
 	JT_EVT_BAPHO_JR = 20062,
 	JT_EVT_V_WOLF = 20063,
