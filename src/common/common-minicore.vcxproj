@@ -164,6 +164,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\uchardet\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

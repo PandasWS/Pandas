@@ -728,6 +728,7 @@ uint64 BarterDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	if( !exists ){
 		barter = std::make_shared<s_npc_barter>();
 		barter->name = npcname;
+		barter->npcid = 0;
 	}
 
 	if( this->nodeExists( node, "Map" ) ){
@@ -1047,7 +1048,53 @@ void BarterDatabase::loadingFinished(){
 
 		std::shared_ptr<s_npc_barter> barter = pair.second;
 
+		bool extended = false;
+
+		// Check if it has to use the extended barter feature or not
+		for( const auto& itemPair : barter->items ){
+			// Normal barter cannot have zeny requirements
+			if( itemPair.second->price > 0 ){
+				extended = true;
+				break;
+			}
+
+			// Normal barter needs to have exchange items defined
+			if( itemPair.second->requirements.empty() ){
+				extended = true;
+				break;
+			}
+
+			// Normal barter can only exchange 1:1
+			if( itemPair.second->requirements.size() > 1 ){
+				extended = true;
+				break;
+			}
+
+			// Normal barter cannot handle refine
+			for( const auto& requirement : itemPair.second->requirements ){
+				if( requirement.second->refine >= 0 ){
+					extended = true;
+					break;
+				}
+			}
+
+			// Check if a refine requirement has been set in the loop above
+			if( extended ){
+				break;
+			}
+		}
+
+		if( extended && !battle_config.feature_barter_extended ){
+#ifndef BUILDBOT
+			ShowError( "Barter %s uses extended mechanics but this is not enabled.\n", barter->name.c_str() );
+#endif
+			continue;
+		}
+
 		struct npc_data* nd = npc_create_npc( barter->m, barter->x, barter->y );
+
+		// Store the npcid for the destructor
+		barter->npcid = nd->bl.id;
 
 		npc_parsename( nd, barter->name.c_str(), nullptr, nullptr, __FILE__ ":" QUOTE(__LINE__) );
 
@@ -1057,48 +1104,7 @@ void BarterDatabase::loadingFinished(){
 		nd->bl.type = BL_NPC;
 		nd->subtype = NPCTYPE_BARTER;
 
-		nd->u.barter.extended = false;
-
-		// Check if it has to use the extended barter feature or not
-		for( const auto& itemPair : barter->items ){
-			// Normal barter cannot have zeny requirements
-			if( itemPair.second->price > 0 ){
-				nd->u.barter.extended = true;
-				break;
-			}
-
-			// Normal barter needs to have exchange items defined
-			if( itemPair.second->requirements.empty() ){
-				nd->u.barter.extended = true;
-				break;
-			}
-
-			// Normal barter can only exchange 1:1
-			if( itemPair.second->requirements.size() > 1 ){
-				nd->u.barter.extended = true;
-				break;
-			}
-
-			// Normal barter cannot handle refine
-			for( const auto& requirement : itemPair.second->requirements ){
-				if( requirement.second->refine >= 0 ){
-					nd->u.barter.extended = true;
-					break;
-				}
-			}
-
-			// Check if a refine requirement has been set in the loop above
-			if( nd->u.barter.extended ){
-				break;
-			}
-		}
-
-		if( nd->u.barter.extended && !battle_config.feature_barter_extended ){
-#ifndef BUILDBOT
-			ShowError( "Barter %s uses extended mechanics but this is not enabled.\n", nd->name );
-#endif
-			continue;
-		}
+		nd->u.barter.extended = extended;
 
 		if( nd->bl.m >= 0 ){
 			map_addnpc( nd->bl.m, nd );
@@ -1158,32 +1164,19 @@ void BarterDatabase::loadingFinished(){
 	TypesafeYamlDatabase::loadingFinished();
 }
 
-#ifdef Pandas_AtCommand_ReloadBarterDB
-//************************************
-// Method:      npc_reload_barters_sub
-// Description: 用于遍历卸载以物易物商店的子函数
-// Parameter:   struct npc_data * nd
-// Parameter:   va_list args
-// Returns:     int
-// Author:      Sola丶小克(CairoLee)  2022/06/16 07:58
-//************************************ 
-static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
-	nullpo_retr(0, nd);
-	
-	if (nd->subtype != NPCTYPE_BARTER)
-		return 0;
+s_npc_barter::~s_npc_barter(){
+	if( this->npcid != 0 ){
+		struct npc_data* nd = map_id2nd( this->npcid );
 
-	npc_unload_duplicates(nd);
-	npc_unload(nd, true);
-
-	return 0;
+		// Check if the NPC still exists or has been removed already
+		if( nd != nullptr ){
+			// Delete the NPC
+			npc_unload( nd, true );
+			// Update NPC event database
+			npc_read_event_script();
+		}
+	}
 }
-
-void BarterDatabase::clear() {
-	map_foreachnpc(npc_reload_barters_sub);
-	TypesafeYamlDatabase::clear();
-}
-#endif // Pandas_AtCommand_ReloadBarterDB
 
 BarterDatabase barter_db;
 
