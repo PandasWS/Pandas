@@ -6030,6 +6030,9 @@ BUILDIN_FUNC(menu)
 
 		StringBuf_Init(&buf);
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		for( i = 2; i < script_lastdata(st); i += 2 )
 		{
 			struct script_data* data;
@@ -6149,6 +6152,9 @@ BUILDIN_FUNC(select)
 
 		StringBuf_Init(&buf);
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		for( i = 2; i <= script_lastdata(st); ++i ) {
 			text = script_getstr(st, i);
 
@@ -6228,6 +6234,9 @@ BUILDIN_FUNC(prompt)
 
 		StringBuf_Init(&buf);
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		for( i = 2; i <= script_lastdata(st); ++i )
 		{
 			text = script_getstr(st, i);

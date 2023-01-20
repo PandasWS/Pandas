@@ -10139,6 +10139,9 @@ void pc_close_npc(map_session_data *sd,int flag)
 		}
 		sd->state.menu_or_input = 0;
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		sd->npc_shopid = 0;
 #ifdef SECURE_NPCTIMEOUT
 		if( sd->npc_idle_timer != INVALID_TIMER ){
