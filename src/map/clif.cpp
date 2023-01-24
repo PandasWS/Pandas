@@ -11822,6 +11822,9 @@ void clif_parse_LoadEndAck(int fd,map_session_data *sd)
 		sd->state.using_fake_npc = 0;
 		sd->state.menu_or_input = 0;
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 
 #ifndef Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 		if(sd->npc_id)
@@ -14158,6 +14161,12 @@ void clif_parse_NpcSelectMenu(int fd,map_session_data *sd){
 	}
 
 	sd->npc_menu = select;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+	if (sd->npc_menu == 0xff) {
+		// 若用户取消了菜单, 那么记录此时的 npc_id 是多少
+		sd->npc_menu_npcid = npc_id;
+	}
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 
 	if( battle_config.idletime_option&IDLE_NPC_MENU ){
 		sd->idletime = last_tick;
@@ -14232,7 +14241,19 @@ void clif_parse_NpcCloseClicked(int fd,map_session_data *sd)
 		sd->idletime = last_tick;
 	}
 
+#ifndef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 	npc_scriptcont(sd, RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]), true);
+#else
+	int npc_id = RFIFOL(fd, packet_db[RFIFOW(fd, 0)].pos[0]);
+	
+	// 当 npc_id 为 0 且刚刚菜单选择的是取消时,
+	// 优先采用 sd->npc_menu_npcid 里备份的 npc_id 来进行后续流程
+	if (!npc_id && sd->npc_menu == 0xff) {
+		npc_id = sd->npc_menu_npcid;
+	}
+	
+	npc_scriptcont(sd, npc_id, true);
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 }
 
 

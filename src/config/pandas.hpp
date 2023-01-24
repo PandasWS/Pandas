@@ -1004,7 +1004,12 @@
 	//
 	// 特别感谢 "差记性的小北" 指出此问题
 	#define Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
-	
+
+	// 修正玩家在 prompt 菜单中选择取消后,
+	// 后续脚本中若调用 close 系列指令会导致报错的问题 [Sola丶小克]
+	//
+	// 特别感谢 "差记性的小北" 指出此问题
+	#define Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 #endif // Pandas_Bugfix
 
 // ============================================================================
