@@ -20861,11 +20861,11 @@ int skill_delunitgroup_(std::shared_ptr<s_skill_unit_group> group, const char* f
 {
 	struct block_list* src;
 	struct unit_data *ud;
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	short i;
 #else
 	int i;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 	int link_group_id;
 
 	if( group == nullptr ) {

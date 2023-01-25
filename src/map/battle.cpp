@@ -7864,11 +7864,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			ad.damage = ad.damage * (1000 + mdef) / (1000 + mdef * 10) - mdef2;
 #else
 			if(battle_config.magic_defense_type)
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 				ad.damage = ad.damage - mdef*battle_config.magic_defense_type - mdef2;
 #else
 				ad.damage = ad.damage - ((int64)mdef) * battle_config.magic_defense_type - mdef2;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 			else
 				ad.damage = ad.damage * (100-mdef)/100 - mdef2;
 #endif

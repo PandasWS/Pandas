@@ -1032,16 +1032,16 @@ int inter_init_sql(const char *file)
 	inter_storage_sql_init();
 	inter_party_sql_init();
 	inter_pet_sql_init();
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	// 这几个函数目前没有什么具体的实际作用, 暂时先注释掉: https://lgtm.com/rules/2165170567/
 	inter_homunculus_sql_init();
 	inter_mercenary_sql_init();
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 	inter_elemental_sql_init();
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	// 这几个函数目前没有什么具体的实际作用, 暂时先注释掉: https://lgtm.com/rules/2165170567/
 	inter_mail_sql_init();
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 	inter_auction_sql_init();
 	inter_clan_init();
 

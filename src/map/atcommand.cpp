@@ -259,7 +259,7 @@ ACMD_FUNC(send)
 {
 	int len=0,type;
 	// read message type as hex number (without the 0x)
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	if(!message || !*message ||
 			!((sscanf(message, "len %8x", &type)==1 && (len=1))
 			|| sscanf(message, "%8x", &type)==1) )
@@ -283,7 +283,7 @@ ACMD_FUNC(send)
 	// 这样的行为会被 LGTM 判定为有潜在错误风险, 为了修正此警告, 我们将 len 的赋值单独拆开
 	if (sscanf(message, "len %8x", &type) == 1)
 		len = 1;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 
 #define PARSE_ERROR(error,p) \
 	{\

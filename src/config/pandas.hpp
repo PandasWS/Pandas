@@ -81,8 +81,9 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 或 CodeQL 建议的处理措施, 避免潜在风险
-	#define Pandas_LGTM_Optimization
+	// 是否启用代码分析工具所建议的处理措施以避免潜在风险
+	// 包含的工具有: LGTM, CodeQL, Microsoft Code Analysis 等
+	#define Pandas_CodeAnalysis_Suggestion
 #endif // Pandas_Basic
 
 // ============================================================================

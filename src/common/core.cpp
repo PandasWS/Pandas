@@ -440,10 +440,10 @@ int Core::start( int argc, char **argv ){
 			SERVER_NAME = ++p1;
 			n = p1-argv[0]; //calc dir name len
 
-#ifdef Pandas_LGTM_Optimization
+#ifdef Pandas_CodeAnalysis_Suggestion
 			// 对通过参数传入的工作路径进行长度限制判断 (暂定为 1kb 的长度)
 			n = (n > 1024 ? 1024 : n);
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 
 			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
 			if(chdir(pwd) != 0)
