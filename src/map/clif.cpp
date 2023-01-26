@@ -11606,6 +11606,10 @@ void clif_parse_LoadEndAck(int fd,map_session_data *sd)
 	// reset the callshop flag if the player changes map
 	sd->state.callshop = 0;
 
+#ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+	sd->callshop_master_npcid = 0;
+#endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+
 	if(map_addblock(&sd->bl))
 		return;
 	clif_spawn(&sd->bl);

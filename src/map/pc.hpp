@@ -562,8 +562,11 @@ public:
 	int npc_item_flag; //Marks the npc_id with which you can use items during interactions with said npc (see script command enable_itemuse)
 	int npc_menu; // internal variable, used in npc menu handling
 #ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
-	int npc_menu_npcid; // 当 prompt 菜单项取消时, 记录 npc_id
+	int npc_menu_npcid;
 #endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+#ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+	int callshop_master_npcid;
+#endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
 	int npc_amount;
 	struct script_state *st;
 #ifdef Pandas_ScriptEngine_MutliStackBackup

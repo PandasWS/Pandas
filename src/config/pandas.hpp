@@ -1011,6 +1011,13 @@
 	//
 	// 特别感谢 "差记性的小北" 指出此问题
 	#define Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+
+	// 修正脚本控制的商店在特定情况下存在的报错问题 [Sola丶小克]
+	// 只要在 npcshopattach + callshop 之前调用了一个 mes 并且不 close 它,
+	// 那么当玩家完成商店中的交易操作后就会出现 npc_scriptcont 报错.
+	//
+	// 特别感谢 "HongShin" 指出此问题
+	#define Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
 #endif // Pandas_Bugfix
 
 // ============================================================================
