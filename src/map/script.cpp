@@ -11367,7 +11367,7 @@ BUILDIN_FUNC(end)
 	if( st->mes_active )
 		st->mes_active = 0;
 
-	if (sd) {
+	if (sd){
 		if (sd->state.callshop == 0)
 			clif_scriptclose(sd, st->oid); // If a menu/select/prompt is active, close it.
 		else 
