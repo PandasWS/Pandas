@@ -2679,7 +2679,8 @@ bool npc_scriptcont(map_session_data* sd, int id, bool closing){
 		TBL_NPC* nd_sd = (TBL_NPC*)map_id2bl(sd->npc_id);
 
 #ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
-		if (!id && sd->st && sd->st->mes_active && sd->npc_id == sd->callshop_master_npcid) {
+		if (!id && sd->st && sd->st->mes_active &&
+			sd->npc_id != 0 && sd->npc_id == sd->callshop_master_npcid) {
 			// 若客户端传来的 npc_id (即: id 变量) 的值为 0
 			// 并且玩家当前存在一个 mes 对话框 (sd->st->mes_active 为 1),
 			// 以及通过 npcshopattach + callshop 打开了脚本控制的商店 (sd->callshop_master_npcid 有值),
@@ -3197,7 +3198,7 @@ static int npc_buylist_sub(map_session_data* sd, std::vector<s_npc_buy_list>& it
 	}
 
 #ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
-	if (nd) {
+	if (sd && nd) {
 		sd->callshop_master_npcid = nd->bl.id;
 	}
 #endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
@@ -3458,7 +3459,7 @@ static int npc_selllist_sub(map_session_data* sd, int list_length, PACKET_CZ_PC_
 	}
 
 #ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
-	if (nd) {
+	if (sd && nd) {
 		sd->callshop_master_npcid = nd->bl.id;
 	}
 #endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
