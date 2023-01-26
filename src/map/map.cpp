@@ -5937,6 +5937,7 @@ void mapgenerator_show_help() {
 	ShowInfo("  -n, -navi [--generate-navi]\tCreate navigation files\n");
 	ShowInfo("  -r, -repu [--generate-reputation]\tCreate reputation bson files\n");
 	ShowInfo("  -i, -imi [--generate-itemmoveinfo]\tCreate itemmoveinfov5.txt\n");
+	printf("\n");
 	systemPause();
 }
 #endif // defined(Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process) && defined(MAP_GENERATOR)
