@@ -22888,16 +22888,16 @@ int script_instancegetid(struct script_state* st, e_instance_mode mode)
 	if (mode == IM_NONE) {
 		struct npc_data *nd = map_id2nd(st->oid);
 
-#ifndef Pandas_Crashfix_Prevent_NullPointer
-		if (nd->instance_id > 0)
-#else
+#ifdef Pandas_Crashfix_Prevent_NullPointer
 		// 此处必须对 nd 进行空指针校验.
 		// 若副本中的 NPC 在调用了 instance_destroy 销毁自己所在的副本之后,
 		// 还在后续的脚本中还企图调用与副本相关的指令时 (比如 '开头的副本变量, instance_ 开头的一系列脚本指令等),
 		// 那么对应的 NPC 早已经在调用 instance_destroy 的时候被销毁了, 不加以判断将引发空指针崩溃.
 		// 重现脚本: https://github.com/PandasWS/Pandas/issues/386
-		if (nd && nd->instance_id > 0)
+		if (!nd) return 0;
 #endif // Pandas_Crashfix_Prevent_NullPointer
+
+		if (nd->instance_id > 0)
 			instance_id = nd->instance_id;
 	} else {
 		map_session_data *sd = map_id2sd(st->rid);
