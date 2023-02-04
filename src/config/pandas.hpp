@@ -911,7 +911,11 @@
 	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
 	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
 
-	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
+	// 修正 progressbar 某些情况下会导致角色无法移动的问题 [Sola丶小克]
+	//
+	// 可能的现象:
+	// - 在 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动
+	// - 在 progressbar 之前使用了 menu / select 会导致打断进度条后角色无法移动
 	#define Pandas_Fix_Progressbar_Abort_Stuck
 
 	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
