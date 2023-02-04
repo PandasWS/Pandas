@@ -21526,6 +21526,26 @@ BUILDIN_FUNC(unitskilluseid)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), -1);
+			pc_setreg(esd, add_str("@useskill_pos_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target_gid"), target_id);
+
+			pc_setreg(esd, add_str("@useskill_x"), -1);
+			pc_setreg(esd, add_str("@useskill_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target"), target_id);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+
 		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
@@ -21580,6 +21600,26 @@ BUILDIN_FUNC(unitskillusepos)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_pos_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target_gid"), 0);
+
+			pc_setreg(esd, add_str("@useskill_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target"), 0);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+		
 		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
