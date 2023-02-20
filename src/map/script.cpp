@@ -29937,7 +29937,7 @@ static int buildin_getsameipinfo_sub(map_session_data* pl_sd, va_list ap)
 	uint32 *count = va_arg(ap, uint32*);
 	int32 m = va_arg(ap, int32);	// int16 通过可变参数方式传递, 会被提升为 int32
 
-	if (!ipaddr || !sd | !count) return 0;
+	if (!ipaddr || !sd || !count) return 0;
 	if (!pl_sd || pl_sd->state.autotrade) return 0;
 	if (m >= 0 && pl_sd->bl.m != m) return 0;
 
