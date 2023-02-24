@@ -21526,6 +21526,26 @@ BUILDIN_FUNC(unitskilluseid)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), -1);
+			pc_setreg(esd, add_str("@useskill_pos_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target_gid"), target_id);
+
+			pc_setreg(esd, add_str("@useskill_x"), -1);
+			pc_setreg(esd, add_str("@useskill_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target"), target_id);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+
 		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
@@ -21580,6 +21600,26 @@ BUILDIN_FUNC(unitskillusepos)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_pos_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target_gid"), 0);
+
+			pc_setreg(esd, add_str("@useskill_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target"), 0);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+		
 		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
@@ -22888,16 +22928,16 @@ int script_instancegetid(struct script_state* st, e_instance_mode mode)
 	if (mode == IM_NONE) {
 		struct npc_data *nd = map_id2nd(st->oid);
 
-#ifndef Pandas_Crashfix_Prevent_NullPointer
-		if (nd->instance_id > 0)
-#else
+#ifdef Pandas_Crashfix_Prevent_NullPointer
 		// 此处必须对 nd 进行空指针校验.
 		// 若副本中的 NPC 在调用了 instance_destroy 销毁自己所在的副本之后,
 		// 还在后续的脚本中还企图调用与副本相关的指令时 (比如 '开头的副本变量, instance_ 开头的一系列脚本指令等),
 		// 那么对应的 NPC 早已经在调用 instance_destroy 的时候被销毁了, 不加以判断将引发空指针崩溃.
 		// 重现脚本: https://github.com/PandasWS/Pandas/issues/386
-		if (nd && nd->instance_id > 0)
+		if (!nd) return 0;
 #endif // Pandas_Crashfix_Prevent_NullPointer
+
+		if (nd->instance_id > 0)
 			instance_id = nd->instance_id;
 	} else {
 		map_session_data *sd = map_id2sd(st->rid);
@@ -32725,7 +32765,7 @@ BUILDIN_FUNC(getbossinfo) {
 		script_both_setreg(st, "boss_tomb_respawnsecs", -1, true, count, char_id);
 		t_tick respawntime = -1;
 		if (tomb_nd && tomb_nd->u.tomb.md->spawn) {
-			respawntime = gett_tickimer(tomb_nd->u.tomb.md->spawn_timer);
+			respawntime = gettick_timer(tomb_nd->u.tomb.md->spawn_timer);
 			if (respawntime != -1) {
 				respawntime = DIFF_TICK(respawntime, gettick());
 				respawntime = respawntime / 1000;
