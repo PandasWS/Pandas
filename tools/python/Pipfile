@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 opencc-python-reimplemented = ">=0.1.5"
 pdbparse = {version = "==1.5", sys_platform = "=='win32'"}
-pefile = "==2019.4.18"
+pefile = ">=2019.4.18"
 colorama = ">=0.4.3"
 chardet = ">=3.0.4"
 gitpython = ">=3.1.7"
@@ -17,6 +17,7 @@ PyYAML = ">=5.4.1"
 "ruamel.yaml" = "*"
 oss2 = "*"
 pyzipper = "*"
+construct = "*"
 
 [requires]
 python_version = "3"
