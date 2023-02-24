@@ -602,8 +602,13 @@ void Core::signal_crash(){
 		this->handle_crash();
 	}
 
+#ifndef Pandas_Google_Breakpad
+	// 若已经启用了 Breakpad 那么此处无需执行退出,
+	// 否则将会导致无法正常生成崩溃转储文件
+
 	// Now stop the process
 	exit( EXIT_FAILURE );
+#endif // Pandas_Google_Breakpad
 }
 
 void Core::signal_shutdown(){
