@@ -195,6 +195,11 @@ HANDLER_FUNC(userconfig_save) {
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 	auto data = GET_STRING_FIELD("data", "");
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
@@ -277,6 +282,11 @@ HANDLER_FUNC(userconfig_load) {
 
 	auto account_id = GET_NUMBER_FIELD("AID", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	if (!isVaildAccount(account_id)) {
 		make_response(res, FAILURE_RET, "The account specified by the \"AID\" does not exist.");

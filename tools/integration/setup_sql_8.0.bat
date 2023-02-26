@@ -3,8 +3,6 @@
 mysql --host %DB_HOST% -u %DB_ROOT% -e "CREATE DATABASE %DB_NAME%;"
 mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\main.sql"
 mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\logs.sql"
-mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\item_cash_db.sql"
-mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\item_cash_db2.sql"
 mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\item_db.sql"
 mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\item_db_usable.sql"
 mysql --host %DB_HOST% -u %DB_ROOT% %DB_NAME% -e "source sql-files\item_db_equip.sql"

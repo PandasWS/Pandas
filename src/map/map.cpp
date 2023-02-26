@@ -83,8 +83,6 @@ int db_use_sqldbs = 0;
 char barter_table[32] = "barter";
 char buyingstores_table[32] = "buyingstores";
 char buyingstore_items_table[32] = "buyingstore_items";
-char item_cash_table[32] = "item_cash_db";
-char item_cash2_table[32] = "item_cash_db2";
 #ifdef RENEWAL
 char item_table[32] = "item_db_re";
 char item2_table[32] = "item_db2_re";
@@ -213,8 +211,6 @@ const char* MSG_CONF_NAME_CHT;	// 繁体中文
 #endif // Pandas_Message_Reorganize
 
 char wisp_server_name[NAME_LENGTH] = "Server"; // can be modified in char-server configuration file
-
-struct s_map_default map_default;
 
 int console = 0;
 int enable_spy = 0; //To enable/disable @spy commands, which consume too much cpu time when sending packets. [Skotlex]
@@ -2345,23 +2341,6 @@ int map_quit(map_session_data *sd) {
 
 	unit_remove_map_pc(sd,CLR_RESPAWN);
 
-	if( mapdata->instance_id > 0 ) { // Avoid map conflicts and warnings on next login
-		int16 m;
-		struct point *pt;
-		if( mapdata->save.map )
-			pt = &mapdata->save;
-		else
-			pt = &sd->status.save_point;
-
-		if( (m=map_mapindex2mapid(pt->map)) >= 0 )
-		{
-			sd->bl.m = m;
-			sd->bl.x = pt->x;
-			sd->bl.y = pt->y;
-			sd->mapindex = pt->map;
-		}
-	}
-
 	if (sd->state.vending)
 		idb_remove(vending_getdb(), sd->status.char_id);
 
@@ -2952,21 +2931,21 @@ int map_addinstancemap(int src_m, int instance_id, bool no_mapflag)
 	dst_map->npc_num_warp = 0;
 
 	// Reallocate cells
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	size_t num_cell = dst_map->xs * dst_map->ys;
 #else
 	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
 	size_t num_cell = (size_t)dst_map->xs * dst_map->ys;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 	CREATE( dst_map->cell, struct mapcell, num_cell );
 	memcpy( dst_map->cell, src_map->cell, num_cell * sizeof(struct mapcell) );
 
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	size_t size = dst_map->bxs * dst_map->bys * sizeof(struct block_list*);
 #else
 	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
 	size_t size = (size_t)dst_map->bxs * dst_map->bys * sizeof(struct block_list*);
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 	dst_map->block = (struct block_list **)aCalloc(1,size);
 	dst_map->block_mob = (struct block_list **)aCalloc(1,size);
 
@@ -2994,7 +2973,7 @@ static int map_instancemap_leave(struct block_list *bl, va_list ap)
 	nullpo_retr(0, bl);
 	nullpo_retr(0, sd = (map_session_data *)bl);
 
-	pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
+	pc_setpos_savepoint( *sd );
 
 	return 1;
 }
@@ -3978,12 +3957,12 @@ int map_readgat (struct map_data* m)
 
 	m->xs = *(int32*)(gat+6);
 	m->ys = *(int32*)(gat+10);
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 	num_cells = m->xs * m->ys;
 #else
 	// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
 	num_cells = (size_t)m->xs * m->ys;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 	CREATE(m->cell, struct mapcell, num_cells);
 
 	water_height = map_waterheight(m->name);
@@ -4121,12 +4100,12 @@ int map_readallmaps (void)
 		mapdata->bxs = (mapdata->xs + BLOCK_SIZE - 1) / BLOCK_SIZE;
 		mapdata->bys = (mapdata->ys + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 		size = mapdata->bxs * mapdata->bys * sizeof(struct block_list*);
 #else
 		// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
 		size = (size_t)mapdata->bxs * mapdata->bys * sizeof(struct block_list*);
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 		mapdata->block = (struct block_list**)aCalloc(size, 1);
 		mapdata->block_mob = (struct block_list**)aCalloc(size, 1);
 
@@ -4477,10 +4456,6 @@ int inter_config_read(const char *cfgName)
 			safestrncpy(mob_skill_table,w2,sizeof(mob_skill_table));
 		else if(strcmpi(w1,"mob_skill2_table")==0)
 			safestrncpy(mob_skill2_table,w2,sizeof(mob_skill2_table));
-		else if( strcmpi( w1, "item_cash_table" ) == 0 )
-			safestrncpy( item_cash_table, w2, sizeof(item_cash_table) );
-		else if( strcmpi( w1, "item_cash2_table" ) == 0 )
-			safestrncpy( item_cash2_table, w2, sizeof(item_cash2_table) );
 		else if( strcmpi( w1, "vending_db" ) == 0 )
 			safestrncpy( vendings_table, w2, sizeof(vendings_table) );
 		else if( strcmpi( w1, "vending_items_table" ) == 0 )
@@ -5962,6 +5937,7 @@ void mapgenerator_show_help() {
 	ShowInfo("  -n, -navi [--generate-navi]\tCreate navigation files\n");
 	ShowInfo("  -r, -repu [--generate-reputation]\tCreate reputation bson files\n");
 	ShowInfo("  -i, -imi [--generate-itemmoveinfo]\tCreate itemmoveinfov5.txt\n");
+	printf("\n");
 	systemPause();
 }
 #endif // defined(Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process) && defined(MAP_GENERATOR)
@@ -6124,11 +6100,6 @@ bool MapServer::initialize( int argc, char *argv[] ){
 	MSG_CONF_NAME_CHT = "conf/msg_conf/map_msg_cht.conf";	// Chinese Traditional
 	/* Multilanguage */
 #endif // Pandas_Message_Reorganize
-
-	// Default map
-	safestrncpy(map_default.mapname, "prontera", MAP_NAME_LENGTH);
-	map_default.x = 156;
-	map_default.y = 191;
 
 	// default inter_config
 	inter_config.start_status_points = 48;

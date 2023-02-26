@@ -728,6 +728,7 @@ uint64 BarterDatabase::parseBodyNode( const ryml::NodeRef& node ){
 	if( !exists ){
 		barter = std::make_shared<s_npc_barter>();
 		barter->name = npcname;
+		barter->npcid = 0;
 	}
 
 	if( this->nodeExists( node, "Map" ) ){
@@ -1047,7 +1048,53 @@ void BarterDatabase::loadingFinished(){
 
 		std::shared_ptr<s_npc_barter> barter = pair.second;
 
+		bool extended = false;
+
+		// Check if it has to use the extended barter feature or not
+		for( const auto& itemPair : barter->items ){
+			// Normal barter cannot have zeny requirements
+			if( itemPair.second->price > 0 ){
+				extended = true;
+				break;
+			}
+
+			// Normal barter needs to have exchange items defined
+			if( itemPair.second->requirements.empty() ){
+				extended = true;
+				break;
+			}
+
+			// Normal barter can only exchange 1:1
+			if( itemPair.second->requirements.size() > 1 ){
+				extended = true;
+				break;
+			}
+
+			// Normal barter cannot handle refine
+			for( const auto& requirement : itemPair.second->requirements ){
+				if( requirement.second->refine >= 0 ){
+					extended = true;
+					break;
+				}
+			}
+
+			// Check if a refine requirement has been set in the loop above
+			if( extended ){
+				break;
+			}
+		}
+
+		if( extended && !battle_config.feature_barter_extended ){
+#ifndef BUILDBOT
+			ShowError( "Barter %s uses extended mechanics but this is not enabled.\n", barter->name.c_str() );
+#endif
+			continue;
+		}
+
 		struct npc_data* nd = npc_create_npc( barter->m, barter->x, barter->y );
+
+		// Store the npcid for the destructor
+		barter->npcid = nd->bl.id;
 
 		npc_parsename( nd, barter->name.c_str(), nullptr, nullptr, __FILE__ ":" QUOTE(__LINE__) );
 
@@ -1057,48 +1104,7 @@ void BarterDatabase::loadingFinished(){
 		nd->bl.type = BL_NPC;
 		nd->subtype = NPCTYPE_BARTER;
 
-		nd->u.barter.extended = false;
-
-		// Check if it has to use the extended barter feature or not
-		for( const auto& itemPair : barter->items ){
-			// Normal barter cannot have zeny requirements
-			if( itemPair.second->price > 0 ){
-				nd->u.barter.extended = true;
-				break;
-			}
-
-			// Normal barter needs to have exchange items defined
-			if( itemPair.second->requirements.empty() ){
-				nd->u.barter.extended = true;
-				break;
-			}
-
-			// Normal barter can only exchange 1:1
-			if( itemPair.second->requirements.size() > 1 ){
-				nd->u.barter.extended = true;
-				break;
-			}
-
-			// Normal barter cannot handle refine
-			for( const auto& requirement : itemPair.second->requirements ){
-				if( requirement.second->refine >= 0 ){
-					nd->u.barter.extended = true;
-					break;
-				}
-			}
-
-			// Check if a refine requirement has been set in the loop above
-			if( nd->u.barter.extended ){
-				break;
-			}
-		}
-
-		if( nd->u.barter.extended && !battle_config.feature_barter_extended ){
-#ifndef BUILDBOT
-			ShowError( "Barter %s uses extended mechanics but this is not enabled.\n", nd->name );
-#endif
-			continue;
-		}
+		nd->u.barter.extended = extended;
 
 		if( nd->bl.m >= 0 ){
 			map_addnpc( nd->bl.m, nd );
@@ -1158,32 +1164,19 @@ void BarterDatabase::loadingFinished(){
 	TypesafeYamlDatabase::loadingFinished();
 }
 
-#ifdef Pandas_AtCommand_ReloadBarterDB
-//************************************
-// Method:      npc_reload_barters_sub
-// Description: 用于遍历卸载以物易物商店的子函数
-// Parameter:   struct npc_data * nd
-// Parameter:   va_list args
-// Returns:     int
-// Author:      Sola丶小克(CairoLee)  2022/06/16 07:58
-//************************************ 
-static int npc_reload_barters_sub(struct npc_data* nd, va_list args) {
-	nullpo_retr(0, nd);
-	
-	if (nd->subtype != NPCTYPE_BARTER)
-		return 0;
+s_npc_barter::~s_npc_barter(){
+	if( this->npcid != 0 ){
+		struct npc_data* nd = map_id2nd( this->npcid );
 
-	npc_unload_duplicates(nd);
-	npc_unload(nd, true);
-
-	return 0;
+		// Check if the NPC still exists or has been removed already
+		if( nd != nullptr ){
+			// Delete the NPC
+			npc_unload( nd, true );
+			// Update NPC event database
+			npc_read_event_script();
+		}
+	}
 }
-
-void BarterDatabase::clear() {
-	map_foreachnpc(npc_reload_barters_sub);
-	TypesafeYamlDatabase::clear();
-}
-#endif // Pandas_AtCommand_ReloadBarterDB
 
 BarterDatabase barter_db;
 
@@ -2532,7 +2525,7 @@ void run_tomb(map_session_data* sd, struct npc_data* nd)
 		pc_setreg(sd, add_str("@tomb_mob_respawnsecs"), -1);
 		t_tick respawntime = -1;
 		if (nd->u.tomb.md->spawn) {
-			respawntime = gett_tickimer(nd->u.tomb.md->spawn_timer);
+			respawntime = gettick_timer(nd->u.tomb.md->spawn_timer);
 			if (respawntime != -1) {
 				respawntime = DIFF_TICK(respawntime, gettick());
 				respawntime = respawntime / 1000;
@@ -2684,6 +2677,18 @@ bool npc_scriptcont(map_session_data* sd, int id, bool closing){
 
 	if( id != sd->npc_id ){
 		TBL_NPC* nd_sd = (TBL_NPC*)map_id2bl(sd->npc_id);
+
+#ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+		if (!id && sd->st && sd->st->mes_active &&
+			sd->npc_id != 0 && sd->npc_id == sd->callshop_master_npcid) {
+			// 若客户端传来的 npc_id (即: id 变量) 的值为 0
+			// 并且玩家当前存在一个 mes 对话框 (sd->st->mes_active 为 1),
+			// 以及通过 npcshopattach + callshop 打开了脚本控制的商店 (sd->callshop_master_npcid 有值),
+			// 并且对话中的 npc_id 与 callshop_master_npcid 一致,
+			// 那么这里直接跳过执行即可, 无需报错.
+			return true;
+		}
+#endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
 
 		ShowDebug("npc_scriptcont: %s (sd->npc_id=%d) is not %s (id=%d).\n",
 			nd_sd?(char*)nd_sd->name:"'Unknown NPC'", (int)sd->npc_id,
@@ -2893,18 +2898,10 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 					clif_messagecolor(&sd->bl, color_table[COLOR_RED], output, false, SELF);
 					return ERROR_TYPE_PURCHASE_FAIL;
 				}
-				pc_setreg2(sd, nd->u.shop.pointshop_str, cost[0] - (price - points));
 
-#ifdef Pandas_Fix_PointShop_Double_Spend_Attack
-				if (add_str(nd->u.shop.pointshop_str) == add_str(CASHPOINT_VAR)) {
-					sd->cashPoints = cost[0] - (price - points);
-					log_cash(sd, LOG_TYPE_NPC, LOG_CASH_TYPE_CASH, -(price - points));
+				if( !set_reg_num( nullptr, sd, add_str( nd->u.shop.pointshop_str ), nd->u.shop.pointshop_str, cost[0] - ( price - points ), nullptr ) ){
+					return ERROR_TYPE_PURCHASE_FAIL;
 				}
-				if (add_str(nd->u.shop.pointshop_str) == add_str(KAFRAPOINT_VAR)) {
-					sd->kafraPoints = cost[0] - (price - points);
-					log_cash(sd, LOG_TYPE_NPC, LOG_CASH_TYPE_KAFRA, -(price - points));
-				}
-#endif // Pandas_Fix_PointShop_Double_Spend_Attack
 
 				sprintf(output, msg_txt(sd, 716), nd->u.shop.pointshop_str, cost[0] - (price - points)); // Your '%s' is now: %d
 #ifdef Pandas_Support_Pointshop_Variable_DisplayName
@@ -3200,6 +3197,12 @@ static int npc_buylist_sub(map_session_data* sd, std::vector<s_npc_buy_list>& it
 		script_setarray_pc( sd, "@bought_quantity", i, item_list[i].qty, &key_amount );
 	}
 
+#ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+	if (sd && nd) {
+		sd->callshop_master_npcid = nd->bl.id;
+	}
+#endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+
 	// invoke event
 	snprintf(npc_ev, ARRAYLENGTH(npc_ev), "%s::%s", nd->exname, script_config.onbuy_event_name);
 	npc_event(sd, npc_ev, 0);
@@ -3454,6 +3457,12 @@ static int npc_selllist_sub(map_session_data* sd, int list_length, PACKET_CZ_PC_
 			}
 		}
 	}
+
+#ifdef Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+	if (sd && nd) {
+		sd->callshop_master_npcid = nd->bl.id;
+	}
+#endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
 
 	// invoke event
 	snprintf(npc_ev, ARRAYLENGTH(npc_ev), "%s::%s", nd->exname, script_config.onsell_event_name);

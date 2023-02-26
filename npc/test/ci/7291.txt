@@ -3,6 +3,9 @@ OnInit:
 	if( checkre(0) ){
 		if( PACKETVER >= 20200916 ){
 			.@expected$ = "<ITEML>0000213v0%0g&00'00)18X)1ck)00)00+2R,00-00</ITEML>";
+		}else if( PACKETVER >= 20180620 ){
+			// Grade does not exist (clientside) yet
+			.@expected$ = "<ITEML>0000213v0%0g&00(18X(1ck(00(00*2R+00,00</ITEML>";
 		}else if( PACKETVER >= 20150225 ){
 			// Grade does not exist (clientside) yet
 			.@expected$ = "<ITEMLINK>0000213v0%0g&00(18X(1ck(00(00*2R+00,00</ITEMLINK>";
@@ -20,6 +23,9 @@ OnInit:
 	}else{
 		if( PACKETVER >= 20200916 ){
 			.@expected$ = "<ITEML>000021hS%0a&00'00)18X)00)00)00</ITEML>";
+		}else if( PACKETVER >= 20180620 ){
+			// Grade does not exist (clientside) yet// Grade does not exist (clientside) yet
+			.@expected$ = "<ITEML>000021hS%0a&00(18X(00(00(00</ITEML>";
 		}else if( PACKETVER >= 20100000 ){
 			// Grade does not exist (clientside) yet// Grade does not exist (clientside) yet
 			.@expected$ = "<ITEMLINK>000021hS%0a&00(18X(00(00(00</ITEMLINK>";

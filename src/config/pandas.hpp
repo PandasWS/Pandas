@@ -67,7 +67,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.19.1"
+	#define Pandas_Version "1.1.20.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -81,8 +81,9 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 或 CodeQL 建议的处理措施, 避免潜在风险
-	#define Pandas_LGTM_Optimization
+	// 是否启用代码分析工具所建议的处理措施以避免潜在风险
+	// 包含的工具有: LGTM, CodeQL, Microsoft Code Analysis 等
+	#define Pandas_CodeAnalysis_Suggestion
 #endif // Pandas_Basic
 
 // ============================================================================
@@ -842,10 +843,6 @@
 	// 目前根据各位脚本大神的反馈, 更希望各个商店 NPC 的商品列表内容是各自独立的 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 
-	// 修正使用 pointshop 类型的商店操作 #CASHPOINTS 或 #KAFRAPOINTS 变量完成最终的货币结算后
-	// 小地图旁边的"道具商城"按钮中的金额不被更新, 最终导致双花的问题 [Sola丶小克]
-	#define Pandas_Fix_PointShop_Double_Spend_Attack
-
 	// 修正 npc_unloadfile 和 npc_parsesrcfile 的行为会被空格影响的问题 [Sola丶小克]
 	// 如果 @reloadnpc 时给定的路径带空格, 系统将无法正确的 unloadnpc, 导致 npc 重复出现
 	#define Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
@@ -914,7 +911,11 @@
 	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
 	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
 
-	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
+	// 修正 progressbar 某些情况下会导致角色无法移动的问题 [Sola丶小克]
+	//
+	// 可能的现象:
+	// - 在 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动
+	// - 在 progressbar 之前使用了 menu / select 会导致打断进度条后角色无法移动
 	#define Pandas_Fix_Progressbar_Abort_Stuck
 
 	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
@@ -1008,7 +1009,19 @@
 	//
 	// 特别感谢 "差记性的小北" 指出此问题
 	#define Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
-	
+
+	// 修正玩家在 prompt 菜单中选择取消后,
+	// 后续脚本中若调用 close 系列指令会导致报错的问题 [Sola丶小克]
+	//
+	// 特别感谢 "差记性的小北" 指出此问题
+	#define Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+
+	// 修正脚本控制的商店在特定情况下存在的报错问题 [Sola丶小克]
+	// 只要在 npcshopattach + callshop 之前调用了一个 mes 并且不 close 它,
+	// 那么当玩家完成商店中的交易操作后就会出现 npc_scriptcont 报错.
+	//
+	// 特别感谢 "HongShin" 指出此问题
+	#define Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1721,10 +1734,6 @@
 	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]
 	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
 	#define Pandas_AtCommand_ReloadLaphineDB
-
-	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
-	// 重新加载 Barters 以物易物数据库 (barters.yml)
-	#define Pandas_AtCommand_ReloadBarterDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -2277,10 +2286,6 @@
 	#ifdef Pandas_WebServer_Database_EncodingAdaptive
 		#define Pandas_WebServer_Rewrite_Controller_HandlerFunc
 	#endif // Pandas_WebServer_Database_EncodingAdaptive
-
-	// 实现用于冒险家中介所的 party 接口 [Sola丶小克]
-	// 启用后将支持 /party/{list|get|add|del|search} 这几个相关接口
-	#define Pandas_WebServer_Implement_PartyRecruitment
 
 	// 在执行 logger 日志函数时是否在内部进行互斥处理 [Sola丶小克]
 	// 

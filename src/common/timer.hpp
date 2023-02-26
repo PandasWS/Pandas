@@ -59,7 +59,7 @@ int delete_timer(int tid, TimerFunc func);
 t_tick addtick_timer(int tid, t_tick tick);
 t_tick settick_timer(int tid, t_tick tick);
 #ifdef Pandas_NpcEvent
-t_tick gett_tickimer(int tid);
+t_tick gettick_timer(int tid);
 #endif // Pandas_NpcEvent
 
 #ifdef Pandas_BattleRecord

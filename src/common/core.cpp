@@ -440,10 +440,10 @@ int Core::start( int argc, char **argv ){
 			SERVER_NAME = ++p1;
 			n = p1-argv[0]; //calc dir name len
 
-#ifdef Pandas_LGTM_Optimization
+#ifdef Pandas_CodeAnalysis_Suggestion
 			// 对通过参数传入的工作路径进行长度限制判断 (暂定为 1kb 的长度)
 			n = (n > 1024 ? 1024 : n);
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 
 			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
 			if(chdir(pwd) != 0)
@@ -495,12 +495,12 @@ int Core::start( int argc, char **argv ){
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 
 	// If initialization did not trigger shutdown
-	if( this->status != e_core_status::STOPPING ){
+	if( this->m_status != e_core_status::STOPPING ){
 		this->set_status( e_core_status::SERVER_INITIALIZED );
 
 		this->set_status( e_core_status::RUNNING );
 #ifndef MINICORE
-		if( !this->run_once ){
+		if( !this->m_run_once ){
 			// Main runtime cycle
 			while( this->get_status() == e_core_status::RUNNING ){
 				t_tick next = do_timer( gettick_nocache() );
@@ -553,7 +553,7 @@ void Core::handle_main( t_tick next ){
 	do_sockets( next );
 
 	// 如果是地图服务器的话那么顺带需要执行异步任务
-	if (this->type == e_core_type::MAP) {
+	if (this->get_type() == e_core_type::MAP) {
 		do_future();
 	}
 #endif
@@ -572,15 +572,15 @@ void Core::finalize(){
 }
 
 void Core::set_status( e_core_status status ){
-	this->status = status;
+	this->m_status = status;
 }
 
 e_core_status Core::get_status(){
-	return this->status;
+	return this->m_status;
 }
 
 e_core_type Core::get_type(){
-	return this->type;
+	return this->m_type;
 }
 
 bool Core::is_running(){
@@ -588,22 +588,27 @@ bool Core::is_running(){
 }
 
 void Core::set_run_once( bool run_once ){
-	this->run_once = run_once;
+	this->m_run_once = run_once;
 }
 
 void Core::signal_crash(){
 	this->set_status( e_core_status::STOPPING );
 
-	if( this->crashed ){
+	if( this->m_crashed ){
 		ShowFatalError( "Received another crash signal, while trying to handle the last crash!\n" );
 	}else{
 		ShowFatalError( "Received a crash signal, trying to handle it as good as possible!\n" );
-		this->crashed = true;
+		this->m_crashed = true;
 		this->handle_crash();
 	}
 
+#ifndef Pandas_Google_Breakpad
+	// 若已经启用了 Breakpad 那么此处无需执行退出,
+	// 否则将会导致无法正常生成崩溃转储文件
+
 	// Now stop the process
 	exit( EXIT_FAILURE );
+#endif // Pandas_Google_Breakpad
 }
 
 void Core::signal_shutdown(){

@@ -3031,10 +3031,12 @@ static bool is_attack_hitting(struct Damage* wd, struct block_list *src, struct 
 			case NPC_CURSEATTACK:
 			case NPC_SLEEPATTACK:
 			case NPC_BLEEDING:
+			case NPC_BLEEDING2:
 				hitrate += hitrate * 20 / 100;
 				break;
 			case NPC_FIREBREATH:
 			case NPC_ICEBREATH:
+			case NPC_ICEBREATH2:
 			case NPC_THUNDERBREATH:
 			case NPC_ACIDBREATH:
 			case NPC_DARKNESSBREATH:
@@ -4119,8 +4121,10 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 		case NPC_DARKNESSBREATH:
 		case NPC_FIREBREATH:
 		case NPC_ICEBREATH:
+		case NPC_ICEBREATH2:
 		case NPC_THUNDERBREATH:
 		case NPC_HELLJUDGEMENT:
+		case NPC_HELLJUDGEMENT2:
 		case NPC_PULSESTRIKE:
 			skillratio += 100 * (skill_lv - 1);
 			break;
@@ -7860,11 +7864,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			ad.damage = ad.damage * (1000 + mdef) / (1000 + mdef * 10) - mdef2;
 #else
 			if(battle_config.magic_defense_type)
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 				ad.damage = ad.damage - mdef*battle_config.magic_defense_type - mdef2;
 #else
 				ad.damage = ad.damage - ((int64)mdef) * battle_config.magic_defense_type - mdef2;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 			else
 				ad.damage = ad.damage * (100-mdef)/100 - mdef2;
 #endif

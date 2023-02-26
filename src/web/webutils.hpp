@@ -16,6 +16,8 @@
 #include <nlohmann/json.hpp>
 #include <httplib.h>
 
+const size_t WORLD_NAME_LENGTH = 32;
+
 void make_response(httplib::Response& res, int type, const std::string& errmes = "", int status_code = 200);
 void make_response(httplib::Response& res, nlohmann::json& content, int status_code = 200);
 #endif // Pandas_WebServer_Rewrite_Controller_HandlerFunc

@@ -45,6 +45,7 @@
 #include "atcommand.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
+#include "cashshop.hpp"
 #include "channel.hpp"
 #include "chat.hpp"
 #include "chrif.hpp"
@@ -6029,6 +6030,9 @@ BUILDIN_FUNC(menu)
 
 		StringBuf_Init(&buf);
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		for( i = 2; i < script_lastdata(st); i += 2 )
 		{
 			struct script_data* data;
@@ -6148,6 +6152,9 @@ BUILDIN_FUNC(select)
 
 		StringBuf_Init(&buf);
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		for( i = 2; i <= script_lastdata(st); ++i ) {
 			text = script_getstr(st, i);
 
@@ -6227,6 +6234,9 @@ BUILDIN_FUNC(prompt)
 
 		StringBuf_Init(&buf);
 		sd->npc_menu = 0;
+#ifdef Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+		sd->npc_menu_npcid = 0;
+#endif // Pandas_Fix_Prompt_Cancel_Combine_Close_Error
 		for( i = 2; i <= script_lastdata(st); ++i )
 		{
 			text = script_getstr(st, i);
@@ -6534,7 +6544,7 @@ BUILDIN_FUNC(warp)
 	if(strcmp(str,"Random")==0)
 		ret = pc_randomwarp(sd,CLR_TELEPORT,true);
 	else if(strcmp(str,"SavePoint")==0 || strcmp(str,"Save")==0)
-		ret = pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
+		ret = pc_setpos( sd, mapindex_name2id( sd->status.save_point.map ), sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 	else
 		ret = pc_setpos(sd,mapindex_name2id(str),x,y,CLR_OUTSIGHT);
 
@@ -6787,11 +6797,11 @@ BUILDIN_FUNC(warpparty)
 		break;
 		case WARPPARTY_SAVEPOINTALL:
 			if (!mapdata->flag[MF_NORETURN])
-				ret = pc_setpos(pl_sd,pl_sd->status.save_point.map,pl_sd->status.save_point.x,pl_sd->status.save_point.y,CLR_TELEPORT);
+				ret = pc_setpos( pl_sd, mapindex_name2id( pl_sd->status.save_point.map ), pl_sd->status.save_point.x, pl_sd->status.save_point.y, CLR_TELEPORT );
 		break;
 		case WARPPARTY_SAVEPOINT:
 			if (!mapdata->flag[MF_NORETURN])
-				ret = pc_setpos(pl_sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
+				ret = pc_setpos( pl_sd, mapindex_name2id( sd->status.save_point.map ),sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 		break;
 		case WARPPARTY_LEADER:
 			if (p->party.member[i].leader)
@@ -6897,11 +6907,11 @@ BUILDIN_FUNC(warpguild)
 		break;
 		case 1: // SavePointAll
 			if(!map_getmapflag(pl_sd->bl.m, MF_NORETURN))
-				pc_setpos(pl_sd,pl_sd->status.save_point.map,pl_sd->status.save_point.x,pl_sd->status.save_point.y,CLR_TELEPORT);
+				pc_setpos( pl_sd, mapindex_name2id( pl_sd->status.save_point.map ), pl_sd->status.save_point.x, pl_sd->status.save_point.y, CLR_TELEPORT );
 		break;
 		case 2: // SavePoint
 			if(!map_getmapflag(pl_sd->bl.m, MF_NORETURN))
-				pc_setpos(pl_sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
+				pc_setpos( pl_sd, mapindex_name2id( sd->status.save_point.map ),sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 		break;
 		case 3: // m,x,y
 			if(!map_getmapflag(pl_sd->bl.m, MF_NORETURN) && !map_getmapflag(pl_sd->bl.m, MF_NOWARP) && pc_job_can_entermap((enum e_job)pl_sd->status.class_, m, pc_get_group_level(pl_sd)))
@@ -9969,7 +9979,7 @@ BUILDIN_FUNC(getpartyleader)
 		case 1: script_pushint(st,p->party.member[i].account_id); break;
 		case 2: script_pushint(st,p->party.member[i].char_id); break;
 		case 3: script_pushint(st,p->party.member[i].class_); break;
-		case 4: script_pushstrcopy(st,mapindex_id2name(p->party.member[i].map)); break;
+		case 4: script_pushstrcopy( st, p->party.member[i].map ); break;
 		case 5: script_pushint(st,p->party.member[i].lv); break;
 		default: script_pushstrcopy(st,p->party.member[i].name); break;
 	}
@@ -14174,7 +14184,7 @@ BUILDIN_FUNC(warpwaitingpc)
 		if( strcmp(map_name,"Random") == 0 )
 			pc_randomwarp(sd,CLR_TELEPORT,true);
 		else if( strcmp(map_name,"SavePoint") == 0 )
-			pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
+			pc_setpos( sd, mapindex_name2id( sd->status.save_point.map ), sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 		else
 			pc_setpos(sd, mapindex_name2id(map_name), x, y, CLR_OUTSIGHT);
 	}
@@ -14670,7 +14680,7 @@ static int buildin_maprespawnguildid_sub_pc(map_session_data* sd, va_list ap)
 		(sd->status.guild_id != g_id && flag&2) || //Warp out outsiders
 		(sd->status.guild_id == 0 && flag&2)	// Warp out players not in guild
 	)
-		pc_setpos(sd,sd->status.save_point.map,sd->status.save_point.x,sd->status.save_point.y,CLR_TELEPORT);
+		pc_setpos( sd, mapindex_name2id( sd->status.save_point.map ), sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT );
 	return 1;
 }
 
@@ -16792,7 +16802,7 @@ int atcommand_sub(struct script_state* st,int type) {
 			memcpy(&dummy_sd.bl, bl, sizeof(struct block_list));
 			if (bl->type == BL_NPC)
 				safestrncpy(dummy_sd.status.name, ((TBL_NPC*)bl)->name, NAME_LENGTH);
-			sd->mapindex = (bl->m > 0) ? map_id2index(bl->m) : mapindex_name2id(map_default.mapname);
+			sd->mapindex = (bl->m > 0) ? map_id2index(bl->m) : 0;
 		}
 
 		// Init Group ID, Level, & permissions
@@ -17376,7 +17386,7 @@ BUILDIN_FUNC(getsavepoint)
 	type = script_getnum(st,2);
 
 	switch(type) {
-		case 0: script_pushstrcopy(st,mapindex_id2name(sd->status.save_point.map)); break;
+		case 0: script_pushstrcopy( st, sd->status.save_point.map ); break;
 		case 1: script_pushint(st,sd->status.save_point.x); break;
 		case 2: script_pushint(st,sd->status.save_point.y); break;
 		default:
@@ -18314,12 +18324,12 @@ BUILDIN_FUNC(implode)
 		if( script_hasdata(st,3) ) {
 			glue = script_getstr(st,3);
 			glue_len = strlen(glue);
-#ifndef Pandas_LGTM_Optimization
+#ifndef Pandas_CodeAnalysis_Suggestion
 			len += glue_len * array_size;
 #else
 			// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
 			len += (size_t)glue_len * array_size;
-#endif // Pandas_LGTM_Optimization
+#endif // Pandas_CodeAnalysis_Suggestion
 		}
 
 		char* output = (char*)aMalloc( len + 1 );
@@ -21516,6 +21526,26 @@ BUILDIN_FUNC(unitskilluseid)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), -1);
+			pc_setreg(esd, add_str("@useskill_pos_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target_gid"), target_id);
+
+			pc_setreg(esd, add_str("@useskill_x"), -1);
+			pc_setreg(esd, add_str("@useskill_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target"), target_id);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+
 		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
@@ -21570,6 +21600,26 @@ BUILDIN_FUNC(unitskillusepos)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_pos_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target_gid"), 0);
+
+			pc_setreg(esd, add_str("@useskill_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target"), 0);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+		
 		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
 	}
 
@@ -22878,16 +22928,16 @@ int script_instancegetid(struct script_state* st, e_instance_mode mode)
 	if (mode == IM_NONE) {
 		struct npc_data *nd = map_id2nd(st->oid);
 
-#ifndef Pandas_Crashfix_Prevent_NullPointer
-		if (nd->instance_id > 0)
-#else
+#ifdef Pandas_Crashfix_Prevent_NullPointer
 		// 此处必须对 nd 进行空指针校验.
 		// 若副本中的 NPC 在调用了 instance_destroy 销毁自己所在的副本之后,
 		// 还在后续的脚本中还企图调用与副本相关的指令时 (比如 '开头的副本变量, instance_ 开头的一系列脚本指令等),
 		// 那么对应的 NPC 早已经在调用 instance_destroy 的时候被销毁了, 不加以判断将引发空指针崩溃.
 		// 重现脚本: https://github.com/PandasWS/Pandas/issues/386
-		if (nd && nd->instance_id > 0)
+		if (!nd) return 0;
 #endif // Pandas_Crashfix_Prevent_NullPointer
+
+		if (nd->instance_id > 0)
 			instance_id = nd->instance_id;
 	} else {
 		map_session_data *sd = map_id2sd(st->rid);
@@ -32715,7 +32765,7 @@ BUILDIN_FUNC(getbossinfo) {
 		script_both_setreg(st, "boss_tomb_respawnsecs", -1, true, count, char_id);
 		t_tick respawntime = -1;
 		if (tomb_nd && tomb_nd->u.tomb.md->spawn) {
-			respawntime = gett_tickimer(tomb_nd->u.tomb.md->spawn_timer);
+			respawntime = gettick_timer(tomb_nd->u.tomb.md->spawn_timer);
 			if (respawntime != -1) {
 				respawntime = DIFF_TICK(respawntime, gettick());
 				respawntime = respawntime / 1000;
