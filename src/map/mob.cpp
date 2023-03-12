@@ -3339,7 +3339,15 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 			if (sd->md && src && (src->type == BL_PC || src->type == BL_MER) && mob->lv > sd->status.base_level / 2)
 				mercenary_kills(sd->md);
 		}
-
+#ifdef Pandas_ScriptCommand_geteventlabel
+		// 返回<"NPC::OnLabel">名称
+		if (sd) {
+			memset(sd->pandas.eventlabel, 0, sizeof(sd->pandas.eventlabel));
+			if (md->npc_event[0]) {
+				memcpy(sd->pandas.eventlabel, md->npc_event, strlen(md->npc_event) + 1);
+			}
+		}
+#endif // Pandas_ScriptCommand_geteventlabel
 		if( md->npc_event[0] && !md->state.npc_killmonster ) {
 			if( sd && battle_config.mob_npc_event_type ) {
 				pc_setparam(sd, SP_KILLEDGID, md->bl.id);

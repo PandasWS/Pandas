@@ -2206,6 +2206,10 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否启用 geteventlabel 脚本指令 [聽風]
+	// 返回<"NPC::OnLabel">名称
+	#define Pandas_ScriptCommand_geteventlabel
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

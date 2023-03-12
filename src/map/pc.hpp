@@ -1026,6 +1026,9 @@ public:
 
 #ifdef Pandas_Struct_Map_Session_Data_Pandas
 	struct s_pandas {
+#ifdef Pandas_ScriptCommand_geteventlabel
+		char eventlabel[EVENT_NAME_LENGTH]; // 返回<"NPC::OnLabel">名称
+#endif // Pandas_ScriptCommand_geteventlabel
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
 		enum npce_event workinevent = NPCE_MAX; // 角色当前正在执行的事件
 #endif // Pandas_Struct_Map_Session_Data_WorkInEvent
