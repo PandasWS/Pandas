@@ -369,6 +369,10 @@
 	// 是否启用 mob_setunitdata_persistence 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制是否高优先级持久化保存 setunitdata 对魔物的设置
 	#define Pandas_BattleConfig_Mob_SetUnitData_Persistence
+
+	// 是否启用 npc_timeout 配置选项及其功能 [聽風]
+	// 与NPC交互时是否对交互超时进行判断
+	#define Pandas_BattleConfig_Npc_Timeout
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 
