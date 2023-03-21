@@ -1800,6 +1800,13 @@
 	// 变量位置: map_session_data.bonus / 变量名称: absorb_dmg_trigger_hpratio, absorb_dmg_cap_ratio
 	// 使用原型: bonus2 bAbsorbDmgMaxHP,n,x;
 	#define Pandas_Bonus2_bAbsorbDmgMaxHP
+
+	// 是否启用 bonus3 bSkillAttribute 效果调整器 [聽風]
+	// 技能 sk 变为 ele 属性(即元素之心效果)
+	// 常量名称: SP_PANDAS_SKILLATTRIBUTE / 调整器名称: bSkillAttribute
+	// 变量位置: map_session_data / 变量名称: skill_attribute
+	// 使用原型: bonus3 bSkillAttribute,sk,ele,n;
+#define Pandas_Bonus3_bSkillAttribute
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

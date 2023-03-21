@@ -10909,6 +10909,9 @@ BUILDIN_FUNC(bonus)
 #ifdef Pandas_Bonus2_bSkillNoRequire
 		case SP_PANDAS_SKILLNOREQUIRE:
 #endif // Pandas_Bonus2_bSkillNoRequire
+#ifdef Pandas_Bonus3_bSkillAttribute
+		case SP_PANDAS_SKILLATTRIBUTE:
+#endif // Pandas_Bonus3_bSkillAttribute
 			// these bonuses support skill names
 			if (script_isstring(st, 3)) {
 				const char *name = script_getstr(st, 3);
@@ -10919,7 +10922,9 @@ BUILDIN_FUNC(bonus)
 				}
 			} else {
 				val1 = script_getnum(st, 3);
-
+#ifdef Pandas_Bonus3_bSkillAttribute
+				if (val1 == 0 || val1 == -1) break;
+#endif // Pandas_Bonus3_bSkillAttribute
 				if (strcmpi(script_getfuncname(st), "bonus") && !skill_get_index(val1)) { // Only check skill ID for bonus2, bonus3, bonus4, or bonus5
 					ShowError("buildin_bonus: Invalid skill ID %d passed to item bonus. Skipping.\n", val1);
 					return SCRIPT_CMD_FAILURE;

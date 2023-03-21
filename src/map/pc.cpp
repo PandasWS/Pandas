@@ -3681,6 +3681,28 @@ static void pc_bonus_itembonus_swtich(std::vector<s_item_bonus>& bonus, uint16 i
 }
 #endif // Pandas_Bonus2_bSkillNoRequire
 
+#ifdef Pandas_Bonus3_bSkillAttribute
+//************************************
+// Method:      pc_bonus_skillattribute
+// Description: 技能 sk 变为 ele 属性的 s_skillattribute 处理函数
+// Access:      public static 
+// Parameter:   std::vector<s_skillattribute> & bonus
+// Parameter:   short id
+// Parameter:   int ele
+// Parameter:   int n
+// Returns:     void
+// Author:      聽風  2023/03/21
+//************************************ 
+static void pc_bonus_skillattribute(std::vector<s_skillattribute>& bonus, short id, int ele, int n)
+{
+	struct s_skillattribute entry = {};
+	entry.id = id;
+	entry.ele = ele;
+	entry.n = n;
+	bonus.push_back(entry);
+}
+#endif // Pandas_Bonus3_bSkillAttribute
+
 /**
  * Remove HP/SP to player when attacking
  * @param bonus: Bonus array
@@ -5339,6 +5361,18 @@ void pc_bonus3(map_session_data *sd,int type,int type2,int type3,int val)
 		pc_bonus_final_damage(sd->finaladd_class[type2], type2, val, type3);
 		break;
 #endif // Pandas_Bonus3_bFinalAddClass
+
+#ifdef Pandas_Bonus3_bSkillAttribute
+	case SP_PANDAS_SKILLATTRIBUTE: // bonus3 bSkillAttribute,sk,ele,n;
+		if (sd->state.lr_flag == 2)
+			break;
+		if (sd->skillattribute.size() == MAX_PC_BONUS) { //Better mention this so the array length can be updated. [Skotlex]
+			ShowWarning("pc_bonus3: SP_PANDAS_SKILLATTRIBUTE: Reached max (%d) number of skills per character, bonus skill %d (%d,%d) lost.\n", MAX_PC_BONUS, type2, type3, val);
+			break;
+		}
+		pc_bonus_skillattribute(sd->skillattribute, type2, type3, val);
+		break;
+#endif // Pandas_Bonus3_bSkillAttribute
 		// PYHELP - BONUS - INSERT POINT - <Section 8>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC

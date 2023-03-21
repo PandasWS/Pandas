@@ -438,6 +438,199 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 		return damage;
 	}
 
+
+#ifdef Pandas_Bonus3_bSkillAttribute
+	map_session_data* sd;
+	struct block_list* bl;
+	int sk_lv;
+	int ele_n = 0;
+	int idchk;
+
+	sd = BL_CAST(BL_PC, src);
+	bl = &sd->bl;
+
+	for (auto& it : sd->skillattribute) {
+		idchk = 0;
+		if (it.id == 0 && battle_getcurrentskill(src) == 0) {
+			idchk = 1;
+		}
+		if (it.id == -1 && battle_getcurrentskill(src) > 0) {
+			idchk = 2;
+		}
+		if (battle_getcurrentskill(src) && it.id == battle_getcurrentskill(src) ) {
+			idchk = 3;
+		}
+		if (idchk) {
+			if (it.ele >= 0) {
+				switch (it.ele) {
+				case ELE_NEUTRAL:
+					atk_elem = ELE_NEUTRAL;
+					sk_lv = 0;
+					break;
+				case ELE_FIRE:
+					atk_elem = ELE_FIRE;
+					sk_lv = 4;
+					break;
+				case ELE_WATER:
+					atk_elem = ELE_WATER;
+					sk_lv = 3;
+					break;
+				case ELE_WIND:
+					atk_elem = ELE_WIND;
+					sk_lv = 2;
+					break;
+				case ELE_EARTH:
+					atk_elem = ELE_EARTH;
+					sk_lv = 1;
+					break;
+				case ELE_POISON:
+					atk_elem = ELE_POISON;
+					sk_lv = 0;
+					break;
+				case ELE_HOLY:
+					atk_elem = ELE_HOLY;
+					sk_lv = 7;
+					break;
+				case ELE_DARK:
+					atk_elem = ELE_DARK;
+					sk_lv = 6;
+					break;
+				case ELE_GHOST:
+					atk_elem = ELE_GHOST;
+					sk_lv = 5;
+					break;
+				case ELE_UNDEAD:
+					atk_elem = ELE_UNDEAD;
+					sk_lv = 0;
+					break;
+				}
+				if (sk_lv && it.n) {
+					int64 sk_n = pc_readreg(sd, add_str("@skillattribute_n"));
+					if (sk_n != sk_lv) {
+						pc_setreg(sd, add_str("@skillattribute_n"), sk_lv);
+						clif_skill_nodamage(src, bl, TK_SEVENWIND, sk_lv, 1);
+					}
+				}
+			}
+			//(为避免带宽消耗过大或特效卡客户端, 每个技能最多显示一次温暖风特效)
+			//ele 为 -1 时变为最克制属性(n 为是否显示温暖的风特效)
+			if (it.ele == -1) {
+				switch (def_type) {
+				case ELE_NEUTRAL:
+					atk_elem = ELE_NEUTRAL;
+					sk_lv = 0;
+					break;
+				case ELE_FIRE:
+					atk_elem = ELE_WATER;
+					sk_lv = 3;
+					break;
+				case ELE_WATER:
+					atk_elem = ELE_WIND;
+					sk_lv = 2;
+					break;
+				case ELE_WIND:
+					atk_elem = ELE_EARTH;
+					sk_lv = 1;
+					break;
+				case ELE_EARTH:
+					atk_elem = ELE_FIRE;
+					sk_lv = 4;
+					break;
+				case ELE_POISON:
+					atk_elem = ELE_FIRE;
+					sk_lv = 4;
+					break;
+				case ELE_HOLY:
+					atk_elem = ELE_DARK;
+					sk_lv = 6;
+					break;
+				case ELE_DARK:
+					atk_elem = ELE_HOLY;
+					sk_lv = 7;
+					break;
+				case ELE_GHOST:
+					atk_elem = ELE_GHOST;
+					sk_lv = 5;
+					break;
+				case ELE_UNDEAD:
+					atk_elem = ELE_HOLY;
+					sk_lv = 7;
+					break;
+				}
+
+				if (sk_lv && it.n) {
+					int64 sk_n = pc_readreg(sd, add_str("@skillattribute_n"));
+					if (sk_n != sk_lv) {
+						pc_setreg(sd, add_str("@skillattribute_n"), sk_lv);
+						clif_skill_nodamage(src, bl, TK_SEVENWIND, sk_lv, 1);
+					}
+				}
+			}
+
+			//ele 为 -2 时变为同属性(n 为是否显示温暖的风特效)
+			if (it.ele == -2) {
+				switch (def_type) {
+				case ELE_NEUTRAL:
+					atk_elem = ELE_NEUTRAL;
+					sk_lv = 0;
+					break;
+				case ELE_FIRE:
+					atk_elem = ELE_FIRE;
+					sk_lv = 4;
+					break;
+				case ELE_WATER:
+					atk_elem = ELE_WATER;
+					sk_lv = 3;
+					break;
+				case ELE_WIND:
+					atk_elem = ELE_WIND;
+					sk_lv = 2;
+					break;
+				case ELE_EARTH:
+					atk_elem = ELE_EARTH;
+					sk_lv = 1;
+					break;
+				case ELE_POISON:
+					atk_elem = ELE_POISON;
+					sk_lv = 0;
+					break;
+				case ELE_HOLY:
+					atk_elem = ELE_HOLY;
+					sk_lv = 7;
+					break;
+				case ELE_DARK:
+					atk_elem = ELE_DARK;
+					sk_lv = 6;
+					break;
+				case ELE_GHOST:
+					atk_elem = ELE_GHOST;
+					sk_lv = 5;
+					break;
+				case ELE_UNDEAD:
+					atk_elem = ELE_UNDEAD;
+					sk_lv = 0;
+					break;
+				}
+
+				if (sk_lv && it.n) {
+					int64 sk_n = pc_readreg(sd, add_str("@skillattribute_n"));
+					if (sk_n != sk_lv) {
+						pc_setreg(sd, add_str("@skillattribute_n"), sk_lv);
+						clif_skill_nodamage(src, bl, TK_SEVENWIND, sk_lv, 1);
+					}
+				}
+			}
+
+			//ele 为 -3 时无视属性克制(伤害倍率修正为 n%, 优先度最高),
+			if (it.ele == -3) {
+				atk_elem = ELE_NEUTRAL;
+				def_type = ELE_NEUTRAL;
+				ele_n = it.n;
+			}
+		}
+	}
+#endif // Pandas_Bonus3_bSkillAttribute
+	
 	ratio = elemental_attribute_db.getAttribute(def_lv-1, atk_elem, def_type);
 	if (sc && sc->count) { //increase dmg by src status
 		switch(atk_elem){
@@ -632,6 +825,12 @@ int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 d
 #else
 	damage = (int64)((damage*ratio)/100);
 #endif
+
+#ifdef Pandas_Bonus3_bSkillAttribute
+	if (ele_n) {
+		damage = (int64)(damage * ele_n / 100);
+	}
+#endif // Pandas_Bonus3_bSkillAttribute
 
 	//Damage can be negative, see battle_config.attr_recover
 	return damage;

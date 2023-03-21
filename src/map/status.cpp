@@ -3899,6 +3899,9 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 	sd->skillnorequire.clear();
 #endif // Pandas_Bonus2_bSkillNoRequire
 
+#ifdef Pandas_Bonus3_bSkillAttribute
+	sd->skillattribute.clear();
+#endif // Pandas_Bonus3_bSkillAttribute
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
