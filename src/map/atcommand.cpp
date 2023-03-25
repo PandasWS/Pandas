@@ -11879,7 +11879,6 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 #ifdef Pandas_NpcFilter_PCUSECOMMAND
 	int psAid = 0; //玩家AID
 	int ptAid = 0; //目标AID
-	char *pcParams;
 #endif // Pandas_NpcFilter_PCUSECOMMAND
 	AtCommandInfo * info;
 
@@ -12048,7 +12047,6 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 		}
 	}
 #ifdef Pandas_NpcFilter_PCUSECOMMAND
-	pcParams = params;
 	pc_setreg(sd, add_str("@cmd_aid"), psAid);
 	pc_setregstr(sd, add_str("@cmd_name$"), command);
 	pc_setregstr(sd, add_str("@cmd_params$"), params);
