@@ -410,6 +410,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	"OnPCFavoriteDelFilter",	// NPCF_FAVORITE_DEL		// favorite_del_filter_name	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_REFINEUI
+	"OnPCRefineUIFilter",	// NPCF_REFINEUI		// refineui_filter_name	// 准备使用精炼UI时触发事件, 可通过修改 @refine_rate 变量修改精炼成功率 [聽風]
+#endif // Pandas_NpcFilter_REFINEUI
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -443,6 +447,10 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	"OnPCUnequipEvent",	// NPCE_UNEQUIP		// unequip_event_name	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_REFINEUI
+	"OnPCRefineUIEvent",	// NPCE_REFINEUI		// refineui_event_name	// 使用精炼UI精炼完成后触发事件 [聽風]
+#endif // Pandas_NpcEvent_REFINEUI
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
 
 	/************************************************************************/
@@ -32913,6 +32921,76 @@ BUILDIN_FUNC(whodropitem) {
 }
 #endif // Pandas_ScriptCommand_WhoDropItem
 
+#ifdef Pandas_ScriptCommand_Refineui_Result
+/* ===========================================================
+ * 指令: refineui_result
+ * 描述: 指令用于自定义精炼UI, 播放精炼动画, 并修改物品精炼值
+ * 用法: refineui_result <背包位置序号>,<动画类型>,<精炼后等级>;
+ * 返回: 无
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(refineui_result) {
+	map_session_data* sd;
+	if (!script_rid2sd(sd))
+		return SCRIPT_CMD_SUCCESS;
+	int index = script_getnum(st, 2);
+	int fail = script_getnum(st, 3);
+	int val = script_getnum(st, 4);
+
+	// 检查 refine UI 是否打开
+	if (!sd->state.refineui_open) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 检查 idx 是否有效
+	if (index >= MAX_INVENTORY) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 获取 道具idx
+	struct item_data* id = sd->inventory_data[index];
+
+	// 未找到道具
+	if (id == NULL) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 检查背包
+	struct item* item = &sd->inventory.u.items_inventory[index];
+
+	// 在背包中找不到该idx的道具
+	if (item == NULL) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 检查道具是否鉴定
+	if (!item->identify) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// 检查道具是否损坏
+	if (item->attribute) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	std::shared_ptr<s_refine_level_info> info = refine_db.findLevelInfo(*id, *item);
+
+	// 无法精炼
+	if (info == nullptr) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	// No possibilities were found
+	if (info->costs.empty()) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	clif_refine(sd->fd, fail, index, val);
+	clif_refineui_info(sd, index);
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_Refineui_Result
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -33900,6 +33978,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+#ifdef Pandas_ScriptCommand_Refineui_Result
+	BUILDIN_DEF(refineui_result,"iii"),						// 在此写上脚本指令说明 [聽風]
+#endif // Pandas_ScriptCommand_Refineui_Result
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"

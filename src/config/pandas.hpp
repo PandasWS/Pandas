@@ -1466,6 +1466,11 @@
 		// 事件类型: Filter / 事件名称: OnPCFavoriteDelFilter
 		// 常量名称: NPCF_FAVORITE_DEL / 变量名称: favorite_del_filter_name
 		#define Pandas_NpcFilter_FAVORITE_DEL
+
+		// 准备使用精炼UI时触发事件, 可通过修改 @refine_rate 变量修改精炼成功率 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCRefineUIFilter
+		// 常量名称: NPCF_REFINEUI / 变量名称: refineui_filter_name
+		#define Pandas_NpcFilter_REFINEUI
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1507,6 +1512,11 @@
 	// 事件类型: Event / 事件名称: OnPCUnequipEvent
 	// 常量名称: NPCE_UNEQUIP / 变量名称: unequip_event_name
 	#define Pandas_NpcEvent_UNEQUIP
+
+	// 使用精炼UI精炼完成后触发事件 [聽風]
+	// 事件类型: Event / 事件名称: OnPCRefineUIEvent
+	// 常量名称: NPCE_REFINEUI / 变量名称: refineui_event_name
+	#define Pandas_NpcEvent_REFINEUI
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/
@@ -2202,6 +2212,10 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否启用 refineui_result 脚本指令 [聽風]
+	// 指令用于自定义精炼UI, 播放精炼动画, 并修改物品精炼值
+	#define Pandas_ScriptCommand_Refineui_Result
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

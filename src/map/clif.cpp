@@ -23403,6 +23403,10 @@ void clif_parse_refineui_refine( int fd, map_session_data* sd ){
 	uint16 index = server_index( p->index );
 	t_itemid material = p->itemId;
 	int16 j;
+#ifdef Pandas_NpcEvent_REFINEUI
+	int refine_success;
+	int failureid;
+#endif // Pandas_NpcEvent_REFINEUI
 
 	// Check if the refine UI is open
 	if( !sd->state.refineui_open ){
@@ -23509,7 +23513,19 @@ void clif_parse_refineui_refine( int fd, map_session_data* sd ){
 	if( blacksmith_amount > 0 && pc_delitem( sd, blacksmith_index, blacksmith_amount, 0, 0, LOG_TYPE_CONSUME ) ){
 		return;
 	}
+#ifdef Pandas_NpcFilter_REFINEUI
+	pc_setreg(sd, add_str("@refine_idx"), index);
+	pc_setreg(sd, add_str("@refine_nameid"), item->nameid);
+	pc_setreg(sd, add_str("@refine_rate"), cost->chance);
+	pc_setreg(sd, add_str("@refine_zeny"), cost->zeny);
+	pc_setreg(sd, add_str("@refine_cost"), cost->nameid);
+	pc_setreg(sd, add_str("@refine_blessing"), (blacksmith_amount > 0) ? 1 : 0);
 
+	if (npc_script_filter(sd, NPCF_REFINEUI)) {
+		return;
+	}
+	cost->chance = (int)cap_value(pc_readreg(sd, add_str("@refine_rate")), 0, INT_MAX);
+#endif // Pandas_NpcFilter_REFINEUI
 	// Try to refine the item
 	if( cost->chance >= ( rnd() % 10000 ) ){
 		log_pick_pc( sd, LOG_TYPE_OTHER, -1, item );
@@ -23525,9 +23541,14 @@ void clif_parse_refineui_refine( int fd, map_session_data* sd ){
 			achievement_update_objective( sd, AG_ENCHANT_SUCCESS, 2, id->weapon_level, item->refine );
 		}
 		clif_refineui_info( sd, index );
+#ifdef Pandas_NpcEvent_REFINEUI
+		refine_success = 1;
+#endif // Pandas_NpcEvent_REFINEUI
 	}else{
 		// Failure
-
+#ifdef Pandas_NpcEvent_REFINEUI
+		failureid = item->nameid;
+#endif // Pandas_NpcEvent_REFINEUI
 		if (info->broadcast_failure) {
 			clif_broadcast_refine_result(*sd, item->nameid, item->refine, false);
 		}
@@ -23552,7 +23573,17 @@ void clif_parse_refineui_refine( int fd, map_session_data* sd ){
 
 		clif_misceffect( &sd->bl, 2 );
 		achievement_update_objective( sd, AG_ENCHANT_FAIL, 1, 1 );
+#ifdef Pandas_NpcEvent_REFINEUI
+		refine_success = 0;
+#endif // Pandas_NpcEvent_REFINEUI
 	}
+#ifdef Pandas_NpcEvent_REFINEUI
+	pc_setreg(sd, add_str("@refine_idx"), index);
+	pc_setreg(sd, add_str("@refine_nameid"), failureid);
+	pc_setreg(sd, add_str("@refine_blessing"), (blacksmith_amount > 0) ? 1 : 0);
+	pc_setreg(sd, add_str("@refine_success"), refine_success);
+	npc_script_event(sd, NPCE_REFINEUI);
+#endif // Pandas_NpcEvent_REFINEUI
 #endif
 }
 
