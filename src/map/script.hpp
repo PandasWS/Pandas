@@ -278,6 +278,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	const char* favorite_del_filter_name;	// NPCF_FAVORITE_DEL	// OnPCFavoriteDelFilter	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+	const char* pcusecommand_filter_name;	// NPCF_PCUSECOMMAND	// OnPCUseCommandFilter	// 当玩家使用GM指令时触发 [聽風]
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/

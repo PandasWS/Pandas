@@ -11876,6 +11876,11 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 	char atcmd_msg[CHAT_SIZE_MAX * 2];
 
 	TBL_PC * ssd = NULL; //sd for target
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+	int psAid = 0; //玩家AID
+	int ptAid = 0; //目标AID
+	char *pcParams;
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 	AtCommandInfo * info;
 
 	bool is_atcommand = true; // false if it's a charcommand
@@ -11913,10 +11918,15 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 
 	if (*message == charcommand_symbol)
 		is_atcommand = false;
-
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+	psAid = sd->bl.id;
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 	if (is_atcommand) { // @command
 		sprintf(atcmd_msg, "%s", message);
 		ssd = sd;
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+		ptAid = sd->bl.id;
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 	} else { // #command
 		char charname[NAME_LENGTH];
 		int n;
@@ -11954,7 +11964,9 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 			clif_displaymessage(fd, output);
 			return true;
 		}
-
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+		ptAid = ssd->bl.id;
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 		if (n > 2)
 			sprintf(atcmd_msg, "%s %s", command, params);
 		else
@@ -12035,7 +12047,16 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 			return true;
 		}
 	}
-
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+	pcParams = params;
+	pc_setreg(sd, add_str("@cmd_aid"), psAid);
+	pc_setregstr(sd, add_str("@cmd_name$"), command);
+	pc_setregstr(sd, add_str("@cmd_params$"), params);
+	pc_setreg(sd, add_str("@cmd_target_aid"), ptAid);
+	if (npc_script_filter(sd, NPCF_PCUSECOMMAND)) {
+		return false;
+	}
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 	//Attempt to use the command
 	if ( (info->func(fd, ssd, command, params) != 0) )
 	{

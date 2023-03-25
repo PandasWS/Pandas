@@ -1466,6 +1466,11 @@
 		// 事件类型: Filter / 事件名称: OnPCFavoriteDelFilter
 		// 常量名称: NPCF_FAVORITE_DEL / 变量名称: favorite_del_filter_name
 		#define Pandas_NpcFilter_FAVORITE_DEL
+
+		// 当玩家使用GM指令时触发 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCUseCommandFilter
+		// 常量名称: NPCF_PCUSECOMMAND / 变量名称: pcusecommand_filter_name
+		#define Pandas_NpcFilter_PCUSECOMMAND
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 

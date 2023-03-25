@@ -135,6 +135,10 @@
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	export_constant(NPCF_FAVORITE_DEL);	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_PCUSECOMMAND
+	export_constant(NPCF_PCUSECOMMAND);	// pcusecommand_filter_name	// OnPCUseCommandFilter		// 当玩家使用GM指令时触发 [聽風]
+#endif // Pandas_NpcFilter_PCUSECOMMAND
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 6>
 
 	/************************************************************************/
