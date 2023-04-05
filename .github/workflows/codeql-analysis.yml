@@ -25,6 +25,7 @@ jobs:
   analyze-cpp:
     name: Analyze - C++
     runs-on: ubuntu-latest
+    if: ${{ github.repository == 'PandasWS/Pandas' }}
     permissions:
       actions: read
       contents: read
@@ -102,6 +103,7 @@ jobs:
   analyze-python:
     name: Analyze - Python
     runs-on: ubuntu-latest
+    if: ${{ github.repository == 'PandasWS/Pandas' }}
     permissions:
       actions: read
       contents: read

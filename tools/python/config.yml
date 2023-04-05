@@ -22,8 +22,6 @@ community:
 commercial:
   name: Commercial
   enable_protect: true
-  compile_mode:
-    - re
 
 # ===================================================================
 # 强制覆盖配置 (若存在配置, 则直接以此作为最终采纳值)

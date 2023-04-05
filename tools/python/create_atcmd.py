@@ -11,7 +11,7 @@
 //= 1.0 首个版本. [Sola丶小克]
 //============================================================
 
-// PYHELP - ATCMD - INSERT POINT - <Section 1>
+// PYHELP - ATCMD - INSERT POINT - <Section 1 / 11>
 pandas.hpp @ 宏定义
 
 // PYHELP - ATCMD - INSERT POINT - <Section 2>
@@ -30,6 +30,10 @@ import os
 from enum import IntEnum
 
 from libs import Common, Injecter, Inputer, Message
+
+# 工程文件的主目录相对此脚本文件的位置
+project_slndir = '../../'
+slndir_path = os.path.abspath(project_slndir)
 
 class InjectPoint(IntEnum):
     PANDAS_SWITCH_DEFINE = 1
@@ -155,6 +159,7 @@ def main():
     Common.welcome('管理员指令添加助手')
 
     options = {
+        'is_pro' : Common.is_commercial_ver(slndir_path),
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - ATCMD - INSERT POINT - <Section (\d{1,2})>',
@@ -162,7 +167,8 @@ def main():
         'mark_configure' : [
             {
                 'id' : InjectPoint.PANDAS_SWITCH_DEFINE,
-                'desc' : 'pandas.hpp @ 宏定义'
+                'desc' : 'pandas.hpp @ 宏定义',
+                'pro_offset' : 10
             },
             {
                 'id' : InjectPoint.ATCMD_FUNC,
