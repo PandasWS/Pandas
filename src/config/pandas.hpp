@@ -2206,6 +2206,10 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否启用 getmobmapinfo 脚本指令 [维护者昵称]
+	// TODO: 请在此填写此脚本指令的说明
+	#define Pandas_ScriptCommand_getmobmapinfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

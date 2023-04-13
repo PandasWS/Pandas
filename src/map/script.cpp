@@ -32953,6 +32953,45 @@ BUILDIN_FUNC(whodropitem) {
 }
 #endif // Pandas_ScriptCommand_WhoDropItem
 
+#ifdef Pandas_ScriptCommand_getmobmapinfo
+/* ===========================================================
+ * 指令: getmobmapinfo
+ * 描述: 在小地图上显示gid的BOSS雷达图标
+ * 用法: getmobmapinfo <gid>{,<time>};
+ * 返回: 无
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmobmapinfo) {
+	int gid = script_getnum(st, 2);
+	block_list* bl = map_id2bl(gid);
+	block_list* tbl = map_id2bl(st->rid);
+	struct map_session_data* sd;
+	int tick, val1  = 0;
+
+	if (!script_rid2sd(sd))
+		return SCRIPT_CMD_SUCCESS;
+	
+	if (bl == nullptr) {
+		ShowWarning("buildin_getmobmapinfo: Unable to find object with given game ID %d!\n", gid);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if (script_hasdata(st, 3))
+		tick = script_getnum(st, 3);
+	else
+		tick = 600000;
+
+	struct mob_data* md = (struct mob_data*)bl;
+	if (md == nullptr)
+		return SCRIPT_CMD_FAILURE;
+
+	val1 = md->bl.id;
+	status_change_start(tbl, tbl, (sc_type)SC_BOSSMAPINFO, 10000, val1, 0, 2, 0, tick, SCSTART_NOAVOID);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_getmobmapinfo
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -33940,6 +33979,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+#ifdef Pandas_ScriptCommand_getmobmapinfo
+	BUILDIN_DEF(getmobmapinfo,"i?"),						// 在小地图上显示gid的BOSS雷达图标 [聽風]
+#endif // Pandas_ScriptCommand_getmobmapinfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
