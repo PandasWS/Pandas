@@ -6600,6 +6600,14 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 		NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_CASHSHOPOPEN
+		NPCF_CASHSHOPOPEN,	// cashshop_open_filter_name	// OnPCCashShopOpenFilter		// 打开商城前触发的事件
+#endif // Pandas_NpcFilter_CASHSHOPOPEN
+
+#ifdef Pandas_NpcFilter_CASHSHOPBUY
+		NPCF_CASHSHOPBUY,	// cashshop_buy_filter_name	// OnPCCashShopBuyFilter		// 点击购买按钮后\还没有扣除CASH点数和拿到物品前触发该事件
+#endif // Pandas_NpcFilter_CASHSHOPBUY
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6985,6 +6993,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCF_FAVORITE_DEL:
 		return script_config.favorite_del_filter_name;	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_CASHSHOPOPEN
+	case NPCF_CASHSHOPOPEN:
+		return script_config.cashshop_open_filter_name;	// OnPCCashShopOpenFilter		// 打开商城前触发的事件
+#endif // Pandas_NpcFilter_CASHSHOPOPEN
+
+#ifdef Pandas_NpcFilter_CASHSHOPBUY
+	case NPCF_CASHSHOPBUY:
+		return script_config.cashshop_buy_filter_name;	// OnPCCashShopBuyFilter		// 点击购买按钮后\还没有扣除CASH点数和拿到物品前触发该事件
+#endif // Pandas_NpcFilter_CASHSHOPBUY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/
@@ -7025,6 +7043,16 @@ const char *npc_get_script_event_name(int npce_index)
 	case NPCE_UNEQUIP:
 		return script_config.unequip_event_name;	// OnPCUnequipEvent		// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_CASHSHOPBUY
+	case NPCE_CASHSHOPBUY:
+		return script_config.cashshop_buy_event_name;	// OnPCCashShopBuyEvent		// 商城购买成功后触发该事件
+#endif // Pandas_NpcEvent_CASHSHOPBUY
+
+#ifdef Pandas_NpcEvent_CASHSHOPCLOSE
+	case NPCE_CASHSHOPCLOSE:
+		return script_config.cashshop_close_event_name;	// OnPCCashShopCloseEvent		// 关闭商城后触发的事件
+#endif // Pandas_NpcEvent_CASHSHOPCLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 9>
 
 	/************************************************************************/
