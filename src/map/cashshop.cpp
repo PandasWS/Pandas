@@ -530,7 +530,7 @@ bool cashshop_buylist( map_session_data* sd, uint32 kafrapoints, int n, struct P
 		script_setarray_pc(sd, "@cashshop_nameid", i, nameid, &key_nameid);
 		script_setarray_pc(sd, "@cashshop_quantity", i, quantity, &key_quantity);
 		script_setarray_pc(sd, "@cashshop_price", i, cash_item->price, &key_price);
-		script_setarray_pc(sd, "@cashshop_type", i, id->type, &key_type);
+		script_setarray_pc(sd, "@cashshop_type", i, tab, &key_type);
 #endif // defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
 	}
 
@@ -596,7 +596,7 @@ bool cashshop_buylist( map_session_data* sd, uint32 kafrapoints, int n, struct P
 			}
 		}
 #endif
-		
+
 		for (uint32 j = 0; j < quantity; j += get_amt) {
 			if( !pet_create_egg( sd, nameid ) ){
 				struct item item_tmp = { 0 };

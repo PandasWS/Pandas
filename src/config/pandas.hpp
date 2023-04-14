@@ -1467,12 +1467,12 @@
 		// 常量名称: NPCF_FAVORITE_DEL / 变量名称: favorite_del_filter_name
 		#define Pandas_NpcFilter_FAVORITE_DEL
 
-		// 打开商城前触发的事件 [聽風]
+		// 打开商城前触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCCashShopOpenFilter
 		// 常量名称: NPCF_CASHSHOPOPEN / 变量名称: cashshop_open_filter_name
 		#define Pandas_NpcFilter_CASHSHOPOPEN
 
-		// 点击购买按钮后\还没有扣除CASH点数和拿到物品前触发该事件 [聽風]
+		// 点击购买按钮后还没有扣除CASH点数和拿到物品前触发过滤器 [聽風]
 		// 事件类型: Filter / 事件名称: OnPCCashShopBuyFilter
 		// 常量名称: NPCF_CASHSHOPBUY / 变量名称: cashshop_buy_filter_name
 		#define Pandas_NpcFilter_CASHSHOPBUY

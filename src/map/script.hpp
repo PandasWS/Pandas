@@ -280,11 +280,11 @@ struct Script_Config {
 #endif // Pandas_NpcFilter_FAVORITE_DEL
 
 #ifdef Pandas_NpcFilter_CASHSHOPOPEN
-	const char* cashshop_open_filter_name;	// NPCF_CASHSHOPOPEN	// OnPCCashShopOpenFilter	// 打开商城前触发的事件
+	const char* cashshop_open_filter_name;	// NPCF_CASHSHOPOPEN	// OnPCCashShopOpenFilter	// 打开商城前触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_CASHSHOPOPEN
 
 #ifdef Pandas_NpcFilter_CASHSHOPBUY
-	const char* cashshop_buy_filter_name;	// NPCF_CASHSHOPBUY	// OnPCCashShopBuyFilter	// 点击购买按钮后\还没有扣除CASH点数和拿到物品前触发该事件
+	const char* cashshop_buy_filter_name;	// NPCF_CASHSHOPBUY	// OnPCCashShopBuyFilter	// 点击购买按钮后还没有扣除CASH点数和拿到物品前触发过滤器 [聽風]
 #endif // Pandas_NpcFilter_CASHSHOPBUY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
@@ -321,11 +321,11 @@ struct Script_Config {
 #endif // Pandas_NpcEvent_UNEQUIP
 
 #ifdef Pandas_NpcEvent_CASHSHOPBUY
-	const char* cashshop_buy_event_name;	// NPCE_CASHSHOPBUY	// OnPCCashShopBuyEvent	// 商城购买成功后触发该事件
+	const char* cashshop_buy_event_name;	// NPCE_CASHSHOPBUY	// OnPCCashShopBuyEvent	// 商城购买成功后触发事件 [聽風]
 #endif // Pandas_NpcEvent_CASHSHOPBUY
 
 #ifdef Pandas_NpcEvent_CASHSHOPCLOSE
-	const char* cashshop_close_event_name;	// NPCE_CASHSHOPCLOSE	// OnPCCashShopCloseEvent	// 关闭商城后触发的事件
+	const char* cashshop_close_event_name;	// NPCE_CASHSHOPCLOSE	// OnPCCashShopCloseEvent	// 关闭商城后触发事件 [聽風]
 #endif // Pandas_NpcEvent_CASHSHOPCLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
