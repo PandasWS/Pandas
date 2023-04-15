@@ -4770,6 +4770,13 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, mes);
 	}
 #endif // Pandas_MapFlag_NoAttack2
+#ifdef Pandas_MapFlag_DamageType
+	if (map_getmapflag(m_id, MF_DAMAGETYPE)) {
+		char mes[256] = { 0 };
+		snprintf(mes, sizeof(mes), " DamageType: %d |", map_getmapflag_param(m_id, MF_DAMAGETYPE, 0));
+		strcat(atcmd_output, mes);
+	}
+#endif // Pandas_MapFlag_DamageType
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
@@ -8998,6 +9005,10 @@ ACMD_FUNC(mapflag) {
 #ifdef Pandas_MapFlag_NoAttack2
 			disabled_mf.insert(disabled_mf.begin(), MF_NOATTACK2);
 #endif // Pandas_MapFlag_NoAttack2
+
+#ifdef Pandas_MapFlag_DamageType
+			disabled_mf.insert(disabled_mf.begin(), MF_DAMAGETYPE);
+#endif // Pandas_MapFlag_DamageType
 
 			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
 
