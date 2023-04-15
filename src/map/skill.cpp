@@ -3635,7 +3635,14 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 #endif
 
 	dmg = battle_calc_attack(attack_type,src,bl,skill_id,skill_lv,flag&0xFFF);
-
+#ifdef Pandas_MapFlag_DamageType
+	if (src && map_getmapflag(src->m, MF_DAMAGETYPE)) {
+		uint16 val = (uint16)map_getmapflag_param(src->m, MF_DAMAGETYPE, 0);
+		if (attack_type & val) {
+			return 0;
+		}	
+	}
+#endif // Pandas_MapFlag_DamageType
 	//If the damage source is a unit, the damage is not delayed
 	if (src != dsrc && skill_id != GS_GROUNDDRIFT)
 		dmg.amotion = 0;

@@ -5112,6 +5112,11 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 			return map_getmapflag_param(m, mapflag, args, 0);
 #endif // Pandas_MapFlag_NoAttack2
 
+#ifdef Pandas_MapFlag_DamageType
+		case MF_DAMAGETYPE:
+			return map_getmapflag_param(m, mapflag, args, 0);
+#endif // Pandas_MapFlag_DamageType
+
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
 			return mapdata->flag[mapflag];
@@ -5516,6 +5521,20 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			mapdata->flag[mapflag] = status;
 			break;
 #endif // Pandas_MapFlag_NoAttack2
+#ifdef Pandas_MapFlag_DamageType
+		case MF_DAMAGETYPE:
+			if (!status)
+				map_setmapflag_param(m, mapflag, 0);
+			else {
+				nullpo_retr(false, args);
+				if (args) {
+					map_setmapflag_param(m, mapflag, args->flag_val);
+					status = !(args->flag_val == 0);
+				}
+			}
+			mapdata->flag[mapflag] = status;
+			break;
+#endif // Pandas_MapFlag_DamageType
 		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;

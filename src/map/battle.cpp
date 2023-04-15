@@ -8965,7 +8965,15 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 
 	wd = battle_calc_attack(BF_WEAPON, src, target, 0, 0, flag);
-
+#ifdef Pandas_MapFlag_DamageType
+	if (src && map_getmapflag(src->m, MF_DAMAGETYPE)) {
+		uint16 val = (uint16)map_getmapflag_param(src->m, MF_DAMAGETYPE, 0);
+		if (BF_WEAPON & val) {
+			damage = 0;
+			return wd.dmg_lv;
+		}	
+	}
+#endif // Pandas_MapFlag_DamageType
 	if (sd && wd.damage + wd.damage2 > 0 && battle_vellum_damage(sd, target, &wd))
 		vellum_damage = true;
 

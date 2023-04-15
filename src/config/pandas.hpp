@@ -1694,6 +1694,10 @@
 	// 是否启用 noattack2 地图标记 [HongShin]
 	// 该标记用于禁止此地图上指定单位进行普通攻击 (支持掩码指定多种类型的单位)
 	#define Pandas_MapFlag_NoAttack2
+
+	// 是否启用 damagetype 地图标记 [维护者昵称]
+	// TODO: 请在此填写此地图标记的说明
+	#define Pandas_MapFlag_DamageType
 	// PYHELP - MAPFLAG - INSERT POINT - <Section 1>
 #endif // Pandas_Mapflags
 
