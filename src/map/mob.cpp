@@ -2628,7 +2628,7 @@ int mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int b
 	if (md) {
 		struct map_data* mapdata = map_getmapdata(md->bl.m);
 		if (!status_has_mode(&md->status, MD_MVP))
-			drop_rate = apply_rate(drop_rate, map_getmapflag_param(md->bl.m, MF_MOBDROPRATE, 100));
+			drop_rate = apply_rate(drop_rate, map_getmapflag_param(md->bl.m, MF_MOBDROPRATE, 1));
 	}
 #endif // Pandas_MapFlag_MobDroprate
 
@@ -2636,7 +2636,7 @@ int mob_getdroprate(struct block_list *src, std::shared_ptr<s_mob_db> mob, int b
 	if (md) {
 		struct map_data* mapdata = map_getmapdata(md->bl.m);
 		if (status_has_mode(&md->status, MD_MVP))
-			drop_rate = apply_rate(drop_rate, map_getmapflag_param(md->bl.m, MF_MVPDROPRATE, 100));
+			drop_rate = apply_rate(drop_rate, map_getmapflag_param(md->bl.m, MF_MVPDROPRATE, 1));
 	}
 #endif // Pandas_MapFlag_MvpDroprate
 
@@ -4027,7 +4027,7 @@ int mobskill_use(struct mob_data *md, t_tick tick, int event, int64 damage)
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (md && map_getmapflag(md->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 0) & BL_MOB) == BL_MOB)
+		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 1) & BL_MOB) == BL_MOB)
 			return 0;
 	}
 #endif // Pandas_MapFlag_NoSkill2

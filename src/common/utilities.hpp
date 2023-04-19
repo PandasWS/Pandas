@@ -311,6 +311,23 @@ namespace rathena {
 		* @return Base62 string
 		**/
 		std::string base62_encode( uint32 val );
+
+#ifdef Pandas_Helper_Common_Function
+		/**
+		 * 在无序映射容器中查找键值对, 并将找到的键值作为引用返回 (const 版本)
+		 * @param map: 要搜索的无序映射容器
+		 * @param key: 想找的键 (Key)
+		 * @return 成功时返回键值的指针 (Value*)，失败时返回 nullptr 空指针
+		 */
+		template <typename K, typename V> const V* umap_find(const std::unordered_map<K, V>& map, K key) {
+			auto it = map.find(key);
+
+			if (it != map.end())
+				return &it->second;
+			else
+				return nullptr;
+		}
+#endif // Pandas_Helper_Common_Function
 	}
 }
 

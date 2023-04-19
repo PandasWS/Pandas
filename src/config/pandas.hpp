@@ -1597,7 +1597,7 @@
 	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
 	// 此地图标记依赖 Pandas_MobInfomation_Extend 的拓展
 	#ifdef Pandas_MobInfomation_Extend
-		#define Pandas_MapFlag_Mobinfo
+		#define Pandas_MapFlag_MobInfo
 	#endif // Pandas_MobInfomation_Extend
 
 	// 是否启用 noautoloot 地图标记 [Sola丶小克]

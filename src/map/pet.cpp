@@ -712,7 +712,7 @@ int pet_attackskill(struct pet_data *pd, int target_id)
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (pd && map_getmapflag(pd->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 0) & BL_PET) == BL_PET)
+		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 1) & BL_PET) == BL_PET)
 			return 0;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -2184,7 +2184,7 @@ TIMER_FUNC(pet_skill_support_timer){
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (pd && map_getmapflag(pd->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 0) & BL_PET) == BL_PET)
+		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 1) & BL_PET) == BL_PET)
 			return 1;
 	}
 #endif // Pandas_MapFlag_NoSkill2

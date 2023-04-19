@@ -5980,7 +5980,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			break;
 		case MF_NOSAVE: {
 			char savemap[MAP_NAME_LENGTH_EXT];
-			union u_mapflag_args args = {};
+			pds_mapflag_args args = {};
 
 			if (state && !strcmpi(w4, "SavePoint")) {
 				args.nosave.map = 0;
@@ -6000,7 +6000,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		case MF_PVP_NIGHTMAREDROP: {
 			char drop_arg1[16], drop_arg2[16];
-			union u_mapflag_args args = {};
+			pds_mapflag_args args = {};
 
 			if (sscanf(w4, "%15[^,],%15[^,],%11d", drop_arg1, drop_arg2, &args.nightmaredrop.drop_per) == 3) {
 
@@ -6027,7 +6027,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		case MF_BATTLEGROUND:
 			if (state) {
-				union u_mapflag_args args = {};
+				pds_mapflag_args args = {};
 
 				if (sscanf(w4, "%11d", &args.flag_val) < 1)
 					args.flag_val = 1; // Default value
@@ -6039,7 +6039,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		case MF_NOCOMMAND:
 			if (state) {
-				union u_mapflag_args args = {};
+				pds_mapflag_args args = {};
 
 				if (sscanf(w4, "%11d", &args.flag_val) < 1)
 					args.flag_val = 100; // No level specified, block everyone.
@@ -6051,7 +6051,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		case MF_RESTRICTED:
 			if (state) {
-				union u_mapflag_args args = {};
+				pds_mapflag_args args = {};
 
 				if (sscanf(w4, "%11d", &args.flag_val) == 1)
 					map_setmapflag_sub(m, MF_RESTRICTED, true, &args);
@@ -6063,7 +6063,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		case MF_JEXP:
 		case MF_BEXP: {
-				union u_mapflag_args args = {};
+				pds_mapflag_args args = {};
 
 				if (sscanf(w4, "%11d", &args.flag_val) < 1)
 					args.flag_val = 0;
@@ -6075,7 +6075,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		case MF_SKILL_DAMAGE: {
 			char skill_name[SKILL_NAME_LENGTH];
 			char caster_constant[NAME_LENGTH];
-			union u_mapflag_args args = {};
+			pds_mapflag_args args = {};
 
 			memset(skill_name, 0, sizeof(skill_name));
 
@@ -6119,7 +6119,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 		}
 
 		case MF_SKILL_DURATION: {
-			union u_mapflag_args args = {};
+			pds_mapflag_args args = {};
 
 			if (!state)
 				map_setmapflag_sub(m, MF_SKILL_DURATION, false, &args);
@@ -6140,131 +6140,53 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			break;
 		}
 
-#ifdef Pandas_MapFlag_Mobinfo
-		case MF_MOBINFO: {
-			// 若脚本中 mapflag 指定的第一个数值参数无效,
-			// 那么将此参数的值设为 0, 但不会阻断此地图标记的开启或关闭操作
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1)
-				args.flag_val = 0;
-
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_Mobinfo
-
-#ifdef Pandas_MapFlag_MobDroprate
-		case MF_MOBDROPRATE: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 100, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 100 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-		case MF_MVPDROPRATE: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 100, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 100 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_MvpDroprate
-
-#ifdef Pandas_MapFlag_MaxHeal
-		case MF_MAXHEAL: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_MaxHeal
-
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-		case MF_MAXDMG_SKILL: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_MaxDmg_Skill
-
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-		case MF_MAXDMG_NORMAL: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_MaxDmg_Normal
-
-#ifdef Pandas_MapFlag_NoSkill2
-		case MF_NOSKILL2: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_NoSkill2
-
-#ifdef Pandas_MapFlag_MaxASPD
-		case MF_MAXASPD: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_MaxASPD
-
-#ifdef Pandas_MapFlag_NoAttack2
-		case MF_NOATTACK2: {
-			// 若脚本中 mapflag 指定的数值无效或为默认值: 0, 则立刻关闭这个地图标记
-			union u_mapflag_args args = {};
-
-			if (sscanf(w4, "%11d", &args.flag_val) < 1 || args.flag_val == 0 || !state)
-				map_setmapflag(m, mapflag, false);
-			else
-				map_setmapflag_sub(m, mapflag, true, &args);
-			break;
-		}
-#endif // Pandas_MapFlag_NoAttack2
-
-		// PYHELP - MAPFLAG - INSERT POINT - <Section 7>
-
 		// All others do not need special treatment
 		default:
 			map_setmapflag(m, mapflag, state);
 			break;
 	}
+
+#ifdef Pandas_Mapflags
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (w4 && w4[0] != '\0' && conf != nullptr) {
+		pds_mapflag_args args = {};
+		int args_count = conf->args.size();
+		args.input.resize(args_count);
+
+		switch (args_count) {
+		case 1:
+			if (sscanf(w4, "%11d", &args.input[0]) < 1) {
+				args.input[0] = conf->args[0].def_val;
+			}
+			map_setmapflag_sub(m, mapflag, state, &args);
+			break;
+		case 2:
+			if (sscanf(w4, "%11d,%11d", &args.input[0], &args.input[1]) < 2) {
+				args.input[0] = conf->args[0].def_val;
+				args.input[1] = conf->args[1].def_val;
+			}
+			map_setmapflag_sub(m, mapflag, state, &args);
+			break;
+		case 3:
+			if (sscanf(w4, "%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2]) < 3) {
+				args.input[0] = conf->args[0].def_val;
+				args.input[1] = conf->args[1].def_val;
+				args.input[2] = conf->args[2].def_val;
+			}
+			map_setmapflag_sub(m, mapflag, state, &args);
+			break;
+		case 4:
+			if (sscanf(w4, "%11d,%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2], &args.input[3]) < 4) {
+				args.input[0] = conf->args[0].def_val;
+				args.input[1] = conf->args[1].def_val;
+				args.input[2] = conf->args[2].def_val;
+				args.input[3] = conf->args[3].def_val;
+			}
+			map_setmapflag_sub(m, mapflag, state, &args);
+			break;
+		}
+	}
+#endif // Pandas_Mapflags
 
 	return strchr(start,'\n');// continue
 }

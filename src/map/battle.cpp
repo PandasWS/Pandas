@@ -8721,7 +8721,7 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 
 #ifdef Pandas_MapFlag_MaxDmg_Skill
 	if (skill_id && bl && map_getmapflag(bl->m, MF_MAXDMG_SKILL)) {
-		int val = map_getmapflag_param(bl->m, MF_MAXDMG_SKILL, 0);
+		int val = map_getmapflag_param(bl->m, MF_MAXDMG_SKILL, 1);
 		if (val > 0 && d.damage + d.damage2 > val) {
 			int64 overval = (d.damage + d.damage2) - val;	// 超了多少
 			if (d.damage2 >= overval) {
@@ -8740,7 +8740,7 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 
 #ifdef Pandas_MapFlag_MaxDmg_Normal
 	if (!skill_id && bl && map_getmapflag(bl->m, MF_MAXDMG_NORMAL)) {
-		int val = map_getmapflag_param(bl->m, MF_MAXDMG_NORMAL, 0);
+		int val = map_getmapflag_param(bl->m, MF_MAXDMG_NORMAL, 1);
 		if (val > 0 && d.damage + d.damage2 > val) {
 			int64 overval = (d.damage + d.damage2) - val;	// 超了多少
 			if (d.damage2 >= overval) {

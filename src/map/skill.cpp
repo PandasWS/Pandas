@@ -802,7 +802,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 	// 限制治愈技能单次施法的最大治愈量
 	if (src && map_getmapflag(src->m, MF_MAXHEAL)) {
 		int result = (heal) ? max(1, hp) : hp;
-		int val = map_getmapflag_param(src->m, MF_MAXHEAL, 0);
+		int val = map_getmapflag_param(src->m, MF_MAXHEAL, 1);
 		return (val > 0) ? cap_value(result, 0, val) : result;
 	}
 #endif // Pandas_MapFlag_MaxHeal
@@ -813,7 +813,7 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 #ifdef Pandas_MapFlag_MaxHeal
 	// 限制治愈技能单次施法的最大治愈量
 	if (src && map_getmapflag(src->m, MF_MAXHEAL)) {
-		int val = map_getmapflag_param(src->m, MF_MAXHEAL, 0);
+		int val = map_getmapflag_param(src->m, MF_MAXHEAL, 1);
 		return (val > 0) ? cap_value(hp, 0, val) : hp;
 	}
 #endif // Pandas_MapFlag_MaxHeal
@@ -915,7 +915,7 @@ bool skill_isNotOk(uint16 skill_id, map_session_data *sd)
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (sd && map_getmapflag(sd->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(sd->bl.m, MF_NOSKILL2, 0) & BL_PC) == BL_PC)
+		if ((map_getmapflag_param(sd->bl.m, MF_NOSKILL2, 1) & BL_PC) == BL_PC)
 			return true;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -1048,7 +1048,7 @@ bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv)
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (hd && map_getmapflag(hd->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(hd->bl.m, MF_NOSKILL2, 0) & BL_HOM) == BL_HOM)
+		if ((map_getmapflag_param(hd->bl.m, MF_NOSKILL2, 1) & BL_HOM) == BL_HOM)
 			return false;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -1174,7 +1174,7 @@ bool skill_isNotOk_mercenary(uint16 skill_id, s_mercenary_data *md)
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (md && map_getmapflag(md->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 0) & BL_MER) == BL_MER)
+		if ((map_getmapflag_param(md->bl.m, MF_NOSKILL2, 1) & BL_MER) == BL_MER)
 			return false;
 	}
 #endif // Pandas_MapFlag_NoSkill2

@@ -1624,7 +1624,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, ui
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (src && src->type == BL_NPC && map_getmapflag(src->m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(src->m, MF_NOSKILL2, 0) & BL_NPC) == BL_NPC)
+		if ((map_getmapflag_param(src->m, MF_NOSKILL2, 1) & BL_NPC) == BL_NPC)
 			return 0;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -2148,7 +2148,7 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, ui
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (src && src->type == BL_NPC && map_getmapflag(src->m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(src->m, MF_NOSKILL2, 0) & BL_NPC) == BL_NPC)
+		if ((map_getmapflag_param(src->m, MF_NOSKILL2, 1) & BL_NPC) == BL_NPC)
 			return 0;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -2447,7 +2447,7 @@ int unit_attack(struct block_list *src,int target_id,int continuous)
 
 #ifdef Pandas_MapFlag_NoAttack2
 	if (src && map_getmapflag(src->m, MF_NOATTACK2)) {
-		if ((map_getmapflag_param(src->m, MF_NOATTACK2, 0) & src->type) == src->type) {
+		if ((map_getmapflag_param(src->m, MF_NOATTACK2, 1) & src->type) == src->type) {
 			return 1;
 		}
 	}

@@ -788,9 +788,9 @@
 	export_constant(MF_NOBUYINGSTORE);
 	export_constant(MF_NODYNAMICNPC);
 
-#ifdef Pandas_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_MobInfo
 	export_constant(MF_MOBINFO);
-#endif // Pandas_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_MobInfo
 
 #ifdef Pandas_MapFlag_NoAutoLoot
 	export_constant(MF_NOAUTOLOOT);

@@ -58,6 +58,10 @@
 #include "aura.hpp"
 #endif // Pandas_Aura_Mechanism
 
+#ifdef Pandas_Mapflags
+std::unordered_map<e_mapflag, s_mapflag_item> mapflag_config;
+#endif // Pandas_Mapflags
+
 using namespace rathena;
 using namespace rathena::server_map;
 
@@ -3842,9 +3846,246 @@ int map_delmap(char* mapname){
 
 /// Initializes map flags and adjusts them depending on configuration.
 void map_flags_init(void){
+
+#ifdef Pandas_MapFlag_MobInfo
+	mapflag_config.insert(std::make_pair(MF_MOBINFO, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MobInfo",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,     
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, 1|2|4|8|16|32|64}
+		}
+	}));
+#endif // Pandas_MapFlag_MobInfo
+
+#ifdef Pandas_MapFlag_NoAutoLoot
+	mapflag_config.insert(std::make_pair(MF_NOAUTOLOOT, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoAutoLoot",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_NoAutoLoot
+
+#ifdef Pandas_MapFlag_NoToken
+	mapflag_config.insert(std::make_pair(MF_NOTOKEN, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoToken",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_NoToken
+
+#ifdef Pandas_MapFlag_NoCapture
+	mapflag_config.insert(std::make_pair(MF_NOCAPTURE, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoCapture",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_NoCapture
+
+#ifdef Pandas_MapFlag_HideGuildInfo
+	mapflag_config.insert(std::make_pair(MF_HIDEGUILDINFO, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "HideGuildInfo",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_HideGuildInfo
+
+#ifdef Pandas_MapFlag_HidePartyInfo
+	mapflag_config.insert(std::make_pair(MF_HIDEPARTYINFO, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "HidePartyInfo",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_HidePartyInfo
+
+#ifdef Pandas_MapFlag_NoMail
+	mapflag_config.insert(std::make_pair(MF_NOMAIL, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoMail",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_NoMail
+
+#ifdef Pandas_MapFlag_NoPet
+	mapflag_config.insert(std::make_pair(MF_NOPET, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoPet",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_NoPet
+
+#ifdef Pandas_MapFlag_NoHomun
+	mapflag_config.insert(std::make_pair(MF_NOHOMUN, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoHomun",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+		}));
+#endif // Pandas_MapFlag_NoHomun
+
+#ifdef Pandas_MapFlag_NoMerc
+	mapflag_config.insert(std::make_pair(MF_NOMERC, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoMerc",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_NoMerc
+
+#ifdef Pandas_MapFlag_MobDroprate
+	mapflag_config.insert(std::make_pair(MF_MOBDROPRATE, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MobDroprate",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{100, 0, INT_MAX, "%"}
+		}
+	}));
+#endif // Pandas_MapFlag_MobDroprate
+
+#ifdef Pandas_MapFlag_MvpDroprate
+	mapflag_config.insert(std::make_pair(MF_MVPDROPRATE, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MvpDroprate",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{100, 0, INT_MAX, "%"}
+		}
+	}));
+#endif // Pandas_MapFlag_MvpDroprate
+
+#ifdef Pandas_MapFlag_MaxHeal
+	mapflag_config.insert(std::make_pair(MF_MAXHEAL, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MaxHeal",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, INT_MAX}
+		}
+	}));
+#endif // Pandas_MapFlag_MaxHeal
+
+#ifdef Pandas_MapFlag_MaxDmg_Skill
+	mapflag_config.insert(std::make_pair(MF_MAXDMG_SKILL, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MaxDmg_Skill",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, INT_MAX}
+		}
+	}));
+#endif // Pandas_MapFlag_MaxDmg_Skill
+
+#ifdef Pandas_MapFlag_MaxDmg_Normal
+	mapflag_config.insert(std::make_pair(MF_MAXDMG_NORMAL, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MaxDmg_Normal",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, INT_MAX}
+		}
+	}));
+#endif // Pandas_MapFlag_MaxDmg_Normal
+
+#ifdef Pandas_MapFlag_NoSkill2
+	mapflag_config.insert(std::make_pair(MF_NOSKILL2, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoSkill2",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, BL_ALL}
+		}
+	}));
+#endif // Pandas_MapFlag_NoSkill2
+
+#ifdef Pandas_MapFlag_NoAura
+	mapflag_config.insert(std::make_pair(MF_NOAURA, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoAura",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_NoAura
+
+#ifdef Pandas_MapFlag_MaxASPD
+	mapflag_config.insert(std::make_pair(MF_MAXASPD, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "MaxASPD",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ true,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ true,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, 199}
+		}
+	}));
+#endif // Pandas_MapFlag_MaxASPD
+
+#ifdef Pandas_MapFlag_NoSlave
+	mapflag_config.insert(std::make_pair(MF_NOSLAVE, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoSlave",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_NoSlave
+
+#ifdef Pandas_MapFlag_NoBank
+	mapflag_config.insert(std::make_pair(MF_NOBANK, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoBank",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_NoBank
+
+#ifdef Pandas_MapFlag_NoUseItem
+	mapflag_config.insert(std::make_pair(MF_NOUSEITEM, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoUseItem",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_NoUseItem
+
+#ifdef Pandas_MapFlag_HideDamage
+	mapflag_config.insert(std::make_pair(MF_HIDEDAMAGE, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "HideDamage",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_HideDamage
+
+#ifdef Pandas_MapFlag_NoAttack
+	mapflag_config.insert(std::make_pair(MF_NOATTACK, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoAttack",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
+	}));
+#endif // Pandas_MapFlag_NoAttack
+
+#ifdef Pandas_MapFlag_NoAttack2
+	mapflag_config.insert(std::make_pair(MF_NOATTACK2, s_mapflag_item{
+		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoAttack2",
+		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
+		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
+		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {
+			{0, 0, BL_ALL}
+		}
+	}));
+#endif // Pandas_MapFlag_NoAttack2
+
+	// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
+
 	for (int i = 0; i < map_num; i++) {
 		struct map_data *mapdata = &map[i];
-		union u_mapflag_args args = {};
+		pds_mapflag_args args = {};
 
 		mapdata->flag.clear();
 		mapdata->flag.resize(MF_MAX, 0); // Resize and define default values
@@ -3862,14 +4103,14 @@ void map_flags_init(void){
 		mapdata->skill_damage.clear();
 		mapdata->skill_duration.clear();
 		map_free_questinfo(mapdata);
-
-#ifdef Pandas_MapFlag_MobDroprate
-		map_setmapflag_param(i, MF_MOBDROPRATE, 100);
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-		map_setmapflag_param(i, MF_MVPDROPRATE, 100);
-#endif // Pandas_MapFlag_MvpDroprate
+		
+// #ifdef Pandas_MapFlag_MobDroprate
+// 		map_setmapflag_param(i, MF_MOBDROPRATE, 1, 100);
+// #endif // Pandas_MapFlag_MobDroprate
+// 
+// #ifdef Pandas_MapFlag_MvpDroprate
+// 		map_setmapflag_param(i, MF_MVPDROPRATE, 1, 100);
+// #endif // Pandas_MapFlag_MvpDroprate
 
 		if (instance_start && i >= instance_start)
 			continue;
@@ -3894,7 +4135,7 @@ void map_data_copy(struct map_data *dst_map, struct map_data *src_map) {
 
 	dst_map->flag = src_map->flag;
 #ifdef Pandas_Mapflags
-	dst_map->flag_params.insert(src_map->flag_params.begin(), src_map->flag_params.end());
+	dst_map->mapflag_values.insert(src_map->mapflag_values.begin(), src_map->mapflag_values.end());
 #endif // Pandas_Mapflags
 	dst_map->skill_damage.insert(src_map->skill_damage.begin(), src_map->skill_damage.end());
 	dst_map->skill_duration.insert(src_map->skill_duration.begin(), src_map->skill_duration.end());
@@ -4727,7 +4968,7 @@ int cleanup_sub(struct block_list *bl, va_list ap)
  * @param skill_id: Skill ID
  * @param args: Mapflag arguments
  */
-void map_skill_damage_add(struct map_data *m, uint16 skill_id, union u_mapflag_args *args) {
+void map_skill_damage_add(struct map_data *m, uint16 skill_id, pds_mapflag_args *args) {
 	nullpo_retv(m);
 	nullpo_retv(args);
 
@@ -4901,15 +5142,32 @@ bool map_getmapflag_name( enum e_mapflag mapflag, char* output ){
 
 #ifdef Pandas_Mapflags
 //************************************
+// Method:      map_mapflag_valid_index
+// Description: 检查指定地图标记的附加参数索引是否有效
+// Parameter:   e_mapflag mapflag
+// Parameter:   int index
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2023/04/29 11:56
+//************************************
+bool map_mapflag_valid_index(e_mapflag mapflag, int index) {
+	#define MAX_ARGS_COUNT 4
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (conf == nullptr) {
+		return false;
+	}
+	return (index >= 0 && index < conf->args.size() && index < MAX_ARGS_COUNT);
+}
+
+//************************************
 // Method:		map_getmapflag_param
-// Description:	获取某个地图标记的附加参数 (通过 args 的 flag_val 控制要获取的参数是哪个)
+// Description:	获取指定地图标记的附加参数 (指定默认值)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	union u_mapflag_args * args
+// Parameter:	int index
 // Parameter:	int default_val
 // Returns:		int
 //************************************
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *args, int default_val) {
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index, int default_val) {
 	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
 		ShowWarning("map_getmapflag_param: Invalid map ID %d.\n", m);
 		return default_val;
@@ -4922,60 +5180,64 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *
 		return default_val;
 	}
 
-	struct s_mapflag_params *params = util::umap_find(mapdata->flag_params, static_cast<int16>(mapflag));
-
-	if (!args) {
+	if (index == 0) {
 		return mapdata->flag[mapflag];
 	}
 
-	switch (args->flag_val)
-	{
-	case MP_PARAM_FIRST:
-		return (params ? params->param_first : default_val);
-	case MP_PARAM_SECOND:
-		return (params ? params->param_second : default_val);
-	default:
-		return mapdata->flag[mapflag];
+	index = index - 1;
+
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (conf == nullptr) {
+		ShowWarning("map_getmapflag_param: No config data for mapflag %d on map %s.\n", mapflag, mapdata->name);
+		return default_val;
 	}
+	
+	if (!map_mapflag_valid_index(mapflag, index)) {
+		ShowWarning("map_getmapflag_param: Invalid param index %d of mapflag '%s' on map %s.\n", index, conf->name, mapdata->name);
+		return default_val;
+	}
+
+	std::vector<int>* params = util::umap_find(mapdata->mapflag_values, mapflag);
+	if (params == nullptr) {
+		return default_val;
+	}
+
+	// map_mapflag_valid_index 检查的是配置中的索引有效区间,
+	// 而这里检查的是实际参数的有效区间
+	if (params->size() < index || index >= params->size()) {
+		return default_val;
+	}
+	
+	return params->at(index);
 }
 
 //************************************
 // Method:		map_getmapflag_param
-// Description:	获取某个地图标记的附加参数 (直接指定要获取的参数是哪个)
+// Description:	获取指定地图标记的附加参数 (自动使用默认值)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	enum e_mapflag_params param
-// Parameter:	int default_val
+// Parameter:	int index
 // Returns:		int
 //************************************
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int default_val) {
-	union u_mapflag_args args = {};
-	args.flag_val = param;
-	return map_getmapflag_param(m, mapflag, &args, default_val);
-}
-
-//************************************
-// Method:		map_getmapflag_param
-// Description:	获取某个地图标记的附加参数 (直接获取第一个参数的值)
-// Parameter:	int16 m
-// Parameter:	enum e_mapflag mapflag
-// Parameter:	int default_val
-// Returns:		int
-//************************************
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int default_val) {
-	return map_getmapflag_param(m, mapflag, MP_PARAM_FIRST, default_val);
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index) {
+	int default_val = 0;
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (conf && map_mapflag_valid_index(mapflag, index - 1)) {
+		default_val = conf->args[index - 1].def_val;
+	}
+	return map_getmapflag_param(m, mapflag, index, default_val);
 }
 
 //************************************
 // Method:		map_setmapflag_param
-// Description:	设置某个地图标记的附加参数 (直接指定要设置的参数是哪个)
+// Description:	设置指定地图标记的附加参数 (直接指定要设置的参数是哪个)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	enum e_mapflag_params param
+// Parameter:	int index
 // Parameter:	int value
 // Returns:		void
 //************************************
-void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int value) {
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int index, int value) {
 	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
 		ShowWarning("map_setmapflag_param: Invalid map ID %d.\n", m);
 		return;
@@ -4988,42 +5250,112 @@ void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params
 		return;
 	}
 
-	struct s_mapflag_params *params = util::umap_find(mapdata->flag_params, static_cast<int16>(mapflag));
-	bool exists = params != nullptr;
-	struct s_mapflag_params new_params = {};
+	if (index == 0) {
+		mapdata->flag[mapflag] = static_cast<bool>(value);
+		return;
+	}
+	
+	index = index - 1;
 
-	if (!exists) {
-		params = &new_params;
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (conf == nullptr) {
+		ShowWarning("map_setmapflag_param: No config data for mapflag %d on map %s.\n", mapflag, mapdata->name);
+		return;
+	}
+	
+	if (!map_mapflag_valid_index(mapflag, index)) {
+		ShowWarning("map_setmapflag_param: Invalid param index %d of mapflag '%s' on map %s.\n", index, conf->name, mapdata->name);
+		return;
 	}
 
-	switch (param)
-	{
-	case MP_PARAM_FIRST:
-		params->param_first = value;
-		break;
-	case MP_PARAM_SECOND:
-		params->param_second = value;
-		break;
-	default:
-		ShowWarning("map_setmapflag_param: Invalid params %d.\n", param);
-		break;
-	}
+	std::vector<int> *current_values = util::umap_find(mapdata->mapflag_values, mapflag);
+	bool exists = (current_values != nullptr);
+	std::vector<int> new_values = {};
 
 	if (!exists) {
-		mapdata->flag_params.insert({ static_cast<int16>(mapflag), *params });
+		current_values = &new_values;
+	}
+
+	int args_count = conf->args.size();
+	if (current_values->size() != args_count) {
+		current_values->resize(args_count);
+	}
+
+	// 此处需要根据 conf->args 中的 min 和 max 参数进行有效区间校验,
+	// 若处于无效区间则需要显示警告并且设置为默认值
+	if (value < conf->args[index].min || value > conf->args[index].max) {
+		ShowWarning("map_setmapflag_param: Invalid value %d for param %d of mapflag '%s' on map %s, defaulting to %d\n",
+			value, index + 1, conf->name, mapdata->name, conf->args[index].def_val);
+		value = conf->args[index].def_val;
+	}
+
+	(*current_values)[index] = value;
+
+	if (!exists) {
+		mapdata->mapflag_values.insert({mapflag, *current_values});
 	}
 }
 
 //************************************
 // Method:		map_setmapflag_param
-// Description:	设置某个地图标记的附加参数 (直接设置第一个参数的值)
+// Description:	设置指定地图标记的附加参数 (设置所有参数)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	int value
+// Parameter:	const std::vector<int>& values
 // Returns:		void
 //************************************
-void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int value) {
-	return map_setmapflag_param(m, mapflag, MP_PARAM_FIRST, value);
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, const std::vector<int>& values) {
+	for (int i = 0; i < values.size(); i++) {
+		map_setmapflag_param(m, mapflag, i + 1, values[i]);
+	}
+}
+
+//************************************
+// Method:		map_setmapflag_param_reset
+// Description:	将指定地图标记的附加参数为默认值
+// Parameter:	int16 m
+// Parameter:	enum e_mapflag mapflag
+// Returns:		void
+//************************************
+void map_setmapflag_param_reset(int16 m, enum e_mapflag mapflag) {
+	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
+		ShowWarning("map_setmapflag_param_reset: Invalid map ID %d.\n", m);
+		return;
+	}
+
+	struct map_data* mapdata = &map[m];
+
+	if (mapflag < MF_MIN || mapflag >= MF_MAX) {
+		ShowWarning("map_setmapflag_param_reset: Invalid mapflag %d on map %s.\n", mapflag, mapdata->name);
+		return;
+	}
+
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (conf == nullptr) {
+		ShowWarning("map_setmapflag_param_reset: No config data for mapflag %d on map %s.\n", mapflag, mapdata->name);
+		return;
+	}
+
+	std::vector<int>* current_values = util::umap_find(mapdata->mapflag_values, mapflag);
+	bool exists = (current_values != nullptr);
+	std::vector<int> new_values = {};
+
+	if (!exists) {
+		current_values = &new_values;
+	}
+
+	int args_count = conf->args.size();
+	if (current_values->size() != args_count) {
+		current_values->resize(args_count);
+	}
+
+	for (int i = 0; i < args_count; ++i) {
+		(*current_values)[i] = conf->args[i].def_val;
+	}
+
+	if (!exists) {
+		mapdata->mapflag_values.insert({ mapflag, *current_values });
+	}
 }
 #endif // Pandas_Mapflags
 
@@ -5034,7 +5366,7 @@ void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int value) {
  * @param args: Arguments for special flags
  * @return Mapflag value on success or -1 on failure
  */
-int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *args)
+int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, pds_mapflag_args *args)
 {
 	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
 		ShowWarning("map_getmapflag: Invalid map ID %d.\n", m);
@@ -5047,6 +5379,12 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 		ShowWarning("map_getmapflag: Invalid mapflag %d on map %s.\n", mapflag, mapdata->name);
 		return -1;
 	}
+
+#ifdef Pandas_Mapflags
+	if (args && util::umap_find(mapflag_config, mapflag) != nullptr) {
+		return map_getmapflag_param(m, mapflag, args->flag_val);
+	}
+#endif // Pandas_Mapflags
 
 	switch(mapflag) {
 		case MF_RESTRICTED:
@@ -5071,52 +5409,6 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 				default:
 					return mapdata->flag[mapflag];
 			}
-#ifdef Pandas_MapFlag_Mobinfo
-		case MF_MOBINFO:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_Mobinfo
-
-#ifdef Pandas_MapFlag_MobDroprate
-		case MF_MOBDROPRATE:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-		case MF_MVPDROPRATE:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_MvpDroprate
-
-#ifdef Pandas_MapFlag_MaxHeal
-		case MF_MAXHEAL:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_MaxHeal
-
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-		case MF_MAXDMG_SKILL:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_MaxDmg_Skill
-
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-		case MF_MAXDMG_NORMAL:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_MaxDmg_Normal
-
-#ifdef Pandas_MapFlag_NoSkill2
-		case MF_NOSKILL2:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_NoSkill2
-
-#ifdef Pandas_MapFlag_MaxASPD
-		case MF_MAXASPD:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_MaxASPD
-
-#ifdef Pandas_MapFlag_NoAttack2
-		case MF_NOATTACK2:
-			return map_getmapflag_param(m, mapflag, args, 0);
-#endif // Pandas_MapFlag_NoAttack2
-
-		// PYHELP - MAPFLAG - INSERT POINT - <Section 5>
 		default:
 			return mapdata->flag[mapflag];
 	}
@@ -5130,7 +5422,7 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
  * @param args: Arguments for special flags
  * @return True on success or false on failure
  */
-bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_mapflag_args *args)
+bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, pds_mapflag_args *args)
 {
 	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
 		ShowWarning("map_setmapflag: Invalid map ID %d.\n", m);
@@ -5387,146 +5679,40 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
-#ifdef Pandas_MapFlag_Mobinfo
-		case MF_MOBINFO:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args)
-					map_setmapflag_param(m, mapflag, args->flag_val);
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_Mobinfo
-#ifdef Pandas_MapFlag_MobDroprate
-		case MF_MOBDROPRATE:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 100);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 100);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_MobDroprate
-#ifdef Pandas_MapFlag_MvpDroprate
-		case MF_MVPDROPRATE:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 100);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 100);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_MvpDroprate
-#ifdef Pandas_MapFlag_MaxHeal
-		case MF_MAXHEAL:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 0);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_MaxHeal
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-		case MF_MAXDMG_SKILL:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 0);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_MaxDmg_Skill
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-		case MF_MAXDMG_NORMAL:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 0);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_MaxDmg_Normal
-#ifdef Pandas_MapFlag_NoSkill2
-		case MF_NOSKILL2:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 0);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_NoSkill2
-#ifdef Pandas_MapFlag_MaxASPD
-		case MF_MAXASPD:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					if (args->flag_val != 0) {
-						if (args->flag_val < 1) {
-							ShowWarning("map_setmapflag: The minimum ASPD cannot be less than 1, and it has been forcibly set to 1.\n");
-						}
-						else if (args->flag_val > 199) {
-							ShowWarning("map_setmapflag: The maximum ASPD cannot be greater than 199, and it has been forcibly set to 199.\n");
-						}
-						args->flag_val = cap_value(args->flag_val, 1, 199);
-					}
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 0);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_MaxASPD
-#ifdef Pandas_MapFlag_NoAttack2
-		case MF_NOATTACK2:
-			if (!status)
-				map_setmapflag_param(m, mapflag, 0);
-			else {
-				nullpo_retr(false, args);
-				if (args) {
-					map_setmapflag_param(m, mapflag, args->flag_val);
-					status = !(args->flag_val == 0);
-				}
-			}
-			mapdata->flag[mapflag] = status;
-			break;
-#endif // Pandas_MapFlag_NoAttack2
-		// PYHELP - MAPFLAG - INSERT POINT - <Section 6>
 		default:
 			mapdata->flag[mapflag] = status;
 			break;
 	}
 
 #ifdef Pandas_Mapflags
+	auto conf = util::umap_find(mapflag_config, mapflag);
+	if (conf != nullptr) {
+		if (!status) {
+			map_setmapflag_param_reset(m, mapflag);
+		}
+		else if (args) {
+			map_setmapflag_param(m, mapflag, args->input);
+
+			if (conf->turn_off_default) {
+				// 如果 args->input 的所有值的内容与 conf->args 相同,
+				// 那么就不需要设置这个 flag
+				bool all_equal = true;
+				for (size_t i = 0; i < conf->args.size(); i++) {
+					if (args->input[i] != conf->args[i].def_val) {
+						all_equal = false;
+						break;
+					}
+				}
+
+				if (all_equal) {
+					map_setmapflag_param_reset(m, mapflag);
+					status = false;
+				}
+			}
+		}
+		mapdata->flag[mapflag] = status;
+	}
+	
 	// 某些地图标记在被赋值后, 可以再此进行一些额外操作
 	// 这里的代码可以允许冗余, 以便提取单个地图标记代码时候更加便利 [Sola丶小克]
 	switch (mapflag) {

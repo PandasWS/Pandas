@@ -16091,7 +16091,7 @@ short pc_maxaspd(map_session_data *sd) {
 
 #ifdef Pandas_MapFlag_MaxASPD
 	if (map_getmapflag(sd->bl.m, MF_MAXASPD)) {
-		int val = map_getmapflag_param(sd->bl.m, MF_MAXASPD, 0);
+		int val = map_getmapflag_param(sd->bl.m, MF_MAXASPD, 1);
 		if (val) {
 			// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
 			int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (

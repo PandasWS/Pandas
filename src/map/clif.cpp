@@ -10724,11 +10724,11 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 				int option = battle_config.show_mob_info;
 
-#ifdef Pandas_MapFlag_Mobinfo
+#ifdef Pandas_MapFlag_MobInfo
 				if (md->bl.m >= 0 && map_getmapflag(md->bl.m, MF_MOBINFO)) {
-					option = map_getmapflag_param(md->bl.m, MF_MOBINFO, 0);
+					option = map_getmapflag_param(md->bl.m, MF_MOBINFO, 1);
 				}
-#endif // Pandas_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_MobInfo
 
 				// ========================================================
 				// 开始处理第一个数据栏位的内容
