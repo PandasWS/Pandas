@@ -29651,8 +29651,8 @@ BUILDIN_FUNC(script4each) {
 
 	switch (execute_range)
 	{
-	case 0: {
-		// 全服单位 - script4each "{<脚本>}",0;
+	case SFE_ALL: {
+		// 全服单位 - script4each "{<脚本>}",SFE_ALL;
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
 			if (!bl || bl->type != bltype) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
@@ -29660,8 +29660,8 @@ BUILDIN_FUNC(script4each) {
 		}
 		break;
 	}
-	case 1: {
-		// 指定地图上的全部单位 - script4each "{<脚本>}",1,<"地图名称">;
+	case SFE_MAP: {
+		// 指定地图上的全部单位 - script4each "{<脚本>}",SFE_MAP,<"地图名称">;
 		int map_id = -1;
 
 		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
@@ -29674,8 +29674,8 @@ BUILDIN_FUNC(script4each) {
 		}
 		break;
 	}
-	case 2: {
-		// 以地图某个点为中心半径距离内的单位 - script4each "{<脚本>}",2,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
+	case SFE_MAP_RANGE: {
+		// 以地图某个点为中心半径距离内的单位 - script4each "{<脚本>}",SFE_MAP_RANGE,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
 		int map_id = -1, map_x = 0, map_y = 0, range = 0;
 
 		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
@@ -29696,48 +29696,52 @@ BUILDIN_FUNC(script4each) {
 		map_foreachinrange(buildin_script4each_sub, &center_bl, range, bltype, script, pos);
 		break;
 	}
-	case 3: {
-		// 指定玩家所在的队伍中的全部队伍成员 - script4each "{<脚本>}",3,<角色编号>;
+	case SFE_MAP_PARTY: {
+		// 指定地图上的全部队伍成员 - script4each "{<脚本>}",SFE_MAP_PARTY,<"地图名称">,<队伍编号>;
 		int party_id = 0;
-		map_session_data *target_sd = nullptr;
+		int map_id = -1;
+		map_session_data* target_sd = nullptr;
 
 		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
 		if (bltype != BL_PC) break;
 
-		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
-		target_sd = map_charid2sd(script_getnum(st, 4));
-		if (!target_sd || (party_id = target_sd->status.party_id) <= 0) break;
+		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
+		if (!script_isint(st, 5)) break;
+
+		party_id = script_getnum(st, 5);
 
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
-			if (!bl || bl->type != bltype) continue;
+			if (!bl || bl->type != bltype || bl->m != map_id) continue;
 			if (((TBL_PC*)bl)->status.party_id != party_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
 			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
-	case 4: {
-		// 指定玩家所在的公会中的全部公会成员 - script4each "{<脚本>}",4,<角色编号>;
+	case SFE_MAP_GUILD: {
+		// 指定地图上的全部公会成员 - script4each "{<脚本>}",SFE_MAP_GUILD,<"地图名称">,<公会编号>;
 		int guild_id = 0;
-		map_session_data *target_sd = nullptr;
+		int map_id = -1;
+		map_session_data* target_sd = nullptr;
 
 		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
 		if (bltype != BL_PC) break;
 
-		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
-		target_sd = map_charid2sd(script_getnum(st, 4));
-		if (!target_sd || (guild_id = target_sd->status.guild_id) <= 0) break;
+		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
+		if (!script_isint(st, 5)) break;
+
+		guild_id = script_getnum(st, 5);
 
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
-			if (!bl || bl->type != bltype) continue;
+			if (!bl || bl->type != bltype || bl->m != map_id) continue;
 			if (((TBL_PC*)bl)->status.guild_id != guild_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
 			run_script(script, pos, bl->id, 0);
 		}
 		break;
 	}
-	case 5: {
-		// 指定区域 - script4each "{<脚本>}",5,<"地图名称">,<坐标x0>,<坐标y0>,<坐标x1>,<坐标y1>;
+	case SFE_MAP_AREA: {
+		// 指定区域内的全部单位 - script4each "{<脚本>}",SFE_MAP_AREA,<"地图名称">,<坐标x0>,<坐标y0>,<坐标x1>,<坐标y1>;
 		int map_id = -1, map_x0 = 0, map_y0 = 0, map_x1 = 0, map_y1 = 0;
 
 		if (!script_hasdata(st, 4) || !script_isstring(st, 4)) break;
@@ -29755,15 +29759,15 @@ BUILDIN_FUNC(script4each) {
 		map_foreachinarea(buildin_script4each_sub, map_id, map_x0, map_y0, map_x1, map_y1, bltype, script, pos);
 		break;
 	}
-	case 6: {
-		// 指定队伍中的全部队伍成员 - script4each "{<脚本>}",6,<队伍编号>;
+	case SFE_PARTY: {
+		// 指定队伍中的全部队伍成员 - script4each "{<脚本>}",SFE_PARTY,<队伍编号>;
 		int party_id = 0;
 
 		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
 		if (bltype != BL_PC) break;
 
 		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
-		if ((party_id = script_getnum(st, 4)) <= 0) break;;
+		if ((party_id = script_getnum(st, 4)) <= 0) break;
 
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
 			if (!bl || bl->type != bltype) continue;
@@ -29773,8 +29777,8 @@ BUILDIN_FUNC(script4each) {
 		}
 		break;
 	}
-	case 7: {
-		// 指定公会中的全部公会成员 - script4each "{<脚本>}",7,<公会编号>;
+	case SFE_GUILD: {
+		// 指定公会中的全部公会成员 - script4each "{<脚本>}",SFE_GUILD,<公会编号>;
 		int guild_id = 0;
 
 		// 该类型不支持 script4eachmob 和 script4eachnpc 指令
@@ -29786,6 +29790,50 @@ BUILDIN_FUNC(script4each) {
 		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
 			if (!bl || bl->type != bltype) continue;
 			if (((TBL_PC*)bl)->status.guild_id != guild_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, pos, bl->id, 0);
+		}
+		break;
+	}
+	case SFE_MAP_TRIBE: {
+		// 指定地图上的全部Tribe阵营成员 - script4each "{<脚本>}",SFE_MAP_PARTY,<"地图名称">,<Tribe阵营编号>;
+		//阵营系统预留
+		break;
+	}
+	case SFE_TRIBE: {
+		// 指定阵营中的全部Tribe阵营成员 - script4each "{<脚本>}",SFE_MAP_PARTY,<"地图名称">,<Tribe阵营编号>;
+		//阵营系统预留
+		break;
+	}
+	case SFE_MAP_BG: {
+		// 指定地图上的全部BG阵营成员 - script4each "{<脚本>}",SFE_MAP_BG,<"地图名称">,<BG阵营编号>;
+		int bg_id = 0;
+		int map_id = -1;
+		map_session_data* target_sd = nullptr;
+
+		if ((map_id = map_mapname2mapid(script_getstr(st, 4))) < 0) break;
+		if (!script_isint(st, 5)) break;
+
+		bg_id = script_getnum(st, 5);
+
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype || bl->m != map_id) continue;
+			if (((TBL_PC*)bl)->bg_id != bg_id) continue;
+			mapreg_setreg(add_str("$@gid"), bl->id);
+			run_script(script, pos, bl->id, 0);
+		}
+		break;
+	}
+	case SFE_BG: {
+		// 指定BG阵营中的全部BG阵营成员 - script4each "{<脚本>}",SFE_BG,<阵营编号>;
+		int bg_id = 0;
+
+		if (!script_hasdata(st, 4) || !script_isint(st, 4)) break;
+		if ((bg_id = script_getnum(st, 4)) <= 0) break;;
+
+		for (bl = mapit_first(iter); mapit_exists(iter); bl = mapit_next(iter)) {
+			if (!bl || bl->type != bltype) continue;
+			if (((TBL_PC*)bl)->bg_id != bg_id) continue;
 			mapreg_setreg(add_str("$@gid"), bl->id);
 			run_script(script, pos, bl->id, 0);
 		}

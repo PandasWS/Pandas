@@ -147,6 +147,23 @@ struct event_data {
 };
 #endif // Pandas_Redeclaration_Struct_Event_Data
 
+#ifdef Pandas_ScriptCommand_Script4Each
+enum Script4Each_CompareMethod {
+	SFE_ALL,
+	SFE_MAP,
+	SFE_MAP_RANGE,
+	SFE_MAP_PARTY,
+	SFE_MAP_GUILD,
+	SFE_MAP_AREA,
+	SFE_PARTY,
+	SFE_GUILD,
+	SFE_MAP_TRIBE,	//阵营系统预留
+	SFE_TRIBE,	//阵营系统预留
+	SFE_MAP_BG,
+	SFE_BG
+};
+#endif // Pandas_ScriptCommand_Script4Each
+
 struct npc_data {
 	struct block_list bl;
 	struct unit_data ud; //Because they need to be able to move....
