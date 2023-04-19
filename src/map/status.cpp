@@ -3899,6 +3899,12 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 	sd->skillnorequire.clear();
 #endif // Pandas_Bonus2_bSkillNoRequire
 
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	sd->statsadd_bonus3.clear();
+	sd->statsadd_bonus4.clear();
+	sd->statsadd_bonus5.clear();
+#endif // Pandas_Bonus3_bStatusAddBonus
+
 #ifdef Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
 	sd->pandas.multi_catch_target_class.clear();
 #endif // Pandas_Struct_Map_Session_Data_MultiCatchTargetClass
@@ -3935,6 +3941,24 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 	npc_script_event(sd, NPCE_STATCALC);
 	running_npc_stat_calc_event = false;
 #endif // Pandas_NpcExpress_STATCALC
+
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	for (auto& it : sd->statsadd_bonus3) {
+		if (!sc->getSCE(it.type))
+			continue;
+		pc_bonus(sd, it.bonus, it.val);
+	}
+	for (auto& it : sd->statsadd_bonus4) {
+		if (!sc->getSCE(it.type))
+			continue;
+		pc_bonus2(sd, it.bonus, it.r, it.val);
+	}
+	for (auto& it : sd->statsadd_bonus5) {
+		if (!sc->getSCE(it.type))
+			continue;
+		pc_bonus3(sd, it.bonus, it.x, it.r, it.val);
+	}
+#endif // Pandas_Bonus3_bStatusAddBonus
 
 	// Parse equipment
 	for (i = 0; i < EQI_MAX; i++) {
@@ -6474,7 +6498,7 @@ void status_calc_bl_(struct block_list* bl, std::bitset<SCB_MAX> flag, uint8 opt
 {
 	struct status_data b_status; // Previous battle status
 	struct status_data* status; // Pointer to current battle status
-
+	
 	if (bl->type == BL_PC) {
 		map_session_data *sd = BL_CAST(BL_PC, bl);
 
@@ -6491,7 +6515,7 @@ void status_calc_bl_(struct block_list* bl, std::bitset<SCB_MAX> flag, uint8 opt
 	// Remember previous values
 	status = status_get_status_data(bl);
 	memcpy(&b_status, status, sizeof(struct status_data));
-
+	
 #ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	struct status_data previous_b_status = { 0 };
 	bool backed_up = false;
@@ -6515,6 +6539,22 @@ void status_calc_bl_(struct block_list* bl, std::bitset<SCB_MAX> flag, uint8 opt
 		case BL_NPC: status_calc_npc_(BL_CAST(BL_NPC,bl), opt); break;
 		}
 	}
+
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	
+		/*
+		* 此处应为检测是否拥有对应SC，如果拥有则强制 status_calc_pc_
+		* 但是因为 rA官方的 SC刷新有BUG，此处等待克总修复，或其他……
+		* 大致执行代码如下
+		*
+		if (bl->type == BL_PC) {
+			for (auto& it : sd->statsadd_bonus3) {
+				if (sc->getSCE(it.type))
+					status_calc_pc_(BL_CAST(BL_PC,bl), opt);
+			}
+		}
+		*/
+#endif // Pandas_Bonus3_bStatusAddBonus
 
 #ifdef Pandas_Persistent_SetUnitData_For_Monster_StatusData
 	// 如果是魔物且魔物曾经被 setunitdata 设置过一些字段,

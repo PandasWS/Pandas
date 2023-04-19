@@ -613,6 +613,9 @@ enum _sp {
 	#ifdef Pandas_Bonus3_bFinalAddClass
 		SP_PANDAS_FINALADDCLASS,	// 调整器名称: bFinalAddClass / 说明: 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	#endif // Pandas_Bonus3_bFinalAddClass
+	#ifdef Pandas_Bonus3_bStatusAddBonus
+		SP_PANDAS_STATUSADDBONUS,	// 调整器名称: bStatusAddBonus / 说明: 当自己拥有 sc 状态的时候, 会增加 bonus 参数为 n / r,n / x,r,n 
+	#endif // Pandas_Bonus3_bStatusAddBonus
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses

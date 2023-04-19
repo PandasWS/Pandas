@@ -365,3 +365,81 @@ bonus4 bStatusAddDamageRate,sc,n,r,bf;
 	- bonus bAbsorbDmgMaxHP,n;
 
 --------------------------------------------------------------
+
+bonus3 bStatusAddBonus,sc,bonus,n;
+
+当自己拥有 sc 状态的时候, 会增加 bonus 参数为 n [聽風]
+
+参数说明:
+	sc			SC 状态编号, 支持常量
+				例如: 天使之赐福状态的常量是 SC_BLESSING
+
+	bonus		bonus 效果调整器
+				例如: STR + n(bonus bStr,n;)的效果调整器是 bStr
+
+	n			增加的数值
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+使用范例:
+	//人物拥有 天使赐福状态时 额外增加 20点 STR
+	bonus3 bStatusAddBonus,SC_BLESSING,bStr,20;
+	
+注意事项:
+	本条效果调整器仅支持 bonus 类
+	且 n 参数只支持数值或常量
+
+--------------------------------------------------------------
+
+bonus4 bStatusAddBonus,sc,bonus,r,n;
+
+当自己拥有 sc 状态的时候, 会增加 bonus 参数为 r,n [聽風]
+
+参数说明:
+	sc			SC 状态编号, 支持常量
+				例如: 天使之赐福状态的常量是 SC_BLESSING
+
+	bonus		bonus2 效果调整器
+				例如: 治愈技能 sk 的治愈效果增加 n% (bonus2 bSkillHeal,sk,n;)的效果调整器是 bSkillHeal
+
+	r			bonus2中的 第一个 参数
+
+	n			增加的数值
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+使用范例:
+	//人物拥有 天使赐福状态时 额外增加 治愈术回复量 100% (治愈术技能ID为 28)
+	bonus4 bStatusAddBonus,SC_BLESSING,bSkillHeal,28,100;
+	
+注意事项:
+	本条效果调整器仅支持 bonus2 类
+	且 r,n 参数只支持数值或常量
+
+--------------------------------------------------------------
+
+bonus5 bStatusAddBonus,sc,bonus,x,r,n;
+
+当自己拥有 sc 状态的时候, 会增加 bonus 参数为 x,r,n [聽風]
+
+参数说明:
+	sc			SC 状态编号, 支持常量
+				例如: 天使之赐福状态的常量是 SC_BLESSING
+
+	bonus		bonus3 效果调整器
+				例如: 攻击时有 n/10% 的机率自动咏唱 y 级技能 sk (bonus3 bAutoSpell,sk,y,n;)的效果调整器是 bAutoSpell
+
+	x			bonus3中的 第一个 参数
+	
+	r			bonus3中的 第二个 参数
+
+	n			增加的数值
+				可被叠加, 支持负数, 若传递负数则表示扣减.
+
+使用范例:
+	//人物拥有 天使赐福状态时 额外增加 普通攻击 10% 自动念咒 火箭术 10级 (火箭术技能ID为 19)
+	bonus5 bStatusAddBonus,SC_BLESSING,bAutoSpell,19,10,100;
+	
+注意事项:
+	本条效果调整器仅支持 bonus3 类
+	且 x,r,n 参数只支持数值或常量
+
+--------------------------------------------------------------
