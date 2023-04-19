@@ -37,6 +37,9 @@
 #include "pc.hpp"
 #include "pet.hpp"
 #include "script.hpp" // script_config
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+#include "achievement.hpp"
+#endif // Pandas_ScriptCommand_NpcHideCondition
 
 #ifdef Pandas_NpcExpress_UNIT_KILL
 #include "mapreg.hpp"
@@ -2596,6 +2599,12 @@ int npc_click(map_session_data* sd, struct npc_data* nd)
 	if(!nd) return 1;
 	if ((nd = npc_checknear(sd,&nd->bl)) == NULL)
 		return 1;
+
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+	if (!npc_hidecondition_check(sd, &nd->bl))
+		return 1;
+#endif // Pandas_ScriptCommand_NpcHideCondition
+
 	//Hidden/Disabled npc.
 	if (nd->class_ < 0 || nd->sc.option&(OPTION_INVISIBLE|OPTION_HIDE))
 		return 1;
@@ -7781,3 +7790,20 @@ bool npc_change_title_event(map_session_data* sd, uint32 title_id, int mode) {
 }
 #endif // Pandas_Character_Title_Controller
 
+
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+bool npc_hidecondition_check(map_session_data* sd, struct block_list* bl) {
+	struct npc_data* nd = ((TBL_NPC*)bl);
+
+	for (int i = 0; i < nd->HideConditionList.size(); i++) {
+		if (!nd || nd->HideConditionList.empty())
+			continue;
+		for (auto& data : nd->HideConditionList) {
+			if (achievement_check_condition(data->condition, sd))
+				return false;
+		}
+	}
+
+	return true;
+}
+#endif // Pandas_ScriptCommand_NpcHideCondition

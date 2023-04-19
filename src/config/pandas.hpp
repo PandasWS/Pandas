@@ -2206,6 +2206,10 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 让NPC根据条件决定是否对当前玩家不可见 [聽風]
+	// 用法: npchidecondition "<NPC名称>","<条件>";
+	#define Pandas_ScriptCommand_NpcHideCondition
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

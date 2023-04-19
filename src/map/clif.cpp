@@ -5398,6 +5398,11 @@ void clif_getareachar_unit( map_session_data* sd,struct block_list *bl ){
 	bool option = false;
 	unsigned int option_val = 0;
 
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+	if ( bl->type == BL_NPC && !npc_hidecondition_check(sd, bl) )
+		return;
+#endif // Pandas_ScriptCommand_NpcHideCondition
+
 	vd = status_get_viewdata(bl);
 	if (!vd || vd->class_ == JT_INVISIBLE)
 		return;

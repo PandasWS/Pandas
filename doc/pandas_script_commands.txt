@@ -3379,3 +3379,46 @@ NPC名称:
 	才能看到查询到那张地图的 BOSS 魔物信息.
 
 --------------------------------------------------------------
+
+*npchidecondition "<NPC名称>","<条件>";
+
+让NPC根据条件决定是否对当前玩家不可见 [聽風]
+
+NPC名称:
+	你可以指定 NPC 的名称, 或者用 strnpcinfo(0) 获取当前 NPC 的名称.
+
+条件:
+	类似于 if 命令中的任何表达式（意思就是if里面怎么写，条件就怎么写）。
+
+返回值:
+	该指令无论成功与否, 都不会有返回值
+
+用法演示:
+	OnInit:
+		npchidecondition(strnpcinfo(0), "npcview == 1 && countitem(501) >= 1");
+		end;
+	
+	解析：
+		NPC默认对所有玩家可见，指定NPC加上上述指令后，只要玩家 npcview 等于 1 且 红色药水 大于等于 1个
+		该NPC将对玩家不可见，如果在点击NPC对话后才达成需求条件，玩家需离开NPC可视范围再回来才会隐藏，
+		如果需要达成条件的同时对玩家隐藏，请使用cloakonnpc指令。
+		关于 cloakonnpc指令 ，cloakonnpc为临时隐藏NPC，玩家对目标NPC为暂时不可见，只要过图/重登，玩家依旧对该NPC可见
+	
+完整例子：
+
+prontera,151,90,4	script	Pandas系统测试	123,{
+	mes "你好啊";
+	mes "如果你身上有的话红色药水";
+	mes "我就不会见你！";
+	close2;
+	if ( countitem(501) ) {
+		npcview = 1;
+		cloakonnpc strnpcinfo(0),getcharid(0);
+	}
+	end;
+	
+OnInit:
+	npchidecondition(strnpcinfo(0), "npcview == 1 && countitem(501) >= 1"); 
+	end;
+}
+--------------------------------------------------------------
