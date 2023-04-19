@@ -140,6 +140,19 @@ struct s_questinfo {
 	}
 };
 
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+struct s_npchidecondition {
+	std::string variable;
+	struct script_code* condition;
+
+	~s_npchidecondition() {
+		if (this->condition != nullptr) {
+			script_free_code(this->condition);
+		}
+	}
+};
+#endif // Pandas_ScriptCommand_NpcHideCondition
+
 #ifdef Pandas_Redeclaration_Struct_Event_Data
 struct event_data {
 	struct npc_data* nd;
@@ -258,6 +271,11 @@ struct npc_data {
 #ifdef Pandas_Struct_Unit_CommonData
 	struct s_unit_common_data ucd;
 #endif // Pandas_Struct_Unit_CommonData
+
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+	std::vector<std::shared_ptr<s_npchidecondition>> HideConditionList;
+#endif // Pandas_ScriptCommand_NpcHideCondition
+
 };
 
 struct eri;
@@ -2701,4 +2719,7 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
 bool npc_change_title_event(map_session_data* sd, uint32 title_id, int mode);
 #endif // Pandas_Character_Title_Controller
 
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+bool npc_hidecondition_check(map_session_data* sd, struct block_list* bl);
+#endif // Pandas_ScriptCommand_NpcHideCondition
 #endif /* NPC_HPP */

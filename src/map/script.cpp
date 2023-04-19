@@ -32913,6 +32913,54 @@ BUILDIN_FUNC(whodropitem) {
 }
 #endif // Pandas_ScriptCommand_WhoDropItem
 
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+/* ===========================================================
+ * 指令: npchidecondition
+ * 描述: 让NPC根据条件决定是否对当前玩家不可见 [聽風]
+ * 用法: npchidecondition "<NPC名称>","<条件>";
+ * 返回: 无返回值
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(npchidecondition) {
+	const char* npc_name = script_getstr(st, 2);
+
+	struct npc_data* nd = npc_name2id(npc_name);
+
+	if (!nd) {
+		ShowError("npchidecondition: 目标不是NPC.\n");
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct script_code* script = nullptr;
+
+	if (script_hasdata(st, 3)) {
+		const char* str = script_getstr(st, 3);
+
+		if (str) {
+			std::string condition(str);
+
+			if (condition.find("achievement_condition") == std::string::npos)
+				condition = "achievement_condition( " + condition + " );";
+
+			script = parse_script(condition.c_str(), "npchideconditionparsing", 0, SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+			if (!script) {
+				st->state = END;
+				return SCRIPT_CMD_FAILURE;
+			}
+		}
+	}
+
+	std::shared_ptr<s_npchidecondition> data = std::make_shared<s_npchidecondition>();
+
+	data->variable = npc_name;
+	data->condition = script;
+
+	nd->HideConditionList.push_back(data);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_NpcHideCondition
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -33900,6 +33948,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+#ifdef Pandas_ScriptCommand_NpcHideCondition
+	BUILDIN_DEF(npchidecondition,"ss"),						// 让NPC根据条件决定是否对当前玩家可见 [聽風]
+#endif // Pandas_ScriptCommand_NpcHideCondition
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include "../custom/script_def.inc"
