@@ -2202,6 +2202,10 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否启用 setnpcdistance 脚本指令 [聽風]
+	// 设置玩家必须靠近NPC多少格之内才可以点击
+	#define Pandas_ScriptCommand_SetNpcDistance
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

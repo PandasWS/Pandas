@@ -2596,6 +2596,12 @@ int npc_click(map_session_data* sd, struct npc_data* nd)
 	if(!nd) return 1;
 	if ((nd = npc_checknear(sd,&nd->bl)) == NULL)
 		return 1;
+
+#ifdef Pandas_ScriptCommand_SetNpcDistance
+	if (!npc_distance_check(sd, &nd->bl))
+		return 1;
+#endif // Pandas_ScriptCommand_SetNpcDistance
+
 	//Hidden/Disabled npc.
 	if (nd->class_ < 0 || nd->sc.option&(OPTION_INVISIBLE|OPTION_HIDE))
 		return 1;
@@ -7781,3 +7787,21 @@ bool npc_change_title_event(map_session_data* sd, uint32 title_id, int mode) {
 }
 #endif // Pandas_Character_Title_Controller
 
+#ifdef Pandas_ScriptCommand_SetNpcDistance
+bool npc_distance_check(map_session_data* sd, struct block_list* bl) {
+	struct npc_data* nd = ((TBL_NPC*)bl);
+	struct block_list* npcbl = &nd->bl;
+	struct block_list* pcbl = &sd->bl;
+
+	for (int i = 0; i < nd->NpcDistanceList.size(); i++) {
+		if (!nd || nd->NpcDistanceList.empty())
+			continue;
+		for (auto& data : nd->NpcDistanceList) {
+			if ( distance_xy(npcbl->x, npcbl->y, pcbl->x, pcbl->y) > data->num )
+				return false;
+		}
+	}
+
+	return true;
+}
+#endif // Pandas_ScriptCommand_SetNpcDistance
