@@ -5,8 +5,8 @@
 #ifndef WEB_UTILS_HPP
 #define WEB_UTILS_HPP
 
-#include "../config/pandas.hpp"	// Pandas_WebServer_Rewrite_Controller_HandlerFunc
-#include "../common/utf8.hpp"	// PandasUtf8::utf8ToAnsi, PandasUtf8::ansiToUtf8
+#include <config/pandas.hpp>	// Pandas_WebServer_Rewrite_Controller_HandlerFunc
+#include <common/utf8.hpp>	// PandasUtf8::utf8ToAnsi, PandasUtf8::ansiToUtf8
 
 #include <string>
 

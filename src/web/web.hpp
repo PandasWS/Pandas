@@ -7,13 +7,15 @@
 #include <string>
 #include <httplib.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/core.hpp" // CORE_ST_LAST
-#include "../common/mmo.hpp" // NAME_LENGTH,SEX_*
-#include "../common/timer.hpp"
-#include "../config/core.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/core.hpp> // CORE_ST_LAST
+#include <common/mmo.hpp> // NAME_LENGTH,SEX_*
+#include <common/timer.hpp>
+#include <config/core.hpp>
 
-#include "../common/utf8.hpp"
+#ifdef Pandas_WebServer_Database_EncodingAdaptive
+#include <common/utf8.hpp>
+#endif // Pandas_WebServer_Database_EncodingAdaptive
 
 #ifdef Pandas_WebServer_Database_EncodingAdaptive
 	// Utf8 to Ansi with Web Encoding

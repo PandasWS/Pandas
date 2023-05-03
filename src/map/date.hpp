@@ -4,8 +4,8 @@
 #ifndef DATE_HPP
 #define DATE_HPP
 
-#include "../common/cbasetypes.hpp"
-#include "../common/assistant.hpp" // 引入 Pandas 的辅助函数库 - 重定向 localtime 函数
+#include <common/cbasetypes.hpp>
+#include <common/assistant.hpp> // 引入 Pandas 的辅助函数库 - 重定向 localtime 函数
 
 enum e_month{
 	JANUARY = 1,

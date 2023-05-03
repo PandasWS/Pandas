@@ -8,10 +8,10 @@
 
 #include <boost/regex.hpp>
 
-#include "../common/strlib.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/assistant.hpp"
+#include <common/strlib.hpp>
+#include <common/nullpo.hpp>
+#include <common/showmsg.hpp>
+#include <common/assistant.hpp>
 
 #include "map.hpp"
 #include "pc.hpp"

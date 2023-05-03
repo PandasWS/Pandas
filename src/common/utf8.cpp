@@ -5,9 +5,9 @@
 
 #include "utf8.hpp"
 
-#include "../common/strlib.hpp"
-#include "../common/performance.hpp"
-#include "../common/assistant.hpp"
+#include <common/strlib.hpp>
+#include <common/performance.hpp>
+#include <common/assistant.hpp>
 
 #undef fopen
 #undef fgets

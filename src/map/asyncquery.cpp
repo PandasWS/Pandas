@@ -3,9 +3,9 @@
 #include "map.hpp"
 #include "log.hpp"
 
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/future.hpp"
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/future.hpp>
 
 #include <thread>
 

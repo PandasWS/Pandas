@@ -4,7 +4,7 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#include "../config/pandas.hpp"
+#include <config/pandas.hpp>
 
 #include <string>
 #include <vector>

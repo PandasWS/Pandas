@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../common/mmo.hpp"
-#include "../common/cbasetypes.hpp"
-#include "../config/pandas.hpp"
+#include <common/mmo.hpp>
+#include <common/cbasetypes.hpp>
+#include <config/pandas.hpp>
 
 #include <map>
 #include <memory>

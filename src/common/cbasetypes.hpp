@@ -4,7 +4,7 @@
 #ifndef CBASETYPES_HPP
 #define CBASETYPES_HPP
 
-#include "../config/pandas.hpp"
+#include <config/pandas.hpp>
 
 /*              +--------+-----------+--------+---------+
  *              | ILP32  |   LP64    |  ILP64 | (LL)P64 |

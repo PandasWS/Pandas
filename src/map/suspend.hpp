@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../common/cbasetypes.hpp"
-#include "../common/db.hpp"
-#include "../common/timer.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/db.hpp>
+#include <common/timer.hpp>
 
 #ifdef Pandas_Player_Suspend_System
 class map_session_data;
