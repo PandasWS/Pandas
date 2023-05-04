@@ -7,8 +7,8 @@
 #include "itemdb.hpp"
 #include "itemprops.hpp"
 
-#include "../common/nullpo.hpp"
-#include "../common/utils.hpp"
+#include <common/nullpo.hpp>
+#include <common/utils.hpp>
 
 #ifdef Pandas_Item_Amulet_System
 

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "../config/pandas.hpp"
-#include "../common/utf8.hpp"
+#include <config/pandas.hpp>
+#include <common/utf8.hpp>
 
 #ifdef Pandas_Support_UTF8BOM_Files
 	#define fopen(FNAME, MODE) PandasUtf8::fopen(FNAME, MODE)

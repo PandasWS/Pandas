@@ -13,11 +13,11 @@
 // 熊猫模拟器定义的部分头文件 - 开始
 // -----------------------------------------------------------------
 
-#include "../config/pandas.hpp"
+#include <config/pandas.hpp>
 
-#include "../common/assistant.hpp"
-#include "../common/performance.hpp"
-#include "../common/utf8_defines.hpp"
+#include <common/assistant.hpp>
+#include <common/performance.hpp>
+#include <common/utf8_defines.hpp>
 
 // -----------------------------------------------------------------
 // 熊猫模拟器定义的部分头文件 - 结束

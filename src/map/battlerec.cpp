@@ -10,8 +10,8 @@
 #include "elemental.hpp"
 #include "status.hpp"
 
-#include "../common/utilities.hpp"
-#include "../common/nullpo.hpp"
+#include <common/utilities.hpp>
+#include <common/nullpo.hpp>
 
 //************************************
 // Method:      batrec_key

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "../common/sql.hpp"
-#include "../common/future.hpp"
+#include <common/sql.hpp>
+#include <common/future.hpp>
 #include <vector>
 #include <string>
 #include <functional>

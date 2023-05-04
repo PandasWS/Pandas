@@ -7,7 +7,7 @@
 #include "showmsg.hpp"
 #include "cbasetypes.hpp"
 
-#include "../config/pandas.hpp"
+#include <config/pandas.hpp>
 
 #include <stdio.h>
 #include <string>	// std::string

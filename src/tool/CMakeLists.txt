@@ -59,7 +59,8 @@ if( BUILD_MAPCACHE )
 	# 设置包含目录
 	# 此处的 ${ZLIB_INCLUDE_DIRS} 是 zlib 依赖项目的包含目录
 	# 此处的 ${COMMON_MINI_INCLUDE_DIRS} 是 common 依赖项目的包含目录
-	set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${COMMON_MINI_INCLUDE_DIRS} )
+	# 此处的 ${RA_INCLUDE_DIRS} 内容来自 src/CMakeLists.txt 中的定义
+	set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${COMMON_MINI_INCLUDE_DIRS} ${RA_INCLUDE_DIRS} )
 
 	# 设置宏定义
 	# 此处的 $(COMMON_MINI_DEFINITIONS) 内容来自 src/common/CMakeLists.txt 中的定义

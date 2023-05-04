@@ -5,7 +5,7 @@
 
 #include "status.hpp"
 
-#include "../common/cbasetypes.hpp"
+#include <common/cbasetypes.hpp>
 
 #ifdef Pandas_Item_Amulet_System
 

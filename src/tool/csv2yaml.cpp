@@ -6,7 +6,7 @@
 #include <math.h>
 
 #ifdef Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
-#include "../common/assistant.hpp"
+#include <common/assistant.hpp>
 #endif // Pandas_Fix_Csv2Yaml_Extra_Slashes_In_The_Path
 
 using namespace rathena::tool_csv2yaml;

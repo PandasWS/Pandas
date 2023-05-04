@@ -2269,6 +2269,9 @@
 	export_constant(SC_BEEF_RIB_STEW);
 	export_constant(SC_PORK_RIB_STEW);
 	export_constant(SC_WEAPONBREAKER);
+	export_constant(SC_TOXIN_OF_MANDARA);
+	export_constant(SC_GOLDENE_TONE);
+	export_constant(SC_TEMPERING);
 
 #ifdef RENEWAL
 	export_constant(SC_EXTREMITYFIST2);
@@ -7230,6 +7233,7 @@
 	export_constant(IG_CLASS_SHADOW_SD_CUBE);
 	export_constant(IG_CLASS_SHADOW_PD_CUBE);
 	export_constant(IG_CLASS_SHADOW_EA_CUBE);
+	export_constant(IG_ENCHANT_STONE_BOX30);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -10760,6 +10764,10 @@
 	export_constant(CPC_NAME);
 	export_constant(CPC_CHAR);
 	export_constant(CPC_ACCOUNT);
+
+	/* instance_warpall flags */
+	export_constant(IWA_NONE);
+	export_constant(IWA_NOTDEAD);
 
 	/* skill hit */
 	export_constant(DMG_SINGLE);
