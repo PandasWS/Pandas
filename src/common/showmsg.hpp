@@ -5,7 +5,7 @@
 #define SHOWMSG_HPP
 
 #include <config/pandas.hpp>
-#include "../../3rdparty/libconfig/libconfig.h"
+#include <libconfig.h>
 
 #ifdef Pandas_Console_Translate
 #include <string>

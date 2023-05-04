@@ -2923,7 +2923,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 					}
 				}
 				if(zeny) // zeny from mobs [Valaris]
-					pc_getzeny(tmpsd[i], zeny, LOG_TYPE_PICKDROP_MONSTER, NULL);
+					pc_getzeny(tmpsd[i], zeny, LOG_TYPE_PICKDROP_MONSTER);
 			}
 
 			if( md->get_bosstype() == BOSSTYPE_MVP )
@@ -3071,7 +3071,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 			if( sd->bonus.get_zeny_num && rnd()%100 < sd->bonus.get_zeny_rate ) {
 				i = sd->bonus.get_zeny_num > 0 ? sd->bonus.get_zeny_num : -md->level * sd->bonus.get_zeny_num;
 				if (!i) i = 1;
-				pc_getzeny(sd, 1+rnd()%i, LOG_TYPE_PICKDROP_MONSTER, NULL);
+				pc_getzeny(sd, 1+rnd()%i, LOG_TYPE_PICKDROP_MONSTER);
 			}
 		}
 
@@ -5597,7 +5597,7 @@ static int mob_read_sqldb(void)
 
 		// process rows one by one
 		while( SQL_SUCCESS == Sql_NextRow(mmysql_handle) ) {
-#ifdef DEBUG
+#ifdef DETAILED_LOADING_OUTPUT
 			ShowStatus("Loading [%" PRIu64 "/%" PRIu64 "] entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++rows, total_rows, mob_db_name[fi]);
 #endif
 			std::vector<std::string> data = {};
