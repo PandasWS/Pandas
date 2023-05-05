@@ -32998,6 +32998,38 @@ BUILDIN_FUNC(whodropitem) {
 }
 #endif // Pandas_ScriptCommand_WhoDropItem
 
+#ifdef Pandas_ScriptCommand_SetNpcDistance
+/* ===========================================================
+ * 指令: setnpcdistance
+ * 描述: 设置玩家必须靠近NPC多少格之内才可以点击
+ * 用法: setnpcdistance <距离>;
+ * 返回: 无返回值
+ * 作者: 聽風
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(setnpcdistance) {
+	TBL_NPC* nd;
+	int num;
+	char* npc_name = NULL;
+
+	nd = map_id2nd(st->oid);
+
+	if (!nd) {
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	npc_name = aStrdup(nd->name);
+	num = script_getnum(st, 2);
+
+	std::shared_ptr<s_setnpcdistance> data = std::make_shared<s_setnpcdistance>();
+
+	data->variable = npc_name;
+	data->num = num;
+
+	nd->NpcDistanceList.push_back(data);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+#endif // Pandas_ScriptCommand_SetNpcDistance
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -33986,6 +34018,9 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+#ifdef Pandas_ScriptCommand_SetNpcDistance
+	BUILDIN_DEF(setnpcdistance,"i"),						// 设置玩家必须靠近NPC多少格之内才可以点击 [聽風]
+#endif // Pandas_ScriptCommand_SetNpcDistance
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include <custom/script_def.inc>
