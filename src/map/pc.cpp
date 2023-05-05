@@ -1339,6 +1339,10 @@ void pc_makesavestatus(map_session_data *sd) {
 #else
 	sd->status.option = sd->sc.option&(OPTION_INVISIBLE|OPTION_CART|OPTION_FALCON|OPTION_RIDING|OPTION_DRAGON|OPTION_WUG|OPTION_WUGRIDER|OPTION_MADOGEAR);
 #endif
+
+	// Mark last point as not instance related by default
+	sd->status.last_point_instanceid = 0;
+
 	if (sd->sc.getSCE(SC_JAILED)) { //When Jailed, do not move last point.
 		if(pc_isdead(sd)){
 			pc_setrestartvalue(sd, 0);
@@ -1380,12 +1384,22 @@ void pc_makesavestatus(map_session_data *sd) {
 				sd->status.last_point.x = sd->status.save_point.x;
 				sd->status.last_point.y = sd->status.save_point.y;
 			}
-		// If the user is on a instance map, we return him to his save point
+		// If the user is on a instance map, special handling is needed
 		}else if( mapdata->instance_id ){
-			// Return the user to his save point
-			safestrncpy( sd->status.last_point.map, sd->status.save_point.map, sizeof( sd->status.last_point.map ) );
-			sd->status.last_point.x = sd->status.save_point.x;
-			sd->status.last_point.y = sd->status.save_point.y;
+			if( battle_config.instance_allow_reconnect ){
+				// Store the original mapname
+				struct map_data* mapdata_source = map_getmapdata( mapdata->instance_src_map );
+
+				mapindex_getmapname( mapindex_id2name( mapdata_source->index ), sd->status.last_point.map );
+				sd->status.last_point.x = sd->bl.x;
+				sd->status.last_point.y = sd->bl.y;
+				sd->status.last_point_instanceid = mapdata->instance_id;
+			}else{
+				// Return the user to his save point
+				safestrncpy( sd->status.last_point.map, sd->status.save_point.map, sizeof( sd->status.last_point.map ) );
+				sd->status.last_point.x = sd->status.save_point.x;
+				sd->status.last_point.y = sd->status.save_point.y;
+			}
 		}else{
 			// Save normally
 			mapindex_getmapname( mapindex_id2name( sd->mapindex ), sd->status.last_point.map );
@@ -1930,6 +1944,106 @@ uint8 pc_isequip(map_session_data *sd,int n)
 	return ITEM_EQUIP_ACK_OK;
 }
 
+/**
+ * Performs some special modifications to a player's last point location,
+ * if the map has a nosave mapflag or if the map was an instance.
+ * @param sd: Player data
+ * @return True if the player should be returned to his savepoint or false if not
+ */
+bool pc_lastpoint_special( map_session_data& sd ){
+	int16 mapid = map_mapname2mapid( sd.status.last_point.map );
+
+	// Should not happen because otherwise the char-server would have sent the player to another map-server
+	if( mapid < 0 ){
+		// Return the player to his savepoint
+		return true;
+	}
+
+	struct map_data* mapdata = map_getmapdata( mapid );
+
+	if( mapdata == nullptr ){
+		// Return the player to his savepoint
+		return true;
+	}
+
+	// Maybe since the player's logout the nosave mapflag was added to the map
+	if( mapdata->flag[MF_NOSAVE] ){
+		// The map has a specific return point
+		if( mapdata->save.map ){
+			safestrncpy( sd.status.last_point.map, mapindex_id2name( mapdata->save.map ), sizeof( sd.status.last_point.map ) );
+			sd.status.last_point.x = mapdata->save.x;
+			sd.status.last_point.y = mapdata->save.y;
+			return false;
+		}else{
+			// Return the user to his save point
+			return true;
+		}
+	}
+
+	// Check if the last point was an instance
+	if( sd.status.last_point_instanceid == 0 ){
+		// Nothing to do
+		return false;
+	}
+
+	// Check if returning to the instance is allowed in general
+	if( !battle_config.instance_allow_reconnect ){
+		// Return the player to his savepoint
+		return true;
+	}
+
+	std::shared_ptr<s_instance_data> instance_data = util::umap_find( instances, sd.status.last_point_instanceid );
+
+	if( instance_data == nullptr ){
+		// Instance does not exist anymore, return the player to his savepoint
+		return true;
+	}
+
+	switch( instance_data->mode ){
+		case IM_NONE:
+			// Cannot validate
+			break;
+		case IM_CHAR:
+			if( sd.status.char_id != instance_data->owner_id ){
+				// It is a character bound instance and the player is not the owner, return the player to his savepoint
+				return true;
+			}
+			break;
+		case IM_PARTY:
+			if( sd.status.party_id != instance_data->owner_id ){
+				// It is a party bound instance and the player is not in the party, return the player to his savepoint
+				return true;
+			}
+			break;
+		case IM_GUILD:
+			if( sd.status.guild_id != instance_data->owner_id ){
+				// It is a guild bound instance and the player is not in the guild, return the player to his savepoint
+				return true;
+			}
+			break;
+		case IM_CLAN:
+			if( sd.status.clan_id != instance_data->owner_id ){
+				// It is a clan bound instance and the player is not in the clan, return the player to his savepoint
+				return true;
+			}
+			break;
+	}
+
+	int16 imapid = instance_mapid( mapid, sd.status.last_point_instanceid );
+
+	if( imapid < 0 ){
+		// Instance does not contain this map anymore, return the player to his savepoint
+		return true;
+	}
+
+	// Overwrite the stored "source mapname" with the real mapname
+	instance_generate_mapname( mapid, sd.status.last_point_instanceid, sd.status.last_point.map );
+	// X/Y coordinates are already correct and do not need to be modified
+
+	// Dont warp the player back to his savepoint
+	return false;
+}
+
 /*==========================================
  * No problem with the session id
  * set the status that has been sent from char server
@@ -2069,6 +2183,14 @@ bool pc_authok(map_session_data *sd, uint32 login_id2, time_t expiration_time, i
 	sd->vars_dirty = false;
 	sd->vars_ok = false;
 	sd->vars_received = 0x0;
+
+	// Check if the player's last point requires special handling and if conditions apply to return the player to his savepoint
+	if( pc_lastpoint_special( *sd ) ){
+		// The player should be warped back to his savepoint
+		safestrncpy( sd->status.last_point.map, sd->status.save_point.map, sizeof( sd->status.last_point.map ) );
+		sd->status.last_point.x = sd->status.save_point.x;
+		sd->status.last_point.y = sd->status.save_point.y;
+	}
 
 	//warp player
 	enum e_setpos setpos_result = pc_setpos( sd, mapindex_name2id( sd->status.last_point.map ), sd->status.last_point.x, sd->status.last_point.y, CLR_OUTSIGHT );
@@ -12772,6 +12894,8 @@ bool pc_equipitem(map_session_data *sd,short n,int req_pos,bool equipswitch, boo
 
 	//OnEquip script [Skotlex]
 	if (id) {
+		current_equip_item_index = n;
+		current_equip_card_id = 0;
 		//only run the script if item isn't restricted
 		if (id->equip_script && (pc_has_permission(sd,PC_PERM_USE_ALL_EQUIPMENT) || !itemdb_isNoEquip(id,sd->bl.m)))
 			run_script(id->equip_script,0,sd->bl.id,fake_nd->bl.id);
@@ -12781,15 +12905,18 @@ bool pc_equipitem(map_session_data *sd,short n,int req_pos,bool equipswitch, boo
 			for( i = 0; i < MAX_SLOTS; i++ ) {
 				if (!sd->inventory.u.items_inventory[n].card[i])
 					continue;
-
 				std::shared_ptr<item_data> data = item_db.find(sd->inventory.u.items_inventory[n].card[i]);
 
 				if ( data != nullptr ) {
-					if (data->equip_script && (pc_has_permission(sd,PC_PERM_USE_ALL_EQUIPMENT) || !itemdb_isNoEquip(data.get(), sd->bl.m)))
+					if (data->equip_script && (pc_has_permission(sd,PC_PERM_USE_ALL_EQUIPMENT) || !itemdb_isNoEquip(data.get(), sd->bl.m))) {
+						current_equip_card_id = sd->inventory.u.items_inventory[n].card[i];
 						run_script(data->equip_script,0,sd->bl.id,fake_nd->bl.id);
+					}
 				}
+				current_equip_card_id = 0;
 			}
 		}
+		current_equip_item_index = -1;
 	}
 	sd->npc_item_flag = iflag;
 
@@ -12877,6 +13004,8 @@ static void pc_unequipitem_sub(map_session_data *sd, int n, int flag) {
 
 	//OnUnEquip script [Skotlex]
 	if (sd->inventory_data[n]) {
+		current_equip_item_index = n;
+		current_equip_card_id = 0;
 		if (sd->inventory_data[n]->unequip_script)
 			run_script(sd->inventory_data[n]->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
 		if (itemdb_isspecial(sd->inventory.u.items_inventory[n].card[0]))
@@ -12889,12 +13018,15 @@ static void pc_unequipitem_sub(map_session_data *sd, int n, int flag) {
 				std::shared_ptr<item_data> data = item_db.find(sd->inventory.u.items_inventory[n].card[i]);
 
 				if (data != nullptr) {
-					if (data->unequip_script)
+					if (data->unequip_script) {
+						current_equip_card_id = sd->inventory.u.items_inventory[n].card[i];
 						run_script(data->unequip_script, 0, sd->bl.id, fake_nd->bl.id);
+					}
 				}
-
+				current_equip_card_id = 0;
 			}
 		}
+		current_equip_item_index = -1;
 	}
 
 	sd->npc_item_flag = iflag;

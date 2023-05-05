@@ -4479,8 +4479,11 @@ int run_func(struct script_state *st)
 		}
 #endif // Pandas_ScriptEngine_Express
 
-		if (str_data[func].func(st) == SCRIPT_CMD_FAILURE) //Report error
+		if (str_data[func].func(st) == SCRIPT_CMD_FAILURE) {
+			//Report error
+			ShowWarning("Script command '%s' returned failure.\n", get_str(func));
 			script_reportsrc(st);
+		}
 	} else {
 		ShowError("script:run_func: '%s' (id=%d type=%s) has no C function. please report this!!!\n", get_str(func), func, script_op2name(str_data[func].type));
 		script_reportsrc(st);
@@ -19501,7 +19504,7 @@ BUILDIN_FUNC(npcshopdelitem)
 		ARR_FIND( 0, size, n, nd->u.shop.shop_item[n].nameid == nameid );
 		if( n < size ) {
 			if (n+1 != size)
-				memmove(&nd->u.shop.shop_item[n], &nd->u.shop.shop_item[n+1], sizeof(nd->u.shop.shop_item[0])*(size-n));
+				memmove(&nd->u.shop.shop_item[n], &nd->u.shop.shop_item[n+1], sizeof(nd->u.shop.shop_item[0])*(size-(n + 1)));
 #if PACKETVER >= 20131223
 			if (nd->subtype == NPCTYPE_MARKETSHOP)
 				npc_market_delfromsql_(nd->exname, nameid, false);
@@ -21511,6 +21514,7 @@ BUILDIN_FUNC(unitskilluseid)
 	casttime = ( script_hasdata(st,6) ? script_getnum(st,6) : 0 );
 	bool cancel = ( script_hasdata(st,7) ? script_getnum(st,7) > 0 : skill_get_castcancel(skill_id) );
 	int msg_id = (script_hasdata(st, 8) ? script_getnum(st, 8) : 0);
+	bool ignore_range = (script_hasdata(st, 9) ? script_getnum(st, 9) > 0 : false);
 
 	if(script_rid2bl(2,bl)){
 		if (msg_id > 0) {
@@ -21548,7 +21552,7 @@ BUILDIN_FUNC(unitskilluseid)
 		}
 #endif // Pandas_NpcFilter_USE_SKILL
 
-		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
+		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel, ignore_range);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -21585,6 +21589,7 @@ BUILDIN_FUNC(unitskillusepos)
 	casttime = ( script_hasdata(st,7) ? script_getnum(st,7) : 0 );
 	bool cancel = ( script_hasdata(st,8) ? script_getnum(st,8) > 0 : skill_get_castcancel(skill_id) );
 	int msg_id = (script_hasdata(st, 9) ? script_getnum(st, 9) : 0);
+	bool ignore_range = (script_hasdata(st, 10) ? script_getnum(st, 10) > 0 : false);
 
 	if(script_rid2bl(2,bl)){
 		if (msg_id > 0) {
@@ -21622,7 +21627,7 @@ BUILDIN_FUNC(unitskillusepos)
 		}
 #endif // Pandas_NpcFilter_USE_SKILL
 		
-		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
+		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel, ignore_range);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -22363,6 +22368,7 @@ BUILDIN_FUNC(erasequest)
 		script_reportsrc(st);
 		script_reportfunc(st);
 	}
+	pc_show_questinfo(sd); 
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -24540,9 +24546,9 @@ BUILDIN_FUNC(npcskill)
 		status_calc_npc(nd, SCO_NONE);
 
 	if (skill_get_inf(skill_id)&INF_GROUND_SKILL)
-		unit_skilluse_pos2(&nd->bl, sd->bl.x, sd->bl.y, skill_id, skill_level,0,0);
+		unit_skilluse_pos2(&nd->bl, sd->bl.x, sd->bl.y, skill_id, skill_level,0,0,true);
 	else
-		unit_skilluse_id2(&nd->bl, sd->bl.id, skill_id, skill_level,0,0);
+		unit_skilluse_id2(&nd->bl, sd->bl.id, skill_id, skill_level,0,0,true);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -33437,8 +33443,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(unitstopattack,"i"),
 	BUILDIN_DEF(unitstopwalk,"i?"),
 	BUILDIN_DEF(unittalk,"is?"),
-	BUILDIN_DEF(unitskilluseid,"ivi????"), // originally by Qamera [Celest]
-	BUILDIN_DEF(unitskillusepos,"iviii???"), // [Celest]
+	BUILDIN_DEF(unitskilluseid,"ivi?????"), // originally by Qamera [Celest]
+	BUILDIN_DEF(unitskillusepos,"iviii????"), // [Celest]
 // <--- [zBuffer] List of unit control commands
 	BUILDIN_DEF(sleep,"i"),
 	BUILDIN_DEF(sleep2,"i"),
