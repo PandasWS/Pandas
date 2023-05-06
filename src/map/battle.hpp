@@ -730,6 +730,7 @@ struct Battle_Config
 
 	int feature_stylist;
 	int feature_banking_state_enforce;
+	int instance_allow_reconnect;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
