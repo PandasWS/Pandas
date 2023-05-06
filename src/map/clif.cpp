@@ -2373,6 +2373,11 @@ void clif_changemapserver(map_session_data* sd, const char* map, int x, int y, u
 #if PACKETVER >= 20170315
 	memset(WFIFOP(fd, 28), 0, 128); // Unknown
 #endif
+#ifdef DEBUG
+	ShowDebug(
+		"Sending the client (%d %d.%d.%d.%d) to map-server with ip %d.%d.%d.%d and port %hu\n",
+		sd->status.account_id, CONVIP(session[fd]->client_addr), CONVIP(ip), port);
+#endif
 	WFIFOSET(fd,packet_len(cmd));
 }
 
@@ -24655,11 +24660,7 @@ void clif_enchantgrade_add( map_session_data& sd, uint16 index = UINT16_MAX, std
 
 	if( index < UINT16_MAX ){
 		p->index = client_index( index );
-		if( sd.inventory.u.items_inventory[index].refine >= gradeLevel->refine ){
-			p->success_chance = gradeLevel->chance / 100;
-		}else{
-			p->success_chance = 0;
-		}
+		p->success_chance = gradeLevel->chances[sd.inventory.u.items_inventory[index].refine] / 100;
 		p->blessing_info.id = client_nameid( gradeLevel->catalyst.item );
 		p->blessing_info.amount = gradeLevel->catalyst.amountPerStep;
 		p->blessing_info.max_blessing = gradeLevel->catalyst.maximumSteps;
@@ -24835,8 +24836,10 @@ void clif_parse_enchantgrade_start( int fd, map_session_data* sd ){
 		return;
 	}
 
-	// Not refined enough
-	if( sd->inventory.u.items_inventory[index].refine < enchantgradelevel->refine ){
+	uint16 totalChance = enchantgradelevel->chances[sd->inventory.u.items_inventory[index].refine];
+
+	// No chance to increase the enchantgrade
+	if( totalChance == 0 ){
 		return;
 	}
 
@@ -24852,7 +24855,6 @@ void clif_parse_enchantgrade_start( int fd, map_session_data* sd ){
 		return;
 	}
 
-	uint16 totalChance = enchantgradelevel->chance;
 	uint16 steps = min( p->blessing_amount, enchantgradelevel->catalyst.maximumSteps );
 	std::unordered_map<uint16, uint16> requiredItems;
 
