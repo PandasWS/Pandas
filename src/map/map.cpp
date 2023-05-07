@@ -4055,6 +4055,9 @@ int map_readallmaps (void)
 		char map_cache_decode_buffer[MAX_MAP_SIZE];
 
 #ifdef DETAILED_LOADING_OUTPUT
+#ifdef Pandas_Speedup_Loading_Map_Status_Restrictor
+		if (i % 10 == 0 || i == map_num)
+#endif // Pandas_Speedup_Loading_Map_Status_Restrictor
 		// show progress
 		ShowStatus("Loading maps [%i/%i]: %s" CL_CLL "\r", i, map_num, mapdata->name);
 #endif

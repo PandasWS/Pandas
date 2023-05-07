@@ -1176,6 +1176,19 @@
 	// 在 Release 模式下提速约 17.65% (1000ms -> 850ms)
 	#define Pandas_Speedup_Map_Read_From_Cache
 
+	// 在 Windows 环境下对加载地图时滚动输出的信息进行限流 [Sola丶小克]
+	// 好处在于极大的提升加载速度, 坏处在于类似 LeeStarter 等工具中打开地图服务器,
+	// 会发现加载地图时的信息是跳跃显示的, 但并不影响实际情况下的使用
+	// 
+	// 优化后性能表现参考信息
+	// VS2019 + Win32 启用 Pandas_Speedup_Map_Read_From_Cache 的情况下
+	// --------------------------------------------------------------
+	// 在 Debug 模式下提速约 64% (1250ms -> 760ms)
+	// 在 Release 模式下地图加载信息默认不再显示 (通过 DETAILED_LOADING_OUTPUT 控制)
+	#ifdef _WIN32
+		#define Pandas_Speedup_Loading_Map_Status_Restrictor
+	#endif // _WIN32
+
 	// 规避卸载 NPC 时的 npc_read_event_script 调用 [Sola丶小克]
 	// OnInit 调用了大量的 unloadnpc, 而每次调用都会触发 npc_read_event_script
 	// 
