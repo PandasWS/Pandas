@@ -22,6 +22,14 @@
 // 指定的 std 标准容器 x 是否不包含指定的 v 值 (不存在则返回 true)
 #define STD_NOT_EXISTS(x, v) (std::find(x.begin(), x.end(), v) == x.end())
 
+#ifdef _WIN32
+#define PATH_SEPARATOR "\\"
+#define WIDE_PATH_SEPARATOR L"\\"
+#else
+#define PATH_SEPARATOR "/"
+#define WIDE_PATH_SEPARATOR L"/"
+#endif // _WIN32
+
 void systemPause();
 bool isRegexMatched(const std::string& content, const std::string& patterns);
 std::string regexExtract(const std::string& content, const std::string& patterns, size_t extract_group, bool icase = true);
@@ -59,8 +67,8 @@ bool strIsNumber(const std::string& str);
 void standardizePathSep(std::string& path);
 void standardizePathSep(std::wstring& path);
 
-void ensurePathEndwithSep(std::string& path, std::string sep);
-void ensurePathEndwithSep(std::wstring& path, std::wstring sep);
+void ensurePathEndwithSep(std::string& path, const std::string& sep);
+void ensurePathEndwithSep(std::wstring& path, const std::wstring& sep);
 
 std::wstring strToWideStr(const std::string& s);
 std::string wideStrToStr(const std::wstring& ws);

@@ -35,12 +35,6 @@
 
 #include "processmutex.hpp"
 
-#ifdef _WIN32
-	const std::string pathSep = "\\";
-#else
-	const std::string pathSep = "/";
-#endif // _WIN32
-
 extern "C" int __isa_available;
 
 //************************************
@@ -132,13 +126,12 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 	if (!getExecuteFileDirectory(workDirectory)) {
 		return false;
 	}
-	ensurePathEndwithSep(workDirectory, pathSep);
 
 	std::string fromDirectory = workDirectory + fromImportDir;
 	std::string toDirectory = workDirectory + toImportDir;
 
-	ensurePathEndwithSep(fromDirectory, pathSep);
-	ensurePathEndwithSep(toDirectory, pathSep);
+	ensurePathEndwithSep(fromDirectory, PATH_SEPARATOR);
+	ensurePathEndwithSep(toDirectory, PATH_SEPARATOR);
 
 	standardizePathSep(fromDirectory);
 	standardizePathSep(toDirectory);
@@ -169,7 +162,7 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 		if (check_filepath(toFullPath.c_str()) != 3) continue;
 
 		std::string displayTargetPath = toImportDir;
-		ensurePathEndwithSep(displayTargetPath, pathSep);
+		ensurePathEndwithSep(displayTargetPath, PATH_SEPARATOR);
 		displayTargetPath = displayTargetPath + fdFileData.cFileName;
 		standardizePathSep(displayTargetPath);
 
@@ -201,7 +194,7 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 		if (check_filepath(toFullPath.c_str()) != 0) continue;
 
 		std::string displayTargetPath = toImportDir;
-		ensurePathEndwithSep(displayTargetPath, pathSep);
+		ensurePathEndwithSep(displayTargetPath, PATH_SEPARATOR);
 		displayTargetPath = displayTargetPath + dt->d_name;
 		standardizePathSep(displayTargetPath);
 
@@ -256,7 +249,7 @@ void deployImportDirectories() {
 
 //************************************
 // Method:      getExecuteFilepath
-// Description: 获取当前进程的文件路径 (暂时不支持 Windows 以外的系统平台)
+// Description: 获取当前进程的文件路径 (跨平台支持)
 // Parameter:   std::string & outFilepath
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/14 23:55
@@ -302,7 +295,7 @@ bool getExecuteFilepath(std::string& outFilepath) {
 
 //************************************
 // Method:      getExecuteFileDirectory
-// Description: 获取当前进程的所在目录
+// Description: 获取当前进程的所在目录 (返回的路径结尾包含路径分隔符)
 // Parameter:   std::string & outFileDirectory
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/14 23:55
@@ -314,13 +307,14 @@ bool getExecuteFileDirectory(std::string& outFileDirectory) {
 		return false;
 	}
 
-	std::size_t dwPos = filePath.rfind(pathSep);
+	std::size_t dwPos = filePath.rfind(PATH_SEPARATOR);
 	if (dwPos == std::string::npos) {
 		outFileDirectory = "";
 		return false;
 	}
 
 	outFileDirectory = filePath.substr(0, dwPos);
+	ensurePathEndwithSep(outFileDirectory, PATH_SEPARATOR);
 	return true;
 }
 
@@ -369,7 +363,7 @@ bool makeDirectories(const std::string& dirpath) {
 
 //************************************
 // Method:      ensureDirectories
-// Description: 确保给定的文件路径其对应的目录 (跨平台支持)
+// Description: 确保给定的文件路径其对应的目录存在 (跨平台支持)
 // Parameter:   const std::string & filepath 文件路径
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2021/1/12 00:02
@@ -707,13 +701,8 @@ bool strEndWith(std::wstring fullstring, std::wstring ending) {
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:24
 //************************************
 void standardizePathSep(std::string& path) {
-#ifdef _WIN32
-	char pathsep[] = "\\";
-#else
-	char pathsep[] = "/";
-#endif // _WIN32
-	strReplace(path, "/", pathsep);
-	strReplace(path, "\\", pathsep);
+	strReplace(path, "/", PATH_SEPARATOR);
+	strReplace(path, "\\", PATH_SEPARATOR);
 }
 
 //************************************
@@ -726,24 +715,19 @@ void standardizePathSep(std::string& path) {
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:24
 //************************************
 void standardizePathSep(std::wstring& path) {
-#ifdef _WIN32
-	wchar_t pathsep[] = L"\\";
-#else
-	wchar_t pathsep[] = L"/";
-#endif // _WIN32
-	strReplace(path, L"/", pathsep);
-	strReplace(path, L"\\", pathsep);
+	strReplace(path, L"/", WIDE_PATH_SEPARATOR);
+	strReplace(path, L"\\", WIDE_PATH_SEPARATOR);
 }
 
 //************************************
 // Method:      ensurePathEndwithSep
 // Description: 确保指定的 std::string 路径使用 sep 结尾
 // Parameter:   std::string & path
-// Parameter:   std::string sep
+// Parameter:   const std::string & sep
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2019/09/16 07:34
 //************************************
-void ensurePathEndwithSep(std::string& path, std::string sep) {
+void ensurePathEndwithSep(std::string& path, const std::string& sep) {
 	if (!(strEndWith(path, "\\") || strEndWith(path, "/"))) {
 		path.append(sep);
 	}
@@ -753,11 +737,11 @@ void ensurePathEndwithSep(std::string& path, std::string sep) {
 // Method:      ensurePathEndwithSep
 // Description: 确保指定的 std::wstring 路径使用 sep 结尾
 // Parameter:   std::wstring & path
-// Parameter:   std::wstring sep
+// Parameter:   const std::wstring & sep
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2019/09/16 07:35
 //************************************
-void ensurePathEndwithSep(std::wstring& path, std::wstring sep) {
+void ensurePathEndwithSep(std::wstring& path, const std::wstring& sep) {
 	if (!(strEndWith(path, L"\\") || strEndWith(path, L"/"))) {
 		path.append(sep);
 	}

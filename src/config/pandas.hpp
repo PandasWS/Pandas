@@ -1286,6 +1286,9 @@
 	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
 	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 
+	// 调整 Yaml2sql 辅助工具在发布版本中的文件保存位置 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml2Sql_SaveFile_Location
+
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
 
