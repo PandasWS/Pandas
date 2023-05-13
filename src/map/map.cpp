@@ -4103,14 +4103,6 @@ void map_flags_init(void){
 		mapdata->skill_damage.clear();
 		mapdata->skill_duration.clear();
 		map_free_questinfo(mapdata);
-		
-// #ifdef Pandas_MapFlag_MobDroprate
-// 		map_setmapflag_param(i, MF_MOBDROPRATE, 1, 100);
-// #endif // Pandas_MapFlag_MobDroprate
-// 
-// #ifdef Pandas_MapFlag_MvpDroprate
-// 		map_setmapflag_param(i, MF_MVPDROPRATE, 1, 100);
-// #endif // Pandas_MapFlag_MvpDroprate
 
 		if (instance_start && i >= instance_start)
 			continue;
@@ -5284,8 +5276,8 @@ void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int index, int value)
 	// 此处需要根据 conf->args 中的 min 和 max 参数进行有效区间校验,
 	// 若处于无效区间则需要显示警告并且设置为默认值
 	if (value < conf->args[index].min || value > conf->args[index].max) {
-		ShowWarning("map_setmapflag_param: Invalid value %d for param %d of mapflag '%s' on map %s, defaulting to %d\n",
-			value, index + 1, conf->name, mapdata->name, conf->args[index].def_val);
+		ShowWarning("map_setmapflag_param: Attempt to assign %d to the %d parameter, but exceeds %d~%d range (Mapflag: %s | Mapname: %s), defaulting to %d\n",
+			value, index + 1, conf->args[index].min, conf->args[index].max, conf->name, mapdata->name, conf->args[index].def_val);
 		value = conf->args[index].def_val;
 	}
 
@@ -5694,19 +5686,23 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, pds_mapfla
 			map_setmapflag_param(m, mapflag, args->input);
 
 			if (conf->turn_off_default) {
-				// 如果 args->input 的所有值的内容与 conf->args 相同,
-				// 那么就不需要设置这个 flag
-				bool all_equal = true;
-				for (size_t i = 0; i < conf->args.size(); i++) {
-					if (args->input[i] != conf->args[i].def_val) {
-						all_equal = false;
-						break;
-					}
-				}
+				std::vector<int>* current_values = util::umap_find(mapdata->mapflag_values, mapflag);
 
-				if (all_equal) {
-					map_setmapflag_param_reset(m, mapflag);
-					status = false;
+				if (current_values) {
+					// 如果 args->input 的所有值的内容与 conf->args 相同,
+					// 那么就不需要设置这个 flag
+					bool all_equal = true;
+					for (size_t i = 0; i < conf->args.size(); i++) {
+						if ((*current_values)[i] != conf->args[i].def_val) {
+							all_equal = false;
+							break;
+						}
+					}
+
+					if (all_equal) {
+						map_setmapflag_param_reset(m, mapflag);
+						status = false;
+					}
 				}
 			}
 		}
