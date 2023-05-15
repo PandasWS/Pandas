@@ -482,7 +482,7 @@ bool elemental_skillnotok(uint16 skill_id, s_elemental_data *ed) {
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (ed && map_getmapflag(ed->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 0) & BL_ELEM) == BL_ELEM)
+		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 1) & BL_ELEM) == BL_ELEM)
 			return false;
 	}
 #endif // Pandas_MapFlag_NoSkill2

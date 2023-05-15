@@ -2758,7 +2758,7 @@ int status_calc_mob_(struct mob_data* md, uint8 opt)
 			pec_ushort amotion_origin = md->db->status.amotion;
 
 			if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
-				int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 0);
+				int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
 				if (val) {
 					val = 2000 - val * 10;
 					val = max(val, md->status.amotion);
@@ -2784,7 +2784,7 @@ int status_calc_mob_(struct mob_data* md, uint8 opt)
 		pec_ushort amotion_origin = md->db->status.amotion;
 
 		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
-			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 0);
+			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
 			if (val) {
 				val = 2000 - val * 10;
 				val = max(val, md->status.amotion);
@@ -6225,7 +6225,7 @@ void status_calc_bl_main(struct block_list *bl, std::bitset<SCB_MAX> flag)
 #ifdef Pandas_MapFlag_MaxASPD
 			// 根据地图标记重新计算人工生命体的 amotion 动画延迟时间
 			if (map_getmapflag(bl->m, MF_MAXASPD)) {
-				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 0);
+				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 1);
 				if (val) {
 					// 地图标记预期的延迟时间
 					// 延迟时间 = 2000 - 193(假设) * 10 = 2000 - 1930 = 70, 也就是延迟为 70 毫秒
@@ -6294,7 +6294,7 @@ void status_calc_bl_main(struct block_list *bl, std::bitset<SCB_MAX> flag)
 			pec_ushort amotion_origin = status->amotion;
 
 			if (bl->m != -1 && map_getmapflag(bl->m, MF_MAXASPD) && amotion_origin) {
-				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 0);
+				int val = map_getmapflag_param(bl->m, MF_MAXASPD, 1);
 				if (val) {
 					// 地图标记预期的延迟时间
 					// 延迟时间 = 2000 - 193(假设) * 10 = 2000 - 1930 = 70, 也就是延迟为 70 毫秒
