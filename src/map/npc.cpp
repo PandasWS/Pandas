@@ -4127,6 +4127,7 @@ void npc_loadsrcfiles() {
 #endif
 		npc_parsesrcfile(file.c_str());
 	}
+	int npc_total = npc_warp + npc_shop + npc_script;
 
 #ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
 	ShowInfo ("Done loading '" CL_WHITE "%d" CL_RESET "' NPCs:" CL_CLL "\n"
@@ -4136,8 +4137,7 @@ void npc_loadsrcfiles() {
 		"\t-'" CL_WHITE "%d" CL_RESET "' Spawn sets\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n",
-		npc_id - START_NPC_NUM, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
-
+		npc_total, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob);
 #else
 	performance_stop("loadingnpc");
 
@@ -4149,7 +4149,7 @@ void npc_loadsrcfiles() {
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Cached\n"
 		"\t-'" CL_WHITE "%d" CL_RESET "' Mobs Not Cached\n"
 		"\tThis operation took %" PRIu64 " milliseconds in total\n",
-		npc_id - START_NPC_NUM, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob,
+		npc_total, npc_warp, npc_shop, npc_script, npc_mob, npc_cache_mob, npc_delay_mob,
 		performance_get_milliseconds("loadingnpc")
 	);
 #endif // Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
