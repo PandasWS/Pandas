@@ -12179,6 +12179,8 @@ BUILDIN_FUNC(monster)
 	else
 		m = map_mapname2mapid(mapn);
 
+	TBL_MOB* md;
+
 	for(i = 0; i < amount; i++) { //not optimised
 #ifndef Pandas_ScriptCommand_BossMonster
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai);
@@ -12186,8 +12188,13 @@ BUILDIN_FUNC(monster)
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai, (!strcmp(script_getfuncname(st), "boss_monster")) ? 1 : 0);
 #endif // Pandas_ScriptCommand_BossMonster
 
-		if (mobid)
+		if (mobid > 0) {
+			md = map_id2md(mobid);
+			if (md)
+				md->next_walktime = INVALID_TIMER;
+
 			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
+		}
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -12300,11 +12307,18 @@ BUILDIN_FUNC(areamonster)
 	else
 		m = map_mapname2mapid(mapn);
 
+	TBL_MOB* md;
+
 	for(i = 0; i < amount; i++) { //not optimised
 		int mobid = mob_once_spawn_area(sd, m, x0, y0, x1, y1, str, class_, 1, event, size, ai);
 
-		if (mobid)
+		if (mobid > 0) {
+			md = map_id2md(mobid);
+			if (md)
+				md->next_walktime = INVALID_TIMER;
+
 			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
+		}
 	}
 
 	return SCRIPT_CMD_SUCCESS;
