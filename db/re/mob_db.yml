@@ -98562,7 +98562,6 @@ Body:
     Race: Formless
     RaceGroups:
       EP172ALPHA: true
-      EP172ALPHA: true
     Element: Neutral
     ElementLevel: 2
     WalkSpeed: 200
