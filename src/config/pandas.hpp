@@ -1022,6 +1022,9 @@
 	//
 	// 特别感谢 "HongShin" 指出此问题
 	#define Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+
+	// 修正启用 use_sql_db 之后终端加载信息出现来源数据表为 (null) 的问题 [Sola丶小克]
+	#define Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
 #endif // Pandas_Bugfix
 
 // ============================================================================

@@ -1596,6 +1596,8 @@ Body:
   Translation: "正在准备加载 '[{CL_WHITE}]%d[{CL_RESET}]' 张地图.\n"
 - Original: "Loading '[{CL_WHITE}]%[{PRIdPTR}][{CL_RESET}]' entries in '[{CL_WHITE}]%s[{CL_RESET}]'\n"
   Translation: "将读取 [{CL_WHITE}]%-5[{PRIdPTR}][{CL_RESET}] 组数据, 源于 '[{CL_WHITE}]%s[{CL_RESET}]'\n"
+- Original: "Loading '[{CL_WHITE}]%[{PRIu64}][{CL_RESET}]' entries in '[{CL_WHITE}]%s[{CL_RESET}]'\n"
+  Translation: "将读取 [{CL_WHITE}]%-5[{PRIu64}][{CL_RESET}] 组数据, 源于 '[{CL_WHITE}]%s[{CL_RESET}]'\n"
 - Original: "Loading '[{CL_WHITE}]%s[{CL_RESET}]'...[{CL_CLL}]\r"
   Translation: "正在加载 '[{CL_WHITE}]%s[{CL_RESET}]'...[{CL_CLL}]\r"
 - Original: "Loading Char Data ([{CL_BOLD}]%d[{CL_RESET}])\n"
