@@ -328,11 +328,11 @@ bool getExecuteFileDirectory(std::string& outFileDirectory) {
 bool isDirectoryExists(const std::string& path) {
 	try
 	{
-		boost::filesystem::path dirpath(path);
-		dirpath = dirpath.generic_path();
-		return boost::filesystem::is_directory(dirpath);
+		std::filesystem::path dirpath(path);
+		dirpath = dirpath.lexically_normal();
+		return std::filesystem::is_directory(dirpath);
 	}
-	catch (const boost::filesystem::filesystem_error &e)
+	catch (const std::filesystem::filesystem_error &e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -349,12 +349,12 @@ bool isDirectoryExists(const std::string& path) {
 bool makeDirectories(const std::string& dirpath) {
 	try
 	{
-		boost::filesystem::path path(dirpath);
-		path = path.generic_path();
+		std::filesystem::path path(dirpath);
+		path = path.lexically_normal();
 		if (isDirectoryExists(dirpath) || isFileExists(dirpath)) return true;
-		return boost::filesystem::create_directories(path);
+		return std::filesystem::create_directories(path);
 	}
-	catch (const boost::filesystem::filesystem_error &e)
+	catch (const std::filesystem::filesystem_error &e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -371,11 +371,11 @@ bool makeDirectories(const std::string& dirpath) {
 bool ensureDirectories(const std::string& filepath) {
 	try
 	{
-		boost::filesystem::path path(filepath);
-		path = path.generic_path().parent_path();
+		std::filesystem::path path(filepath);
+		path = path.lexically_normal().parent_path();
 		return makeDirectories(path.string());
 	}
-	catch (const boost::filesystem::filesystem_error& e)
+	catch (const std::filesystem::filesystem_error& e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -392,12 +392,12 @@ bool ensureDirectories(const std::string& filepath) {
 bool deleteDirectory(std::string path) {
 	try
 	{
-		boost::filesystem::path dirpath(path);
-		dirpath = dirpath.generic_path();
-		boost::filesystem::remove_all(dirpath);
+		std::filesystem::path dirpath(path);
+		dirpath = dirpath.lexically_normal();
+		std::filesystem::remove_all(dirpath);
 		return true;
 	}
-	catch (const boost::filesystem::filesystem_error &e)
+	catch (const std::filesystem::filesystem_error &e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -412,21 +412,21 @@ bool deleteDirectory(std::string path) {
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:21
 //************************************
-bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem::path &to) {
+bool copyDirectory(const std::filesystem::path &from, const std::filesystem::path &to) {
 	try
 	{
-		if (boost::filesystem::exists(to)) {
+		if (std::filesystem::exists(to)) {
 			throw std::runtime_error("The path "+ to.generic_string() + " is already exists.");
 		}
 
-		if (boost::filesystem::is_directory(from)) {
-			boost::filesystem::create_directories(to);
-			for (boost::filesystem::directory_entry& item : boost::filesystem::directory_iterator(from)) {
+		if (std::filesystem::is_directory(from)) {
+			std::filesystem::create_directories(to);
+			for (const auto& item : std::filesystem::directory_iterator(from)) {
 				copyDirectory(item.path(), to / item.path().filename());
 			}
 		}
-		else if (boost::filesystem::is_regular_file(from)) {
-			boost::filesystem::copy(from, to);
+		else if (std::filesystem::is_regular_file(from)) {
+			std::filesystem::copy(from, to);
 		}
 		else {
 			throw std::runtime_error("The path " + to.generic_string() + " is not directory or file.");
@@ -451,11 +451,11 @@ bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem:
 bool isFileExists(const std::string& path) {
 	try
 	{
-		boost::filesystem::path filepath(path);
-		filepath = filepath.generic_path();
-		return boost::filesystem::is_regular_file(filepath);
+		std::filesystem::path filepath(path);
+		filepath = filepath.lexically_normal();
+		return std::filesystem::is_regular_file(filepath);
 	}
-	catch (const boost::filesystem::filesystem_error& e)
+	catch (const std::filesystem::filesystem_error& e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -473,19 +473,19 @@ bool isFileExists(const std::string& path) {
 bool copyFile(const std::string& from, const std::string& to) {
 	try
 	{
-		boost::filesystem::path frompath(from);
-		frompath = frompath.generic_path();
+		std::filesystem::path frompath(from);
+		frompath = frompath.lexically_normal();
 
-		boost::filesystem::path topath(to);
-		topath = topath.generic_path();
+		std::filesystem::path topath(to);
+		topath = topath.lexically_normal();
 
-		boost::filesystem::copy_file(
+		std::filesystem::copy_file(
 			frompath, topath,
-			boost::filesystem::copy_option::overwrite_if_exists
+			std::filesystem::copy_options::overwrite_existing
 		);
 		return true;
 	}
-	catch (const boost::filesystem::filesystem_error&)
+	catch (const std::filesystem::filesystem_error&)
 	{
 		return false;
 	}
@@ -502,11 +502,11 @@ bool copyFile(const std::string& from, const std::string& to) {
 bool deleteFile(const std::string& path) {
 	try
 	{
-		boost::filesystem::path filepath(path);
-		filepath = filepath.generic_path();
-		return boost::filesystem::remove(filepath);
+		std::filesystem::path filepath(path);
+		filepath = filepath.lexically_normal();
+		return std::filesystem::remove(filepath);
 	}
-	catch (const boost::filesystem::filesystem_error&)
+	catch (const std::filesystem::filesystem_error&)
 	{
 		return false;
 	}

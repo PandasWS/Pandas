@@ -19,7 +19,7 @@ INCLUDEDIR=
 # =================================================================
 # Pandas only requires the following modules
 # =================================================================
-LIBS="--with-filesystem --with-locale --with-date_time"
+LIBS="--with-locale --with-date_time"
 # =================================================================
 PYTHON=python
 PYTHON_VERSION=

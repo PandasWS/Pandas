@@ -6,6 +6,7 @@
 #include <string> // std::string
 #include <memory> // std::shared_ptr
 #include <vector> // std::vector
+#include <filesystem>
 
 // 使 Boost::locale 使用 unique_ptr 而不是已被声明废弃的 auto_ptr
 // 定义这个开关是 Boost 的推荐解决方案, 主要为了关闭在 GCC 编译器下的警告提示
@@ -13,7 +14,6 @@
 
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
-#include <boost/filesystem.hpp>
 
 // 指定的 std 标准容器 x 是否包含指定的 v 值 (存在则返回 true)
 #define STD_EXISTS(x, v) (std::find(x.begin(), x.end(), v) != x.end())
@@ -42,7 +42,7 @@ bool isDirectoryExists(const std::string& path);
 bool makeDirectories(const std::string& path);
 bool ensureDirectories(const std::string& filepath);
 bool deleteDirectory(std::string szDirPath);
-bool copyDirectory(const boost::filesystem::path& from, const boost::filesystem::path& to);
+bool copyDirectory(const std::filesystem::path& from, const std::filesystem::path& to);
 
 bool isFileExists(const std::string& path);
 bool copyFile(const std::string& fromPath, const std::string& toPath);
