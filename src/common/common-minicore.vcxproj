@@ -28,7 +28,6 @@
     <ClInclude Include="database.hpp" />
     <ClInclude Include="des.hpp" />
     <ClInclude Include="grfio.hpp" />
-    <ClInclude Include="configparser.hpp" />
     <ClInclude Include="malloc.hpp" />
     <ClInclude Include="mapindex.hpp" />
     <ClInclude Include="md5calc.hpp" />
