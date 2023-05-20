@@ -15,7 +15,7 @@
 	#include <langinfo.h>
 #endif // _WIN32
 
-#include <boost/regex.hpp>
+#include <regex>
 
 TranslateDB translate_db;
 
@@ -107,25 +107,31 @@ void TranslateDB::parseTags(std::string& message) {
 		// 处理特殊宏 EXPAND_AND_QUOTE 的展开
 		if (message.find("EXPAND_AND_QUOTE") != std::string::npos) {
 			// Step1. 获取要替换的常量名称
-			boost::regex re(R"(\[{EXPAND_AND_QUOTE\(\s*(.*)\s*\)}\])", boost::regex::icase);
-			boost::smatch match_result;
+			try {
+				std::regex re(R"(\[\{EXPAND_AND_QUOTE\(\s*(.*)\s*\)\}\])", std::regex::icase);
+				std::smatch match_result;
 
-			if (boost::regex_search(message, match_result, re)) {
-				std::string constant = match_result[1].str();
+				if (std::regex_search(message, match_result, re)) {
+					std::string constant = match_result[1].str();
 
-				// Step2. 获取常量对应的值
-				std::string constant_val;
-				for (auto it : this->m_quoteList) {
-					if (it.name == constant) {
-						constant_val = it.value;
-						break;
+					// Step2. 获取常量对应的值
+					std::string constant_val;
+					for (auto it : this->m_quoteList) {
+						if (it.name == constant) {
+							constant_val = it.value;
+							break;
+						}
+					}
+
+					// Step3. 执行替换操作, 完成特殊流程处理
+					if (!constant_val.empty()) {
+						message = std::regex_replace(message, re, constant_val);
 					}
 				}
-
-				// Step3. 执行替换操作, 完成特殊流程处理
-				if (!constant_val.empty()) {
-					message = boost::regex_replace(message, re, constant_val);
-				}
+			}
+			catch (std::regex_error& e) {
+				ShowError("%s throw regex_error : %s\n", __func__, e.what());
+				return;
 			}
 		}
 

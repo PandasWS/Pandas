@@ -21,7 +21,7 @@
 #endif // Pandas_ScriptEngine_Express
 
 #ifdef Pandas_ScriptCommand_Preg_Search
-#include <boost/regex.hpp>
+#include <regex>
 #endif // Pandas_ScriptCommand_Preg_Search
 
 #ifdef PCRE_SUPPORT
@@ -31366,17 +31366,17 @@ BUILDIN_FUNC(preg_search) {
 
 	try
 	{
-		boost::regex re;
+		std::regex re;
 		if (flag & 1) {
-			re = boost::regex(patterns, boost::regex::icase);
+			re = std::regex(patterns, std::regex::icase);
 		}
 		else {
-			re = boost::regex(patterns);
+			re = std::regex(patterns);
 		}
 
-		boost::smatch match_result;
+		std::smatch match_result;
 
-		if (!boost::regex_search(text, match_result, re)) {
+		if (!std::regex_search(text, match_result, re)) {
 			script_pushint(st, -1);
 			return SCRIPT_CMD_SUCCESS;
 		}
@@ -31388,7 +31388,7 @@ BUILDIN_FUNC(preg_search) {
 
 		script_pushint(st, match_result.size());
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowError("%s: throw regex_error : %s\n", __func__, e.what());
 		script_pushint(st, -1);

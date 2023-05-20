@@ -25,7 +25,7 @@
 #include <linux/limits.h> // PATH_MAX
 #endif // _WIN32
 
-#include <boost/regex.hpp>
+#include <regex>
 #include <boost/date_time/local_time/local_time.hpp>
 
 #include "strlib.hpp"
@@ -62,14 +62,14 @@ void systemPause() {
 bool isRegexMatched(const std::string& content, const std::string& patterns) {
 	try
 	{
-		boost::regex re(patterns, boost::regex::icase);
-		boost::smatch match_result;
+		std::regex re(patterns, std::regex::icase);
+		std::smatch match_result;
 
-		if (!boost::regex_search(content, match_result, re)) {
+		if (!std::regex_search(content, match_result, re)) {
 			return false;
 		}
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return false;
@@ -90,10 +90,10 @@ bool isRegexMatched(const std::string& content, const std::string& patterns) {
 std::string regexExtract(const std::string& content, const std::string& patterns, size_t extract_group, bool icase) {
 	try
 	{
-		boost::regex re(patterns, icase ? boost::regex::icase : boost::regex::normal);
-		boost::smatch match_result;
+		std::regex re(patterns, icase ? std::regex::icase : std::regex::ECMAScript);
+		std::smatch match_result;
 
-		if (!boost::regex_search(content, match_result, re)) {
+		if (!std::regex_search(content, match_result, re)) {
 			return "";
 		}
 
@@ -103,7 +103,7 @@ std::string regexExtract(const std::string& content, const std::string& patterns
 
 		return match_result[extract_group];
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return "";

@@ -59,7 +59,7 @@ ECHO option.set keep-going : false ; >> project-config.jam
 ECHO. >> project-config.jam
 
 REM ========== Pandas Requires Components ==========
-ECHO libraries =  --with-regex --with-filesystem --with-locale --with-date_time ; >> project-config.jam
+ECHO libraries = --with-filesystem --with-locale --with-date_time ; >> project-config.jam
 ECHO. >> project-config.jam
 REM ================================================
 

@@ -6,7 +6,7 @@
 #include <cctype> // toupper, tolower
 #include <algorithm> // transform
 
-#include <boost/regex.hpp>
+#include <regex>
 
 #include <common/strlib.hpp>
 #include <common/nullpo.hpp>
@@ -36,10 +36,10 @@ bool hasCatchPet(const std::string& script, std::vector<uint32>& pet_mobid) {
 
 	try
 	{
-		boost::regex re(patterns, boost::regex::icase);
-		boost::smatch match_result;
+		std::regex re(patterns, std::regex::icase);
+		std::smatch match_result;
 
-		if (!boost::regex_search(script, match_result, re)) return false;
+		if (!std::regex_search(script, match_result, re)) return false;
 		if (match_result.size() != 8) return false;
 
 		std::string cmd = boost::to_lower_copy(match_result[2].str());
@@ -67,7 +67,7 @@ bool hasCatchPet(const std::string& script, std::vector<uint32>& pet_mobid) {
 			pet_mobid.end()
 		);
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return false;
