@@ -215,13 +215,13 @@ enum e_pandas_encoding getEncodingByLanguage(e_pandas_language lang) {
 // Author:      Sola丶小克(CairoLee)  2021/10/28 18:56
 //************************************ 
 enum e_pandas_encoding getEncodingByString(const std::string& strEncoding) {
-	if (boost::icontains(strEncoding, "UTF-8"))
+	if (icontains(strEncoding, "UTF-8"))
 		return PANDAS_ENCODING_UTF8;
-	if (boost::icontains(strEncoding, "GBK"))
+	if (icontains(strEncoding, "GBK"))
 		return PANDAS_ENCODING_GBK;
-	if (boost::icontains(strEncoding, "BIG5"))
+	if (icontains(strEncoding, "BIG5"))
 		return PANDAS_ENCODING_BIG5;
-	if (boost::icontains(strEncoding, "LATIN1"))
+	if (icontains(strEncoding, "LATIN1"))
 		return PANDAS_ENCODING_LATIN1;
 	return PANDAS_ENCODING_UNKNOW;
 }

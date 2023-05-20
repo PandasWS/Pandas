@@ -313,12 +313,14 @@ namespace rathena {
 		std::string base62_encode( uint32 val );
 
 #ifdef Pandas_Helper_Common_Function
-		/**
-		 * 在无序映射容器中查找键值对, 并将找到的键值作为引用返回 (const 版本)
-		 * @param map: 要搜索的无序映射容器
-		 * @param key: 想找的键 (Key)
-		 * @return 成功时返回键值的指针 (Value*)，失败时返回 nullptr 空指针
-		 */
+		//************************************
+		// Method:      umap_find
+		// Description: 在无序映射容器中查找键值对, 并将找到的键值作为引用返回 (const 版本)
+		// Parameter:   const std::unordered_map<K, V>& map
+		// Parameter:   K key
+		// Returns:     const V* 成功返回键值的指针 (Value*), 失败返回 nullptr
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 19:29
+		//************************************
 		template <typename K, typename V> const V* umap_find(const std::unordered_map<K, V>& map, K key) {
 			auto it = map.find(key);
 
@@ -326,6 +328,21 @@ namespace rathena {
 				return &it->second;
 			else
 				return nullptr;
+		}
+
+		//************************************
+		// Method:      tolower_copy
+		// Description: 模拟 boost::algorithm::to_lower_copy 函数
+		//              将字符串中的大写字母转换为小写字母, 并返回转换后的字符串 (不修改 input 的值)
+		// Parameter:   const T & input
+		// Returns:     T
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 19:26
+		//************************************
+		template <typename T> T tolower_copy(const T& input) {
+			T output = input;
+			std::transform(output.begin(), output.end(), output.begin(),
+				[](unsigned char c) { return std::tolower(c); });
+			return output;
 		}
 #endif // Pandas_Helper_Common_Function
 	}

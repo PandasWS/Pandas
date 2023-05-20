@@ -1018,3 +1018,20 @@ void isaAvailableHotfix() {
 	}
 #endif // (_MSC_VER == 1923)
 }
+
+//************************************
+// Method:      icontains
+// Description: 不区分大小写情况下 haystack 字符串中是否包含 needle 字符串
+// Parameter:   const std::string & haystack
+// Parameter:   const std::string & needle
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2023/05/20 19:22
+//************************************
+bool icontains(const std::string& haystack, const std::string& needle) {
+	auto it = std::search(
+		haystack.begin(), haystack.end(),
+		needle.begin(), needle.end(),
+		[](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+	);
+	return (it != haystack.end());
+}

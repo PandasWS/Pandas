@@ -14,7 +14,6 @@
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
 
 // 指定的 std 标准容器 x 是否包含指定的 v 值 (存在则返回 true)
 #define STD_EXISTS(x, v) (std::find(x.begin(), x.end(), v) != x.end())
@@ -83,3 +82,4 @@ bool isEscapeSequence(const char* start_p);
 int convertRFC2822toTimeStamp(std::string strRFC822Date);
 
 void isaAvailableHotfix();
+bool icontains(const std::string& haystack, const std::string& needle);

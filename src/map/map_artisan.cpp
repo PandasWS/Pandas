@@ -42,7 +42,7 @@ bool hasCatchPet(const std::string& script, std::vector<uint32>& pet_mobid) {
 		if (!std::regex_search(script, match_result, re)) return false;
 		if (match_result.size() != 8) return false;
 
-		std::string cmd = boost::to_lower_copy(match_result[2].str());
+		std::string cmd = rathena::util::tolower_copy(match_result[2].str());
 		std::string params = strTrim(match_result[5].str());
 		if (!params.length()) return false;
 
