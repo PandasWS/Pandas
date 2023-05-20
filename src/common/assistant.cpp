@@ -26,12 +26,12 @@
 #endif // _WIN32
 
 #include <regex>
-#include <boost/date_time/local_time/local_time.hpp>
 
 #include "strlib.hpp"
 #include "db.hpp"
 #include "showmsg.hpp"
 #include "utils.hpp" // check_filepath
+#include "utilities.hpp"
 
 #include "processmutex.hpp"
 
@@ -606,17 +606,6 @@ bool strContain(std::string needle, const std::string& str) {
 }
 
 //************************************
-// Method:      strTrim
-// Description: 移除给定 std::string 字符串左右两侧的空白字符
-// Parameter:   const std::string & s
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
-//************************************
-std::string strTrim(const std::string& s) {
-	return boost::trim_copy(s);
-}
-
-//************************************
 // Method:      strExplode
 // Description: 将给定的 s 字符串按 delim 字符进行切割
 // Parameter:   std::string const & s
@@ -781,7 +770,7 @@ std::string wideStrToStr(const std::wstring& ws) {
 //************************************
 std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix, int ver_type) {
 	std::vector<std::string> split;
-	boost::split(split, ver, boost::is_any_of("."));
+	split = strExplode(ver, '.');
 
 	if (ver_type == 0) {
 		std::string suffix = split[split.size() - 1] == "1" ? "-dev" : "";
@@ -976,32 +965,6 @@ bool isEscapeSequence(const char* start_p) {
 	if (len != 2) return false;
 	size_t n = sv_unescape_c(buf, start_p, len);
 	return (n == 1);
-}
-
-//************************************
-// Method:      convertRFC2822toTimeStamp
-// Description: 将符合 RFC2822 标准的时间字符串转换成时间戳
-// Access:      public 
-// Parameter:   std::string strRFC822Date
-//				例如: Sun, 23 Jan 2022 05:03:50 GMT
-// Returns:     int
-// Author:      Sola丶小克(CairoLee)  2022/01/23 13:17
-//************************************ 
-int convertRFC2822toTimeStamp(std::string strRFC822Date)
-{
-	boost::posix_time::ptime pt;
-	boost::posix_time::time_input_facet* tif(
-		new boost::posix_time::time_input_facet("%a, %d %b %Y %H:%M:%S GMT")
-	);
-
-	std::stringstream ss;
-	ss.imbue(std::locale(std::locale::classic(), tif));
-	ss.str(strRFC822Date);
-	ss >> pt;
-
-	boost::posix_time::ptime time_t_begin(boost::gregorian::date(1970, 1, 1));
-	boost::posix_time::time_duration timestamp = pt - time_t_begin;
-	return (int)timestamp.total_seconds();
 }
 
 //************************************

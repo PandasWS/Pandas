@@ -344,6 +344,20 @@ namespace rathena {
 				[](unsigned char c) { return std::tolower(c); });
 			return output;
 		}
+
+		//************************************
+		// Method:      trim_copy
+		// Description: 模拟 boost::trim_copy 函数
+		//              去除字符串首尾的空白字符, 并返回处理后的字符串 (不修改 s 的值)
+		// Parameter:   const T & s
+		// Returns:     T
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 20:38
+		//************************************
+		template <typename T> T trim_copy(const T& s) {
+			auto wsfront = std::find_if_not(s.begin(), s.end(), [](auto c) {return std::isspace(c); });
+			auto wsback = std::find_if_not(s.rbegin(), s.rend(), [](auto c) {return std::isspace(c); }).base();
+			return (wsback <= wsfront ? T() : T(wsfront, wsback));
+		}
 #endif // Pandas_Helper_Common_Function
 	}
 }

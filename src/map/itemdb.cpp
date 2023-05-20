@@ -65,13 +65,13 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = strTrim(script);
+		item->pandas.script_plaintext.script = util::trim_copy(script);
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = strTrim(script);
+		item->pandas.script_plaintext.equip_script = util::trim_copy(script);
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = strTrim(script);
+		item->pandas.script_plaintext.unequip_script = util::trim_copy(script);
 		break;
 	default:
 		break;
@@ -3838,7 +3838,7 @@ uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
-			combo->script_plaintext = strTrim(script);
+			combo->script_plaintext = util::trim_copy(script);
 #endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 		} else {
 			if (!exists) {
@@ -4478,7 +4478,7 @@ uint64 RandomOptionDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		randopt->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-		randopt->script_plaintext = strTrim(script);
+		randopt->script_plaintext = util::trim_copy(script);
 #endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 	}
 

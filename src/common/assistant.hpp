@@ -58,8 +58,6 @@ void strReplace(char* str, const char* from, const char* to);
 bool strContain(std::vector<std::string> needle, const std::string& str);
 bool strContain(std::string needle, const std::string& str);
 
-std::string strTrim(const std::string& s);
-
 std::vector<std::string> strExplode(std::string const& s, char delim);
 bool strIsNumber(const std::string& str);
 
@@ -78,8 +76,6 @@ std::string getPandasVersion(bool bPrefix = true, bool bSuffix = true);
 
 bool isDoubleByteCharacter(unsigned char high, unsigned char low);
 bool isEscapeSequence(const char* start_p);
-
-int convertRFC2822toTimeStamp(std::string strRFC822Date);
 
 void isaAvailableHotfix();
 bool icontains(const std::string& haystack, const std::string& needle);
