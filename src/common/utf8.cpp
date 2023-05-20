@@ -8,6 +8,7 @@
 #include <common/strlib.hpp>
 #include <common/performance.hpp>
 #include <common/assistant.hpp>
+#include <common/utilities.hpp>
 
 #undef fopen
 #undef fgets
@@ -38,6 +39,8 @@
 #include <unordered_map>
 
 #include "../../3rdparty/uchardet/src/uchardet.h"
+
+using namespace rathena;
 
 namespace PandasUtf8 {
 // -------------------------------------------------------------------
@@ -102,20 +105,20 @@ enum e_pandas_language getSystemLanguage() {
 	}
 #else
 	setlocale(LC_ALL, "");
-	char* szLocale = setlocale(LC_CTYPE, NULL);
+	std::string szLocale = setlocale(LC_CTYPE, NULL);
 
-	if (boost::istarts_with(szLocale, "zh_CN"))
+	if (util::istarts_with(szLocale, std::string("zh_CN")))
 		return PANDAS_LANGUAGE_CHS;
-	else if (boost::istarts_with(szLocale, "zh_TW"))
+	else if (util::istarts_with(szLocale, std::string("zh_TW")))
 		return PANDAS_LANGUAGE_CHT;
-	else if (boost::istarts_with(szLocale, "zh_HK"))
+	else if (util::istarts_with(szLocale, std::string("zh_HK")))
 		return PANDAS_LANGUAGE_CHT;
-	else if (boost::istarts_with(szLocale, "en_US"))
+	else if (util::istarts_with(szLocale, std::string("en_US")))
 		return PANDAS_LANGUAGE_ENG;
-	else if (boost::istarts_with(szLocale, "C."))
+	else if (util::istarts_with(szLocale, std::string("C.")))
 		return PANDAS_LANGUAGE_ENG;
 	else {
-		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
+		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale.c_str());
 	}
 
 	return PANDAS_LANGUAGE_ENG;
@@ -160,7 +163,7 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 	setlocale(LC_ALL, "");
 	char* szLanginfo = nl_langinfo(CODESET);
 
-	if (boost::icontains(szLanginfo, "UTF-8")) {
+	if (icontains(szLanginfo, "UTF-8")) {
 		if (!bIgnoreUtf8) {
 			return PANDAS_ENCODING_UTF8;
 		}
@@ -172,15 +175,15 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 			return PANDAS_ENCODING_LATIN1;
 		}
 	}
-	else if (boost::icontains(szLanginfo, "GBK"))
+	else if (icontains(szLanginfo, "GBK"))
 		return PANDAS_ENCODING_GBK;
-	else if (boost::icontains(szLanginfo, "GB18030"))
+	else if (icontains(szLanginfo, "GB18030"))
 		return PANDAS_ENCODING_GBK;
-	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
+	else if (icontains(szLanginfo, "Big5HKSCS"))
 		return PANDAS_ENCODING_BIG5;
-	else if (boost::icontains(szLanginfo, "Big5"))
+	else if (icontains(szLanginfo, "Big5"))
 		return PANDAS_ENCODING_BIG5;
-	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
+	else if (icontains(szLanginfo, "ANSI_X3.4-1968"))
 		return PANDAS_ENCODING_LATIN1;
 	else {
 		printf("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);

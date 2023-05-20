@@ -358,6 +358,34 @@ namespace rathena {
 			auto wsback = std::find_if_not(s.rbegin(), s.rend(), [](auto c) {return std::isspace(c); }).base();
 			return (wsback <= wsfront ? T() : T(wsfront, wsback));
 		}
+
+		//************************************
+		// Method:      istarts_with
+		// Description: 模拟 boost::istarts_with 函数
+		//              判断字符串 input 是否以字符串 test 开头
+		// Parameter:   const T & input
+		// Parameter:   const T & test
+		// Returns:     bool
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 23:40
+		//************************************
+		template <typename T> bool istarts_with(const T& input, const T& test) {
+			if (test.size() > input.size()) {
+				return false;
+			}
+
+			auto it_input = input.begin();
+			auto it_test = test.begin();
+
+			std::locale loc;
+
+			for (; it_test != test.end(); ++it_test, ++it_input) {
+				if (std::tolower(*it_input, loc) != std::tolower(*it_test, loc)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
 #endif // Pandas_Helper_Common_Function
 	}
 }
