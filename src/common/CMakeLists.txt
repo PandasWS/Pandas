@@ -169,6 +169,7 @@ set( COMMON_MINI_INCLUDE_DIRS
 	${YAML_INCLUDE_DIRS}
 	${opencc_INCLUDE_DIRS}
 	${uchardet_INCLUDE_DIRS}
+	${fmt_INCLUDE_DIRS}
 	CACHE INTERNAL ""
 )
 
@@ -266,6 +267,7 @@ if( WITH_ZLIB )
 		${BREAKPAD_INCLUDE_DIRS}
 		${opencc_INCLUDE_DIRS}
 		${uchardet_INCLUDE_DIRS}
+		${fmt_INCLUDE_DIRS}
 		CACHE INTERNAL "common_base include dirs"
 	)
 
