@@ -5938,6 +5938,20 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 		npc_delay_mob += data->num;
 	}
 
+#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+	if (mapdata) {
+		auto it = std::find(
+			mapdata->mobspawns.begin(),
+			mapdata->mobspawns.end(),
+			data
+		);
+
+		if (it == mapdata->mobspawns.end()) {
+			mapdata->mobspawns.push_back(data);
+		}
+	}
+#endif // Pandas_Struct_Map_Data_Mob_Spawns
+
 	npc_mob++;
 
 	return strchr(start,'\n');// continue
@@ -7196,6 +7210,15 @@ int npc_reload(void) {
 			}
 		}
 	}
+
+#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+	for (int i = 0; i < map_num; i++) {
+		struct map_data* mapdata = map_getmapdata(i);
+		if (mapdata) {
+			mapdata->mobspawns.clear();
+		}
+	}
+#endif // Pandas_Struct_Map_Data_Mob_Spawns
 
 	// clear mob spawn lookup index
 	mob_clear_spawninfo();

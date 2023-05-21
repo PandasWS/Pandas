@@ -992,6 +992,9 @@ struct map_data {
 
 	struct npc_data *npc[MAX_NPC_PER_MAP];
 	struct spawn_data *moblist[MAX_MOB_LIST_PER_MAP]; // [Wizputer]
+#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+	std::vector<struct spawn_data *> mobspawns;
+#endif // Pandas_Struct_Map_Data_Mob_Spawns
 	int mob_delete_timer;	// Timer ID for map_removemobs_timer [Skotlex]
 
 	// Instance Variables

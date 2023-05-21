@@ -221,6 +221,9 @@
 
 	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
 	#define Pandas_Struct_Status_Change_Cloak_Reverting
+
+	// 使 map_data 能保存全部魔物的刷新点信息 [Sola丶小克]
+	#define Pandas_Struct_Map_Data_Mob_Spawns
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -2146,11 +2149,17 @@
 
 	// 是否启用 getmapspawns 脚本指令 [Sola丶小克]
 	// 该指令用于获取指定地图的魔物刷新点信息
-	#define Pandas_ScriptCommand_GetMapSpawns
+	// 此选项开关需要依赖 Pandas_Struct_Map_Data_Mob_Spawns 的拓展
+	#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+		#define Pandas_ScriptCommand_GetMapSpawns
+	#endif // Pandas_Struct_Map_Data_Mob_Spawns
 
 	// 是否启用 getmobspawns 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定魔物在不同地图的刷新点信息
-	#define Pandas_ScriptCommand_GetMobSpawns
+	// 此选项开关需要依赖 Pandas_Struct_Map_Data_Mob_Spawns 的拓展
+	#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+		#define Pandas_ScriptCommand_GetMobSpawns
+	#endif // Pandas_Struct_Map_Data_Mob_Spawns
 
 	// 是否启用 getcalendartime 脚本指令 [Haru]
 	// 该指令用于获取下次出现指定时间的 UNIX 时间戳

@@ -32147,9 +32147,7 @@ BUILDIN_FUNC(getmapspawns) {
 
 	int j = 0;
 
-	for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
-		if (!mapdata || mapdata->moblist[i] == nullptr) continue;
-		struct spawn_data* data = mapdata->moblist[i];
+	for (const auto& data : mapdata->mobspawns) {
 		if (!data) continue;
 		std::shared_ptr<s_mob_db> mob = mob_db.find(data->id);
 		if (!mob) continue;
@@ -32235,9 +32233,7 @@ BUILDIN_FUNC(getmobspawns) {
 		// 找不到对应地图的数据则直接跳过
 		if (!mapdata) continue;
 
-		for (int i = 0; i < MAX_MOB_LIST_PER_MAP; i++) {
-			if (!mapdata || mapdata->moblist[i] == nullptr) continue;
-			struct spawn_data* data = mapdata->moblist[i];
+		for (const auto& data : mapdata->mobspawns) {
 			if (!data) continue;
 			if (data->id != mob_id) continue;
 			std::shared_ptr<s_mob_db> mob = mob_db.find(data->id);
