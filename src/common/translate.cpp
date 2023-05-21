@@ -16,6 +16,7 @@
 #endif // _WIN32
 
 #include <regex>
+#include <fmt/core.h>
 
 TranslateDB translate_db;
 
@@ -35,9 +36,8 @@ const std::string TranslateDB::getDefaultLocation() {
 
 	if (postfix.empty()) return "";
 
-	std::string location = boost::str(
-		boost::format("%1%/msg_conf/translation_%2%.yml") %
-		conf_path % postfix
+	std::string location = fmt::format(
+		"{}/msg_conf/translation_{}.yml", conf_path, postfix
 	);
 
 	return location;

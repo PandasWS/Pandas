@@ -26,6 +26,7 @@
 #endif // _WIN32
 
 #include <regex>
+#include <fmt/core.h>
 
 #include "strlib.hpp"
 #include "db.hpp"
@@ -772,21 +773,19 @@ std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix, int ver_t
 	std::vector<std::string> split;
 	split = strExplode(ver, '.');
 
+	std::string prefix = bPrefix ? "v" : "";
+	std::string suffix;
+
 	if (ver_type == 0) {
-		std::string suffix = split[split.size() - 1] == "1" ? "-dev" : "";
-		return ver = boost::str(
-			boost::format("%1%%2%.%3%.%4%%5%") %
-			(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
-		);
+		suffix = split.back() == "1" ? "-dev" : "";
 	}
 	else {
-		std::string suffix = split[split.size() - 1];
-		suffix = (suffix != "0" ? " Rev." + suffix : "");
-		return ver = boost::str(
-			boost::format("%1%%2%.%3%.%4%%5%") %
-			(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
-		);
+		suffix = split.back() != "0" ? fmt::format(" Rev.{}", split.back()) : "";
 	}
+
+	suffix = bSuffix ? suffix : "";
+
+	return fmt::format("{}{}.{}.{}{}", prefix, split[0], split[1], split[2], suffix);
 }
 
 //************************************
@@ -856,11 +855,11 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 		UINT nItemLength = 0;
 		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
-			std::string szVersionFormat = (isCommercialVersion() ? "%1$04d.%2$02d.%3$02d.%4%" : "%1%.%2%.%3%.%4%");
+			std::string szVersionFormat = (isCommercialVersion() ? "{:04}.{:02}.{:02}.{}" : "{}.{}.{}.{}");
 
-			std::string sFileVersion = boost::str(boost::format(szVersionFormat) %
-				HIWORD(pFileInfo->dwFileVersionMS) % LOWORD(pFileInfo->dwProductVersionMS) % 
-				HIWORD(pFileInfo->dwProductVersionLS) % LOWORD(pFileInfo->dwProductVersionLS)
+			std::string sFileVersion = fmt::format(szVersionFormat,
+				HIWORD(pFileInfo->dwFileVersionMS), LOWORD(pFileInfo->dwProductVersionMS),
+				HIWORD(pFileInfo->dwProductVersionLS), LOWORD(pFileInfo->dwProductVersionLS)
 			);
 
 			delete[] pVersionInfo;

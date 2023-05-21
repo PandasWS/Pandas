@@ -11,8 +11,6 @@
 // 使 Boost::locale 使用 unique_ptr 而不是已被声明废弃的 auto_ptr
 // 定义这个开关是 Boost 的推荐解决方案, 主要为了关闭在 GCC 编译器下的警告提示
 #define BOOST_LOCALE_HIDE_AUTO_PTR
-
-#include <boost/format.hpp>
 #include <boost/locale.hpp>
 
 // 指定的 std 标准容器 x 是否包含指定的 v 值 (存在则返回 true)
