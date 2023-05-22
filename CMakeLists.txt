@@ -150,6 +150,15 @@ endif()
 
 
 #
+# Disable some warnings for Clang compiler
+#
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -Wno-register" )
+endif()
+message( STATUS "GLOBAL_DEFINITIONS : ${GLOBAL_DEFINITIONS}")
+
+
+#
 # 3rd party
 #
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cmake  CACHE INTERNAL "" )
@@ -441,14 +450,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
         set_property( CACHE GLOBAL_LIBRARIES PROPERTY VALUE ${GLOBAL_LIBRARIES} stdc++fs )
     endif()
-endif()
-
-
-#
-# Disable register keyword warnings for Clang
-#
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -Wregister" )
 endif()
 
 
