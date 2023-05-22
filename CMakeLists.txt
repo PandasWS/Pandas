@@ -435,6 +435,16 @@ endif()
 
 
 #
+# Enable stdc++fs library for GCC < 9
+#
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+		set_property( CACHE GLOBAL_LIBRARIES    PROPERTY VALUE ${GLOBAL_LIBRARIES} stdc++fs )
+    endif()
+endif()
+
+
+#
 # Enable profiler (default=none)
 #
 set( PROFILER_OPTIONS "none;gprof" )

@@ -428,7 +428,9 @@ bool copyDirectory(const std::filesystem::path &from, const std::filesystem::pat
 			}
 		}
 		else if (std::filesystem::is_regular_file(from)) {
-			std::filesystem::copy(from, to);
+			std::filesystem::copy_file(
+				from, to, std::filesystem::copy_options::overwrite_existing
+			);
 		}
 		else {
 			throw std::runtime_error("The path " + to.generic_string() + " is not directory or file.");
