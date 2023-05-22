@@ -27,6 +27,7 @@
 
 #include <regex>
 #include <fmt/core.h>
+#include <utf8.h>
 
 #include "strlib.hpp"
 #include "db.hpp"
@@ -745,7 +746,9 @@ void ensurePathEndwithSep(std::wstring& path, const std::wstring& sep) {
 // Author:      Sola丶小克(CairoLee)  2019/11/05 15:32
 //************************************
 std::wstring strToWideStr(const std::string& s) {
-	return boost::locale::conv::utf_to_utf<wchar_t>(s);
+	std::wstring ws;
+	utf8::utf8to16(s.begin(), s.end(), std::back_inserter(ws));
+	return ws;
 }
 
 //************************************
@@ -756,7 +759,9 @@ std::wstring strToWideStr(const std::string& s) {
 // Author:      Sola丶小克(CairoLee)  2019/11/05 15:32
 //************************************
 std::string wideStrToStr(const std::wstring& ws) {
-	return boost::locale::conv::utf_to_utf<char>(ws);
+	std::string s;
+	utf8::utf16to8(ws.begin(), ws.end(), std::back_inserter(s));
+	return s;
 }
 
 //************************************
