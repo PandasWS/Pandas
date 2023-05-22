@@ -62,28 +62,8 @@ jobs:
         echo "${{ matrix.build_type }}" >> .CACHE_HASHFILE
         echo "${{ matrix.configure_flags }}" >> .CACHE_HASHFILE
         echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
-        echo "${{ hashFiles('3rdparty/boost/bootstrap.sh') }}" >> .CACHE_HASHFILE
-        echo "${{ hashFiles('3rdparty/boost/Jamroot') }}" >> .CACHE_HASHFILE
         echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
         cat .CACHE_HASHFILE
-
-    - name: Cache boost c++ libraries
-      uses: actions/cache@v2
-      id: cache-boost
-      env:
-        cache-name: codeql-cache-boost
-      with:
-        path: |
-          3rdparty/boost/bin.v2/
-          3rdparty/boost/stage/
-          3rdparty/boost/b2
-        key: ${{ env.cache-name }}-${{ hashFiles('.CACHE_HASHFILE') }}
-
-    - name: Build boost c++ libraries
-      if: steps.cache-boost.outputs.cache-hit != 'true'
-      run: |
-        cd 3rdparty/boost/
-        ./bootstrap.sh && ./b2
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
