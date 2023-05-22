@@ -435,11 +435,15 @@ endif()
 
 
 #
-# Enable stdc++fs library for GCC < 9
+# Enable filesystem library for GCC < 9 and Clang < 7
 #
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-		set_property( CACHE GLOBAL_LIBRARIES    PROPERTY VALUE ${GLOBAL_LIBRARIES} stdc++fs )
+        set_property( CACHE GLOBAL_LIBRARIES PROPERTY VALUE ${GLOBAL_LIBRARIES} stdc++fs )
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
+        set_property( CACHE GLOBAL_LIBRARIES PROPERTY VALUE ${GLOBAL_LIBRARIES} c++fs )
     endif()
 endif()
 
