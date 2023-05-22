@@ -445,6 +445,14 @@ endif()
 
 
 #
+# Disable register keyword warnings for Clang
+#
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -Wregister" )
+endif()
+
+
+#
 # Enable profiler (default=none)
 #
 set( PROFILER_OPTIONS "none;gprof" )
