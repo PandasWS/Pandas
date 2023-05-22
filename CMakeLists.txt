@@ -258,26 +258,6 @@ endif()
 message( STATUS "Detecting dynamic loading library (dl) - done" )
 endif()
 
-#
-# Boost C++ libraries
-#
-set( Boost_NO_SYSTEM_PATHS ON ) # 不搜索系统自带的 Boost 库
-set( Boost_USE_STATIC_LIBS ON ) # 使用静态库
-set( Boost_USE_MULTITHREADED ON ) # 使用多线程(MT)
-set( Boost_USE_STATIC_RUNTIME OFF ) # 不使用 runtime 静态库
-set( BOOST_ROOT 3rdparty/boost ) # 从指定的位置搜索 Boost 库
-
-# 寻找名为 Boost 的库, 要求携带指定的多个组件, 失败则报错
-find_package(Boost COMPONENTS locale REQUIRED)
-
-# 如果成功找到 Boost 库, 那么进行相关的设置操作
-if( Boost_FOUND )
-	# 将 ${Boost_INCLUDE_DIRS} 放到 ${GLOBAL_INCLUDE_DIRS} 中去
-	set_property( CACHE GLOBAL_INCLUDE_DIRS  PROPERTY VALUE ${GLOBAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
-
-	# 将 ${Boost_LIBRARIES} 放到 ${GLOBAL_LIBRARIES} 中去
-	set_property( CACHE GLOBAL_LIBRARIES  PROPERTY VALUE ${GLOBAL_LIBRARIES} ${Boost_LIBRARIES} )
-endif()
 
 #
 # networking library (Solaris/MinGW)
