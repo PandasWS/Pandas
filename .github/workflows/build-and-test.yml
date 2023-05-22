@@ -103,7 +103,7 @@ jobs:
 
     strategy:
       matrix:
-        compiler_version: [6, 13]
+        compiler_version: [7, 13]
         build_type: ['Debug'] # 'RelWithDebInfo'
         configure_flags: ['-DENABLE_EXTRA_BUILDBOT_CODE=ON', '-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON']
         packetver: ['-DPACKETVER=20180620', '-DPACKETVER=20210107 -DPACKETVER_RE=ON']

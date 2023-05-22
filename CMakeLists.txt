@@ -118,8 +118,8 @@ if( NOT WIN32 )
 			message(FATAL_ERROR "GCC version must be at least 8.0 !")
 		endif()
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
-			message(FATAL_ERROR "Clang version must be at least 6.0 !")
+		if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
+			message(FATAL_ERROR "Clang version must be at least 7.0 !")
 		endif()
 	endif()
 endif()
@@ -435,15 +435,11 @@ endif()
 
 
 #
-# Enable filesystem library for GCC < 9 and Clang < 7
+# Enable filesystem library for GCC < 9
 #
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
         set_property( CACHE GLOBAL_LIBRARIES PROPERTY VALUE ${GLOBAL_LIBRARIES} stdc++fs )
-    endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
-        set_property( CACHE GLOBAL_LIBRARIES PROPERTY VALUE ${GLOBAL_LIBRARIES} c++fs )
     endif()
 endif()
 
