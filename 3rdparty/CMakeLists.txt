@@ -164,6 +164,7 @@ endif()
 
 CPMAddPackage(
 	NAME fmt
+	OPTIONS		"FMT_INSTALL OFF"
 	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/fmt"
 )
 
@@ -174,4 +175,7 @@ if(fmt_ADDED)
 	# 后面 common 等项目构建的时候需要将 fmt_INCLUDE_DIRS 设为包含目录的一部分
 	find_path( fmt_INCLUDE_DIRS "fmt/core.h" PATHS "${fmt_SOURCE_DIR}/include" NO_DEFAULT_PATH REQUIRED )
 	# message( STATUS "fmt_INCLUDE_DIRS = ${fmt_INCLUDE_DIRS}")
+	
+	# 启用 FMT_HEADER_ONLY 宏定义
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DFMT_HEADER_ONLY" )
 endif()
