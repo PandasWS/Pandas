@@ -313,20 +313,17 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	}
 
 	const char* instr = strANSI.c_str();
-	size_t instr_len = (strANSI.length() + 1) * sizeof(char);
+	size_t instr_len = strANSI.length() * sizeof(char);
 
-	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
-	wchar_t* result_buf_out = result_buf;
-	size_t result_buf_len = instr_len * sizeof(wchar_t);
-	memset(result_buf, 0, result_buf_len);
+	size_t result_buf_len = (instr_len + 1) * sizeof(wchar_t);
+	std::vector<char> outbufvec(result_buf_len);
+    char* result_buf = outbufvec.data();
 
 	size_t iconv_result = iconv(descr_in,
-		(char**)&instr, &instr_len,
-		(char**)&result_buf, &result_buf_len
+		(char**)&instr, &instr_len, &result_buf, &result_buf_len
 	);
 
-	std::wstring w_content(result_buf_out);
-	delete[] result_buf_out;
+	std::wstring w_content = std::wstring((wchar_t*)outbufvec.data(), (wchar_t*)result_buf);
 	iconv_close(descr_in);
 
 	return std::move(w_content);
@@ -362,20 +359,17 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	}
 
 	const char* instr = (const char*)strUnicode.c_str();
-	size_t instr_len = (strUnicode.length() + 1) * sizeof(wchar_t);
+	size_t instr_len = strUnicode.length() * sizeof(wchar_t);
 
-	char* result_buf = new char[instr_len];
-	char* result_buf_out = result_buf;
-	size_t result_buf_len = instr_len;
-	memset(result_buf, 0, result_buf_len);
+	size_t result_buf_len = instr_len + 1;
+	std::vector<char> outbufvec(result_buf_len);
+    char* result_buf = outbufvec.data();
 
 	size_t iconv_result = iconv(descr_out,
-		(char**)&instr, &instr_len,
-		(char**)&result_buf, &result_buf_len
+		(char**)&instr, &instr_len, &result_buf, &result_buf_len
 	);
 
-	std::string s_content(result_buf_out);
-	delete[] result_buf_out;
+	std::string s_content = std::string((char*)outbufvec.data(), (char*)result_buf);
 	iconv_close(descr_out);
 
 	return std::move(s_content);
