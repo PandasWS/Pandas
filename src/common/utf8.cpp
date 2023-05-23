@@ -115,7 +115,7 @@ enum e_pandas_language getSystemLanguage() {
 		return PANDAS_LANGUAGE_CHT;
 	else if (util::istarts_with(szLocale, std::string("en_US")))
 		return PANDAS_LANGUAGE_ENG;
-	else if (util::istarts_with(szLocale, std::string("C.")))
+	else if (util::istarts_with(szLocale, std::string("C.")) || (szLocale == "C"))
 		return PANDAS_LANGUAGE_ENG;
 	else {
 		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale.c_str());
