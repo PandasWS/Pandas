@@ -3257,6 +3257,9 @@ void CharacterServer::finalize(){
 
 /// Called when a terminate signal is received.
 void CharacterServer::handle_shutdown(){
+#ifdef Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	printf("\n");
+#endif // Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	ShowStatus("Shutting down...\n");
 	// TODO proper shutdown procedure; wait for acks?, kick all characters, ... [FlavoJS]
 	for( int id = 0; id < ARRAYLENGTH(map_server); ++id )

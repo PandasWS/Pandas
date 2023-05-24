@@ -6238,6 +6238,9 @@ int mapgenerator_get_options(int argc, char** argv) {
 
 /// Called when a terminate signal is received.
 void MapServer::handle_shutdown(){
+#ifdef Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	printf("\n");
+#endif // Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	ShowStatus("Shutting down...\n");
 
 #ifdef Pandas_Crashfix_Prevent_NullPointer
