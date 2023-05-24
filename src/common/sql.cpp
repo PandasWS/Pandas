@@ -226,6 +226,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding)
 int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encoding, const char* connect_name)
 {
 	bool bNoSetEncoding = false;
+	std::string strCurrentCodePage;
 
 	do 
 	{
@@ -254,8 +255,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		}
 		Sql_FreeResult(self);
 		if (current_codepage == nullptr) break;
-
-		std::string strCurrentCodePage(current_codepage);
+		strCurrentCodePage = current_codepage;
 
 		// 当 connect_name 非空时, 提示当前数据库的编码
 		if (connect_name != nullptr) {
