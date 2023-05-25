@@ -479,7 +479,7 @@ void on_yaml_error( const char* msg, size_t len, ryml::Location loc, void *user_
 	std::shared_ptr<char> mes(new char[len + 1], std::default_delete<char[]>());
 	memset(mes.get(), 0, len + 1);
 	memcpy(mes.get(), msg, len);
-	std::string text = strTrim(mes.get());
+	std::string text = util::trim_copy(std::string(mes.get()));
 	throw std::runtime_error(text.c_str());
 #endif // Pandas_UserExperience_Yaml_Error
 }

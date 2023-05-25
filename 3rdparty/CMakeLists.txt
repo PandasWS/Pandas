@@ -157,3 +157,43 @@ if(uchardet_ADDED)
 	find_path( uchardet_INCLUDE_DIRS "uchardet.h" PATHS "${uchardet_SOURCE_DIR}/src" NO_DEFAULT_PATH REQUIRED )
 	# message( STATUS "uchardet_INCLUDE_DIRS = ${uchardet_INCLUDE_DIRS}")
 endif()
+
+#
+# 使用 CPM 模块引入 fmt 第三方库
+#
+
+CPMAddPackage(
+	NAME fmt
+	OPTIONS		"FMT_INSTALL OFF"
+	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/fmt"
+)
+
+# 若 fmt 引入成功, 则进行一系列的额外配置操作
+if(fmt_ADDED)
+	# 确保 ${fmt_SOURCE_DIR}/include 目录中存在 fmt/core.h 文件, 
+	# 将目录的路径保存到 fmt_INCLUDE_DIRS 变量中 (声明为 REQUIRED 如果失败则终止)
+	# 后面 common 等项目构建的时候需要将 fmt_INCLUDE_DIRS 设为包含目录的一部分
+	find_path( fmt_INCLUDE_DIRS "fmt/core.h" PATHS "${fmt_SOURCE_DIR}/include" NO_DEFAULT_PATH REQUIRED )
+	# message( STATUS "fmt_INCLUDE_DIRS = ${fmt_INCLUDE_DIRS}")
+	
+	# 启用 FMT_HEADER_ONLY 宏定义
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DFMT_HEADER_ONLY" )
+endif()
+
+#
+# 使用 CPM 模块引入 utfcpp 第三方库
+#
+
+CPMAddPackage(
+	NAME utfcpp
+	SOURCE_DIR	"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/3rdparty/utfcpp"
+)
+
+# 若 utfcpp 引入成功, 则进行一系列的额外配置操作
+if(utfcpp_ADDED)
+	# 确保 ${utfcpp_SOURCE_DIR}/source 目录中存在 utf8.h 文件, 
+	# 将目录的路径保存到 utfcpp_INCLUDE_DIRS 变量中 (声明为 REQUIRED 如果失败则终止)
+	# 后面 common 等项目构建的时候需要将 utfcpp_INCLUDE_DIRS 设为包含目录的一部分
+	find_path( utfcpp_INCLUDE_DIRS "utf8.h" PATHS "${utfcpp_SOURCE_DIR}/source" NO_DEFAULT_PATH REQUIRED )
+	# message( STATUS "utfcpp_INCLUDE_DIRS = ${utfcpp_INCLUDE_DIRS}")
+endif()

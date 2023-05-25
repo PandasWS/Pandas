@@ -6,15 +6,18 @@
 #include <cctype> // toupper, tolower
 #include <algorithm> // transform
 
-#include <boost/regex.hpp>
+#include <regex>
 
 #include <common/strlib.hpp>
 #include <common/nullpo.hpp>
 #include <common/showmsg.hpp>
 #include <common/assistant.hpp>
+#include <common/utilities.hpp>
 
 #include "map.hpp"
 #include "pc.hpp"
+
+using namespace rathena;
 
 // 参考资料: 
 // https://www.zhaokeli.com/article/8289.html
@@ -36,26 +39,26 @@ bool hasCatchPet(const std::string& script, std::vector<uint32>& pet_mobid) {
 
 	try
 	{
-		boost::regex re(patterns, boost::regex::icase);
-		boost::smatch match_result;
+		std::regex re(patterns, std::regex::icase);
+		std::smatch match_result;
 
-		if (!boost::regex_search(script, match_result, re)) return false;
+		if (!std::regex_search(script, match_result, re)) return false;
 		if (match_result.size() != 8) return false;
 
-		std::string cmd = boost::to_lower_copy(match_result[2].str());
-		std::string params = strTrim(match_result[5].str());
+		std::string cmd = util::tolower_copy(match_result[2].str());
+		std::string params = util::trim_copy(match_result[5].str());
 		if (!params.length()) return false;
 
 		std::vector<std::string> explode = strExplode(params, ',');
 
 		if (cmd == "multicatchpet" || cmd == "mpet") {
 			for (const std::string& it : explode) {
-				pet_mobid.push_back(std::stoi(strTrim(it)));
+				pet_mobid.push_back(std::stoi(util::trim_copy(it)));
 			}
 		}
 		else {
 			for (const std::string& it : explode) {
-				pet_mobid.push_back(std::stoi(strTrim(it)));
+				pet_mobid.push_back(std::stoi(util::trim_copy(it)));
 				break; // 仅获取第一个魔物编号即可
 			}
 		}
@@ -67,7 +70,7 @@ bool hasCatchPet(const std::string& script, std::vector<uint32>& pet_mobid) {
 			pet_mobid.end()
 		);
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return false;

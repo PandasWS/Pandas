@@ -313,12 +313,14 @@ namespace rathena {
 		std::string base62_encode( uint32 val );
 
 #ifdef Pandas_Helper_Common_Function
-		/**
-		 * 在无序映射容器中查找键值对, 并将找到的键值作为引用返回 (const 版本)
-		 * @param map: 要搜索的无序映射容器
-		 * @param key: 想找的键 (Key)
-		 * @return 成功时返回键值的指针 (Value*)，失败时返回 nullptr 空指针
-		 */
+		//************************************
+		// Method:      umap_find
+		// Description: 在无序映射容器中查找键值对, 并将找到的键值作为引用返回 (const 版本)
+		// Parameter:   const std::unordered_map<K, V>& map
+		// Parameter:   K key
+		// Returns:     const V* 成功返回键值的指针 (Value*), 失败返回 nullptr
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 19:29
+		//************************************
 		template <typename K, typename V> const V* umap_find(const std::unordered_map<K, V>& map, K key) {
 			auto it = map.find(key);
 
@@ -326,6 +328,63 @@ namespace rathena {
 				return &it->second;
 			else
 				return nullptr;
+		}
+
+		//************************************
+		// Method:      tolower_copy
+		// Description: 模拟 boost::algorithm::to_lower_copy 函数
+		//              将字符串中的大写字母转换为小写字母, 并返回转换后的字符串 (不修改 input 的值)
+		// Parameter:   const T & input
+		// Returns:     T
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 19:26
+		//************************************
+		template <typename T> T tolower_copy(const T& input) {
+			T output = input;
+			std::transform(output.begin(), output.end(), output.begin(),
+				[](unsigned char c) { return std::tolower(c); });
+			return output;
+		}
+
+		//************************************
+		// Method:      trim_copy
+		// Description: 模拟 boost::trim_copy 函数
+		//              去除字符串首尾的空白字符, 并返回处理后的字符串 (不修改 s 的值)
+		// Parameter:   const T & s
+		// Returns:     T
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 20:38
+		//************************************
+		template <typename T> T trim_copy(const T& s) {
+			auto wsfront = std::find_if_not(s.begin(), s.end(), [](auto c) {return std::isspace(c); });
+			auto wsback = std::find_if_not(s.rbegin(), s.rend(), [](auto c) {return std::isspace(c); }).base();
+			return (wsback <= wsfront ? T() : T(wsfront, wsback));
+		}
+
+		//************************************
+		// Method:      istarts_with
+		// Description: 模拟 boost::istarts_with 函数
+		//              判断字符串 input 是否以字符串 test 开头
+		// Parameter:   const T & input
+		// Parameter:   const T & test
+		// Returns:     bool
+		// Author:      Sola丶小克(CairoLee)  2023/05/20 23:40
+		//************************************
+		template <typename T> bool istarts_with(const T& input, const T& test) {
+			if (test.size() > input.size()) {
+				return false;
+			}
+
+			auto it_input = input.begin();
+			auto it_test = test.begin();
+
+			std::locale loc;
+
+			for (; it_test != test.end(); ++it_test, ++it_input) {
+				if (std::tolower(*it_input, loc) != std::tolower(*it_test, loc)) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 #endif // Pandas_Helper_Common_Function
 	}

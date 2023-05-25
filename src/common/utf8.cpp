@@ -8,6 +8,7 @@
 #include <common/strlib.hpp>
 #include <common/performance.hpp>
 #include <common/assistant.hpp>
+#include <common/utilities.hpp>
 
 #undef fopen
 #undef fgets
@@ -38,6 +39,8 @@
 #include <unordered_map>
 
 #include "../../3rdparty/uchardet/src/uchardet.h"
+
+using namespace rathena;
 
 namespace PandasUtf8 {
 // -------------------------------------------------------------------
@@ -102,20 +105,20 @@ enum e_pandas_language getSystemLanguage() {
 	}
 #else
 	setlocale(LC_ALL, "");
-	char* szLocale = setlocale(LC_CTYPE, NULL);
+	std::string szLocale = setlocale(LC_CTYPE, NULL);
 
-	if (boost::istarts_with(szLocale, "zh_CN"))
+	if (util::istarts_with(szLocale, std::string("zh_CN")))
 		return PANDAS_LANGUAGE_CHS;
-	else if (boost::istarts_with(szLocale, "zh_TW"))
+	else if (util::istarts_with(szLocale, std::string("zh_TW")))
 		return PANDAS_LANGUAGE_CHT;
-	else if (boost::istarts_with(szLocale, "zh_HK"))
+	else if (util::istarts_with(szLocale, std::string("zh_HK")))
 		return PANDAS_LANGUAGE_CHT;
-	else if (boost::istarts_with(szLocale, "en_US"))
+	else if (util::istarts_with(szLocale, std::string("en_US")))
 		return PANDAS_LANGUAGE_ENG;
-	else if (boost::istarts_with(szLocale, "C."))
+	else if (util::istarts_with(szLocale, std::string("C.")) || (szLocale == "C"))
 		return PANDAS_LANGUAGE_ENG;
 	else {
-		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale);
+		printf("%s: Unsupport locale: %s, defaulting to english\n", __func__, szLocale.c_str());
 	}
 
 	return PANDAS_LANGUAGE_ENG;
@@ -160,7 +163,7 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 	setlocale(LC_ALL, "");
 	char* szLanginfo = nl_langinfo(CODESET);
 
-	if (boost::icontains(szLanginfo, "UTF-8")) {
+	if (icontains(szLanginfo, "UTF-8")) {
 		if (!bIgnoreUtf8) {
 			return PANDAS_ENCODING_UTF8;
 		}
@@ -172,15 +175,15 @@ enum e_pandas_encoding getSystemEncoding(bool bIgnoreUtf8) {
 			return PANDAS_ENCODING_LATIN1;
 		}
 	}
-	else if (boost::icontains(szLanginfo, "GBK"))
+	else if (icontains(szLanginfo, "GBK"))
 		return PANDAS_ENCODING_GBK;
-	else if (boost::icontains(szLanginfo, "GB18030"))
+	else if (icontains(szLanginfo, "GB18030"))
 		return PANDAS_ENCODING_GBK;
-	else if (boost::icontains(szLanginfo, "Big5HKSCS"))
+	else if (icontains(szLanginfo, "Big5HKSCS"))
 		return PANDAS_ENCODING_BIG5;
-	else if (boost::icontains(szLanginfo, "Big5"))
+	else if (icontains(szLanginfo, "Big5"))
 		return PANDAS_ENCODING_BIG5;
-	else if (boost::icontains(szLanginfo, "ANSI_X3.4-1968"))
+	else if (icontains(szLanginfo, "ANSI_X3.4-1968"))
 		return PANDAS_ENCODING_LATIN1;
 	else {
 		printf("%s: Unsupport codeset: %s, defaulting to latin1\n", __func__, szLanginfo);
@@ -215,13 +218,13 @@ enum e_pandas_encoding getEncodingByLanguage(e_pandas_language lang) {
 // Author:      Sola丶小克(CairoLee)  2021/10/28 18:56
 //************************************ 
 enum e_pandas_encoding getEncodingByString(const std::string& strEncoding) {
-	if (boost::icontains(strEncoding, "UTF-8"))
+	if (icontains(strEncoding, "UTF-8"))
 		return PANDAS_ENCODING_UTF8;
-	if (boost::icontains(strEncoding, "GBK"))
+	if (icontains(strEncoding, "GBK"))
 		return PANDAS_ENCODING_GBK;
-	if (boost::icontains(strEncoding, "BIG5"))
+	if (icontains(strEncoding, "BIG5"))
 		return PANDAS_ENCODING_BIG5;
-	if (boost::icontains(strEncoding, "LATIN1"))
+	if (icontains(strEncoding, "LATIN1"))
 		return PANDAS_ENCODING_LATIN1;
 	return PANDAS_ENCODING_UNKNOW;
 }
@@ -310,20 +313,17 @@ std::wstring UnicodeEncode(const std::string& strANSI, e_pandas_encoding strEnco
 	}
 
 	const char* instr = strANSI.c_str();
-	size_t instr_len = (strANSI.length() + 1) * sizeof(char);
+	size_t instr_len = strANSI.length() * sizeof(char);
 
-	wchar_t* result_buf = new wchar_t[instr_len * sizeof(wchar_t)];
-	wchar_t* result_buf_out = result_buf;
-	size_t result_buf_len = instr_len * sizeof(wchar_t);
-	memset(result_buf, 0, result_buf_len);
+	size_t result_buf_len = (instr_len + 1) * sizeof(wchar_t);
+	std::vector<char> outbufvec(result_buf_len);
+    char* result_buf = outbufvec.data();
 
 	size_t iconv_result = iconv(descr_in,
-		(char**)&instr, &instr_len,
-		(char**)&result_buf, &result_buf_len
+		(char**)&instr, &instr_len, &result_buf, &result_buf_len
 	);
 
-	std::wstring w_content(result_buf_out);
-	delete[] result_buf_out;
+	std::wstring w_content = std::wstring((wchar_t*)outbufvec.data(), (wchar_t*)result_buf);
 	iconv_close(descr_in);
 
 	return std::move(w_content);
@@ -359,20 +359,17 @@ std::string UnicodeDecode(const std::wstring& strUnicode, e_pandas_encoding strE
 	}
 
 	const char* instr = (const char*)strUnicode.c_str();
-	size_t instr_len = (strUnicode.length() + 1) * sizeof(wchar_t);
+	size_t instr_len = strUnicode.length() * sizeof(wchar_t);
 
-	char* result_buf = new char[instr_len];
-	char* result_buf_out = result_buf;
-	size_t result_buf_len = instr_len;
-	memset(result_buf, 0, result_buf_len);
+	size_t result_buf_len = instr_len + 1;
+	std::vector<char> outbufvec(result_buf_len);
+    char* result_buf = outbufvec.data();
 
 	size_t iconv_result = iconv(descr_out,
-		(char**)&instr, &instr_len,
-		(char**)&result_buf, &result_buf_len
+		(char**)&instr, &instr_len, &result_buf, &result_buf_len
 	);
 
-	std::string s_content(result_buf_out);
-	delete[] result_buf_out;
+	std::string s_content = std::string((char*)outbufvec.data(), (char*)result_buf);
 	iconv_close(descr_out);
 
 	return std::move(s_content);

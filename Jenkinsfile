@@ -49,15 +49,6 @@ pipeline {
 		
 		stage('Prepare') {
 			parallel {
-				stage('Prepare: Boost') {
-					steps {
-						bat """
-							cd 3rdparty\\boost\\
-							bootstrap.bat
-						"""
-					}
-				}
-				
 				stage('Prepare: Pipenv') {
 					steps {
 						bat """

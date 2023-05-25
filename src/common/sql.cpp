@@ -226,6 +226,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding)
 int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encoding, const char* connect_name)
 {
 	bool bNoSetEncoding = false;
+	std::string strCurrentCodePage;
 
 	do 
 	{
@@ -254,10 +255,11 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		}
 		Sql_FreeResult(self);
 		if (current_codepage == nullptr) break;
+		strCurrentCodePage = current_codepage;
 
 		// 当 connect_name 非空时, 提示当前数据库的编码
 		if (connect_name != nullptr) {
-			ShowInfo("Detected the " CL_WHITE "%s" CL_RESET " database character set is " CL_WHITE "%s" CL_RESET ".\n", connect_name, current_codepage);
+			ShowInfo("Detected the " CL_WHITE "%s" CL_RESET " database character set is " CL_WHITE "%s" CL_RESET ".\n", connect_name, strCurrentCodePage.c_str());
 		}
 
 		// 若 encoding 不是空指针且不是空字符串, 但它的值不等于 auto 那么直接走原来的逻辑
@@ -269,7 +271,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		if (global_core->get_type() != e_core_type::WEB) {
 			size_t i = 0;
 			const char* non_ansi[] = { "utf8", "utf8mb4" };
-			ARR_FIND(0, ARRAYLENGTH(non_ansi), i, stricmp(current_codepage, non_ansi[i]) == 0);
+			ARR_FIND(0, ARRAYLENGTH(non_ansi), i, strCurrentCodePage == non_ansi[i]);
 			if (ARRAYLENGTH(non_ansi) > i) {
 
 				// 若目标数据库使用 utf8 或者 utf8mb4 编码, 
@@ -278,7 +280,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 				switch (PandasUtf8::systemLanguage) {
 				case PandasUtf8::PANDAS_LANGUAGE_CHS: encoding = "gbk"; break;
 				case PandasUtf8::PANDAS_LANGUAGE_CHT: encoding = "big5"; break;
-				default: encoding = current_codepage; break;
+				default: encoding = strCurrentCodePage.c_str(); break;
 				}
 
 				break;
@@ -286,7 +288,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding, const char* default_encodin
 		}
 
 		// 将连接编码设置为与数据库的 server character set 完全一致
-		encoding = current_codepage;
+		encoding = strCurrentCodePage.c_str();
 	} while (false);
 
 	// 将程序建立连接后, 最终选用的连接编码告知给用户

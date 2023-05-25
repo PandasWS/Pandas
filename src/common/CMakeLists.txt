@@ -138,7 +138,6 @@ set( COMMON_MINI_HEADERS
 	"${COMMON_SOURCE_DIR}/database.hpp"
 	"${COMMON_SOURCE_DIR}/performance.hpp"
 	"${COMMON_SOURCE_DIR}/processmutex.hpp"
-	"${COMMON_SOURCE_DIR}/configparser.hpp"
 	${LIBCONFIG_HEADERS} # needed by showmsg.hpp
 	${BREAKPAD_HEADERS}
 	${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -170,6 +169,8 @@ set( COMMON_MINI_INCLUDE_DIRS
 	${YAML_INCLUDE_DIRS}
 	${opencc_INCLUDE_DIRS}
 	${uchardet_INCLUDE_DIRS}
+	${fmt_INCLUDE_DIRS}
+	${utfcpp_INCLUDE_DIRS}
 	CACHE INTERNAL ""
 )
 
@@ -220,7 +221,6 @@ if( WITH_ZLIB )
 		"${COMMON_SOURCE_DIR}/translate.hpp"
 		"${COMMON_SOURCE_DIR}/performance.hpp"
 		"${COMMON_SOURCE_DIR}/processmutex.hpp"
-		"${COMMON_SOURCE_DIR}/configparser.hpp"
 		${LIBCONFIG_HEADERS} # needed by conf.hpp/showmsg.hpp
 		${BREAKPAD_HEADERS}
 		${COMMON_ADDITIONALL_HPP} # needed by Windows
@@ -268,6 +268,8 @@ if( WITH_ZLIB )
 		${BREAKPAD_INCLUDE_DIRS}
 		${opencc_INCLUDE_DIRS}
 		${uchardet_INCLUDE_DIRS}
+		${fmt_INCLUDE_DIRS}
+		${utfcpp_INCLUDE_DIRS}
 		CACHE INTERNAL "common_base include dirs"
 	)
 

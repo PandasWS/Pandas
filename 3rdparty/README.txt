@@ -11,4 +11,5 @@ json - library for nlohmann json (https://github.com/nlohmann/json/tree/4b2c8ce6
 cryptopp - Crypto++ Library is a free C++ class library of cryptographic schemes. (https://www.cryptopp.com/)
 breakpad - A set of client and server components which implement a crash-reporting system. (https://chromium.googlesource.com/breakpad/breakpad/)
 dbghelp -  It contains a set of debugging support routines that allow you to work with executable images in the portable executable (PE) format.
-
+fmt - library for fmtlib fmt (https://github.com/fmtlib/fmt/releases/tag/10.0.0)
+utfcpp - library for nemtrif utfcpp (https://github.com/nemtrif/utfcpp/releases/tag/v3.2.3)
