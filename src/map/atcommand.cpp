@@ -4652,7 +4652,7 @@ ACMD_FUNC(mapinfo) {
 
 		if (map_getmapflag(m_id, it.first)) {
 			if (args_count == 0) {
-				std::string temp_str = atcmd_output_str + it.second.name + " |";
+				std::string temp_str = atcmd_output_str + " " + it.second.name + " |";
 
 				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
 				// 那么就可以直接使用 temp_str 的内容
@@ -4689,7 +4689,7 @@ ACMD_FUNC(mapinfo) {
 					}
 				}
 
-				std::string temp_str = atcmd_output_str + it.second.name + ": " + args_mes + " |";
+				std::string temp_str = atcmd_output_str + " " + it.second.name + ": " + args_mes + " |";
 
 				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
 				// 那么就可以直接使用 temp_str 的内容
