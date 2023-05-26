@@ -1,125 +1,129 @@
-name: "CodeQL"
+name: Analyse servers with CodeQL
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !contains(fromJSON('["refs/heads/master", "refs/heads/develop"]'), github.ref)}}
 
 on:
+  workflow_dispatch:
   push:
-    branches: [master, develop]
+    branches:
+      - master
+      - develop
     paths:
       - '.github/workflows/**'
       - 'tools/integration/**'
       - 'src/**'
       - '3rdparty/**'
   pull_request:
-    branches: [master, develop]
     paths:
       - '.github/workflows/**'
       - 'tools/integration/**'
       - 'src/**'
       - '3rdparty/**'
-  schedule:
-    - cron: '30 1 * * 0'
-
-env:
-  CACHE_VERSION: "2021-12-18"
 
 jobs:
   analyze-cpp:
     name: Analyze - C++
-    runs-on: ubuntu-latest
-    if: ${{ github.repository == 'PandasWS/Pandas' }}
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
+    if: ${{ !contains(fromJSON('["ci-skip", "skip-ci", "ql-skip", "skip-ql", "no-ci"]'), github.event.head_commit.message) }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        compiler_version: [9]
-        build_type: ['Debug'] # 'RelWithDebInfo'
-        configure_flags: ['-DENABLE_EXTRA_BUILDBOT_CODE=ON', '-DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=ON']
-        packetver: ['-DPACKETVER=20180620', '-DPACKETVER=20210107 -DPACKETVER_RE=ON']
+        os: [ubuntu-latest]
+        compiler_version: [10]
+        mode: ['PRE','RE']
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
-
-    - name: Preparing dependencies
-      run: |
-        ./tools/integration/retry.sh sudo apt-get update -y
-        ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
-
-    - name: Setup gcc compiler
-      uses: egor-tensin/setup-gcc@v1
-      with:
-        version: ${{ matrix.compiler_version }}
-
-    - name: Generate cache hash information
-      run: |
-        echo "$(cat /proc/version)" >> .CACHE_HASHFILE
-        echo "gcc${{ matrix.compiler_version }}" >> .CACHE_HASHFILE
-        echo "${{ matrix.build_type }}" >> .CACHE_HASHFILE
-        echo "${{ matrix.configure_flags }}" >> .CACHE_HASHFILE
-        echo "${{ matrix.packetver }}" >> .CACHE_HASHFILE
-        echo "${{ env.CACHE_VERSION }}" >> .CACHE_HASHFILE
-        cat .CACHE_HASHFILE
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
-        languages: cpp
-        config-file: ./.github/codeql/codeql-cpp.yml
-
-    - name: Build Pandas
-      run: |
-        mkdir cbuild && cd cbuild
-        cmake -G "Unix Makefiles" .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ${{ matrix.packetver }} ${{ matrix.configure_flags }}
-        make -j2
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
-
-  analyze-python:
-    name: Analyze - Python
-    runs-on: ubuntu-latest
-    if: ${{ github.repository == 'PandasWS/Pandas' }}
     permissions:
       actions: read
       contents: read
       security-events: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
-    - name: Install pipenv
-      run: pipx install pipenv
+      - name: Update & Install dependencies
+        run: |
+          ./tools/integration/retry.sh sudo apt-get update -y
+          ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
 
-    - name: Setup Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-        cache: 'pipenv'
-        cache-dependency-path: |
-          tools/python/Pipfile.lock
+      - name: Setup GCC compiler
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.compiler_version }}
 
-    - name: Preparing dependencies
-      working-directory: tools/python
-      run: pipenv install
+      - name: Variable Parsing - PRE
+        if: ${{ matrix.mode == 'PRE' }} 
+        run: |
+          echo "PRERE=ON" >> "$GITHUB_ENV"
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
-        languages: python
-        setup-python-dependencies: false
-        config-file: ./.github/codeql/codeql-python.yml
+      - name: Variable Parsing - RE
+        if: ${{ matrix.mode == 'RE' }} 
+        run: |
+          echo "PRERE=OFF" >> "$GITHUB_ENV"
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: cpp
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      - name: Build Pandas
+        run: |
+          mkdir cbuild && cd cbuild
+          cmake -G "Unix Makefiles" .. -DCMAKE_BUILD_TYPE=Debug -DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=${{ env.PRERE }}
+          make -j2
 
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  analyze-python:
+    name: Analyze - Python
+    if: ${{ !contains(fromJSON('["ci-skip", "skip-ci", "ql-skip", "skip-ql", "no-ci"]'), github.event.head_commit.message) }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+          cache-dependency-path: |
+            tools/python/Pipfile.lock
+
+      - name: Install dependencies
+        working-directory: tools/python
+        run: |
+          pipx install pipenv
+          pipenv install
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: python
+          setup-python-dependencies: false
+          config: |
+            paths:
+              - tools/python
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
