@@ -159,6 +159,9 @@ generated
 # Dlls
 /dbghelp.dll
 
+# OpenCC
+/db/dicts/*
+
 # VMProtect
 /VMProtectSDK32.dll
 /VMProtectSDK64.dll
