@@ -1278,6 +1278,13 @@
 // ============================================================================
 
 #ifdef Pandas_UserExperience
+	// 对 C++17 及更新的标准中禁用 register 关键字 [Sola丶小克]
+	// 因为 register 关键字在 C++17 中已被废弃, 且在 C++20 中已被移除
+	// 详见: https://en.cppreference.com/w/cpp/keyword/register
+	#if __cplusplus <= 201703L
+		#define Pandas_UserExperience_Disable_Register_Keyword
+	#endif // __cplusplus >= 201703L
+
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
 
