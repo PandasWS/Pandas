@@ -13,3 +13,4 @@ breakpad - A set of client and server components which implement a crash-reporti
 dbghelp -  It contains a set of debugging support routines that allow you to work with executable images in the portable executable (PE) format.
 fmt - library for fmtlib fmt (https://github.com/fmtlib/fmt/releases/tag/10.0.0)
 utfcpp - library for nemtrif utfcpp (https://github.com/nemtrif/utfcpp/releases/tag/v3.2.3)
+opencc - library for BYVoid OpenCC (https://github.com/BYVoid/OpenCC/releases/tag/ver.1.1.6)
