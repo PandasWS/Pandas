@@ -270,7 +270,11 @@ static int add_path(struct node_heap *heap, struct path_node *tp, int16 x, int16
  *------------------------------------------*/
 bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell)
 {
+#ifndef Pandas_UserExperience_Disable_Register_Keyword
 	register int i, x, y, dx = 0, dy = 0;
+#else
+	int i, x, y, dx = 0, dy = 0;
+#endif // Pandas_UserExperience_Disable_Register_Keyword
 	struct map_data *mapdata = map_getmapdata(m);
 	struct walkpath_data s_wpd;
 
