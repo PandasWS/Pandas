@@ -4646,63 +4646,75 @@ ACMD_FUNC(mapinfo) {
 	clif_displaymessage(fd, atcmd_output);
 
 #ifdef Pandas_Mapflags
-	strcpy(atcmd_output,msg_txt_cn(sd,100)); // 熊猫地图标记:
+	std::string atcmd_output_str(msg_txt_cn(sd, 100)); // 熊猫地图标记:
 	for (const auto& it : mapflag_config) {
 		int args_count = it.second.args.size();
 
 		if (map_getmapflag(m_id, it.first)) {
 			if (args_count == 0) {
-				// 使用 snprintf 提前获得拼接结果长度, 保存到变量中
-				int len = snprintf(nullptr, 0, "%s %s |", atcmd_output, it.second.name);
+				std::string temp_str = atcmd_output_str + " " + it.second.name + " |";
 
-				// 如果 len 加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX, 那么正常拼接
-				if (len + strlen(atcmd_output) < CHAT_SIZE_MAX) {
-					sprintf(atcmd_output, "%s %s |", atcmd_output, it.second.name);
+				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
+				// 那么就可以直接使用 temp_str 的内容
+				if (temp_str.size() < CHAT_SIZE_MAX - 1) {
+					atcmd_output_str = temp_str;
 				}
 				else {
-					// 否则先调用 clif_displaymessage 进行一次数据发送
+					// 先将 atcmd_output_str 放到 atcmd_output 中
+					strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+					atcmd_output[sizeof(atcmd_output) - 1] = '\0';
+
+					// 调用 clif_displaymessage 进行一次数据发送
 					clif_displaymessage(fd, atcmd_output);
-					// 清空 atcmd_output 缓冲区中的内容
-					memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+					// 清空 atcmd_output_str 缓冲区中的内容
+					atcmd_output_str.clear();
+
 					// 然后再尝试进行拼接工作
-					sprintf(atcmd_output, "%s %s |", atcmd_output, it.second.name);
+					atcmd_output_str = std::string(it.second.name) + " |";
 				}
 			}
 			else {
-				char args_mes[256] = { 0 };
+				std::string args_mes;
 				// 使用索引遍历 it.second.args
 				for (int i = 0; i < args_count; i++) {
 					const char* unit = it.second.args[i].unit;
 					if (unit == nullptr) {
 						unit = "";
 					}
-
-					sprintf(args_mes, "%s%d%s", args_mes, map_getmapflag_param(m_id, it.first, i + 1), unit);
-
+					args_mes += std::to_string(map_getmapflag_param(m_id, it.first, i + 1)) + unit;
 					// 如果不是最后一个参数, 那么在其末尾追加分隔符
 					if (i != args_count - 1) {
-						strcat(args_mes, ", ");
+						args_mes += ", ";
 					}
 				}
 
-				// 使用 snprintf 提前获得拼接结果长度, 保存到变量中
-				int len = snprintf(nullptr, 0, "%s %s: %s |", atcmd_output, it.second.name, args_mes);
+				std::string temp_str = atcmd_output_str + " " + it.second.name + ": " + args_mes + " |";
 
-				// 如果 len 加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX, 那么正常拼接
-				if (len + strlen(atcmd_output) < CHAT_SIZE_MAX) {
-					sprintf(atcmd_output, "%s %s: %s |", atcmd_output, it.second.name, args_mes);
+				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
+				// 那么就可以直接使用 temp_str 的内容
+				if (temp_str.size() < CHAT_SIZE_MAX - 1) {
+					atcmd_output_str = temp_str;
 				}
 				else {
-					// 否则先调用 clif_displaymessage 进行一次数据发送
+					// 先将 atcmd_output_str 放到 atcmd_output 中
+					strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+					atcmd_output[sizeof(atcmd_output) - 1] = '\0';
+
+					// 调用 clif_displaymessage 进行一次数据发送
 					clif_displaymessage(fd, atcmd_output);
-					// 清空 atcmd_output 缓冲区中的内容
-					memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+					// 清空 atcmd_output_str 缓冲区中的内容
+					atcmd_output_str.clear();
+
 					// 然后再尝试进行拼接工作
-					sprintf(atcmd_output, "%s %s: %s |", atcmd_output, it.second.name, args_mes);
+					atcmd_output_str = std::string(it.second.name) + ": " + args_mes + " |";
 				}
 			}
 		}
 	}
+	strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+	atcmd_output[sizeof(atcmd_output) - 1] = '\0';
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
 
