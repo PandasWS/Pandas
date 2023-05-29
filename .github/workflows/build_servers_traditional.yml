@@ -15,12 +15,14 @@ on:
       - 'tools/integration/**'
       - 'src/**'
       - '3rdparty/**'
+      - '**/CMakeLists.txt'
   pull_request:
     paths:
       - '.github/workflows/**'
       - 'tools/integration/**'
       - 'src/**'
       - '3rdparty/**'
+      - '**/CMakeLists.txt'
 
 jobs:
   build:
