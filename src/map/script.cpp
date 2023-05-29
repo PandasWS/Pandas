@@ -28311,8 +28311,8 @@ BUILDIN_FUNC(openbank){
 
 #ifdef Pandas_MapFlag_NoBank
 	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
-		// This map prohibit using the bank system.
-		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF);
+		// You cannot use the Bank on this map.
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt(sd, 831), false, SELF);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}

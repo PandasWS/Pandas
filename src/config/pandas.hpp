@@ -1699,7 +1699,7 @@
 	#define Pandas_MapFlag_NoSlave
 
 	// 是否启用 nobank 地图标记 [聽風]
-	// 该标记用于禁止玩家在地图上使用银行系统 (包括存款 / 提现操作)
+	// rAthena 官方已经实现此标记, 当前宏定义所包含的代码用于处理体验细节
 	#define Pandas_MapFlag_NoBank
 
 	// 是否启用 nouseitem 地图标记 [HongShin]
