@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        compiler_version: [11]
+        gcc: [11]
         mode: ['PRE', 'RE']
 
     steps:
@@ -53,7 +53,7 @@ jobs:
       - name: Setup GCC compiler
         uses: egor-tensin/setup-gcc@v1
         with:
-          version: ${{ matrix.compiler_version }}
+          version: ${{ matrix.gcc }}
 
       - name: Variable Parsing - PRE
         if: ${{ matrix.mode == 'PRE' }} 
