@@ -4,7 +4,9 @@
 #include "elemental.hpp"
 
 #include <cstring>
+#ifndef __STDCPP17_AND_NEWER
 #include <ctgmath> //floor
+#endif // __STDCPP17_AND_NEWER
 #include <math.h>
 #include <stdlib.h>
 
