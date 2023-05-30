@@ -418,6 +418,9 @@ int web_sql_close(void)
  *  dealloc..., function called at exit of the web-server
  */
 void WebServer::finalize(){
+#ifdef Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	printf("\n");
+#endif // Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	ShowStatus("Terminating...\n");
 #ifdef WEB_SERVER_ENABLE
 	http_server->stop();
