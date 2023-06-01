@@ -565,9 +565,11 @@ void write_npc_distances() {
 		int npc_processed = 0;
 #endif // Pandas_UserExperience_MapServerGenerator_Output
 		auto m = map_getmapdata(mapid);
+#ifndef Pandas_UserExperience_MapServerGenerator_Output
 #ifdef DETAILED_LOADING_OUTPUT
 		ShowStatus("Loading [%i/%i]" CL_CLL "\r", mapid, map_num);
 #endif
+#endif // Pandas_UserExperience_MapServerGenerator_Output
 		if (m->navi.npcs.size() == 0) {
 			// ShowStatus("Skipped %s NPC distance table, no NPCs in map (%d/%d)\n", map[m].name, m, map_num);
 			continue;
