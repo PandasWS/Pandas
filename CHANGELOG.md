@@ -1216,6 +1216,7 @@
 
 -------------------------------------------------------------------------------
 
+[v1.2.0]: https://github.com/PandasWS/Pandas/compare/v1.1.19...v1.2.0
 [v1.1.19]: https://github.com/PandasWS/Pandas/compare/v1.1.18...v1.1.19
 [v1.1.18]: https://github.com/PandasWS/Pandas/compare/v1.1.17...v1.1.18
 [v1.1.17]: https://github.com/PandasWS/Pandas/compare/v1.1.16...v1.1.17
