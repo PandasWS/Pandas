@@ -9,14 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/malloc.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/malloc.hpp>
+#include <common/nullpo.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 
 #include "battle.hpp"
 #include "chrif.hpp"
@@ -439,7 +439,7 @@ AchievementLevelDatabase achievement_level_db;
  * @param achievement_id: Achievement to add
  * @return NULL on failure, achievement data on success
  */
-struct achievement *achievement_add(struct map_session_data *sd, int achievement_id)
+struct achievement *achievement_add(map_session_data *sd, int achievement_id)
 {
 	int i, index;
 
@@ -485,7 +485,7 @@ struct achievement *achievement_add(struct map_session_data *sd, int achievement
  * @param achievement_id: Achievement to remove
  * @return True on success, false on failure
  */
-bool achievement_remove(struct map_session_data *sd, int achievement_id)
+bool achievement_remove(map_session_data *sd, int achievement_id)
 {
 	struct achievement dummy;
 	int i;
@@ -532,7 +532,7 @@ bool achievement_remove(struct map_session_data *sd, int achievement_id)
  * @param achievement_id: Achievement to check if it's complete
  * @return True on completed, false if not
  */
-static bool achievement_done(struct map_session_data *sd, int achievement_id) {
+static bool achievement_done(map_session_data *sd, int achievement_id) {
 	for (int i = 0; i < sd->achievement_data.count; i++) {
 		if (sd->achievement_data.achievements[i].achievement_id == achievement_id && sd->achievement_data.achievements[i].completed > 0)
 			return true;
@@ -547,7 +547,7 @@ static bool achievement_done(struct map_session_data *sd, int achievement_id) {
  * @param achievement_id: Achievement to check if it has a dependent
  * @return False on failure or not complete, true on complete or no dependents
  */
-bool achievement_check_dependent(struct map_session_data *sd, int achievement_id)
+bool achievement_check_dependent(map_session_data *sd, int achievement_id)
 {
 	nullpo_retr(false, sd);
 
@@ -573,7 +573,7 @@ bool achievement_check_dependent(struct map_session_data *sd, int achievement_id
  * @param sd: Achievement to compare for completed dependents
  * @return True if successful, false if not
  */
-static int achievement_check_groups(struct map_session_data *sd, struct s_achievement_db *ad)
+static int achievement_check_groups(map_session_data *sd, struct s_achievement_db *ad)
 {
 	int i;
 
@@ -604,7 +604,7 @@ static int achievement_check_groups(struct map_session_data *sd, struct s_achiev
  * @param complete: Complete state of an achievement
  * @return True if successful, false if not
  */
-bool achievement_update_achievement(struct map_session_data *sd, int achievement_id, bool complete)
+bool achievement_update_achievement(map_session_data *sd, int achievement_id, bool complete)
 {
 	int i;
 
@@ -658,7 +658,7 @@ bool achievement_update_achievement(struct map_session_data *sd, int achievement
  * @param sd: Player getting the reward
  * @param achievement_id: Achievement to get reward data
  */
-void achievement_get_reward(struct map_session_data *sd, int achievement_id, time_t rewarded)
+void achievement_get_reward(map_session_data *sd, int achievement_id, time_t rewarded)
 {
 	int i;
 
@@ -699,7 +699,7 @@ void achievement_get_reward(struct map_session_data *sd, int achievement_id, tim
  * @param sd: Player to get reward
  * @param achievement_id: Achievement to get reward data
  */
-void achievement_check_reward(struct map_session_data *sd, int achievement_id)
+void achievement_check_reward(map_session_data *sd, int achievement_id)
 {
 	int i;
 
@@ -735,7 +735,7 @@ void achievement_check_reward(struct map_session_data *sd, int achievement_id)
  */
 void achievement_get_titles(uint32 char_id)
 {
-	struct map_session_data *sd = map_charid2sd(char_id);
+	map_session_data *sd = map_charid2sd(char_id);
 
 	if (sd) {
 		sd->titles.clear();
@@ -757,7 +757,7 @@ void achievement_get_titles(uint32 char_id)
  * Frees the player's data for achievements
  * @param sd: Player's session
  */
-void achievement_free(struct map_session_data *sd)
+void achievement_free(map_session_data *sd)
 {
 	nullpo_retv(sd);
 
@@ -775,7 +775,7 @@ void achievement_free(struct map_session_data *sd)
  * @param type: Type to return
  * @return The type's data, -1 if player doesn't have achievement, -2 on failure/incorrect type
  */
-int achievement_check_progress(struct map_session_data *sd, int achievement_id, int type)
+int achievement_check_progress(map_session_data *sd, int achievement_id, int type)
 {
 	int i;
 
@@ -808,7 +808,7 @@ int achievement_check_progress(struct map_session_data *sd, int achievement_id, 
  * @param flag: If the call should attempt to give the AG_GOAL_ACHIEVE achievement
  * @return Rollover and TNL EXP or 0 on failure
  */
-int *achievement_level(struct map_session_data *sd, bool flag)
+int *achievement_level(map_session_data *sd, bool flag)
 {
 	nullpo_retr(nullptr, sd);
 
@@ -872,8 +872,8 @@ int *achievement_level(struct map_session_data *sd, bool flag)
 	return info;
 }
 
-bool achievement_check_condition( struct script_code* condition, struct map_session_data* sd ){
 #ifndef Pandas_ScriptEngine_MutliStackBackup
+bool achievement_check_condition( struct script_code* condition, map_session_data* sd ){
 	// Save the old script the player was attached to
 	struct script_state* previous_st = sd->st;
 
@@ -882,7 +882,6 @@ bool achievement_check_condition( struct script_code* condition, struct map_sess
 		// Detach the player from the current script
 		script_detach_rid(previous_st);
 	}
-#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	run_script( condition, 0, sd->bl.id, fake_nd->bl.id );
 
@@ -893,14 +892,9 @@ bool achievement_check_condition( struct script_code* condition, struct map_sess
 	if( st != nullptr ){
 		value = script_getnum( st, 2 );
 
-#ifdef Pandas_ScriptEngine_MutliStackBackup
-		script_detach_state(st, false);
-#endif // Pandas_ScriptEngine_MutliStackBackup
-
 		script_free_state(st);
 	}
 
-#ifndef Pandas_ScriptEngine_MutliStackBackup
 	// If an old script is present
 	if( previous_st != nullptr ){
 		// Because of detach the RID will be removed, so we need to restore it
@@ -909,10 +903,37 @@ bool achievement_check_condition( struct script_code* condition, struct map_sess
 		// Reattach the player to it, so that the limitations of that script kick back in
 		script_attach_state( previous_st );
 	}
-#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	return value != 0;
 }
+#else
+bool achievement_check_condition(struct script_code* condition, map_session_data* sd) {
+	// 执行条件脚本之前, 先备份一下当前玩家的 st 指针
+	struct script_state* origin_st = sd->st;
+
+	// run_script 会隐含的创建一个新的 st 指针
+	run_script(condition, 0, sd->bl.id, fake_nd->bl.id);
+
+	// 执行条件脚本之后, 再记录一下当前玩家的 st 指针
+	struct script_state* st = sd->st;
+
+	int value = 0;
+
+	if (st != nullptr) {
+		value = script_getnum(st, 2);
+
+		script_detach_state(st, false);
+
+		// 只有当执行 run_script 前后的 st 指针不相同,
+		// 才意味着这个 st 是 run_script 为了执行本次条件脚本而创建的.
+		// 这种情况下才需要执行释放工作.
+		if (st != origin_st)
+			script_free_state(st);
+	}
+
+	return value != 0;
+}
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 /**
  * Check to see if an achievement's target count is complete
@@ -935,7 +956,7 @@ static bool achievement_target_complete(std::shared_ptr<s_achievement_db> ad, st
  * @param update_count: Objective values from event
  * @return 1 on success and false on failure
  */
-static bool achievement_update_objectives(struct map_session_data *sd, std::shared_ptr<struct s_achievement_db> ad, enum e_achievement_group group, const std::array<int, MAX_ACHIEVEMENT_OBJECTIVES> &update_count)
+static bool achievement_update_objectives(map_session_data *sd, std::shared_ptr<struct s_achievement_db> ad, enum e_achievement_group group, const std::array<int, MAX_ACHIEVEMENT_OBJECTIVES> &update_count)
 {
 	if (!ad || !sd)
 		return false;
@@ -1095,7 +1116,7 @@ static bool achievement_update_objectives(struct map_session_data *sd, std::shar
  * @param sp_value: SP parameter value
  * @param arg_count: va_arg count
  */
-void achievement_update_objective(struct map_session_data *sd, enum e_achievement_group group, uint8 arg_count, ...)
+void achievement_update_objective(map_session_data *sd, enum e_achievement_group group, uint8 arg_count, ...)
 {
 	if (!battle_config.feature_achievement)
 		return;

@@ -25,21 +25,17 @@
 #include <linux/limits.h> // PATH_MAX
 #endif // _WIN32
 
-#include <boost/regex.hpp>
-#include <boost/date_time/local_time/local_time.hpp>
+#include <regex>
+#include <fmt/core.h>
+#include <utf8.h>
 
 #include "strlib.hpp"
 #include "db.hpp"
 #include "showmsg.hpp"
 #include "utils.hpp" // check_filepath
+#include "utilities.hpp"
 
 #include "processmutex.hpp"
-
-#ifdef _WIN32
-	const std::string pathSep = "\\";
-#else
-	const std::string pathSep = "/";
-#endif // _WIN32
 
 extern "C" int __isa_available;
 
@@ -53,7 +49,7 @@ void systemPause() {
 #ifdef _WIN32
 	system("pause");
 #else
-	system("read");
+	int _unused = system("read");
 #endif // _WIN32
 }
 
@@ -68,14 +64,14 @@ void systemPause() {
 bool isRegexMatched(const std::string& content, const std::string& patterns) {
 	try
 	{
-		boost::regex re(patterns, boost::regex::icase);
-		boost::smatch match_result;
+		std::regex re(patterns, std::regex::icase);
+		std::smatch match_result;
 
-		if (!boost::regex_search(content, match_result, re)) {
+		if (!std::regex_search(content, match_result, re)) {
 			return false;
 		}
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return false;
@@ -96,10 +92,10 @@ bool isRegexMatched(const std::string& content, const std::string& patterns) {
 std::string regexExtract(const std::string& content, const std::string& patterns, size_t extract_group, bool icase) {
 	try
 	{
-		boost::regex re(patterns, icase ? boost::regex::icase : boost::regex::normal);
-		boost::smatch match_result;
+		std::regex re(patterns, icase ? std::regex::icase : std::regex::ECMAScript);
+		std::smatch match_result;
 
-		if (!boost::regex_search(content, match_result, re)) {
+		if (!std::regex_search(content, match_result, re)) {
 			return "";
 		}
 
@@ -109,7 +105,7 @@ std::string regexExtract(const std::string& content, const std::string& patterns
 
 		return match_result[extract_group];
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowWarning("%s throw regex_error : %s\n", __func__, e.what());
 		return "";
@@ -132,13 +128,12 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 	if (!getExecuteFileDirectory(workDirectory)) {
 		return false;
 	}
-	ensurePathEndwithSep(workDirectory, pathSep);
 
 	std::string fromDirectory = workDirectory + fromImportDir;
 	std::string toDirectory = workDirectory + toImportDir;
 
-	ensurePathEndwithSep(fromDirectory, pathSep);
-	ensurePathEndwithSep(toDirectory, pathSep);
+	ensurePathEndwithSep(fromDirectory, PATH_SEPARATOR);
+	ensurePathEndwithSep(toDirectory, PATH_SEPARATOR);
 
 	standardizePathSep(fromDirectory);
 	standardizePathSep(toDirectory);
@@ -169,7 +164,7 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 		if (check_filepath(toFullPath.c_str()) != 3) continue;
 
 		std::string displayTargetPath = toImportDir;
-		ensurePathEndwithSep(displayTargetPath, pathSep);
+		ensurePathEndwithSep(displayTargetPath, PATH_SEPARATOR);
 		displayTargetPath = displayTargetPath + fdFileData.cFileName;
 		standardizePathSep(displayTargetPath);
 
@@ -201,7 +196,7 @@ bool deployImportDirectory(std::string fromImportDir, std::string toImportDir) {
 		if (check_filepath(toFullPath.c_str()) != 0) continue;
 
 		std::string displayTargetPath = toImportDir;
-		ensurePathEndwithSep(displayTargetPath, pathSep);
+		ensurePathEndwithSep(displayTargetPath, PATH_SEPARATOR);
 		displayTargetPath = displayTargetPath + dt->d_name;
 		standardizePathSep(displayTargetPath);
 
@@ -256,7 +251,7 @@ void deployImportDirectories() {
 
 //************************************
 // Method:      getExecuteFilepath
-// Description: 获取当前进程的文件路径 (暂时不支持 Windows 以外的系统平台)
+// Description: 获取当前进程的文件路径 (跨平台支持)
 // Parameter:   std::string & outFilepath
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/14 23:55
@@ -302,7 +297,7 @@ bool getExecuteFilepath(std::string& outFilepath) {
 
 //************************************
 // Method:      getExecuteFileDirectory
-// Description: 获取当前进程的所在目录
+// Description: 获取当前进程的所在目录 (返回的路径结尾包含路径分隔符)
 // Parameter:   std::string & outFileDirectory
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/14 23:55
@@ -314,13 +309,14 @@ bool getExecuteFileDirectory(std::string& outFileDirectory) {
 		return false;
 	}
 
-	std::size_t dwPos = filePath.rfind(pathSep);
+	std::size_t dwPos = filePath.rfind(PATH_SEPARATOR);
 	if (dwPos == std::string::npos) {
 		outFileDirectory = "";
 		return false;
 	}
 
 	outFileDirectory = filePath.substr(0, dwPos);
+	ensurePathEndwithSep(outFileDirectory, PATH_SEPARATOR);
 	return true;
 }
 
@@ -334,11 +330,11 @@ bool getExecuteFileDirectory(std::string& outFileDirectory) {
 bool isDirectoryExists(const std::string& path) {
 	try
 	{
-		boost::filesystem::path dirpath(path);
-		dirpath = dirpath.generic_path();
-		return boost::filesystem::is_directory(dirpath);
+		std::filesystem::path dirpath(path);
+		dirpath = dirpath.lexically_normal();
+		return std::filesystem::is_directory(dirpath);
 	}
-	catch (const boost::filesystem::filesystem_error &e)
+	catch (const std::filesystem::filesystem_error &e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -355,12 +351,12 @@ bool isDirectoryExists(const std::string& path) {
 bool makeDirectories(const std::string& dirpath) {
 	try
 	{
-		boost::filesystem::path path(dirpath);
-		path = path.generic_path();
+		std::filesystem::path path(dirpath);
+		path = path.lexically_normal();
 		if (isDirectoryExists(dirpath) || isFileExists(dirpath)) return true;
-		return boost::filesystem::create_directories(path);
+		return std::filesystem::create_directories(path);
 	}
-	catch (const boost::filesystem::filesystem_error &e)
+	catch (const std::filesystem::filesystem_error &e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -369,7 +365,7 @@ bool makeDirectories(const std::string& dirpath) {
 
 //************************************
 // Method:      ensureDirectories
-// Description: 确保给定的文件路径其对应的目录 (跨平台支持)
+// Description: 确保给定的文件路径其对应的目录存在 (跨平台支持)
 // Parameter:   const std::string & filepath 文件路径
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2021/1/12 00:02
@@ -377,11 +373,11 @@ bool makeDirectories(const std::string& dirpath) {
 bool ensureDirectories(const std::string& filepath) {
 	try
 	{
-		boost::filesystem::path path(filepath);
-		path = path.generic_path().parent_path();
+		std::filesystem::path path(filepath);
+		path = path.lexically_normal().parent_path();
 		return makeDirectories(path.string());
 	}
-	catch (const boost::filesystem::filesystem_error& e)
+	catch (const std::filesystem::filesystem_error& e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -398,12 +394,12 @@ bool ensureDirectories(const std::string& filepath) {
 bool deleteDirectory(std::string path) {
 	try
 	{
-		boost::filesystem::path dirpath(path);
-		dirpath = dirpath.generic_path();
-		boost::filesystem::remove_all(dirpath);
+		std::filesystem::path dirpath(path);
+		dirpath = dirpath.lexically_normal();
+		std::filesystem::remove_all(dirpath);
 		return true;
 	}
-	catch (const boost::filesystem::filesystem_error &e)
+	catch (const std::filesystem::filesystem_error &e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -418,21 +414,23 @@ bool deleteDirectory(std::string path) {
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:21
 //************************************
-bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem::path &to) {
+bool copyDirectory(const std::filesystem::path &from, const std::filesystem::path &to) {
 	try
 	{
-		if (boost::filesystem::exists(to)) {
+		if (std::filesystem::exists(to)) {
 			throw std::runtime_error("The path "+ to.generic_string() + " is already exists.");
 		}
 
-		if (boost::filesystem::is_directory(from)) {
-			boost::filesystem::create_directories(to);
-			for (boost::filesystem::directory_entry& item : boost::filesystem::directory_iterator(from)) {
+		if (std::filesystem::is_directory(from)) {
+			std::filesystem::create_directories(to);
+			for (const auto& item : std::filesystem::directory_iterator(from)) {
 				copyDirectory(item.path(), to / item.path().filename());
 			}
 		}
-		else if (boost::filesystem::is_regular_file(from)) {
-			boost::filesystem::copy(from, to);
+		else if (std::filesystem::is_regular_file(from)) {
+			std::filesystem::copy_file(
+				from, to, std::filesystem::copy_options::overwrite_existing
+			);
 		}
 		else {
 			throw std::runtime_error("The path " + to.generic_string() + " is not directory or file.");
@@ -457,11 +455,11 @@ bool copyDirectory(const boost::filesystem::path &from, const boost::filesystem:
 bool isFileExists(const std::string& path) {
 	try
 	{
-		boost::filesystem::path filepath(path);
-		filepath = filepath.generic_path();
-		return boost::filesystem::is_regular_file(filepath);
+		std::filesystem::path filepath(path);
+		filepath = filepath.lexically_normal();
+		return std::filesystem::is_regular_file(filepath);
 	}
-	catch (const boost::filesystem::filesystem_error& e)
+	catch (const std::filesystem::filesystem_error& e)
 	{
 		ShowWarning("%s: %s\n", __func__, e.what());
 		return false;
@@ -479,19 +477,19 @@ bool isFileExists(const std::string& path) {
 bool copyFile(const std::string& from, const std::string& to) {
 	try
 	{
-		boost::filesystem::path frompath(from);
-		frompath = frompath.generic_path();
+		std::filesystem::path frompath(from);
+		frompath = frompath.lexically_normal();
 
-		boost::filesystem::path topath(to);
-		topath = topath.generic_path();
+		std::filesystem::path topath(to);
+		topath = topath.lexically_normal();
 
-		boost::filesystem::copy_file(
+		std::filesystem::copy_file(
 			frompath, topath,
-			boost::filesystem::copy_option::overwrite_if_exists
+			std::filesystem::copy_options::overwrite_existing
 		);
 		return true;
 	}
-	catch (const boost::filesystem::filesystem_error&)
+	catch (const std::filesystem::filesystem_error&)
 	{
 		return false;
 	}
@@ -508,11 +506,11 @@ bool copyFile(const std::string& from, const std::string& to) {
 bool deleteFile(const std::string& path) {
 	try
 	{
-		boost::filesystem::path filepath(path);
-		filepath = filepath.generic_path();
-		return boost::filesystem::remove(filepath);
+		std::filesystem::path filepath(path);
+		filepath = filepath.lexically_normal();
+		return std::filesystem::remove(filepath);
 	}
-	catch (const boost::filesystem::filesystem_error&)
+	catch (const std::filesystem::filesystem_error&)
 	{
 		return false;
 	}
@@ -612,17 +610,6 @@ bool strContain(std::string needle, const std::string& str) {
 }
 
 //************************************
-// Method:      strTrim
-// Description: 移除给定 std::string 字符串左右两侧的空白字符
-// Parameter:   const std::string & s
-// Returns:     std::string
-// Author:      Sola丶小克(CairoLee)  2019/10/13 23:46
-//************************************
-std::string strTrim(const std::string& s) {
-	return boost::trim_copy(s);
-}
-
-//************************************
 // Method:      strExplode
 // Description: 将给定的 s 字符串按 delim 字符进行切割
 // Parameter:   std::string const & s
@@ -707,13 +694,8 @@ bool strEndWith(std::wstring fullstring, std::wstring ending) {
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:24
 //************************************
 void standardizePathSep(std::string& path) {
-#ifdef _WIN32
-	char pathsep[] = "\\";
-#else
-	char pathsep[] = "/";
-#endif // _WIN32
-	strReplace(path, "/", pathsep);
-	strReplace(path, "\\", pathsep);
+	strReplace(path, "/", PATH_SEPARATOR);
+	strReplace(path, "\\", PATH_SEPARATOR);
 }
 
 //************************************
@@ -726,24 +708,19 @@ void standardizePathSep(std::string& path) {
 // Author:      Sola丶小克(CairoLee)  2019/09/16 08:24
 //************************************
 void standardizePathSep(std::wstring& path) {
-#ifdef _WIN32
-	wchar_t pathsep[] = L"\\";
-#else
-	wchar_t pathsep[] = L"/";
-#endif // _WIN32
-	strReplace(path, L"/", pathsep);
-	strReplace(path, L"\\", pathsep);
+	strReplace(path, L"/", WIDE_PATH_SEPARATOR);
+	strReplace(path, L"\\", WIDE_PATH_SEPARATOR);
 }
 
 //************************************
 // Method:      ensurePathEndwithSep
 // Description: 确保指定的 std::string 路径使用 sep 结尾
 // Parameter:   std::string & path
-// Parameter:   std::string sep
+// Parameter:   const std::string & sep
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2019/09/16 07:34
 //************************************
-void ensurePathEndwithSep(std::string& path, std::string sep) {
+void ensurePathEndwithSep(std::string& path, const std::string& sep) {
 	if (!(strEndWith(path, "\\") || strEndWith(path, "/"))) {
 		path.append(sep);
 	}
@@ -753,11 +730,11 @@ void ensurePathEndwithSep(std::string& path, std::string sep) {
 // Method:      ensurePathEndwithSep
 // Description: 确保指定的 std::wstring 路径使用 sep 结尾
 // Parameter:   std::wstring & path
-// Parameter:   std::wstring sep
+// Parameter:   const std::wstring & sep
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2019/09/16 07:35
 //************************************
-void ensurePathEndwithSep(std::wstring& path, std::wstring sep) {
+void ensurePathEndwithSep(std::wstring& path, const std::wstring& sep) {
 	if (!(strEndWith(path, L"\\") || strEndWith(path, L"/"))) {
 		path.append(sep);
 	}
@@ -771,7 +748,9 @@ void ensurePathEndwithSep(std::wstring& path, std::wstring sep) {
 // Author:      Sola丶小克(CairoLee)  2019/11/05 15:32
 //************************************
 std::wstring strToWideStr(const std::string& s) {
-	return boost::locale::conv::utf_to_utf<wchar_t>(s);
+	std::wstring ws;
+	utf8::utf8to16(s.begin(), s.end(), std::back_inserter(ws));
+	return ws;
 }
 
 //************************************
@@ -782,7 +761,9 @@ std::wstring strToWideStr(const std::string& s) {
 // Author:      Sola丶小克(CairoLee)  2019/11/05 15:32
 //************************************
 std::string wideStrToStr(const std::wstring& ws) {
-	return boost::locale::conv::utf_to_utf<char>(ws);
+	std::string s;
+	utf8::utf16to8(ws.begin(), ws.end(), std::back_inserter(s));
+	return s;
 }
 
 //************************************
@@ -797,23 +778,21 @@ std::string wideStrToStr(const std::wstring& ws) {
 //************************************
 std::string formatVersion(std::string ver, bool bPrefix, bool bSuffix, int ver_type) {
 	std::vector<std::string> split;
-	boost::split(split, ver, boost::is_any_of("."));
+	split = strExplode(ver, '.');
+
+	std::string prefix = bPrefix ? "v" : "";
+	std::string suffix;
 
 	if (ver_type == 0) {
-		std::string suffix = split[split.size() - 1] == "1" ? "-dev" : "";
-		return ver = boost::str(
-			boost::format("%1%%2%.%3%.%4%%5%") %
-			(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
-		);
+		suffix = split.back() == "1" ? "-dev" : "";
 	}
 	else {
-		std::string suffix = split[split.size() - 1];
-		suffix = (suffix != "0" ? " Rev." + suffix : "");
-		return ver = boost::str(
-			boost::format("%1%%2%.%3%.%4%%5%") %
-			(bPrefix ? "v" : "") % split[0] % split[1] % split[2] % (bSuffix ? suffix : "")
-		);
+		suffix = split.back() != "0" ? fmt::format(" Rev.{}", split.back()) : "";
 	}
+
+	suffix = bSuffix ? suffix : "";
+
+	return fmt::format("{}{}.{}.{}{}", prefix, split[0], split[1], split[2], suffix);
 }
 
 //************************************
@@ -883,11 +862,11 @@ std::string getPandasVersion(bool bPrefix, bool bSuffix) {
 		UINT nItemLength = 0;
 		if (VerQueryValue(pVersionInfo, "\\", &lpBuffer, &nItemLength)) {
 			VS_FIXEDFILEINFO *pFileInfo = (VS_FIXEDFILEINFO*)lpBuffer;
-			std::string szVersionFormat = (isCommercialVersion() ? "%1$04d.%2$02d.%3$02d.%4%" : "%1%.%2%.%3%.%4%");
+			std::string szVersionFormat = (isCommercialVersion() ? "{:04}.{:02}.{:02}.{}" : "{}.{}.{}.{}");
 
-			std::string sFileVersion = boost::str(boost::format(szVersionFormat) %
-				HIWORD(pFileInfo->dwFileVersionMS) % LOWORD(pFileInfo->dwProductVersionMS) % 
-				HIWORD(pFileInfo->dwProductVersionLS) % LOWORD(pFileInfo->dwProductVersionLS)
+			std::string sFileVersion = fmt::format(szVersionFormat,
+				HIWORD(pFileInfo->dwFileVersionMS), LOWORD(pFileInfo->dwProductVersionMS),
+				HIWORD(pFileInfo->dwProductVersionLS), LOWORD(pFileInfo->dwProductVersionLS)
 			);
 
 			delete[] pVersionInfo;
@@ -995,32 +974,6 @@ bool isEscapeSequence(const char* start_p) {
 }
 
 //************************************
-// Method:      convertRFC2822toTimeStamp
-// Description: 将符合 RFC2822 标准的时间字符串转换成时间戳
-// Access:      public 
-// Parameter:   std::string strRFC822Date
-//				例如: Sun, 23 Jan 2022 05:03:50 GMT
-// Returns:     int
-// Author:      Sola丶小克(CairoLee)  2022/01/23 13:17
-//************************************ 
-int convertRFC2822toTimeStamp(std::string strRFC822Date)
-{
-	boost::posix_time::ptime pt;
-	boost::posix_time::time_input_facet* tif(
-		new boost::posix_time::time_input_facet("%a, %d %b %Y %H:%M:%S GMT")
-	);
-
-	std::stringstream ss;
-	ss.imbue(std::locale(std::locale::classic(), tif));
-	ss.str(strRFC822Date);
-	ss >> pt;
-
-	boost::posix_time::ptime time_t_begin(boost::gregorian::date(1970, 1, 1));
-	boost::posix_time::time_duration timestamp = pt - time_t_begin;
-	return (int)timestamp.total_seconds();
-}
-
-//************************************
 // Method:      isaAvailableHotfix
 // Description: 修正在支持 AVX512 指令的设备上
 //              使用 std::unordered_map::reserve 会提示 Illegal instruction 的问题
@@ -1033,4 +986,21 @@ void isaAvailableHotfix() {
 		__isa_available = 5;
 	}
 #endif // (_MSC_VER == 1923)
+}
+
+//************************************
+// Method:      icontains
+// Description: 不区分大小写情况下 haystack 字符串中是否包含 needle 字符串
+// Parameter:   const std::string & haystack
+// Parameter:   const std::string & needle
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2023/05/20 19:22
+//************************************
+bool icontains(const std::string& haystack, const std::string& needle) {
+	auto it = std::search(
+		haystack.begin(), haystack.end(),
+		needle.begin(), needle.end(),
+		[](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+	);
+	return (it != haystack.end());
 }

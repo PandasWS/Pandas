@@ -7,8 +7,8 @@
 #include <iostream>
 #include <ostream>
 
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp"
+#include <common/showmsg.hpp>
+#include <common/socket.hpp>
 
 #include "auth.hpp"
 #include "http.hpp"
@@ -21,15 +21,9 @@
 
 #ifndef Pandas_WebServer_Rewrite_Controller_HandlerFunc
 
-std::string getUniqueFileName(const int guild_id, const std::string& world_name, const int version) {
-	auto stream = std::ostringstream();
-	stream << world_name << "_" << guild_id << "_" << version;
-	return stream.str();
-}
-
 HANDLER_FUNC(emblem_download) {
 	if (!isAuthorized(req, false)) {
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -44,7 +38,7 @@ HANDLER_FUNC(emblem_download) {
 		fail = true;
 	}
 	if (fail) {
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -56,7 +50,7 @@ HANDLER_FUNC(emblem_download) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version`, `file_type`, `file_data` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
@@ -67,7 +61,7 @@ HANDLER_FUNC(emblem_download) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -81,7 +75,7 @@ HANDLER_FUNC(emblem_download) {
 		SqlStmt_Free(stmt);
 		ShowError("[GuildID: %d / World: \"%s\"] Not found in table\n", guild_id, world_name);
 		sl.unlock();
-		res.status = 404;
+		res.status = HTTP_NOT_FOUND;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -95,7 +89,7 @@ HANDLER_FUNC(emblem_download) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -105,7 +99,7 @@ HANDLER_FUNC(emblem_download) {
 
 	if (emblem_size > MAX_EMBLEM_SIZE) {
 		ShowDebug("Emblem is too big, current size is %d and the max length is %d.\n", emblem_size, MAX_EMBLEM_SIZE);
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -116,7 +110,7 @@ HANDLER_FUNC(emblem_download) {
 		content_type = "image/gif";
 	else {
 		ShowError("Invalid image type %s, rejecting!\n", filetype);
-		res.status = 404;
+		res.status = HTTP_NOT_FOUND;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -128,30 +122,30 @@ HANDLER_FUNC(emblem_download) {
 
 HANDLER_FUNC(emblem_upload) {
 	if (!isAuthorized(req, true)) {
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
 
 	bool fail = false;
 	if (!req.has_file("GDID")) {
-		ShowDebug("Missing GuildID field for emblem download.\n");
+		ShowDebug("Missing GuildID field for emblem upload.\n");
 		fail = true;
 	}
 	if (!req.has_file("WorldName")) {
-		ShowDebug("Missing WorldName field for emblem download.\n");
+		ShowDebug("Missing WorldName field for emblem upload.\n");
 		fail = true;
 	}
 	if (!req.has_file("Img")) {
-		ShowDebug("Missing Img field for emblem download.\n");
+		ShowDebug("Missing Img field for emblem upload.\n");
 		fail = true;
 	}
 	if (!req.has_file("ImgType")) {
-		ShowDebug("Missing ImgType for emblem download.\n");
+		ShowDebug("Missing ImgType for emblem upload.\n");
 		fail = true;
 	}
 	if (fail) {
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -166,7 +160,7 @@ HANDLER_FUNC(emblem_upload) {
 	
 	if (imgtype_str != "BMP" && imgtype_str != "GIF") {
 		ShowError("Invalid image type %s, rejecting!\n", imgtype);
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -174,7 +168,7 @@ HANDLER_FUNC(emblem_upload) {
 	auto length = img.length();
 	if (length > MAX_EMBLEM_SIZE) {
 		ShowDebug("Emblem is too big, current size is %lu and the max length is %d.\n", length, MAX_EMBLEM_SIZE);
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -182,38 +176,39 @@ HANDLER_FUNC(emblem_upload) {
 	if (imgtype_str == "GIF") {
 		if (!web_config.allow_gifs) {
 			ShowDebug("Client sent GIF image but GIF image support is disabled.\n");
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
 		if (img.substr(0, 3) != "GIF") {
 			ShowDebug("Server received ImgType GIF but received file does not start with \"GIF\" magic header.\n");
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
+		// TODO: transparency check for GIF emblems
 	}
 	else if (imgtype_str == "BMP") {
 		if (length < 14) {
 			ShowDebug("File size is too short\n");
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
 		if (img.substr(0, 2) != "BM") {
 			ShowDebug("Server received ImgType BMP but received file does not start with \"BM\" magic header.\n");
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
 		if (RBUFL(img_cstr, 2) != length) {
 			ShowDebug("Bitmap size doesn't match size in file header.\n");
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
 
-		if (web_config.emblem_transparency_limit < 100) {
+		if (inter_config.emblem_transparency_limit < 100) {
 			uint32 offset = RBUFL(img_cstr, 0x0A);
 			int i, transcount = 1, tmp[3];
 			for (i = offset; i < length - 1; i++) {
@@ -222,9 +217,9 @@ HANDLER_FUNC(emblem_upload) {
 				if (j == 2 && (tmp[0] == 0xFFFF00FF) && (tmp[1] == 0xFFFF00) && (tmp[2] == 0xFF00FFFF)) //if pixel is transparent
 					transcount++;
 			}
-			if (((transcount * 300) / (length - offset)) > web_config.emblem_transparency_limit) {
+			if (((transcount * 300) / (length - offset)) > inter_config.emblem_transparency_limit) {
 				ShowDebug("Bitmap transparency check failed.\n");
-				res.status = 400;
+				res.status = HTTP_BAD_REQUEST;
 				res.set_content("Error", "text/plain");
 				return;
 			}
@@ -234,7 +229,7 @@ HANDLER_FUNC(emblem_upload) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt * stmt = SqlStmt_Malloc(handle);
 	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
 			"SELECT `version` FROM `%s` WHERE (`guild_id` = ? AND `world_name` = ?)",
 			guild_emblems_table)
@@ -245,7 +240,7 @@ HANDLER_FUNC(emblem_upload) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -259,7 +254,7 @@ HANDLER_FUNC(emblem_upload) {
 			SqlStmt_ShowDebug(stmt);
 			SqlStmt_Free(stmt);
 			sl.unlock();
-			res.status = 400;
+			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
 			return;
 		}
@@ -280,7 +275,7 @@ HANDLER_FUNC(emblem_upload) {
 		SqlStmt_ShowDebug(stmt);
 		SqlStmt_Free(stmt);
 		sl.unlock();
-		res.status = 400;
+		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
@@ -314,6 +309,11 @@ HANDLER_FUNC(emblem_download) {
 	auto guild_id = GET_NUMBER_FIELD("GDID", 0);
 	auto guild_emblem_version = GET_NUMBER_FIELD("Version", 0);
 	auto world_name = GET_STRING_FIELD("WorldName", "");
+
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
 
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
@@ -403,6 +403,11 @@ HANDLER_FUNC(emblem_upload) {
 	auto img = GET_RAWSTR_FIELD("Img", "");
 	auto world_name = GET_STRING_FIELD("WorldName", "");
 
+	if (world_name.length() > WORLD_NAME_LENGTH) {
+		make_response(res, FAILURE_RET, "The world name length exceeds limit.");
+		return;
+	}
+
 	if (imgtype != "BMP" && imgtype != "GIF") {
 		ShowError("Invalid image type %s, rejecting!\n", imgtype.c_str());
 		make_response(res, FAILURE_RET, "Unsupported image type, reject.");
@@ -445,7 +450,7 @@ HANDLER_FUNC(emblem_upload) {
 			return;
 		}
 
-		if (web_config.emblem_transparency_limit < 100) {
+		if (inter_config.emblem_transparency_limit < 100) {
 			uint32 offset = RBUFL(img.c_str(), 0x0A);
 			int i, transcount = 1, tmp[3];
 			for (i = offset; i < length - 1; i++) {
@@ -454,7 +459,7 @@ HANDLER_FUNC(emblem_upload) {
 				if (j == 2 && (tmp[0] == 0xFFFF00FF) && (tmp[1] == 0xFFFF00) && (tmp[2] == 0xFF00FFFF)) //if pixel is transparent
 					transcount++;
 			}
-			if (((transcount * 300) / (length - offset)) > web_config.emblem_transparency_limit) {
+			if (((transcount * 300) / (length - offset)) > inter_config.emblem_transparency_limit) {
 				ShowDebug("Bitmap transparency check failed.\n");
 				make_response(res, FAILURE_RET, "Bitmap transparency check failed.");
 				return;

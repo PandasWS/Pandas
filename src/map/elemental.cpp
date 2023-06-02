@@ -4,19 +4,21 @@
 #include "elemental.hpp"
 
 #include <cstring>
+#ifndef __STDCPP17_AND_NEWER
 #include <ctgmath> //floor
+#endif // __STDCPP17_AND_NEWER
 #include <math.h>
 #include <stdlib.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/malloc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/malloc.hpp>
+#include <common/mmo.hpp>
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utils.hpp>
 
 #include "battle.hpp"
 #include "clif.hpp"
@@ -288,7 +290,7 @@ int elemental_data_received(s_elemental *ele, bool flag) {
 		clif_spawn(&ed->bl);
 		clif_elemental_info(sd);
 		clif_elemental_updatestatus(sd,SP_HP);
-		clif_hpmeter_single(sd->fd,ed->bl.id,ed->battle_status.hp,ed->battle_status.max_hp);
+		clif_hpmeter_single( *sd, ed->bl.id, ed->battle_status.hp, ed->battle_status.max_hp );
 		clif_elemental_updatestatus(sd,SP_SP);
 	}
 
@@ -482,7 +484,7 @@ bool elemental_skillnotok(uint16 skill_id, s_elemental_data *ed) {
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (ed && map_getmapflag(ed->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 0) & BL_ELEM) == BL_ELEM)
+		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 1) & BL_ELEM) == BL_ELEM)
 			return false;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -606,7 +608,7 @@ static int elemental_ai_sub_timer(s_elemental_data *ed, map_session_data *sd, t_
 
 	int master_dist, view_range;
 
-	if( ed->sc.count && ed->sc.data[SC_BLIND] )
+	if( ed->sc.count && ed->sc.getSCE(SC_BLIND) )
 		view_range = 3;
 	else
 		view_range = ed->db->range2;

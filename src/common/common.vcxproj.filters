@@ -113,9 +113,6 @@
     <ClInclude Include="processmutex.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="configparser.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cli.cpp">

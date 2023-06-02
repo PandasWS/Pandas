@@ -1,0 +1,194 @@
+# This file is a part of rAthena.
+#   Copyright(C) 2022 rAthena Development Team
+#   https://rathena.org - https://github.com/rathena
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###########################################################################
+# Status Change Database
+###########################################################################
+#
+# Status Change Settings
+#
+###########################################################################
+# - Status                    Status change name.
+#   Icon                      Status change icon. (Default: EFST_BLANK)
+#   DurationLookup            Default status change duration. (Default: 0)
+#   States:                   Status change state to determine player states. (Default: None)
+#   CalcFlags:                Status change calculation to indicate which stat is adjusted. (Default: None)
+#   Opt1                      Special effect when a status change is active. Non-stackable. (Default: None)
+#   Opt2:                     Special options/client effects when a status change is active. (Default: None)
+#   Opt3:                     Special options/client effects when a status change is active. (Default: Normal)
+#   Options:                  Special options/client effects when a status change is active. (Default: Nothing)
+#   Flags:                    Special flags which trigger during certain events.  (Default: None)
+#   MinRate                   Minimum rate after status change reduction (10000 = 100%). (Default: 0)
+#   MinDuration               Minimum duration in milliseconds after status change reduction. (Default: 1)
+#   Fail:                     List of Status Changes that causes the status to fail to activate. (Optional)
+#   EndOnStart:               List of Status Changes that will end when the status activates. (Optional)
+#   EndReturn:                List of Status Changes that will end when the status activates and won't give its effect. (Optional)
+#   EndOnEnd:                 List of Status Changes that will end when the status becomes inactive. (Optional)
+###########################################################################
+
+Header:
+  Type: STATUS_DB
+  Version: 3
+
+Body:
+  - Status: Monster_Transform
+    Flags:
+      SendVal1: true
+  - Status: Active_Monster_Transform
+    Flags:
+      SendVal1: true
+  - Status: Fightingspirit
+    Flags:
+      SendVal2: true
+  - Status: Sphere_1
+    Flags:
+      SendVal1: true
+  - Status: Sphere_2
+    Flags:
+      SendVal1: true
+  - Status: Sphere_3
+    Flags:
+      SendVal1: true
+  - Status: Sphere_4
+    Flags:
+      SendVal1: true
+  - Status: Sphere_5
+    Flags:
+      SendVal1: true
+  - Status: Venomimpress
+    Flags:
+      SendVal2: true
+  - Status: Poisoningweapon
+    Flags:
+      SendVal3: true
+  - Status: Weaponblocking
+    Flags:
+      SendVal2: true
+  - Status: Cloakingexceed
+    Flags:
+      SendVal3: true
+  - Status: Hallucinationwalk
+    Flags:
+      SendVal3: true
+  - Status: Rollingcutter
+    Flags:
+      SendVal1: true
+  - Status: Forceofvanguard
+    Flags:
+      SendVal3: true
+  - Status: Prestige
+    Flags:
+      SendVal2: true
+  - Status: Banding
+    Flags:
+      SendVal1: true
+  - Status: Spellfist
+    Flags:
+      SendVal3: true
+  - Status: Propertywalk
+    Flags:
+      SendVal2: true
+  - Status: Crescentelbow
+    Flags:
+      SendVal2: true
+  - Status: Cursedcircle_Atker
+    Flags:
+      SendVal3: true
+  - Status: Lightningwalk
+    Flags:
+      SendVal1: true
+  - Status: _Invisibility
+    Flags:
+      SendVal2: true
+  - Status: _Enervation
+    Flags:
+      SendVal2: true
+  - Status: _Groomy
+    Flags:
+      SendVal3: true
+  - Status: _Laziness
+    Flags:
+      SendVal3: true
+  - Status: _Unlucky
+    Flags:
+      SendVal3: true
+  - Status: _Weakness
+    Flags:
+      SendVal2: true
+  - Status: Pyrotechnic_Option
+    Flags:
+      SendVal3: true
+  - Status: Heater_Option
+    Flags:
+      SendVal3: true
+  - Status: Aquaplay_Option
+    Flags:
+      SendVal3: true
+  - Status: Cooler_Option
+    Flags:
+      SendVal3: true
+  - Status: Chilly_Air_Option
+    Flags:
+      SendVal2: true
+  - Status: Gust_Option
+    Flags:
+      SendVal2: true
+  - Status: Blast_Option
+    Flags:
+      SendVal3: true
+  - Status: Wild_Storm_Option
+    Flags:
+      SendVal2: true
+  - Status: Petrology_Option
+    Flags:
+      SendVal3: true
+  - Status: Cursed_Soil_Option
+    Flags:
+      SendVal3: true
+  - Status: Upheaval_Option
+    Flags:
+      SendVal2: true
+  - Status: Jp_Event04
+    Flags:
+      SendVal1: true
+  - Status: Clan_Info
+    Flags:
+      SendVal2: true
+  - Status: Swordclan
+    Flags:
+      SendVal1: true
+  - Status: Arcwandclan
+    Flags:
+      SendVal1: true
+  - Status: Goldenmaceclan
+    Flags:
+      SendVal1: true
+  - Status: Crossbowclan
+    Flags:
+      SendVal1: true
+  - Status: Jumpingclan
+    Flags:
+      SendVal1: true
+  - Status: Dailysendmailcnt
+    Flags:
+      SendVal2: true
+  - Status: Dressup
+    Flags:
+      SendVal1: true
+  - Status: Misty_Frost
+    Flags:
+      SendVal1: true

@@ -1,0 +1,84 @@
+name: Run servers in PRE and RE mode
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !contains(fromJSON('["refs/heads/master", "refs/heads/develop"]'), github.ref) }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - develop
+    paths:
+      - '.github/workflows/**'
+      - 'tools/integration/**'
+      - 'src/**'
+      - '3rdparty/**'
+      - '**/CMakeLists.txt'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'tools/integration/**'
+      - 'src/**'
+      - '3rdparty/**'
+      - '**/CMakeLists.txt'
+
+jobs:
+  build:
+    if: ${{ !contains(fromJSON('["ci-skip", "skip-ci", "ql-skip", "skip-ql", "no-ci"]'), github.event.head_commit.message) }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        gcc: [11]
+        mode: ['PRE','RE']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Update & Install dependencies
+        run: |
+          ./tools/integration/retry.sh sudo apt-get update -y
+          ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
+
+      - name: Setup GCC compiler
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.gcc }}
+
+      - name: Variable Parsing - PRE
+        if: ${{ matrix.mode == 'PRE' }} 
+        run: |
+          echo "PRERE=ON" >> "$GITHUB_ENV"
+
+      - name: Variable Parsing - RE
+        if: ${{ matrix.mode == 'RE' }} 
+        run: |
+          echo "PRERE=OFF" >> "$GITHUB_ENV"
+
+      - name: Setup Database and import table data
+        run: |
+          sudo systemctl start mysql.service
+          ./tools/integration/setup_sql.sh
+
+      - name: Build Pandas
+        run: |
+          mkdir cbuild && cd cbuild
+          cmake -G "Unix Makefiles" .. -DCMAKE_BUILD_TYPE=Debug -DENABLE_EXTRA_BUILDBOT_CODE=ON -DENABLE_PRERE_MODE=${{ env.PRERE }}
+          make -j2
+
+      - name: Run Once - login-server
+        run: |
+          ./login-server --run-once
+
+      - name: Run Once - char-server
+        run: |
+          ./char-server --run-once
+
+      - name: Run Once - map-server
+        run: |
+          ./map-server --run-once

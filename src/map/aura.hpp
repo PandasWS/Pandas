@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../common/database.hpp"
-#include "../common/timer.hpp"
-#include "../common/mmo.hpp"
+#include <common/database.hpp>
+#include <common/timer.hpp>
+#include <common/mmo.hpp>
 
 #ifdef Pandas_Aura_Mechanism
 

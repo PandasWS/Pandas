@@ -21,9 +21,7 @@ environment.initialize()
 import os
 import re
 import operator
-import shutil
 
-from dotenv import load_dotenv
 from libs import Common, Message
 
 # 切换工作目录为脚本所在目录
@@ -34,7 +32,7 @@ project_slndir = '../../'
 
 # 用于提取格式化标记的正则表达式
 # 参考: https://www.cplusplus.com/reference/cstdio/printf/
-format_pattern = r"(%([+\- #0]|)(\d+|\*|)(\.\d+|\.\*|)[diuoxXfFeEgGaAcspn%]?)"
+format_pattern = r"(%([+\-#0]|)(\d+|\*|)(\.\d+|\.\*|)[diuoxXfFeEgGaAcspn%]?)"
 
 # 作为入口需要进行分析的文件, 同时也是范本文件
 # 它们 import 的其他文件, 都需与他们自己包含的格式化标记的个数、顺序完全一致才行
@@ -178,15 +176,9 @@ def do_check_file(filename):
     print('')
 
 def main():
-    # 加载 .env 中的配置信息
-    load_dotenv(dotenv_path='.config.env', encoding='UTF-8')
-    
-    # 若无配置信息则自动复制一份文件出来
-    if not Common.is_file_exists('.config.env'):
-        shutil.copyfile('.config.env.sample', '.config.env')
-
     # 显示欢迎信息
     Common.welcome('格式化占位符检查辅助脚本')
+
     print('')
     
     # 执行检查工作

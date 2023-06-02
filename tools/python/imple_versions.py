@@ -58,6 +58,8 @@ options = {
             'vmode' : '.',
             'for_type' : 0
         },
+    ],
+    r'^professional\.hpp$' : [
         {
             'regex' : r'#define Pandas_Commercial_Version "(.*)"',
             'replto' : r'#define Pandas_Commercial_Version "%s"',
@@ -170,7 +172,7 @@ def main():
 
     # 询问获取升级后的目标版本
     newver = Inputer().requireText({
-        'tips' : '请输入新的版本号 (%s): ' % rule_tips,
+        'tips' : '请输入新的版本号 (%s)' % rule_tips,
     })
 
     if not isVersionFormatValid(newver):

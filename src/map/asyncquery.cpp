@@ -1,10 +1,11 @@
 ﻿#include "asyncquery.hpp"
+
 #include "map.hpp"
 #include "log.hpp"
 
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/future.hpp"
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/future.hpp>
 
 #include <thread>
 
@@ -13,6 +14,7 @@
 // DB Thread
 
 using namespace std;
+using namespace rathena::server_core;
 
 extern int map_server_port;
 extern std::string map_server_ip;
@@ -128,9 +130,8 @@ void doQuery(dbJob& job) {
 
 // DB Thread Function
 void db_runtime(void) {
-	while (runflag != CORE_ST_STOP) {
-		// 只要服务器的运行状态不是 CORE_ST_STOP
-		// 那么此线程函数每 50 毫秒执行一次 dbJobs.Run 方法
+	while (global_core->is_running()) {
+		// 此线程函数每 50 毫秒执行一次 dbJobs.Run 方法
 		this_thread::sleep_for(chrono::milliseconds(50));
 
 		// 取出任务并挨个执行 doQuery 方法 (不是并行)

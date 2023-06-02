@@ -145,14 +145,14 @@ public:
   }
 
   /**
-   * Returns ture if the character is a line ending or end of file.
+   * Returns true if the character is a line ending or end of file.
    */
   static bool IsLineEndingOrFileEnding(const char ch) {
     return ch == '\0' || ch == '\n' || ch == '\r';
   }
 
   /**
-   * Copies a substd::string with given length to a new std::string.
+   * Copies a substring with given length to a new string.
    */
   static std::string FromSubstr(const char* str, size_t length) {
     std::string newStr;

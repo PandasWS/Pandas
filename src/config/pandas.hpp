@@ -12,6 +12,16 @@
 
 #define Pandas
 
+#if defined(_MSVC_LANG) 
+	#if _MSVC_LANG >= 201703L
+		#define __STDCPP17_AND_NEWER
+	#endif // _MSVC_LANG >= 201703L
+#elif defined(__cplusplus)
+	#if __cplusplus >= 201703L
+		#define __STDCPP17_AND_NEWER
+	#endif // __cplusplus >= 201703L
+#endif
+
 #ifdef Pandas
 	#define Pandas_Basic
 	#define Pandas_DatabaseIncrease
@@ -67,7 +77,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.14.0"
+	#define Pandas_Version "1.2.1.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -81,8 +91,9 @@
 	// 是否启用一些杂乱的自定义辅助函数
 	#define Pandas_Helper_Common_Function
 
-	// 是否启用 LGTM 或 CodeQL 建议的处理措施, 避免潜在风险
-	#define Pandas_LGTM_Optimization
+	// 是否启用代码分析工具所建议的处理措施以避免潜在风险
+	// 包含的工具有: LGTM, CodeQL, Microsoft Code Analysis 等
+	#define Pandas_CodeAnalysis_Suggestion
 #endif // Pandas_Basic
 
 // ============================================================================
@@ -188,10 +199,6 @@
 
 	// 以下选项开关需要依赖 Pandas_Struct_Mob_Data_Pandas 的拓展
 	#ifdef Pandas_Struct_Mob_Data_Pandas
-		// 使 mob_data 结构体可记录此魔物的 damagetaken 承伤倍率 [Sola丶小克]
-		// 结构体修改定位 mob.hpp -> mob_data.pandas.damagetaken
-		#define Pandas_Struct_Mob_Data_DamageTaken
-
 		// 使 mob_data 结构体可记录此魔物被 setunitdata 修改过哪些项目 [Sola丶小克]
 		// 结构体修改定位 mob.hpp -> mob_data.pandas.special_setunitdata
 		#define Pandas_Struct_Mob_Data_Special_SetUnitData
@@ -244,9 +251,6 @@
 
 	// 是否拓展 Yaml 的 Database 操作类使之能抑制错误信息 [Sola丶小克]
 	#define Pandas_Database_Yaml_BeQuiet
-
-	// 是否拓展 Yaml 的 Database 操作类使之能读取 UTF8-BOM 编码的文件 [Sola丶小克]
-	#define Pandas_Database_Yaml_Support_UTF8BOM
 
 	// 是否支持用于读取 SQL 连接编码的 Sql_GetEncoding 函数 [Sola丶小克]
 	#define Pandas_Database_SQL_GetEncoding
@@ -444,10 +448,6 @@
 	// 新增的 caller 参数用来标记调用这个函数的调用者是谁, 以便在必要情况下能够调整返回给客户端的字段值
 	#define Pandas_FuncParams_Clif_Item_Equip
 
-	// 调整 mob.cpp 的 mob_getdroprate 函数增加 md 参数 [Sola丶小克]
-	// 新增的 md 参数用于在 mob_getdroprate 进行掉率计算时能根据魔物实例进行必要调整
-	#define Pandas_FuncParams_Mob_GetDroprate
-
 	// 在 mob.cpp 中的 mob_once_spawn_sub 增加 spawn_flag 参数 [Sola丶小克]
 	// 新增的 spawn_flag 参数可以用来控制召唤出来的魔物是不是 BOSS (可以被 BOSS 雷达探测)
 	#define Pandas_FuncDefine_Mob_Once_Spawn_Sub
@@ -473,11 +473,7 @@
 // ============================================================================
 
 #ifdef Pandas_PacketFunction
-	// 是否实现冒险家中介所相关的封包处理函数 [Sola丶小克]
-	// 用于响应客户端中冒险者中介所的加入队伍请求, 包含了队长进行确认的相关逻辑
-	#if PACKETVER >= 20200300
-		#define Pandas_PacketFunction_PartyJoinRequest
-	#endif // PACKETVER >= 20200300
+	// 没有什么需要修改
 #endif // Pandas_PacketFunction
 
 // ============================================================================
@@ -509,8 +505,8 @@
 		#define Pandas_Support_Specify_PacketKeys
 	#endif // PACKET_OBFUSCATION
 
-	// 是否支持读取 UTF8-BOM 编码的 libconfig 配置文件 [Sola丶小克]
-	#define Pandas_Support_Read_UTF8BOM_Configure
+	// 是否支持读取 UTF8-BOM 编码的配置或者数据文件 [Sola丶小克]
+	#define Pandas_Support_UTF8BOM_Files
 
 	// 在使用 _M/_F 注册的时候, 能够限制使用中文等字符作为游戏账号 [Sola丶小克]
 	// 这里的 PCRE_SUPPORT 在"项目属性 -> C/C++ -> 预处理器"中定义
@@ -606,7 +602,6 @@
 	// 
 	// - 能够输出目标数据库当前所使用的编码
 	// - 当在 inter_athena.conf 中指定了 codepage 时, 能提示最终使用的编码
-	// - 若目标数据库使用 utf8 或者 utf8mb4 编码则会给与提示
 	// - 若目标数据库使用 utf8 或者 utf8mb4 编码, 为了兼容性考虑会根据操作
 	//   系统语言来选择使用 gbk 或 big5 编码, 若不是简体中文也不是繁体中文则直接
 	//   使用当前数据库的 `character_set_database` 编码.
@@ -685,7 +680,10 @@
 	#endif // Pandas_Struct_Map_Session_Data_Skip_LoadEndAck_NPC_Event_Dequeue
 
 	// 是否支持根据系统语言读取对应的消息数据库文件 [Sola丶小克]
-	#define Pandas_Adaptive_Importing_Message_Database
+	// 此选项依赖 Pandas_Support_UTF8BOM_Files 的拓展
+	#ifdef Pandas_Support_UTF8BOM_Files
+		#define Pandas_Adaptive_Importing_Message_Database
+	#endif // Pandas_Support_UTF8BOM_Files
 
 	// 是否支持处理 Windows 10 编码选项带来的中文乱码问题 [Sola丶小克]
 	// Beta: Use Unicode UTF-8 for worldwide language support
@@ -855,10 +853,6 @@
 	// 目前根据各位脚本大神的反馈, 更希望各个商店 NPC 的商品列表内容是各自独立的 [Sola丶小克]
 	#define Pandas_Fix_Duplicate_Shop_With_FullyShopItemList
 
-	// 修正使用 pointshop 类型的商店操作 #CASHPOINTS 或 #KAFRAPOINTS 变量完成最终的货币结算后
-	// 小地图旁边的"道具商城"按钮中的金额不被更新, 最终导致双花的问题 [Sola丶小克]
-	#define Pandas_Fix_PointShop_Double_Spend_Attack
-
 	// 修正 npc_unloadfile 和 npc_parsesrcfile 的行为会被空格影响的问题 [Sola丶小克]
 	// 如果 @reloadnpc 时给定的路径带空格, 系统将无法正确的 unloadnpc, 导致 npc 重复出现
 	#define Pandas_Fix_NPC_Filepath_WhiteSpace_Effects
@@ -927,7 +921,11 @@
 	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
 	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
 
-	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
+	// 修正 progressbar 某些情况下会导致角色无法移动的问题 [Sola丶小克]
+	//
+	// 可能的现象:
+	// - 在 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动
+	// - 在 progressbar 之前使用了 menu / select 会导致打断进度条后角色无法移动
 	#define Pandas_Fix_Progressbar_Abort_Stuck
 
 	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
@@ -990,6 +988,53 @@
 	// 修正 inter_server.yml 中的 Max 超大时没有妥善处理的问题 [Sola丶小克]
 	// 启用后 Max 字段的值最多不能超过 MAX_STORAGE 的值
 	#define Pandas_Fix_INTER_SERVER_DB_Field_Verify
+
+	// 修正特殊情况下 bonus_script 拥有 BSF_REM_ON_LOGOUT 标记位,
+	// 也会在重新进入游戏时生效的问题 [Sola丶小克]
+	// 
+	// 正常情况下角色若正常退出游戏, 标记位包含 BSF_REM_ON_LOGOUT 的 bonus_script 不会被记录,
+	// 那怕由于操作仓库而导致角色数据被提前保存, 也会在角色退出的时候被清除.
+	//
+	// 但如果在包含 BSF_REM_ON_LOGOUT 的 bonus_script 记录在数据库时强制关闭地图服务器,
+	// 那么这条 bonus_script 将会保存到下次服务器启动, 并且玩家进入游戏时还有效.
+	//
+	// 解决方案: 进入游戏加载 bonus_script 的时候抛弃拥有 BSF_REM_ON_LOGOUT 标记位的数据
+	#define Pandas_Fix_Bonus_Script_Effective_Timing_Exception
+
+	// 修正 sprintf 脚本指令无法格式化 int64 数值的问题 [Sola丶小克]
+	// 注意: 即使启用此选项, 当你需要格式化 int64 的数值时依然需要使用 %lld 而不是 %d
+	#define Pandas_Fix_Sprintf_ScriptCommand_Unsupport_Int64
+
+	// 修正 setunitdata 对魔物的部分属性调整会继承到魔物下一次重生的问题 [Sola丶小克]
+	// 
+	// 当一个魔物是由自然刷怪点刷新出来的话, 杀死它并不会导致 md 的数据被清空,
+	// 而是会被设置一个重生时间 (spawn_timer), 下次重生的时候还会携带上次 setunitdata 时候的信息.
+	// 因此, 若魔物的某个属性可以在 setunitdata 中被修改,
+	// 且保存其值的变量不在 md->base_status 结构体中, 那么需要手动重置一下.
+	//
+	// 备注: md->base_status 结构体中的属性在魔物重生时在 status_calc_mob_ 中被重置,
+	// 因此我们不需要手动重置 md->base_status 结构体中的这些属性.
+	//
+	// 已知 UMOB_MASTERAID 在 mob_spawn 中故意不重置
+	//
+	// 特别感谢 "差记性的小北" 指出此问题
+	#define Pandas_Fix_SetUnitData_Forget_Reset_After_Monster_Dead
+
+	// 修正玩家在 prompt 菜单中选择取消后,
+	// 后续脚本中若调用 close 系列指令会导致报错的问题 [Sola丶小克]
+	//
+	// 特别感谢 "差记性的小北" 指出此问题
+	#define Pandas_Fix_Prompt_Cancel_Combine_Close_Error
+
+	// 修正脚本控制的商店在特定情况下存在的报错问题 [Sola丶小克]
+	// 只要在 npcshopattach + callshop 之前调用了一个 mes 并且不 close 它,
+	// 那么当玩家完成商店中的交易操作后就会出现 npc_scriptcont 报错.
+	//
+	// 特别感谢 "HongShin" 指出此问题
+	#define Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+
+	// 修正启用 use_sql_db 之后终端加载信息出现来源数据表为 (null) 的问题 [Sola丶小克]
+	#define Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1116,6 +1161,14 @@
 
 	// 规避在 map_addblock 和 map_delblock 因检查不严而导致崩溃的问题 [Renee]
 	#define Pandas_Crashfix_MapBlock_Operation
+
+	// 避免非 DelayConsume 类型的道具在使用脚本中调用 laphine_synthesis 脚本指令时,
+	// 当最后一个物品被消耗时会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_Laphine_Synthesis_Without_DelayConsume
+
+	// 避免非 DelayConsume 类型的道具在使用脚本中调用 laphine_upgrade 脚本指令时,
+	// 当最后一个物品被消耗时会导致地图服务器崩溃的问题 [Sola丶小克]
+	#define Pandas_Crashfix_Laphine_Upgrade_Without_DelayConsume
 #endif // Pandas_Crashfix
 
 // ============================================================================
@@ -1144,7 +1197,7 @@
 	// VS2019 + Win32 启用 Pandas_Speedup_Map_Read_From_Cache 的情况下
 	// --------------------------------------------------------------
 	// 在 Debug 模式下提速约 64% (1250ms -> 760ms)
-	// 在 Release 模式下提速约 1 倍 (940ms -> 460ms)
+	// 在 Release 模式下地图加载信息默认不再显示 (通过 DETAILED_LOADING_OUTPUT 控制)
 	#ifdef _WIN32
 		#define Pandas_Speedup_Loading_Map_Status_Restrictor
 	#endif // _WIN32
@@ -1178,6 +1231,15 @@
 	// 使脚本引擎能够支持穿越事件队列机制, 直接执行某些事件 [Sola丶小克]
 	#define Pandas_ScriptEngine_Express
 
+	// 调整脚本引擎在 add_str 中分配内存的步进空间 [Sola丶小克]
+	// 避免过于频繁的 RECREATE 申请并移动内存中的数据, 减少内存分配开销
+	//
+	// 性能表现参考信息
+	// --------------------------------------------------------------
+	// - 调整前 str_buf  需要被重新分配 1174 次, 调整后为 37 次
+	// - 调整前 str_data 需要被重新分配 185  次, 调整后为 47 次
+	#define Pandas_ScriptEngine_AddStr_Realloc_Memory
+
 	// 使脚本引擎能够支持备份无数个脚本堆栈 [Sola丶小克]
 	// 以此避免嵌套调用超过两层的脚本会导致程序崩溃的问题 (如: script4each -> getitem -> 成就系统)
 	#define Pandas_ScriptEngine_MutliStackBackup
@@ -1206,6 +1268,10 @@
 	// 原计划输出的 "中文" 输出将变成: "中文
 	// 而最末末尾的 " 将被作为一个新的字符串起点, 导致语法检测双引号无法闭合而报错
 	#define Pandas_ScriptEngine_DoubleByte_UnEscape_Detection
+
+	// 修正 add_str 触发 str_buf 的扩容分配后 st->funcname 的所指向的指令名称无效的问题,
+	// 因为 st->funcname 指针指向的内存已在扩容分配时被释放 [Sola丶小克]
+	#define Pandas_ScriptEngine_Relocation_Funcname_After_StrBuf_Realloc
 #endif // Pandas_ScriptEngine
 
 // ============================================================================
@@ -1222,6 +1288,13 @@
 // ============================================================================
 
 #ifdef Pandas_UserExperience
+	// 对 C++17 及更新的标准中禁用 register 关键字 [Sola丶小克]
+	// 因为 register 关键字在 C++17 中已被废弃, 且在 C++20 中已被移除
+	// 详见: https://en.cppreference.com/w/cpp/keyword/register
+	#ifdef __STDCPP17_AND_NEWER
+		#define Pandas_UserExperience_Disable_Register_Keyword
+	#endif // __STDCPP17_AND_NEWER
+
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
 
@@ -1233,11 +1306,31 @@
 	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
 	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 
+	// 调整 Yaml2sql 辅助工具在发布版本中的文件保存位置 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml2Sql_SaveFile_Location
+
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
 
 	// 优化加载与解析 YAML 文件时出现的一些报错体验 [Sola丶小克]
 	#define Pandas_UserExperience_Yaml_Error
+
+	// 当 YAML 数据文件中不存在 Body 节点时也依然输出结尾信息 [Sola丶小克]
+	#define Pandas_UserExperience_Output_Ending_Even_Body_Node_Is_Not_Exists
+
+	// 使 map-server-generator 能在运行时按需自动创建输出目录 [Sola丶小克]
+	#define Pandas_UserExperience_AutoCreate_Generated_Directory
+
+	// 改写 map-server-generator 的参数处理流程, 支持短参数以及输出帮助 [Sola丶小克]
+	#define Pandas_UserExperience_Rewrite_MapServerGenerator_Args_Process
+
+	// 优化 map-server-generator 的输出信息 [Sola丶小克]
+	#define Pandas_UserExperience_MapServerGenerator_Output
+
+	// 在 Linux 平台上使用 Ctrl+C 输出 ^C 符号之后换一行 [Sola丶小克]
+	#ifndef _WIN32
+		#define Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	#endif // _WIN32
 #endif // Pandas_UserExperience
 
 // ============================================================================
@@ -1385,6 +1478,26 @@
 		// 事件类型: Filter / 事件名称: OnPCStorageDelFilter
 		// 常量名称: NPCF_STORAGE_DEL / 变量名称: storage_del_filter_name
 		#define Pandas_NpcFilter_STORAGE_DEL
+
+		// 当玩家准备将道具从背包存入手推车时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCCartAddFilter
+		// 常量名称: NPCF_CART_ADD / 变量名称: cart_add_filter_name
+		#define Pandas_NpcFilter_CART_ADD
+
+		// 当玩家准备将道具从手推车取回背包时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCCartDelFilter
+		// 常量名称: NPCF_CART_DEL / 变量名称: cart_del_filter_name
+		#define Pandas_NpcFilter_CART_DEL
+
+		// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCFavoriteAddFilter
+		// 常量名称: NPCF_FAVORITE_ADD / 变量名称: favorite_add_filter_name
+		#define Pandas_NpcFilter_FAVORITE_ADD
+
+		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
+		// 事件类型: Filter / 事件名称: OnPCFavoriteDelFilter
+		// 常量名称: NPCF_FAVORITE_DEL / 变量名称: favorite_del_filter_name
+		#define Pandas_NpcFilter_FAVORITE_DEL
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1509,7 +1622,7 @@
 	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
 	// 此地图标记依赖 Pandas_MobInfomation_Extend 的拓展
 	#ifdef Pandas_MobInfomation_Extend
-		#define Pandas_MapFlag_Mobinfo
+		#define Pandas_MapFlag_MobInfo
 	#endif // Pandas_MobInfomation_Extend
 
 	// 是否启用 noautoloot 地图标记 [Sola丶小克]
@@ -1591,7 +1704,7 @@
 	#define Pandas_MapFlag_NoSlave
 
 	// 是否启用 nobank 地图标记 [聽風]
-	// 该标记用于禁止玩家在地图上使用银行系统 (包括存款 / 提现操作)
+	// rAthena 官方已经实现此标记, 当前宏定义所包含的代码用于处理体验细节
 	#define Pandas_MapFlag_NoBank
 
 	// 是否启用 nouseitem 地图标记 [HongShin]
@@ -1649,10 +1762,6 @@
 	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]
 	// 重新加载 Laphine 数据库 (laphine_synthesis.yml 和 laphine_upgrade.yml)
 	#define Pandas_AtCommand_ReloadLaphineDB
-
-	// 是否启用 reloadbarterdb 管理员指令 [Sola丶小克]
-	// 重新加载 Barters 以物易物数据库 (barters.yml)
-	#define Pandas_AtCommand_ReloadBarterDB
 	// PYHELP - ATCMD - INSERT POINT - <Section 1>
 #endif // Pandas_AtCommands
 
@@ -1762,7 +1871,7 @@
 	#define Pandas_ScriptCommand_InstanceUsers
 
 	// 是否启用 cap 脚本指令 [Sola丶小克]
-	// 确保数值不低于给定的最小值, 不超过给定的最大值
+	// 由于 rAthena 已经实现 cap_value 指令, 这里兼容老版本 cap 指令
 	#define Pandas_ScriptCommand_CapValue
 
 	// 是否启用 mobremove 脚本指令 [Sola丶小克]
@@ -1834,8 +1943,13 @@
 	// 获取指定位置装备的租赁到期剩余秒数 (该指令有一个用于兼容的别名: isrental)
 	#define Pandas_ScriptCommand_GetEquipExpireTick
 
-	// 是否启用 getinventoryinfo 脚本指令 [Sola丶小克]
-	// 查询指定背包序号的道具的详细信息
+	// 是否启用 getinventoryinfo 系列脚本指令 [Sola丶小克]
+	// 查询指定背包、公会仓库、手推车、个人仓库/扩充仓库序号的道具详细信息
+	// 包含以下几个指令变体:
+	// getinventoryinfo <道具的背包序号>,<要查看的信息类型>{,<角色编号>};
+	// getcartinfo <道具的手推车序号>,<要查看的信息类型>{,<角色编号>};
+	// getguildstorageinfo <道具的公会仓库序号>,<要查看的信息类型>{,<角色编号>};
+	// getstorageinfo <道具的个人仓库/扩充仓库序号>,<要查看的信息类型>{{,<仓库编号>},<角色编号>};
 	#define Pandas_ScriptCommand_GetInventoryInfo
 
 	// 是否启用 statuscheck 脚本指令 [Sola丶小克]
@@ -2087,8 +2201,8 @@
 	#define Pandas_ScriptCommand_Next_Dropitem_Special
 
 	// 是否启用 getgradeitem 脚本指令 [Sola丶小克]
-	// 该指令用于创造带有指定附魔评级的道具, 按照目前大家理解比较接近的 getitem4 标准来实现
-	// 也就是在 getitem3 的基础上多增加一个附魔评级字段
+	// 该指令用于创造带有指定附魔评级的道具, 由于 rAthena 已经正式实现了 getitem4,
+	// getgradeitem 仅用于兼容旧版本的脚本, 请尽量使用 getitem4
 	#define Pandas_ScriptCommand_GetGradeItem
 
 	// 是否启用 getrateidx 脚本指令 [Sola丶小克]
@@ -2166,12 +2280,14 @@
 	// 是否拓展 getiteminfo 脚本指令的可用参数 [Sola丶小克]
 	#define Pandas_ScriptParams_GetItemInfo
 
-	// 是否拓展 setunitdata / getunitdata 指令的参数
-	// 使之能设置或者读取指定魔物实例的承伤倍率 (DamageTaken) [Sola丶小克]
-	// 此选项依赖 Pandas_Struct_Mob_Data_DamageTaken 的拓展
-	#ifdef Pandas_Struct_Mob_Data_DamageTaken
-		#define Pandas_ScriptParams_UnitData_DamageTaken
-	#endif // Pandas_Struct_Mob_Data_DamageTaken
+	// 是否拓展 getunitdata 指令的参数
+	// 使之能读取指定魔物在 DB 中设置的承伤倍率 (UMOB_DAMAGETAKEN_DB) [Sola丶小克]
+	#define Pandas_ScriptParams_DamageTaken_From_Database
+
+	// 是否扩展 setunitdata / getunitdata 指令的参数
+	// 使 UMOB_DAMAGETAKEN 能支持 -1 的值, 表示采用 DB 中设置的承伤倍率 [Sola丶小克]
+	// 该选项主要为了兼容旧版本熊猫模拟器的用户可能已经使用了 -1 值的情况
+	#define Pandas_ScriptParams_DamageTaken_Extend
 
 	// 是否拓展 setunitdata / getunitdata 指令的参数
 	// 使之能设置或者读取指定魔物实例的经验值 (BASEEXP / JOBEXP) [人鱼姬的思念]
@@ -2209,14 +2325,6 @@
 	#ifdef Pandas_WebServer_Database_EncodingAdaptive
 		#define Pandas_WebServer_Rewrite_Controller_HandlerFunc
 	#endif // Pandas_WebServer_Database_EncodingAdaptive
-
-	// 实现用于读写商店配置信息的 MerchantStore 接口 [Sola丶小克]
-	// 启用后将支持 /MerchantStore/load 和 /MerchantStore/save 两个相关接口
-	#define Pandas_WebServer_Implement_MerchantStore
-
-	// 实现用于冒险家中介所的 party 接口 [Sola丶小克]
-	// 启用后将支持 /party/{list|get|add|del|search} 这几个相关接口
-	#define Pandas_WebServer_Implement_PartyRecruitment
 
 	// 在执行 logger 日志函数时是否在内部进行互斥处理 [Sola丶小克]
 	// 

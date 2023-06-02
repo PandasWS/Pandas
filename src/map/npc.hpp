@@ -7,13 +7,15 @@
 #include <map>
 #include <vector>
 
-#include "../common/database.hpp"
-#include "../common/timer.hpp"
+#include <common/database.hpp>
+#include <common/timer.hpp>
+#include <config/core.hpp>
 
 #include "clif.hpp" //
 #include "map.hpp" // struct block_list
 #include "status.hpp" // struct status_change
 #include "unit.hpp" // struct unit_data
+#include "navi.hpp" // navi stuff
 
 struct block_list;
 struct npc_data;
@@ -102,6 +104,9 @@ struct s_npc_barter{
 	uint8 dir;
 	int16 sprite;
 	std::map<uint16, std::shared_ptr<s_npc_barter_item>> items;
+	int32 npcid;
+
+	~s_npc_barter();
 };
 
 class BarterDatabase : public TypesafeYamlDatabase<std::string, s_npc_barter>{
@@ -113,10 +118,6 @@ public:
 	const std::string getDefaultLocation();
 	uint64 parseBodyNode( const ryml::NodeRef& node );
 	void loadingFinished();
-
-#ifdef Pandas_AtCommand_ReloadBarterDB
-	void clear() override;
-#endif // Pandas_AtCommand_ReloadBarterDB
 };
 
 extern BarterDatabase barter_db;
@@ -139,6 +140,20 @@ struct s_questinfo {
 	}
 };
 
+// Status of NPC view.
+enum e_npcv_status : uint8 {
+	NPCVIEW_DISABLE  = 0x01,
+	NPCVIEW_ENABLE   = 0x02,
+	NPCVIEW_HIDEOFF  = 0x04,
+	NPCVIEW_HIDEON   = 0x08,
+	NPCVIEW_CLOAKOFF = 0x10,
+	NPCVIEW_CLOAKON  = 0x20,
+
+	NPCVIEW_VISIBLE   = NPCVIEW_ENABLE | NPCVIEW_HIDEOFF | NPCVIEW_CLOAKOFF,
+	NPCVIEW_INVISIBLE = NPCVIEW_DISABLE | NPCVIEW_HIDEON | NPCVIEW_CLOAKON,
+	NPCVIEW_CLOAK     = NPCVIEW_CLOAKOFF | NPCVIEW_CLOAKON,
+};
+
 #ifdef Pandas_Redeclaration_Struct_Event_Data
 struct event_data {
 	struct npc_data* nd;
@@ -150,7 +165,7 @@ struct npc_data {
 	struct block_list bl;
 	struct unit_data ud; //Because they need to be able to move....
 	struct view_data vd;
-	struct status_change sc; //They can't have status changes, but.. they want the visual opt values.
+	status_change sc; //They can't have status changes, but.. they want the visual opt values.
 	struct npc_data *master_nd;
 	short class_,speed;
 	char name[NPC_NAME_LENGTH+1];// display name
@@ -158,6 +173,7 @@ struct npc_data {
 	int chat_id,touching_id;
 	unsigned int next_walktime;
 	int instance_id;
+	e_npcv_status state{NPCVIEW_ENABLE};
 
 	unsigned size : 2;
 
@@ -209,7 +225,7 @@ struct npc_data {
 			char killer_name[NAME_LENGTH];
 			int spawn_timer;
 #ifdef Pandas_FuncParams_Mob_MvpTomb_Create
-			int killer_gid = 0;
+			int killer_gid;
 #endif // Pandas_FuncParams_Mob_MvpTomb_Create
 		} tomb;
 		struct {
@@ -227,6 +243,18 @@ struct npc_data {
 		unsigned long color;
 	} progressbar;
 
+	struct{
+		uint32 owner_char_id;
+		t_tick last_interaction;
+		int removal_tid;
+	} dynamicnpc;
+
+#ifdef MAP_GENERATOR
+	struct navi_link navi; // for warps and the src of npcs
+	std::vector<navi_link> links; // for extra links, like warper npc
+#endif
+	bool is_invisible;
+
 #ifdef Pandas_ScriptCommand_ShowVend
 	struct {
 		char message[NAME_LENGTH + 1];
@@ -237,7 +265,7 @@ struct npc_data {
 #ifdef Pandas_Struct_Npc_Data_Pandas
 	struct {
 #ifdef Pandas_Struct_Npc_Data_DestructionStrategy
-		int destruction_strategy = 0;	// 记录当前 NPC 的自毁策略 ( 0 - 不自毁; 1 - 最后一个对话结束时自毁)
+		int destruction_strategy;	// 记录当前 NPC 的自毁策略 ( 0 - 不自毁; 1 - 最后一个对话结束时自毁)
 		int destruction_timer = INVALID_TIMER; // 记录当前 NPC 的立刻自毁计时器
 #endif // Pandas_Struct_Npc_Data_DestructionStrategy
 	} pandas;
@@ -1452,24 +1480,40 @@ enum e_job_types
 	JT_4_RAGFES_16,
 	JT_4_RAGFES_16_M,
 	JT_4_EXJOB_NINJA2,
-
-	JT_ROZ_MQ_LUCIAN = 10510,
+	JT_4_VR_BOOK_FAIRY,
+	JT_ROZ_MQ_LUCIAN,
 	JT_ROZ_MQ_BRITIA,
 	JT_ROZ_MQ_ASSASIN01,
 	JT_STRANGE_B_SMITH1,
 	JT_STRONGER_B_SMTIH,
+	JT_4_VR_BOOK_RED,
+	JT_4_VR_BOOK_BLUE,
+	JT_4_VR_BOOK_YELLOW,
+	JT_4_VR_BOOK_GREEN,
+	JT_4_VR_BOOK_WHITE,
+	JT_4_VR_YGNIZEM,
+
+	JT_4_JP_19TH = 10524,
+	JT_4_KING_PORING,
+	JT_4_VR_SWORDMAN_DEAD,
+	JT_GATE_SKYBLUE,
+	JT_4_CS_RIGEL,
+	JT_4_M_NILLEM,
+	JT_4_LARVA_RED,
+	JT_4_LARVA_YELLOW,
+	JT_4_LARVA_BLACK,
+	JT_4_LARVA_VIOLET,
+	JT_4_HERO_SAUSAGE,
+	JT_4_PRINCESS_SAUSAGE,
+
+	JT_ROZ_MQ_XAVIER = 13000,
+	JT_ROZ_MQ_MOCLORD,
+	JT_ROZ_MQ_SKULD,
 
 #ifndef Pandas_Update_NPC_Identity_Information
 	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
 #else
-	JT_4_VR_BOOK_FAIRY = 10509,
-	JT_4_VR_BOOK_RED = 10515,
-	JT_4_VR_BOOK_BLUE = 10516,
-	JT_4_VR_BOOK_YELLOW = 10517,
-	JT_4_VR_BOOK_GREEN = 10518,
-	JT_4_VR_BOOK_WHITE = 10519,
-	JT_4_VR_YGNIZEM = 10520,
 	JT_EVT_BAPHOMET = 20061,
 	JT_EVT_BAPHO_JR = 20062,
 	JT_EVT_V_WOLF = 20063,
@@ -2387,6 +2431,22 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_STORAGE_DEL
 	NPCF_STORAGE_DEL,	// storage_del_filter_name	// OnPCStorageDelFilter		// 当玩家准备将道具取出仓库时触发过滤器
 #endif // Pandas_NpcFilter_STORAGE_DEL
+
+#ifdef Pandas_NpcFilter_CART_ADD
+	NPCF_CART_ADD,	// cart_add_filter_name	// OnPCCartAddFilter		// 当玩家准备将道具从背包存入手推车时触发过滤器
+#endif // Pandas_NpcFilter_CART_ADD
+
+#ifdef Pandas_NpcFilter_CART_DEL
+	NPCF_CART_DEL,	// cart_del_filter_name	// OnPCCartDelFilter		// 当玩家准备将道具从手推车取回背包时触发过滤器
+#endif // Pandas_NpcFilter_CART_DEL
+
+#ifdef Pandas_NpcFilter_FAVORITE_ADD
+	NPCF_FAVORITE_ADD,	// favorite_add_filter_name	// OnPCFavoriteAddFilter		// 当玩家准备将道具移入收藏栏位时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_ADD
+
+#ifdef Pandas_NpcFilter_FAVORITE_DEL
+	NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
+#endif // Pandas_NpcFilter_FAVORITE_DEL
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
@@ -2478,7 +2538,7 @@ enum npce_event : uint8 {
 };
 
 #ifdef Pandas_NpcEvent_KILLMVP
-void npc_event_aide_killmvp(struct map_session_data* sd, struct map_session_data* mvp_sd, struct mob_data* md);
+void npc_event_aide_killmvp(map_session_data* sd, map_session_data* mvp_sd, struct mob_data* md);
 #endif // Pandas_NpcEvent_KILLMVP
 #ifdef Pandas_NpcExpress_UNIT_KILL
 void npc_event_aide_unitkill(struct block_list* src, struct block_list* target, uint16 skillid);
@@ -2490,10 +2550,10 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 	struct block_list* src, struct item_drop_list* dlist, t_itemid nameid, int drop_rate, int drop_type);
 #endif // Pandas_NpcExpress_MOBDROPITEM
 #ifdef Pandas_NpcFilter_STORAGE_ADD
-bool npc_event_aide_storage_add(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_from);
+bool npc_event_aide_storage_add(map_session_data* sd, struct s_storage* store, int idx, int amount, int item_from);
 #endif // Pandas_NpcFilter_STORAGE_ADD
 #ifdef Pandas_NpcFilter_STORAGE_DEL
-bool npc_event_aide_storage_del(struct map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to);
+bool npc_event_aide_storage_del(map_session_data* sd, struct s_storage* store, int idx, int amount, int item_to);
 #endif // Pandas_NpcFilter_STORAGE_DEL
 
 #ifdef Pandas_Helper_Common_Function
@@ -2502,45 +2562,35 @@ bool npc_event_exists(const char* eventname);
 bool npc_event_exists(struct npc_data *nd, const char* eventname);
 #endif // Pandas_Helper_Common_Function
 
-// Status of NPC view.
-enum e_npcv_status : uint8 {
-	NPCVIEW_DISABLE  = 0x01,
-	NPCVIEW_ENABLE   = 0x02,
-	NPCVIEW_HIDEOFF  = 0x04,
-	NPCVIEW_HIDEON   = 0x08,
-	NPCVIEW_CLOAKOFF = 0x10,
-	NPCVIEW_CLOAKON  = 0x20,
-
-	NPCVIEW_VISIBLE   = 0x16,
-	NPCVIEW_INVISIBLE = 0x29,
-	NPCVIEW_CLOAK     = 0x30,
-};
 struct view_data* npc_get_viewdata(int class_);
 int npc_chat_sub(struct block_list* bl, va_list ap);
-int npc_event_dequeue(struct map_session_data* sd,bool free_script_stack=true);
-int npc_event(struct map_session_data* sd, const char* eventname, int ontouch);
-int npc_touch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y, struct npc_data* nd);
-int npc_touch_area_allnpc(struct map_session_data* sd, int16 m, int16 x, int16 y);
+int npc_event_dequeue(map_session_data* sd,bool free_script_stack=true);
+int npc_event(map_session_data* sd, const char* eventname, int ontouch);
+int npc_touch_areanpc(map_session_data* sd, int16 m, int16 x, int16 y, struct npc_data* nd);
+int npc_touch_area_allnpc(map_session_data* sd, int16 m, int16 x, int16 y);
 int npc_touch_areanpc2(struct mob_data *md); // [Skotlex]
 int npc_check_areanpc(int flag, int16 m, int16 x, int16 y, int16 range);
-int npc_touchnext_areanpc(struct map_session_data* sd,bool leavemap);
-int npc_click(struct map_session_data* sd, struct npc_data* nd);
-bool npc_scriptcont(struct map_session_data* sd, int id, bool closing);
-struct npc_data* npc_checknear(struct map_session_data* sd, struct block_list* bl);
-int npc_buysellsel(struct map_session_data* sd, int id, int type);
-e_purchase_result npc_buylist(struct map_session_data* sd, std::vector<s_npc_buy_list>& item_list);
-static int npc_buylist_sub(struct map_session_data* sd, std::vector<s_npc_buy_list>& item_list, struct npc_data* nd);
-uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list);
-e_purchase_result npc_barter_purchase( struct map_session_data& sd, std::shared_ptr<s_npc_barter> barter, std::vector<s_barter_purchase>& purchases );
+int npc_touchnext_areanpc(map_session_data* sd,bool leavemap);
+int npc_click(map_session_data* sd, struct npc_data* nd);
+bool npc_scriptcont(map_session_data* sd, int id, bool closing);
+struct npc_data* npc_checknear(map_session_data* sd, struct block_list* bl);
+int npc_buysellsel(map_session_data* sd, int id, int type);
+e_purchase_result npc_buylist(map_session_data* sd, std::vector<s_npc_buy_list>& item_list);
+static int npc_buylist_sub(map_session_data* sd, std::vector<s_npc_buy_list>& item_list, struct npc_data* nd);
+uint8 npc_selllist(map_session_data* sd, int list_length, PACKET_CZ_PC_SELL_ITEMLIST_sub* item_list);
+e_purchase_result npc_barter_purchase( map_session_data& sd, std::shared_ptr<s_npc_barter> barter, std::vector<s_barter_purchase>& purchases );
 void npc_parse_mob2(struct spawn_data* mob);
 struct npc_data* npc_add_warp(char* name, short from_mapid, short from_x, short from_y, short xs, short ys, unsigned short to_mapindex, short to_x, short to_y);
 int npc_globalmessage(const char* name,const char* mes);
 const char *npc_get_script_event_name(int npce_index);
+npc_data* npc_duplicate_npc( npc_data& nd, char name[NPC_NAME_LENGTH + 1], int16 mapid, int16 x, int16 y, int class_, uint8 dir, int16 xs, int16 ys, map_session_data* owner = nullptr );
+struct npc_data* npc_duplicate_npc_for_player( struct npc_data& nd, map_session_data& sd );
 
 void npc_setcells(struct npc_data* nd);
 void npc_unsetcells(struct npc_data* nd);
 bool npc_movenpc(struct npc_data* nd, int16 x, int16 y);
-bool npc_is_cloaked(struct npc_data* nd, struct map_session_data* sd);
+bool npc_is_cloaked(struct npc_data* nd, map_session_data* sd);
+bool npc_is_hidden_dynamicnpc( struct npc_data& nd, map_session_data& tsd );
 bool npc_enable_target(npc_data& nd, uint32 char_id, e_npcv_status flag);
 #define npc_enable(nd, flag) npc_enable_target(nd, 0, flag)
 void npc_setdisplayname(struct npc_data* nd, const char* newname);
@@ -2568,7 +2618,7 @@ int npc_event_doall_path(const char* event_name, const char* path);
 
 int npc_timerevent_start(struct npc_data* nd, int rid);
 int npc_timerevent_stop(struct npc_data* nd);
-void npc_timerevent_quit(struct map_session_data* sd);
+void npc_timerevent_quit(map_session_data* sd);
 t_tick npc_gettimerevent_tick(struct npc_data* nd);
 int npc_settimerevent_tick(struct npc_data* nd, int newtimer);
 int npc_remove_map(struct npc_data* nd);
@@ -2576,18 +2626,18 @@ void npc_unload_duplicates (struct npc_data* nd);
 int npc_unload(struct npc_data* nd, bool single);
 int npc_reload(void);
 void npc_read_event_script(void);
-int npc_script_event(struct map_session_data* sd, enum npce_event type);
+int npc_script_event(map_session_data* sd, enum npce_event type);
 
 int npc_duplicate4instance(struct npc_data *snd, int16 m);
 int npc_instanceinit(struct npc_data* nd);
 int npc_instancedestroy(struct npc_data* nd);
-int npc_cashshop_buy(struct map_session_data *sd, t_itemid nameid, int amount, int points);
+int npc_cashshop_buy(map_session_data *sd, t_itemid nameid, int amount, int points);
 
-void npc_shop_currency_type(struct map_session_data *sd, struct npc_data *nd, int cost[2], bool display);
+void npc_shop_currency_type(map_session_data *sd, struct npc_data *nd, int cost[2], bool display);
 
 extern struct npc_data* fake_nd;
 
-int npc_cashshop_buylist( struct map_session_data *sd, int points, std::vector<s_npc_buy_list>& item_list );
+int npc_cashshop_buylist( map_session_data *sd, int points, std::vector<s_npc_buy_list>& item_list );
 bool npc_shop_discount(struct npc_data* nd);
 
 #if PACKETVER >= 20131223
@@ -2600,15 +2650,15 @@ void npc_market_delfromsql_(const char *exname, t_itemid nameid, bool clear);
 #endif
 
 // @commands (script-based)
-int npc_do_atcmd_event(struct map_session_data* sd, const char* command, const char* message, const char* eventname);
+int npc_do_atcmd_event(map_session_data* sd, const char* command, const char* message, const char* eventname);
 
 bool npc_unloadfile( const char* path );
 
 #ifdef Pandas_Struct_Map_Session_Data_EventHalt
-bool setProcessHalt(struct map_session_data *sd, enum npce_event event, bool halt = true);
-bool getProcessHalt(struct map_session_data *sd, enum npce_event event, bool autoreset = true);
-bool npc_script_filter(struct map_session_data* sd, enum npce_event type);
-bool npc_script_filter(struct map_session_data* sd, const char* eventname);
+bool setProcessHalt(map_session_data *sd, enum npce_event event, bool halt = true);
+bool getProcessHalt(map_session_data *sd, enum npce_event event, bool autoreset = true);
+bool npc_script_filter(map_session_data* sd, enum npce_event type);
+bool npc_script_filter(map_session_data* sd, const char* eventname);
 #endif // Pandas_Struct_Map_Session_Data_EventHalt
 
 #ifdef Pandas_Struct_Map_Session_Data_WorkInEvent
@@ -2624,9 +2674,9 @@ enum npce_trigger : uint16 {
 	EVENT_TRIGGER_MAX
 };
 
-bool setEventTrigger(struct map_session_data *sd, enum npce_event event, enum npce_trigger trigger_flag);
-npce_trigger getEventTrigger(struct map_session_data *sd, enum npce_event event);
-bool isAllowTriggerEvent(struct map_session_data* sd, enum npce_event event);
+bool setEventTrigger(map_session_data *sd, enum npce_event event, enum npce_trigger trigger_flag);
+npce_trigger getEventTrigger(map_session_data *sd, enum npce_event event);
+bool isAllowTriggerEvent(map_session_data* sd, enum npce_event event);
 #endif // Pandas_Struct_Map_Session_Data_EventTrigger
 
 #ifdef Pandas_ScriptEngine_Express
@@ -2651,7 +2701,7 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
 #endif // Pandas_ScriptCommand_Copynpc
 
 #ifdef Pandas_Character_Title_Controller
-bool npc_change_title_event(struct map_session_data* sd, uint32 title_id, int mode);
+bool npc_change_title_event(map_session_data* sd, uint32 title_id, int mode);
 #endif // Pandas_Character_Title_Controller
 
 #endif /* NPC_HPP */

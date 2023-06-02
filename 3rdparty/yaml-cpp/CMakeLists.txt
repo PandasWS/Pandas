@@ -20,7 +20,8 @@ set( YAML_HEADERS
     "${YAML_INCLUDE_DIRS}/yaml-cpp/parser.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/ostream_wrapper.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/null.h"
-    "${YAML_INCLUDE_DIRS}/yaml-cpp/noncopyable.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/depthguard.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/noexcept.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/mark.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/exceptions.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/eventhandler.h"
@@ -60,6 +61,7 @@ set( YAML_SOURCES
   "${YAML_SOURCE_DIR}/node_data.cpp"
   "${YAML_SOURCE_DIR}/nodeevents.cpp"
   "${YAML_SOURCE_DIR}/null.cpp"
+  "${YAML_SOURCE_DIR}/depthguard.cpp"
   "${YAML_SOURCE_DIR}/ostream_wrapper.cpp"
   "${YAML_SOURCE_DIR}/parse.cpp"
   "${YAML_SOURCE_DIR}/parser.cpp"
@@ -76,7 +78,7 @@ set( YAML_SOURCES
   "${YAML_SOURCE_DIR}/contrib/graphbuilder.cpp"
 	CACHE INTERNAL "yaml sources" )
 set( YAML_DEFINITIONS
-	"-std=c++11"
+	"-std=c++17"
 	CACHE INTERNAL "yaml definitions" )
 include_directories(${YAML_INCLUDE_DIRS} ${YAML_SOURCE_DIR})
 #message(STATUS "YAML_INCLUDE_DIRS : ${YAML_INCLUDE_DIRS}, YAML_SOURCE_DIR=${YAML_SOURCE_DIR}")

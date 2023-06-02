@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "../common/timer.hpp"
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/utf8.hpp"
-#include "../common/assistant.hpp"
+#include <common/timer.hpp>
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/showmsg.hpp>
+#include <common/utf8.hpp>
+#include <common/assistant.hpp>
 
 #define export_quote(x) #x
 #define export_message_tag(a) this->m_tagsList.push_back({"[{"#a"}]", a});

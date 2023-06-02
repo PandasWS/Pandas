@@ -10,8 +10,8 @@
 #include "elemental.hpp"
 #include "status.hpp"
 
-#include "../common/utilities.hpp"
-#include "../common/nullpo.hpp"
+#include <common/utilities.hpp>
+#include <common/nullpo.hpp>
 
 //************************************
 // Method:      batrec_key
@@ -160,7 +160,7 @@ void batrec_sortout(struct block_list* bl, e_batrec_type type) {
 	if (!(rec = batrec_getmap(bl, type)))
 		return;
 
-	struct map_session_data* sd = nullptr;
+	map_session_data* sd = nullptr;
 	struct block_list* tbl = nullptr;
 
 	auto iter = rec->begin();

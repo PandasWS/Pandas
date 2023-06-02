@@ -1,5 +1,49 @@
 # Change History of OpenCC
 
+## Version 1.1.6
+
+2022年12月08日
+
+* 修复python3.11 macos构建 ([#744](https://github.com/BYVoid/OpenCC/pull/744))。
+* Bump gtest 和 benchmark 以与最新的 github runners 一起工作 ([#747](https://github.com/BYVoid/OpenCC/pull/747))。
+
+## Version 1.1.5
+
+2022年12月03日
+
+* 支持Python 3.11 ([#728](https://github.com/BYVoid/OpenCC/pull/728))。
+* Automatically name SO files ([#708](https://github.com/BYVoid/OpenCC/pull/708))
+* Add support for Apple silicon build tag ([#716](https://github.com/BYVoid/OpenCC/pull/716))
+* 若干其他小修復。
+
+## Version 1.1.4
+
+2022年6月4日
+
+* 支持Python 3.10（[#637](https://github.com/BYVoid/OpenCC/issues/637)）。
+* 移除針對Python 2.7、3.5、3.6和Node 10的構建（[#690](https://github.com/BYVoid/OpenCC/issues/690), [#691](https://github.com/BYVoid/OpenCC/issues/691)）。
+* 若干其他小修復。
+
+## Version 1.1.3
+
+2021年9月3日
+
+* 修復部分頭文件不能單獨使用的問題（#550）。
+* 修復引入系統pybind11的方法（#566）。
+* 支持Node.js 16（#597）。
+* 支持Python 3.9（#603）。
+* 修正轉換錯誤。
+* 若干其他小修復。
+
+## Version 1.1.2
+
+2021年3月2日
+
+* 新增香港繁體轉換。
+* 根據《通用漢字規範表》修正大量簡體異體字轉換。調整臺灣標準，避免過度轉換。
+* 修正編譯兼容性問題，包括並行編譯。
+* 修正1.1.0以來引入的性能嚴重下降問題。
+
 ## Version 1.1.1
 
 2020年5月22日

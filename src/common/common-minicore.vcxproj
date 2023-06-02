@@ -28,7 +28,6 @@
     <ClInclude Include="database.hpp" />
     <ClInclude Include="des.hpp" />
     <ClInclude Include="grfio.hpp" />
-    <ClInclude Include="configparser.hpp" />
     <ClInclude Include="malloc.hpp" />
     <ClInclude Include="mapindex.hpp" />
     <ClInclude Include="md5calc.hpp" />
@@ -71,6 +70,11 @@
     <ClCompile Include="utf8.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="winapi.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rdparty\uchardet\uchardet.vcxproj">
+      <Project>{1dc4f10c-8c26-4e92-be51-d7f246bb9111}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{352B45B3-FE88-4431-9D89-48CF811446DB}</ProjectGuid>
@@ -123,30 +127,30 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir).vs\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\boost;$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\fmt\include;$(SolutionDir)\3rdparty\utfcpp\source</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir).vs\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\boost;$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\fmt\include;$(SolutionDir)\3rdparty\utfcpp\source</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir).vs\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\boost;$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\fmt\include;$(SolutionDir)\3rdparty\utfcpp\source</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir).vs\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\boost;$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)3rdparty\breakpad\src;$(SolutionDir)3rdparty\dbghelp\include;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\fmt\include;$(SolutionDir)\3rdparty\utfcpp\source</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -154,11 +158,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,11 +177,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL=0;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -190,11 +197,12 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -211,11 +219,12 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_LIB;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\mysql\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\yaml-cpp\include\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\zlib\include\;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -227,7 +236,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <Target Name="BoostLibraries" BeforeTargets="PrepareForBuild">
-    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." />
-  </Target>
 </Project>

@@ -9,87 +9,90 @@
 #include <string>
 #include <thread>
 
-#include "../common/cli.hpp"
-#include "../common/core.hpp"
-#include "../common/malloc.hpp"
-#include "../common/md5calc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/msg_conf.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp" //ip2str
-#include "../common/sql.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
-#include "../config/core.hpp"
+#include <common/cli.hpp>
+#include <common/core.hpp>
+#include <common/malloc.hpp>
+#include <common/md5calc.hpp>
+#include <common/mmo.hpp>
+#include <common/msg_conf.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp> //ip2str
+#include <common/sql.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
+#include <config/core.hpp>
 
 #include "charconfig_controller.hpp"
 #include "emblem_controller.hpp"
 #include "http.hpp"
+#include "merchantstore_controller.hpp"
+#include "partybooking_controller.hpp"
 #include "userconfig_controller.hpp"
 
-#ifdef Pandas_WebServer_Implement_MerchantStore
-#include "merchantstore_controller.hpp"
-#endif // Pandas_WebServer_Implement_MerchantStore
-
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-#include "recruitment_controller.hpp"
-#endif // Pandas_WebServer_Implement_PartyRecruitment
-
 using namespace rathena;
+using namespace rathena::server_core;
+using namespace rathena::server_web;
 
 #define WEB_MAX_MSG 30				/// Max number predefined in msg_conf
 static char* msg_table[WEB_MAX_MSG];	/// Web Server messages_conf
 
 struct Web_Config web_config {};
+struct Inter_Config inter_config {};
 std::shared_ptr<httplib::Server> http_server;
 
 int login_server_port = 3306;
-char login_server_ip[64] = "127.0.0.1";
-char login_server_id[32] = "ragnarok";
-char login_server_pw[32] = "";
-char login_server_db[32] = "ragnarok";
+std::string login_server_ip = "127.0.0.1";
+std::string login_server_id = "ragnarok";
+std::string login_server_pw = "";
+std::string login_server_db = "ragnarok";
 #ifdef Pandas_SQL_Configure_Optimization
 char login_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 
 int  char_server_port = 3306;
-char char_server_ip[64] = "127.0.0.1";
-char char_server_id[32] = "ragnarok";
-char char_server_pw[32] = "";
-char char_server_db[32] = "ragnarok";
+std::string char_server_ip = "127.0.0.1";
+std::string char_server_id = "ragnarok";
+std::string char_server_pw = "";
+std::string char_server_db = "ragnarok";
 #ifdef Pandas_SQL_Configure_Optimization
 char char_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 
+int map_server_port = 3306;
+std::string map_server_ip = "127.0.0.1";
+std::string map_server_id = "ragnarok";
+std::string map_server_pw = "";
+std::string map_server_db = "ragnarok";
+#ifdef Pandas_SQL_Configure_Optimization
+char map_codepage[32] = "";
+#endif // Pandas_SQL_Configure_Optimization
+
 int web_server_port = 3306;
-char web_server_ip[64] = "127.0.0.1";
-char web_server_id[32] = "ragnarok";
-char web_server_pw[32] = "";
-char web_server_db[32] = "ragnarok";
+std::string web_server_ip = "127.0.0.1";
+std::string web_server_id = "ragnarok";
+std::string web_server_pw = "";
+std::string web_server_db = "ragnarok";
 #ifdef Pandas_SQL_Configure_Optimization
 char web_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 
-char default_codepage[32] = "";
+std::string default_codepage = "";
 
 Sql * login_handle = NULL;
 Sql * char_handle = NULL;
+Sql * map_handle = NULL;
 Sql * web_handle = NULL;
 
 char login_table[32] = "login";
 char guild_emblems_table[32] = "guild_emblems";
 char user_configs_table[32] = "user_configs";
 char char_configs_table[32] = "char_configs";
-#ifdef Pandas_WebServer_Implement_MerchantStore
 char merchant_configs_table[32] = "merchant_configs";
-#endif // Pandas_WebServer_Implement_MerchantStore
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-char recruitment_table[32] = "recruitment";
 char party_table[32] = "party";
-#endif // Pandas_WebServer_Implement_PartyRecruitment
+char partybookings_table[32] = "party_bookings";
 char guild_db_table[32] = "guild";
 char char_db_table[32] = "char";
 
@@ -173,8 +176,6 @@ bool web_config_read(const char* cfgName, bool normal) {
 			web_config.print_req_res = config_switch(w2);
 		else if (!strcmpi(w1, "import"))
 			web_config_read(w2, normal);
-		else if (!strcmpi(w1, "emblem_transparency_limit"))
-			web_config.emblem_transparency_limit = atoi(w2);
 		else if (!strcmpi(w1, "allow_gifs"))
 			web_config.allow_gifs = config_switch(w2) == 1;
 	}
@@ -206,54 +207,64 @@ int inter_config_read(const char* cfgName)
 		if (sscanf(line, "%23[^:]: %1023[^\r\n]", w1, w2) != 2)
 			continue;
 
-		if(!strcmpi(w1,"login_server_ip"))
-			safestrncpy(login_server_ip,w2,sizeof(login_server_ip));
+		if (!strcmpi(w1, "emblem_transparency_limit"))
+			inter_config.emblem_woe_change = atoi(w2);
+		else if (!strcmpi(w1, "emblem_transparency_limit"))
+			inter_config.emblem_woe_change = config_switch(w2) == 1;
+		else if(!strcmpi(w1,"login_server_ip"))
+			login_server_ip = w2;
 		else if(!strcmpi(w1,"login_server_port"))
 			login_server_port = atoi(w2);
 		else if(!strcmpi(w1,"login_server_id"))
-			safestrncpy(login_server_id,w2,sizeof(login_server_id));
+			login_server_id = w2;
 		else if(!strcmpi(w1,"login_server_pw"))
-			safestrncpy(login_server_pw,w2,sizeof(login_server_pw));
+			login_server_pw = w2;
 		else if(!strcmpi(w1,"login_server_db"))
-			safestrncpy(login_server_db,w2,sizeof(login_server_db));
+			login_server_db = w2;
 		else if(!strcmpi(w1,"char_server_ip"))
-			safestrncpy(char_server_ip,w2,sizeof(char_server_ip));
+			char_server_ip = w2;
 		else if(!strcmpi(w1,"char_server_port"))
 			char_server_port = atoi(w2);
 		else if(!strcmpi(w1,"char_server_id"))
-			safestrncpy(char_server_id,w2,sizeof(char_server_id));
+			char_server_id = w2;
 		else if(!strcmpi(w1,"char_server_pw"))
-			safestrncpy(char_server_pw,w2,sizeof(char_server_pw));
+			char_server_pw = w2;
 		else if(!strcmpi(w1,"char_server_db"))
-			safestrncpy(char_server_db,w2,sizeof(char_server_db));
+			char_server_db = w2;
+		else if(!strcmpi(w1,"map_server_ip"))
+			map_server_ip = w2;
+		else if(!strcmpi(w1,"map_server_port"))
+			map_server_port = atoi(w2);
+		else if(!strcmpi(w1,"map_server_id"))
+			map_server_id = w2;
+		else if(!strcmpi(w1,"map_server_pw"))
+			map_server_pw = w2;
+		else if(!strcmpi(w1,"map_server_db"))
+			map_server_db = w2;
 		else if(!strcmpi(w1,"web_server_ip"))
-			safestrncpy(web_server_ip,w2,sizeof(web_server_ip));
+			web_server_ip = w2;
 		else if(!strcmpi(w1,"web_server_port"))
 			web_server_port = atoi(w2);
 		else if(!strcmpi(w1,"web_server_id"))
-			safestrncpy(web_server_id,w2,sizeof(web_server_id));
+			web_server_id = w2;
 		else if(!strcmpi(w1,"web_server_pw"))
-			safestrncpy(web_server_pw,w2,sizeof(web_server_pw));
+			web_server_pw = w2;
 		else if(!strcmpi(w1,"web_server_db"))
-			safestrncpy(web_server_db,w2,sizeof(web_server_db));
+			web_server_db = w2;
 		else if(!strcmpi(w1,"default_codepage"))
-			safestrncpy(default_codepage,w2,sizeof(default_codepage));
-		else if (!strcmpi(w1, "user_configs_table"))
+			default_codepage = w2;
+		else if (!strcmpi(w1, "user_configs"))
 			safestrncpy(user_configs_table, w2, sizeof(user_configs_table));
-		else if (!strcmpi(w1, "char_configs_table"))
+		else if (!strcmpi(w1, "char_configs"))
 			safestrncpy(char_configs_table, w2, sizeof(char_configs_table));
-		else if (!strcmpi(w1, "guild_emblems_table"))
-			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
-#ifdef Pandas_WebServer_Implement_MerchantStore
-		else if (!strcmpi(w1, "merchant_configs_table"))
+		else if (!strcmpi(w1, "merchant_configs"))
 			safestrncpy(merchant_configs_table, w2, sizeof(merchant_configs_table));
-#endif // Pandas_WebServer_Implement_MerchantStore
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-		else if (!strcmpi(w1, "recruitment_table"))
-			safestrncpy(recruitment_table, w2, sizeof(recruitment_table));
 		else if (!strcmpi(w1, "party_db"))
 			safestrncpy(party_table, w2, sizeof(party_table));
-#endif // Pandas_WebServer_Implement_PartyRecruitment
+		else if (!strcmpi(w1, "partybookings_table"))
+			safestrncpy(partybookings_table, w2, sizeof(partybookings_table));
+		else if (!strcmpi(w1, "guild_emblems"))
+			safestrncpy(guild_emblems_table, w2, sizeof(guild_emblems_table));
 		else if (!strcmpi(w1, "login_server_account_db"))
 			safestrncpy(login_table, w2, sizeof(login_table));
 		else if (!strcmpi(w1, "guild_db"))
@@ -265,6 +276,8 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(login_codepage, w2, sizeof(login_codepage));
 		else if (!strcmpi(w1, "char_codepage"))
 			safestrncpy(char_codepage, w2, sizeof(char_codepage));
+		else if (!strcmpi(w1, "map_codepage"))
+			safestrncpy(map_codepage, w2, sizeof(map_codepage));
 		else if (!strcmpi(w1, "web_codepage"))
 			safestrncpy(web_codepage, w2, sizeof(web_codepage));
 #endif // Pandas_SQL_Configure_Optimization
@@ -285,6 +298,9 @@ void web_set_defaults() {
 	safestrncpy(web_config.webconf_name, "conf/web_athena.conf", sizeof(web_config.webconf_name));
 	safestrncpy(web_config.msgconf_name, "conf/msg_conf/web_msg.conf", sizeof(web_config.msgconf_name));
 	web_config.print_req_res = false;
+
+	inter_config.emblem_transparency_limit = 100;
+	inter_config.emblem_woe_change = true;
 }
 
 
@@ -295,43 +311,60 @@ int web_sql_init(void) {
 	login_handle = Sql_Malloc();
 	ShowInfo("Connecting to the Login DB server.....\n");
 
-	if (SQL_ERROR == Sql_Connect(login_handle, login_server_id, login_server_pw, login_server_ip, login_server_port, login_server_db)) {
-		ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-			login_server_id, login_server_pw, login_server_ip, login_server_port, login_server_db);
+	if (SQL_ERROR == Sql_Connect(login_handle, login_server_id.c_str(), login_server_pw.c_str(), login_server_ip.c_str(), login_server_port, login_server_db.c_str())) {
+		ShowError("Couldn't connect with uname='%s',host='%s',port='%d',database='%s'\n",
+			login_server_id.c_str(), login_server_ip.c_str(), login_server_port, login_server_db.c_str());
 		Sql_ShowDebug(login_handle);
 		Sql_Free(login_handle);
 		exit(EXIT_FAILURE);
 	}
 	ShowStatus("Connect success! (Login Server Connection)\n");
 
-	if (strlen(default_codepage) > 0) {
-		if (SQL_ERROR == Sql_SetEncoding(login_handle, default_codepage))
+	if (!default_codepage.empty()) {
+		if (SQL_ERROR == Sql_SetEncoding(login_handle, default_codepage.c_str()))
 			Sql_ShowDebug(login_handle);
 	}
 
 	char_handle = Sql_Malloc();
 	ShowInfo("Connecting to the Char DB server.....\n");
 
-	if (SQL_ERROR == Sql_Connect(char_handle, char_server_id, char_server_pw, char_server_ip, char_server_port, char_server_db)) {
-		ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-			char_server_id, char_server_pw, char_server_ip, char_server_port, char_server_db);
+	if (SQL_ERROR == Sql_Connect(char_handle, char_server_id.c_str(), char_server_pw.c_str(), char_server_ip.c_str(), char_server_port, char_server_db.c_str())) {
+		ShowError("Couldn't connect with uname='%s',host='%s',port='%d',database='%s'\n",
+			char_server_id.c_str(), char_server_ip.c_str(), char_server_port, char_server_db.c_str());
 		Sql_ShowDebug(char_handle);
 		Sql_Free(char_handle);
 		exit(EXIT_FAILURE);
 	}
 	ShowStatus("Connect success! (Char Server Connection)\n");
 
-	if (strlen(default_codepage) > 0) {
-		if (SQL_ERROR == Sql_SetEncoding(char_handle, default_codepage))
+	if (!default_codepage.empty()) {
+		if (SQL_ERROR == Sql_SetEncoding(char_handle, default_codepage.c_str()))
 			Sql_ShowDebug(char_handle);
+	}
+
+	map_handle = Sql_Malloc();
+	ShowInfo("Connecting to the Map DB server.....\n");
+
+	if (SQL_ERROR == Sql_Connect(map_handle, map_server_id.c_str(), map_server_pw.c_str(), map_server_ip.c_str(), map_server_port, map_server_db.c_str())) {
+		ShowError("Couldn't connect with uname='%s',host='%s',port='%d',database='%s'\n",
+			map_server_id.c_str(), map_server_ip.c_str(), map_server_port, map_server_db.c_str());
+		Sql_ShowDebug(map_handle);
+		Sql_Free(map_handle);
+		exit(EXIT_FAILURE);
+	}
+	ShowStatus("Connect success! (Map Server Connection)\n");
+
+	if (!default_codepage.empty()) {
+		if (SQL_ERROR == Sql_SetEncoding(map_handle, default_codepage.c_str()))
+			Sql_ShowDebug(map_handle);
 	}
 
 	web_handle = Sql_Malloc();
 	ShowInfo("Connecting to the Web DB server.....\n");
 
-	if (SQL_ERROR == Sql_Connect(web_handle, web_server_id, web_server_pw, web_server_ip, web_server_port, web_server_db)) {
-		ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-			web_server_id, web_server_pw, web_server_ip, web_server_port, web_server_db);
+	if (SQL_ERROR == Sql_Connect(web_handle, web_server_id.c_str(), web_server_pw.c_str(), web_server_ip.c_str(), web_server_port, web_server_db.c_str())) {
+		ShowError("Couldn't connect with uname='%s',host='%s',port='%d',database='%s'\n",
+			web_server_id.c_str(), web_server_ip.c_str(), web_server_port, web_server_db.c_str());
 		Sql_ShowDebug(web_handle);
 		Sql_Free(web_handle);
 		exit(EXIT_FAILURE);
@@ -339,16 +372,18 @@ int web_sql_init(void) {
 	ShowStatus("Connect success! (Web Server Connection)\n");
 
 #ifndef Pandas_SQL_Configure_Optimization
-	if (strlen(default_codepage) > 0) {
-		if (SQL_ERROR == Sql_SetEncoding(web_handle, default_codepage))
+	if (!default_codepage.empty()) {
+		if (SQL_ERROR == Sql_SetEncoding(web_handle, default_codepage.c_str()))
 			Sql_ShowDebug(web_handle);
 	}
 #else
-	if (SQL_ERROR == Sql_SetEncoding(login_handle, login_codepage, default_codepage, "Login-Server"))
+	if (SQL_ERROR == Sql_SetEncoding(login_handle, login_codepage, default_codepage.c_str(), "Login-Server"))
 		Sql_ShowDebug(login_handle);
-	if (SQL_ERROR == Sql_SetEncoding(char_handle, char_codepage, default_codepage, "Char-Server"))
+	if (SQL_ERROR == Sql_SetEncoding(char_handle, char_codepage, default_codepage.c_str(), "Char-Server"))
 		Sql_ShowDebug(char_handle);
-	if (SQL_ERROR == Sql_SetEncoding(web_handle, web_codepage, default_codepage, "Web-Server"))
+	if (SQL_ERROR == Sql_SetEncoding(map_handle, map_codepage, default_codepage.c_str(), "Map-Server"))
+		Sql_ShowDebug(map_handle);
+	if (SQL_ERROR == Sql_SetEncoding(web_handle, web_codepage, default_codepage.c_str(), "Web-Server"))
 		Sql_ShowDebug(web_handle);
 #endif // Pandas_SQL_Configure_Optimization
 
@@ -368,6 +403,9 @@ int web_sql_close(void)
 	ShowStatus("Close Char DB Connection....\n");
 	Sql_Free(char_handle);
 	char_handle = NULL;
+	ShowStatus("Close Map DB Connection....\n");
+	Sql_Free(map_handle);
+	map_handle = NULL;
 	ShowStatus("Close Web DB Connection....\n");
 	Sql_Free(web_handle);
 	web_handle = NULL;
@@ -376,10 +414,13 @@ int web_sql_close(void)
 }
 
 /**
- * Login-serv destructor
- *  dealloc..., function called at exit of the login-serv
+ * web-server destructor
+ *  dealloc..., function called at exit of the web-server
  */
-void do_final(void) {
+void WebServer::finalize(){
+#ifdef Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	printf("\n");
+#endif // Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	ShowStatus("Terminating...\n");
 #ifdef WEB_SERVER_ENABLE
 	http_server->stop();
@@ -392,23 +433,10 @@ void do_final(void) {
 
 /**
  * Signal handler
- *  This function attempts to properly close the server when an interrupt signal is received.
- *  current signal catch : SIGTERM, SIGINT
- */
-void do_shutdown(void) {
-	if( runflag != WEBSERVER_ST_SHUTDOWN ) {
-		runflag = WEBSERVER_ST_SHUTDOWN;
-		ShowStatus("Shutting down...\n");
-		runflag = CORE_ST_STOP;
-	}
-}
-
-/**
- * Signal handler
  *  Function called when the server has received a crash signal.
  *  current signal catch : SIGSEGV, SIGFPE
  */
-void do_abort(void) {
+void WebServer::handle_crash(){
 #ifdef WEB_SERVER_ENABLE
 	http_server->stop();
 	svr_thr.join();
@@ -424,13 +452,6 @@ void display_helpscreen(bool do_exit)
 	if( do_exit )
 		exit(EXIT_SUCCESS);
 }
-
-
-// Is this still used ??
-void set_server_type(void) {
-	SERVER_TYPE = ATHENA_SERVER_WEB;
-}
-
 
 // called just before sending repsonse
 void logger(const Request & req, const Response & res) {
@@ -470,11 +491,11 @@ void logger(const Request & req, const Response & res) {
 }
 
 
-int do_init(int argc, char** argv) {
-	runflag = WEBSERVER_ST_STARTING;
+bool WebServer::initialize( int argc, char* argv[] ){
 #ifndef WEB_SERVER_ENABLE
-	ShowStatus("The web-server is " CL_GREEN "idling" CL_RESET " (PACKETVER too old to use).\n\n");
-	return 0;
+	ShowStatus("The web-server is " CL_GREEN "stopping" CL_RESET " (PACKETVER too old to use).\n\n");
+	this->signal_shutdown();
+	return true;
 #else
 	INTER_CONF_NAME="conf/inter_athena.conf";
 
@@ -494,36 +515,34 @@ int do_init(int argc, char** argv) {
 
 	http_server = std::make_shared<httplib::Server>();
 	// set up routes
-	http_server->Post("/emblem/download", emblem_download);
-	http_server->Post("/emblem/upload", emblem_upload);
-	http_server->Post("/userconfig/load", userconfig_load);
-	http_server->Post("/userconfig/save", userconfig_save);
 	http_server->Post("/charconfig/load", charconfig_load);
 	http_server->Post("/charconfig/save", charconfig_save);
-#ifdef Pandas_WebServer_Implement_MerchantStore
+	http_server->Post("/emblem/download", emblem_download);
+	http_server->Post("/emblem/upload", emblem_upload);
 	http_server->Post("/MerchantStore/load", merchantstore_load);
 	http_server->Post("/MerchantStore/save", merchantstore_save);
-#endif // Pandas_WebServer_Implement_MerchantStore
-#ifdef Pandas_WebServer_Implement_PartyRecruitment
-	http_server->Post("/party/add", party_recruitment_add);
-	http_server->Post("/party/del", party_recruitment_del);
-	http_server->Post("/party/get", party_recruitment_get);
-	http_server->Post("/party/list", party_recruitment_list);
-	http_server->Post("/party/search", party_recruitment_search);
-#endif // Pandas_WebServer_Implement_PartyRecruitment
+	http_server->Post("/party/add", partybooking_add);
+	http_server->Post("/party/del", partybooking_delete);
+	http_server->Post("/party/get", partybooking_get);
+	http_server->Post("/party/info", partybooking_info);
+	http_server->Post("/party/list", partybooking_list);
+	http_server->Post("/party/search", partybooking_search);
+	http_server->Post("/userconfig/load", userconfig_load);
+	http_server->Post("/userconfig/save", userconfig_save);
 
 	// set up logger
 	http_server->set_logger(logger);
-	shutdown_callback = do_shutdown;
-
-	runflag = WEBSERVER_ST_RUNNING;
 
 	svr_thr = std::thread([] {
 		http_server->listen(web_config.web_ip.c_str(), web_config.web_port);
 	});
 
 	for (int i = 0; i < 10; i++) {
-		if (http_server->is_running() || runflag != WEBSERVER_ST_RUNNING)
+		if( global_core->get_status() == e_core_status::STOPPING ){
+			return true;
+		}
+
+		if (http_server->is_running())
 			break;
 #ifndef Pandas_Cleanup_Useless_Message
 		ShowDebug("Web server not running, sleeping 1 second.\n");
@@ -533,11 +552,18 @@ int do_init(int argc, char** argv) {
 
 	if (!http_server->is_running()) {
 		ShowError("Web server hasn't started, stopping.\n");
-		runflag = CORE_ST_STOP;
-		return 0;
+		return false;
 	}
 
 	ShowStatus("The web-server is " CL_GREEN "ready" CL_RESET " (Server is listening on the port %u).\n\n", web_config.web_port);
-	return 0;
+	return true;
 #endif
+}
+
+void WebServer::handle_main( t_tick next ){
+	std::this_thread::sleep_for( std::chrono::milliseconds( next ) );
+}
+
+int main( int argc, char *argv[] ){
+	return main_core<WebServer>( argc, argv );
 }

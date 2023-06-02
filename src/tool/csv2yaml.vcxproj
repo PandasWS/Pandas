@@ -70,32 +70,32 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\3rdparty\fmt\include;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\3rdparty\fmt\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\3rdparty\fmt\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir).vs\build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)3rdparty\boost\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)3rdparty\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\3rdparty\fmt\include;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>..\..\rAthena.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -121,15 +121,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,14 +142,15 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;_DEBUG;_CONSOLE;_LIB;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -160,16 +163,17 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -182,16 +186,17 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>$(DefineConstants);WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;LIBCONFIG_STATIC;YY_USE_CONST;MINICORE;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)3rdparty\yaml-cpp\include\;$(SolutionDir)3rdparty\rapidyaml\src;$(SolutionDir)3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;version.lib;wininet.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\common-minicore.lib;$(SolutionDir)3rdparty\zlib\lib\$(Platform)\zlib.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\yaml-cpp.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\ryml.lib;$(SolutionDir).vs\build\$(Platform)\$(Configuration)\uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -229,9 +234,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <Target Name="BoostLibraries" BeforeTargets="PrepareForBuild">
-    <Error Condition="(!Exists('$(SolutionDir)\3rdparty\boost\stage\lib') Or !Exists('$(SolutionDir)\3rdparty\boost\b2.exe'))" Text="Please run `3rdparty\boost\bootstrap.bat` to compile `Boost C++ Libraries` before build `$(ProjectName)` project." />
-  </Target>
   <Target Name="AfterClean">
     <Delete Files="$(SolutionDir)zlib.dll" ContinueOnError="true" />
     <Delete Files="$(SolutionDir)serv.bat" ContinueOnError="true" />

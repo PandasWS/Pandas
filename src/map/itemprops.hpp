@@ -8,8 +8,8 @@
 
 #include "itemdb.hpp"
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
 
 #ifdef Pandas_Item_Properties
 

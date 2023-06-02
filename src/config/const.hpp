@@ -4,7 +4,7 @@
 #ifndef CONFIG_CONST_H
 #define CONFIG_CONST_H
 
-#include "../common/cbasetypes.hpp"
+#include <common/cbasetypes.hpp>
 
 /**
  * rAthena configuration file (http://rathena.org)
@@ -163,13 +163,6 @@ const t_exp MAX_LEVEL_JOB_EXP = 999999999;
     #define MAP_DEFAULT_NAME "new_1-1"
     #define MAP_DEFAULT_X 53
     #define MAP_DEFAULT_Y 111
-#endif
-
-/**
- * Use web service?
- **/
-#if PACKETVER > 20200300
-	#define WEB_SERVER_ENABLE
 #endif
 
 /**

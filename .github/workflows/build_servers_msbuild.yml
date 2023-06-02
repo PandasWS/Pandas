@@ -1,0 +1,51 @@
+name: Build servers with MSBuild
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !contains(fromJSON('["refs/heads/master", "refs/heads/develop"]'), github.ref) }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - develop
+    paths:
+      - '.github/workflows/**'
+      - 'tools/integration/**'
+      - 'src/**'
+      - '3rdparty/**'
+      - '**/CMakeLists.txt'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'tools/integration/**'
+      - 'src/**'
+      - '3rdparty/**'
+      - '**/CMakeLists.txt'
+
+jobs:
+  build:
+    if: ${{ !contains(fromJSON('["ci-skip", "skip-ci", "ql-skip", "skip-ql", "no-ci"]'), github.event.head_commit.message) }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        mode: ['PRE', 'RE']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Setup MSBuild compiler
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build solution in PRE for Debug
+        if: ${{ matrix.mode == 'PRE' }}
+        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Debug /p:DefineConstants="BUILDBOT%3BPRERE"
+
+      - name: Build solution in RE for Debug
+        if: ${{ matrix.mode == 'RE' }}
+        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Debug /p:DefineConstants="BUILDBOT"
