@@ -6,8 +6,8 @@
 #include <chrono>
 #include <map>
 
-#include "../common/showmsg.hpp"
-#include "../common/cbasetypes.hpp"
+#include <common/showmsg.hpp>
+#include <common/cbasetypes.hpp>
 
 using std::chrono::nanoseconds;
 using std::chrono::milliseconds;

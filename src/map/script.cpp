@@ -21,25 +21,25 @@
 #endif // Pandas_ScriptEngine_Express
 
 #ifdef Pandas_ScriptCommand_Preg_Search
-#include <boost/regex.hpp>
+#include <regex>
 #endif // Pandas_ScriptCommand_Preg_Search
 
 #ifdef PCRE_SUPPORT
-#include "../../3rdparty/pcre/include/pcre.h" // preg_match
+#include <pcre.h> // preg_match
 #endif
 
-#include "../common/cbasetypes.hpp"
-#include "../common/ers.hpp"  // ers_destroy
-#include "../common/malloc.hpp"
-#include "../common/md5calc.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/ers.hpp>  // ers_destroy
+#include <common/malloc.hpp>
+#include <common/md5calc.hpp>
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
@@ -4487,8 +4487,11 @@ int run_func(struct script_state *st)
 		}
 #endif // Pandas_ScriptEngine_Express
 
-		if (str_data[func].func(st) == SCRIPT_CMD_FAILURE) //Report error
+		if (str_data[func].func(st) == SCRIPT_CMD_FAILURE) {
+			//Report error
+			ShowWarning("Script command '%s' returned failure.\n", get_str(func));
 			script_reportsrc(st);
+		}
 	} else {
 		ShowError("script:run_func: '%s' (id=%d type=%s) has no C function. please report this!!!\n", get_str(func), func, script_op2name(str_data[func].type));
 		script_reportsrc(st);
@@ -5764,6 +5767,8 @@ void do_init_script(void) {
 	st_ers = ers_new(sizeof(struct script_state), "script.cpp::st_ers", ERS_CACHE_OPTIONS);
 	stack_ers = ers_new(sizeof(struct script_stack), "script.cpp::script_stack", ERS_OPT_FLEX_CHUNK);
 	array_ers = ers_new(sizeof(struct script_array), "script.cpp:array_ers", ERS_CLEAN_OPTIONS);
+
+	add_timer_func_list( run_script_timer, "run_script_timer" );
 
 	ers_chunk_size(st_ers, 10);
 	ers_chunk_size(stack_ers, 10);
@@ -7605,7 +7610,7 @@ BUILDIN_FUNC(inarray)
 {
 	struct script_data *data;
 	const char* name;
-	int id, i, array_size;
+	int id;
 	map_session_data* sd = NULL;
 	struct reg_db *ref = NULL;
 	data = script_getdata(st, 2);
@@ -7624,15 +7629,15 @@ BUILDIN_FUNC(inarray)
 	if (not_server_variable(*name) && !script_rid2sd(sd))
 		return SCRIPT_CMD_FAILURE;
 
-	array_size = script_array_highest_key(st, sd, name, ref) - 1;
+	const uint32 array_size = script_array_highest_key(st, sd, name, ref);
 
-	if (array_size < 0)
+	if (array_size == 0)
 	{
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (array_size > SCRIPT_MAX_ARRAYSIZE)
+	if (array_size >= SCRIPT_MAX_ARRAYSIZE)
 	{
 		ShowError("buildin_inarray: The array is too large.\n");
 		script_reportdata(data);
@@ -7645,7 +7650,7 @@ BUILDIN_FUNC(inarray)
 	if( is_string_variable( name ) ){
 		const char* value = script_getstr( st, 3 );
 
-		for( i = 0; i <= array_size; ++i ){
+		for( uint32 i = 0; i < array_size; ++i ){
 			const char* temp = get_val2_str( st, reference_uid( id, i ), ref );
 
 			if( !strcmp( temp, value ) ){
@@ -7661,7 +7666,7 @@ BUILDIN_FUNC(inarray)
 	}else{
 		int64 value = script_getnum64( st, 3 );
 
-		for( i = 0; i <= array_size; ++i ){
+		for( uint32 i = 0; i < array_size; ++i ){
 			int64 temp = get_val2_num( st, reference_uid( id, i ), ref );
 
 			if( temp == value ){
@@ -7684,7 +7689,7 @@ BUILDIN_FUNC(countinarray)
 	struct script_data *data1 , *data2;
 	const char* name1;
 	const char* name2;
-	int id1, id2, i, j, array_size1, array_size2, case_count = 0;
+	int id1, id2, case_count = 0;
 	map_session_data* sd = NULL;
 	struct reg_db *ref1 = NULL, *ref2 = NULL;
 	data1 = script_getdata(st, 2);
@@ -7707,16 +7712,16 @@ BUILDIN_FUNC(countinarray)
 	if (not_server_variable(*name1) && not_server_variable(*name2) && !script_rid2sd(sd))
 		return SCRIPT_CMD_FAILURE;
 
-	array_size1 = script_array_highest_key(st, sd, name1, ref1) - 1;
-	array_size2 = script_array_highest_key(st, sd, name2, ref2) - 1;
+	const uint32 array_size1 = script_array_highest_key(st, sd, name1, ref1);
+	const uint32 array_size2 = script_array_highest_key(st, sd, name2, ref2);
 
-	if (array_size1 < 0 || array_size2 < 0)
+	if (array_size1 == 0 || array_size2 == 0)
 	{
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (array_size1 > SCRIPT_MAX_ARRAYSIZE || array_size2 > SCRIPT_MAX_ARRAYSIZE)
+	if (array_size1 >= SCRIPT_MAX_ARRAYSIZE || array_size2 >= SCRIPT_MAX_ARRAYSIZE)
 	{
 		ShowError("buildin_countinarray: The array is too large.\n");
 		script_reportdata(data1);
@@ -7725,9 +7730,9 @@ BUILDIN_FUNC(countinarray)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	i = reference_getindex(data1);
-	j = reference_getindex(data2);
-	if (array_size1 < i || array_size2 < j)
+	uint32 i = reference_getindex(data1);
+	uint32 j = reference_getindex(data2);
+	if (i > array_size1 - 1 || j > array_size2 - 1)
 	{	//To prevent unintended behavior
 		ShowError("buildin_countinarray: The given index of the array is higher than the array size.\n");
 		script_reportdata(data1);
@@ -7740,10 +7745,10 @@ BUILDIN_FUNC(countinarray)
 	id2 = reference_getid(data2);
 
 	if( is_string_variable( name1 ) && is_string_variable( name2 ) ){
-		for( ; i <= array_size1; ++i ){
+		for( ; i < array_size1; ++i ){
 			const char* temp1 = get_val2_str( st, reference_uid( id1, i ), ref1 );
 
-			for( j = reference_getindex( data2 ); j <= array_size2; j++ ){
+			for( j = reference_getindex( data2 ); j < array_size2; j++ ){
 				const char* temp2 = get_val2_str( st, reference_uid( id2, j ), ref2 );
 
 				if( !strcmp( temp1, temp2 ) ){
@@ -7758,10 +7763,10 @@ BUILDIN_FUNC(countinarray)
 			script_removetop( st, -1, 0 );
 		}
 	}else if( !is_string_variable( name1 ) && !is_string_variable( name2 ) ){
-		for( ; i <= array_size1; ++i ){
+		for( ; i < array_size1; ++i ){
 			int64 temp1 = get_val2_num( st, reference_uid( id1, i ), ref1 );
 
-			for( j = reference_getindex( data2 ); j <= array_size2; j++ ){
+			for( j = reference_getindex( data2 ); j < array_size2; j++ ){
 				int64 temp2 = get_val2_num( st, reference_uid( id2, j ), ref2 );
 
 				if( temp1 == temp2 ){
@@ -12182,6 +12187,8 @@ BUILDIN_FUNC(monster)
 	else
 		m = map_mapname2mapid(mapn);
 
+	TBL_MOB* md;
+
 	for(i = 0; i < amount; i++) { //not optimised
 #ifndef Pandas_ScriptCommand_BossMonster
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai);
@@ -12189,8 +12196,13 @@ BUILDIN_FUNC(monster)
 		int mobid = mob_once_spawn(sd, m, x, y, str, class_, 1, event, size, ai, (!strcmp(script_getfuncname(st), "boss_monster")) ? 1 : 0);
 #endif // Pandas_ScriptCommand_BossMonster
 
-		if (mobid)
+		if (mobid > 0) {
+			md = map_id2md(mobid);
+			if (md)
+				md->next_walktime = INVALID_TIMER;
+
 			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
+		}
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -12303,11 +12315,18 @@ BUILDIN_FUNC(areamonster)
 	else
 		m = map_mapname2mapid(mapn);
 
+	TBL_MOB* md;
+
 	for(i = 0; i < amount; i++) { //not optimised
 		int mobid = mob_once_spawn_area(sd, m, x0, y0, x1, y1, str, class_, 1, event, size, ai);
 
-		if (mobid)
+		if (mobid > 0) {
+			md = map_id2md(mobid);
+			if (md)
+				md->next_walktime = INVALID_TIMER;
+
 			mapreg_setreg(reference_uid(add_str("$@mobid"), i), mobid);
+		}
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -14180,7 +14199,7 @@ BUILDIN_FUNC(warpwaitingpc)
 			{// no zeny to cover set fee
 				break;
 			}
-			pc_payzeny(sd, cd->zeny, LOG_TYPE_NPC, NULL);
+			pc_payzeny(sd, cd->zeny, LOG_TYPE_NPC);
 		}
 
 		mapreg_setreg(reference_uid(add_str("$@warpwaitingpc"), i), sd->bl.id);
@@ -14395,7 +14414,7 @@ BUILDIN_FUNC(setmapflagnosave)
 	int16 m,x,y;
 	unsigned short mapindex;
 	const char *str,*str2;
-	union u_mapflag_args args = {};
+	pds_mapflag_args args = {};
 
 	str=script_getstr(st,2);
 	str2=script_getstr(st,3);
@@ -14438,11 +14457,10 @@ BUILDIN_FUNC(getmapflag)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	union u_mapflag_args args = {};
+	pds_mapflag_args args = {};
 
 	if (mf == MF_SKILL_DAMAGE && !script_hasdata(st, 4))
 		args.flag_val = SKILLDMG_MAX;
-	// PYHELP - MAPFLAG - INSERT POINT - <Section 10>
 	else
 		FETCH(4, args.flag_val);
 
@@ -14472,7 +14490,7 @@ BUILDIN_FUNC(setmapflag)
 		return SCRIPT_CMD_FAILURE;
 	}
 
-	union u_mapflag_args args = {};
+	pds_mapflag_args args = {};
 
 	switch(mf) {
 		case MF_SKILL_DAMAGE:
@@ -14507,11 +14525,42 @@ BUILDIN_FUNC(setmapflag)
 			args.nightmaredrop.drop_per = 300;
 			args.nightmaredrop.drop_type = NMDT_EQUIP;
 			break;
-		// PYHELP - MAPFLAG - INSERT POINT - <Section 9>
 		default:
 			FETCH(4, args.flag_val);
 			break;
 	}
+
+#ifdef Pandas_Mapflags
+	auto conf = util::umap_find(mapflag_config, static_cast<e_mapflag>(mf));
+	if (conf != nullptr) {
+		int args_count = conf->args.size();
+		args.input.resize(args_count);
+
+		switch (args_count) {
+		case 1:
+			FETCH(4, args.input[0]);
+			break;
+		case 2:
+			FETCH(4, args.input[0]);
+			FETCH(5, args.input[1]);
+			break;
+		case 3:
+			FETCH(4, args.input[0]);
+			FETCH(5, args.input[1]);
+			FETCH(6, args.input[2]);
+			break;
+		case 4:
+			FETCH(4, args.input[0]);
+			FETCH(5, args.input[1]);
+			FETCH(6, args.input[2]);
+			FETCH(7, args.input[3]);
+			break;
+		default:
+			ShowError("buildin_setmapflag: Unsupported mapflag '%s' with %d arguments.\n", conf->name, args_count);
+			break;
+		}
+	}
+#endif // Pandas_Mapflags
 
 	map_setmapflag_sub(m, static_cast<e_mapflag>(mf), true, &args);
 
@@ -14523,7 +14572,7 @@ BUILDIN_FUNC(removemapflag)
 	int16 m;
 	int mf;
 	const char *str;
-	union u_mapflag_args args = {};
+	pds_mapflag_args args = {};
 
 	str = script_getstr(st, 2);
 	m = map_mapname2mapid(str);
@@ -15568,7 +15617,7 @@ BUILDIN_FUNC(getitemname)
 
 	char* item_name = (char *)aMalloc( ITEM_NAME_LENGTH * sizeof( char ) );
 
-	memcpy(item_name, i_data->ename.c_str(), ITEM_NAME_LENGTH);
+	safestrncpy(item_name, i_data->ename.c_str(), ITEM_NAME_LENGTH);
 	script_pushstr(st,item_name);
 
 	return SCRIPT_CMD_SUCCESS;
@@ -18312,16 +18361,16 @@ BUILDIN_FUNC(implode)
 	}
 
 	//count chars
-	size_t array_size = script_array_highest_key( st, sd, name, reference_getref( data ) ) - 1;
+	const uint32 array_size = script_array_highest_key( st, sd, name, reference_getref( data ) );
 
-	if(array_size == -1) { //empty array check (AmsTaff)
+	if(array_size == 0) {
 		ShowWarning("script:implode: array length = 0\n");
 		script_pushstrcopy( st, "NULL" );
 	} else {
 		const char *glue = nullptr, *temp;
 		size_t len = 0, glue_len = 0, k = 0;
 
-		for( int i = 0; i <= array_size; ++i ){
+		for( uint32 i = 0; i < array_size; ++i ){
 			temp = get_val2_str( st, reference_uid( id, i ), reference_getref( data ) );
 			len += strlen(temp);
 			// Remove stack entry from get_val2_str
@@ -18332,18 +18381,13 @@ BUILDIN_FUNC(implode)
 		if( script_hasdata(st,3) ) {
 			glue = script_getstr(st,3);
 			glue_len = strlen(glue);
-#ifndef Pandas_CodeAnalysis_Suggestion
-			len += glue_len * array_size;
-#else
-			// 乘法计算时使用较大的数值类型来避免计算结果溢出: https://lgtm.com/rules/2157860313/
-			len += (size_t)glue_len * array_size;
-#endif // Pandas_CodeAnalysis_Suggestion
+			len += glue_len * (size_t)( array_size - 1 );
 		}
 
 		char* output = (char*)aMalloc( len + 1 );
 
 		//build output
-		for( int i = 0; i < array_size; ++i ){
+		for( uint32 i = 0; i < array_size - 1; ++i ){
 			temp = get_val2_str( st, reference_uid( id, i ), reference_getref( data ) );
 			len = strlen(temp);
 			memcpy(&output[k], temp, len);
@@ -18357,7 +18401,7 @@ BUILDIN_FUNC(implode)
 			}
 		}
 
-		temp = get_val2_str( st, reference_uid( id, array_size ), reference_getref( data ) );
+		temp = get_val2_str( st, reference_uid( id, array_size - 1), reference_getref( data ) );
 		len = strlen(temp);
 		memcpy(&output[k], temp, len);
 		k += len;
@@ -19507,7 +19551,7 @@ BUILDIN_FUNC(npcshopdelitem)
 		ARR_FIND( 0, size, n, nd->u.shop.shop_item[n].nameid == nameid );
 		if( n < size ) {
 			if (n+1 != size)
-				memmove(&nd->u.shop.shop_item[n], &nd->u.shop.shop_item[n+1], sizeof(nd->u.shop.shop_item[0])*(size-n));
+				memmove(&nd->u.shop.shop_item[n], &nd->u.shop.shop_item[n+1], sizeof(nd->u.shop.shop_item[0])*(size-(n + 1)));
 #if PACKETVER >= 20131223
 			if (nd->subtype == NPCTYPE_MARKETSHOP)
 				npc_market_delfromsql_(nd->exname, nameid, false);
@@ -21517,6 +21561,7 @@ BUILDIN_FUNC(unitskilluseid)
 	casttime = ( script_hasdata(st,6) ? script_getnum(st,6) : 0 );
 	bool cancel = ( script_hasdata(st,7) ? script_getnum(st,7) > 0 : skill_get_castcancel(skill_id) );
 	int msg_id = (script_hasdata(st, 8) ? script_getnum(st, 8) : 0);
+	bool ignore_range = (script_hasdata(st, 9) ? script_getnum(st, 9) > 0 : false);
 
 	if(script_rid2bl(2,bl)){
 		if (msg_id > 0) {
@@ -21534,7 +21579,27 @@ BUILDIN_FUNC(unitskilluseid)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
-		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), -1);
+			pc_setreg(esd, add_str("@useskill_pos_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target_gid"), target_id);
+
+			pc_setreg(esd, add_str("@useskill_x"), -1);
+			pc_setreg(esd, add_str("@useskill_y"), -1);
+			pc_setreg(esd, add_str("@useskill_target"), target_id);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+
+		unit_skilluse_id2(bl, target_id, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel, ignore_range);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -21571,6 +21636,7 @@ BUILDIN_FUNC(unitskillusepos)
 	casttime = ( script_hasdata(st,7) ? script_getnum(st,7) : 0 );
 	bool cancel = ( script_hasdata(st,8) ? script_getnum(st,8) > 0 : skill_get_castcancel(skill_id) );
 	int msg_id = (script_hasdata(st, 9) ? script_getnum(st, 9) : 0);
+	bool ignore_range = (script_hasdata(st, 10) ? script_getnum(st, 10) > 0 : false);
 
 	if(script_rid2bl(2,bl)){
 		if (msg_id > 0) {
@@ -21588,7 +21654,27 @@ BUILDIN_FUNC(unitskillusepos)
 			else
 				status_calc_npc(((TBL_NPC*)bl), SCO_NONE);
 		}
-		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel);
+
+#ifdef Pandas_NpcFilter_USE_SKILL
+		if (bl && bl->type == BL_PC) {
+			map_session_data* esd = (TBL_PC*)bl;
+			
+			pc_setreg(esd, add_str("@useskill_id"), skill_id);
+			pc_setreg(esd, add_str("@useskill_lv"), skill_lv);
+			pc_setreg(esd, add_str("@useskill_pos_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_pos_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target_gid"), 0);
+
+			pc_setreg(esd, add_str("@useskill_x"), skill_x);
+			pc_setreg(esd, add_str("@useskill_y"), skill_y);
+			pc_setreg(esd, add_str("@useskill_target"), 0);
+
+			if (npc_script_filter(esd, NPCF_USE_SKILL))
+				return SCRIPT_CMD_SUCCESS;
+		}
+#endif // Pandas_NpcFilter_USE_SKILL
+		
+		unit_skilluse_pos2(bl, skill_x, skill_y, skill_id, skill_lv, (casttime * 1000) + skill_castfix(bl, skill_id, skill_lv), cancel, ignore_range);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -22329,6 +22415,7 @@ BUILDIN_FUNC(erasequest)
 		script_reportsrc(st);
 		script_reportfunc(st);
 	}
+	pc_show_questinfo(sd); 
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -22896,16 +22983,16 @@ int script_instancegetid(struct script_state* st, e_instance_mode mode)
 	if (mode == IM_NONE) {
 		struct npc_data *nd = map_id2nd(st->oid);
 
-#ifndef Pandas_Crashfix_Prevent_NullPointer
-		if (nd->instance_id > 0)
-#else
+#ifdef Pandas_Crashfix_Prevent_NullPointer
 		// 此处必须对 nd 进行空指针校验.
 		// 若副本中的 NPC 在调用了 instance_destroy 销毁自己所在的副本之后,
 		// 还在后续的脚本中还企图调用与副本相关的指令时 (比如 '开头的副本变量, instance_ 开头的一系列脚本指令等),
 		// 那么对应的 NPC 早已经在调用 instance_destroy 的时候被销毁了, 不加以判断将引发空指针崩溃.
 		// 重现脚本: https://github.com/PandasWS/Pandas/issues/386
-		if (nd && nd->instance_id > 0)
+		if (!nd) return 0;
 #endif // Pandas_Crashfix_Prevent_NullPointer
+
+		if (nd->instance_id > 0)
 			instance_id = nd->instance_id;
 	} else {
 		map_session_data *sd = map_id2sd(st->rid);
@@ -23141,6 +23228,7 @@ static int buildin_instance_warpall_sub(struct block_list *bl, va_list ap)
 	int x = va_arg(ap,int);
 	int y = va_arg(ap,int);
 	int instance_id = va_arg(ap, int);
+	int flag = va_arg(ap, int);
 	map_session_data *sd;
 
 	nullpo_retr(0, bl);
@@ -23149,6 +23237,9 @@ static int buildin_instance_warpall_sub(struct block_list *bl, va_list ap)
 		return 0;
 
 	sd = (TBL_PC *)bl;
+
+	if ((flag & IWA_NOTDEAD) != 0 && pc_isdead(sd))
+		return 0;
 
 	std::shared_ptr<s_instance_data> idata = util::umap_find(instances, instance_id);
 
@@ -23171,9 +23262,11 @@ static int buildin_instance_warpall_sub(struct block_list *bl, va_list ap)
 		case IM_GUILD:
 			if (sd->status.guild_id != owner_id)
 				return 0;
+			break;
 		case IM_CLAN:
 			if (sd->status.clan_id != owner_id)
 				return 0;
+			break;
 	}
 
 #ifdef Pandas_Support_Transfer_Autotrade_Player
@@ -23188,19 +23281,18 @@ BUILDIN_FUNC(instance_warpall)
 {
 	int16 m;
 	int instance_id;
-	const char *mapn;
-	int x, y;
 
-	mapn = script_getstr(st,2);
-	x    = script_getnum(st,3);
-	y    = script_getnum(st,4);
+	const char *mapn = script_getstr(st,2);
+
 	if( script_hasdata(st,5) )
 		instance_id = script_getnum(st,5);
 	else
 		instance_id = script_instancegetid(st, IM_PARTY);
 
-	if( instance_id <= 0 || (m = map_mapname2mapid(mapn)) < 0 || (m = instance_mapid(m, instance_id)) < 0)
+	if( instance_id <= 0 || (m = map_mapname2mapid(mapn)) < 0 || (m = instance_mapid(m, instance_id)) < 0) {
+		ShowError("buildin_instance_warpall: Instance map for instance ID %d is not found.\n", instance_id);
 		return SCRIPT_CMD_FAILURE;
+	}
 
 	std::shared_ptr<s_instance_data> idata = util::umap_find(instances, instance_id);
 
@@ -23209,8 +23301,15 @@ BUILDIN_FUNC(instance_warpall)
 		return SCRIPT_CMD_FAILURE;
 	}
 
+	int flag = IWA_NONE;
+	int x = script_getnum(st,3);
+	int y = script_getnum(st,4);
+
+	if( script_hasdata(st, 6) )
+		flag = script_getnum(st, 6);
+
 	for(const auto &it : idata->map)
-		map_foreachinmap(buildin_instance_warpall_sub, it.m, BL_PC, map_id2index(m), x, y, instance_id);
+		map_foreachinmap(buildin_instance_warpall_sub, it.m, BL_PC, map_id2index(m), x, y, instance_id, flag);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -24494,9 +24593,9 @@ BUILDIN_FUNC(npcskill)
 		status_calc_npc(nd, SCO_NONE);
 
 	if (skill_get_inf(skill_id)&INF_GROUND_SKILL)
-		unit_skilluse_pos2(&nd->bl, sd->bl.x, sd->bl.y, skill_id, skill_level,0,0);
+		unit_skilluse_pos2(&nd->bl, sd->bl.x, sd->bl.y, skill_id, skill_level,0,0,true);
 	else
-		unit_skilluse_id2(&nd->bl, sd->bl.id, skill_id, skill_level,0,0);
+		unit_skilluse_id2(&nd->bl, sd->bl.id, skill_id, skill_level,0,0,true);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -28220,8 +28319,8 @@ BUILDIN_FUNC(openbank){
 
 #ifdef Pandas_MapFlag_NoBank
 	if (map_getmapflag(sd->bl.m, MF_NOBANK)) {
-		// This map prohibit using the bank system.
-		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt_cn(sd, 10), false, SELF);
+		// You cannot use the Bank on this map.
+		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt(sd, 831), false, SELF);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -28544,6 +28643,37 @@ BUILDIN_FUNC(itemlink)
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(mesitemlink){
+	t_itemid nameid = script_getnum( st, 2 );
+	std::shared_ptr<item_data> data = item_db.find( nameid );
+	
+	if( data == nullptr ){
+		ShowError( "buildin_mesitemlink: Item ID %u does not exists.\n", nameid );
+		script_pushconststr( st, "" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	bool use_brackets = true;
+
+	if( script_hasdata( st, 3 ) ){
+		use_brackets = script_getnum( st, 3 ) != 0;
+	}
+
+	const char* name = nullptr;
+
+	if( script_hasdata( st, 4 ) ){
+		name = script_getstr( st, 4 );
+	}
+
+	// Create the link, depending on configuration and packet version
+	std::string itemlstr = item_db.create_item_link_for_mes( data, use_brackets, name );
+
+	// Push it to the script engine for further usage
+	script_pushstrcopy( st, itemlstr.c_str() );
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
 BUILDIN_FUNC(addfame) {
 	map_session_data *sd;
 
@@ -28609,7 +28739,7 @@ BUILDIN_FUNC(macro_detector) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
-#include "../custom/script.inc"
+#include <custom/script.inc>
 
 // declarations that were supposed to be exported from npc_chat.cpp
 #ifdef PCRE_SUPPORT
@@ -31244,17 +31374,17 @@ BUILDIN_FUNC(preg_search) {
 
 	try
 	{
-		boost::regex re;
+		std::regex re;
 		if (flag & 1) {
-			re = boost::regex(patterns, boost::regex::icase);
+			re = std::regex(patterns, std::regex::icase);
 		}
 		else {
-			re = boost::regex(patterns);
+			re = std::regex(patterns);
 		}
 
-		boost::smatch match_result;
+		std::smatch match_result;
 
-		if (!boost::regex_search(text, match_result, re)) {
+		if (!std::regex_search(text, match_result, re)) {
 			script_pushint(st, -1);
 			return SCRIPT_CMD_SUCCESS;
 		}
@@ -31266,7 +31396,7 @@ BUILDIN_FUNC(preg_search) {
 
 		script_pushint(st, match_result.size());
 	}
-	catch (const boost::regex_error& e)
+	catch (const std::regex_error& e)
 	{
 		ShowError("%s: throw regex_error : %s\n", __func__, e.what());
 		script_pushint(st, -1);
@@ -32733,7 +32863,7 @@ BUILDIN_FUNC(getbossinfo) {
 		script_both_setreg(st, "boss_tomb_respawnsecs", -1, true, count, char_id);
 		t_tick respawntime = -1;
 		if (tomb_nd && tomb_nd->u.tomb.md->spawn) {
-			respawntime = gett_tickimer(tomb_nd->u.tomb.md->spawn_timer);
+			respawntime = gettick_timer(tomb_nd->u.tomb.md->spawn_timer);
 			if (respawntime != -1) {
 				respawntime = DIFF_TICK(respawntime, gettick());
 				respawntime = respawntime / 1000;
@@ -33222,7 +33352,15 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(isloggedin,"i?"),
 	BUILDIN_DEF(setmapflagnosave,"ssii"),
 	BUILDIN_DEF(getmapflag,"si?"),
+#ifndef Pandas_Mapflags
 	BUILDIN_DEF(setmapflag,"si??"),
+#else
+	// rAthena 原先的定义为:
+	// setmapflag "<map name>",<flag>{,<zone>{,<type>}};
+	// 为了方便对不同长度的参数值进行赋值, 熊猫改造成了:
+	// setmapflag "<map name>",<flag>{,<val1>{,<val2>{,<val3>{,<val4>}}}};
+	BUILDIN_DEF(setmapflag,"si????"),
+#endif // Pandas_Mapflags
 	BUILDIN_DEF(removemapflag,"si?"),
 	BUILDIN_DEF(pvpon,"s"),
 	BUILDIN_DEF(pvpoff,"s"),
@@ -33430,8 +33568,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(unitstopattack,"i"),
 	BUILDIN_DEF(unitstopwalk,"i?"),
 	BUILDIN_DEF(unittalk,"is?"),
-	BUILDIN_DEF(unitskilluseid,"ivi????"), // originally by Qamera [Celest]
-	BUILDIN_DEF(unitskillusepos,"iviii???"), // [Celest]
+	BUILDIN_DEF(unitskilluseid,"ivi?????"), // originally by Qamera [Celest]
+	BUILDIN_DEF(unitskillusepos,"iviii????"), // [Celest]
 // <--- [zBuffer] List of unit control commands
 	BUILDIN_DEF(sleep,"i"),
 	BUILDIN_DEF(sleep2,"i"),
@@ -33507,7 +33645,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(instance_enter,"s????"),
 	BUILDIN_DEF(instance_npcname,"s?"),
 	BUILDIN_DEF(instance_mapname,"s?"),
-	BUILDIN_DEF(instance_warpall,"sii?"),
+	BUILDIN_DEF(instance_warpall,"sii??"),
 	BUILDIN_DEF(instance_announce,"isi?????"),
 	BUILDIN_DEF(instance_check_party,"i???"),
 	BUILDIN_DEF(instance_check_guild,"i???"),
@@ -33711,6 +33849,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(item_reform, "??"),
 	BUILDIN_DEF(item_enchant, "i?"),
 	BUILDIN_DEF(itemlink, "i?????????"),
+	BUILDIN_DEF(mesitemlink, "i??"),
 	BUILDIN_DEF(addfame, "i?"),
 	BUILDIN_DEF(getfame, "?"),
 	BUILDIN_DEF(getfamerank, "?"),
@@ -33983,7 +34122,7 @@ struct script_function buildin_func[] = {
 #endif // Pandas_ScriptCommand_Refineui_Result
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
-#include "../custom/script_def.inc"
+#include <custom/script_def.inc>
 
 	{NULL,NULL,NULL},
 };

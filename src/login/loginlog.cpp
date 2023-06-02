@@ -6,12 +6,12 @@
 #include <stdlib.h> // exit
 #include <string.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/mmo.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp"
-#include "../common/sql.hpp"
-#include "../common/strlib.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/mmo.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp>
+#include <common/sql.hpp>
+#include <common/strlib.hpp>
 
 #ifdef Pandas_SQL_Configure_Optimization
 #include "login.hpp" // default_codepage

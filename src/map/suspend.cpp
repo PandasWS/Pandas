@@ -3,10 +3,10 @@
 
 #include "suspend.hpp"
 
-#include "../common/malloc.hpp" // aMalloc, aFree
-#include "../common/nullpo.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/sql.hpp"
+#include <common/malloc.hpp> // aMalloc, aFree
+#include <common/nullpo.hpp>
+#include <common/showmsg.hpp>
+#include <common/sql.hpp>
 
 #include "map.hpp"
 #include "chrif.hpp"

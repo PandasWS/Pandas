@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/mmo.hpp" // JOB_*, MAX_FAME_LIST, struct fame_list, struct mmo_charstatus
-#include "../common/strlib.hpp"// StringBuf
-#include "../common/timer.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/mmo.hpp> // JOB_*, MAX_FAME_LIST, struct fame_list, struct mmo_charstatus
+#include <common/strlib.hpp>// StringBuf
+#include <common/timer.hpp>
 
 #include "battleground.hpp"
 #include "buyingstore.hpp" // struct s_buyingstore
@@ -667,6 +667,8 @@ public:
 		int dropaddrace[RC_MAX];
 		int dropaddclass[CLASS_MAX];
 		int magic_subdefele[ELE_MAX];
+		int ignore_res_by_race[RC_MAX];
+		int ignore_mres_by_race[RC_MAX];
 	} indexed_bonus;
 	// zeroed arrays end here.
 
@@ -890,6 +892,7 @@ public:
 		uint32 pending_weight;
 		uint32 pending_zeny;
 		uint16 pending_slots;
+		uint32 dest_id;
 	} mail;
 
 	//Quest log system
@@ -1376,7 +1379,7 @@ enum e_mado_type : uint16 {
 	#define pc_leftside_def(sd) ((sd)->battle_status.def)
 	#define pc_rightside_def(sd) ((sd)->battle_status.def2)
 	#define pc_leftside_mdef(sd) ((sd)->battle_status.mdef)
-	#define pc_rightside_mdef(sd) ( (sd)->battle_status.mdef2 - ((sd)->battle_status.vit>>1) )
+	#define pc_rightside_mdef(sd) ( (sd)->battle_status.mdef2 - ((sd)->battle_status.vit / 2) )
 #define pc_leftside_matk(sd) \
     (\
     ((sd)->sc.getSCE(SC_MAGICPOWER) && (sd)->sc.getSCE(SC_MAGICPOWER)->val4) \
@@ -1570,9 +1573,9 @@ uint8 pc_inventoryblank(map_session_data *sd);
 uint16 pc_inventoryblank(map_session_data *sd);
 #endif // Pandas_FuncExtend_Increase_Inventory
 short pc_search_inventory(map_session_data *sd, t_itemid nameid);
-char pc_payzeny(map_session_data *sd, int zeny, enum e_log_pick_type type, map_session_data *tsd);
+char pc_payzeny(map_session_data *sd, int zeny, enum e_log_pick_type type, uint32 log_charid = 0);
 enum e_additem_result pc_additem(map_session_data *sd, struct item *item, int amount, e_log_pick_type log_type);
-char pc_getzeny(map_session_data *sd, int zeny, enum e_log_pick_type type, map_session_data *tsd);
+char pc_getzeny(map_session_data *sd, int zeny, enum e_log_pick_type type, uint32 log_charid = 0);
 char pc_delitem(map_session_data *sd, int n, int amount, int type, short reason, e_log_pick_type log_type);
 
 uint64 pc_generate_unique_id(map_session_data *sd);

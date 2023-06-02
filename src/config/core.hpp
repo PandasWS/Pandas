@@ -13,17 +13,17 @@
 // 熊猫模拟器定义的部分头文件 - 开始
 // -----------------------------------------------------------------
 
-#include "../config/pandas.hpp"
+#include <config/pandas.hpp>
 
-#include "../common/assistant.hpp"
-#include "../common/performance.hpp"
-#include "../common/utf8_defines.hpp"
+#include <common/assistant.hpp>
+#include <common/performance.hpp>
+#include <common/utf8_defines.hpp>
 
 // -----------------------------------------------------------------
 // 熊猫模拟器定义的部分头文件 - 结束
 // -----------------------------------------------------------------
 
-#include "../custom/defines_pre.hpp"
+#include <custom/defines_pre.hpp>
 
 /// Max number of items on @autolootid list
 #define AUTOLOOTITEM_SIZE 10
@@ -114,6 +114,14 @@
 /// Uncomment for use with Nemo patch ExtendOldCashShopPreview
 //#define ENABLE_OLD_CASHSHOP_PREVIEW_PATCH
 
+#if defined(_DEBUG) || defined(DEBUG)
+	#define DETAILED_LOADING_OUTPUT
+#endif
+
+/// Uncomment to forcibly disable the detailed loading output.
+/// This will noticeably decrease the boot time of the map server by not having to print so many status messages.
+//#undef DETAILED_LOADING_OUTPUT
+
 /**
  * No settings past this point
  **/
@@ -127,6 +135,6 @@
  **/
 #include "./const.hpp"
 
-#include "../custom/defines_post.hpp"
+#include <custom/defines_post.hpp>
 
 #endif /* CONFIG_CORE_HPP */

@@ -10,14 +10,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/core.hpp" // CORE_ST_LAST
-#include "../common/db.hpp"
-#include "../common/mapindex.hpp"
-#include "../common/mmo.hpp"
-#include "../common/msg_conf.hpp"
-#include "../common/timer.hpp"
-#include "../config/core.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/core.hpp> // CORE_ST_LAST
+#include <common/db.hpp>
+#include <common/mapindex.hpp>
+#include <common/mmo.hpp>
+#include <common/msg_conf.hpp>
+#include <common/timer.hpp>
+#include <config/core.hpp>
 
 #include "navi.hpp"
 #include "script.hpp"
@@ -376,6 +376,9 @@ enum e_race2 : uint8{
 	RC2_TEMPLE_DEMON,
 	RC2_ILLUSION_VAMPIRE,
 	RC2_MALANGDO,
+	RC2_EP172ALPHA,
+	RC2_EP172BETA,
+	RC2_EP172BATH,
 	RC2_MAX
 };
 
@@ -580,9 +583,10 @@ enum _sp {
 	SP_IGNORE_DEF_CLASS_RATE, SP_REGEN_PERCENT_HP, SP_REGEN_PERCENT_SP, SP_SKILL_DELAY, SP_NO_WALK_DELAY, //2088-2092
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
 	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN, SP_ADD_ITEM_SPHEAL_RATE, SP_ADD_ITEMGROUP_SPHEAL_RATE, // 2098-2101
-	SP_WEAPON_SUBSIZE, SP_ABSORB_DMG_MAXHP2 // 2102-2103
+	SP_WEAPON_SUBSIZE, SP_ABSORB_DMG_MAXHP2, // 2102-2103
+	SP_SP_IGNORE_RES_RACE_RATE, SP_SP_IGNORE_MRES_RACE_RATE, // 2104-2105
+
 #ifdef Pandas_ScriptParams_ReadParam
-	,
 	SP_EXTEND_UNUSED = 3100,
 	SP_STR_ALL, SP_AGI_ALL, SP_VIT_ALL, SP_INT_ALL, SP_DEX_ALL, SP_LUK_ALL,	// 3101-3106
 #endif // Pandas_ScriptParams_ReadParam
@@ -727,9 +731,10 @@ enum e_mapflag : int16 {
 	MF_NOPETCAPTURE,
 	MF_NOBUYINGSTORE,
 	MF_NODYNAMICNPC,
-#ifdef Pandas_MapFlag_Mobinfo
+	MF_NOBANK,
+#ifdef Pandas_MapFlag_MobInfo
 	MF_MOBINFO,
-#endif // Pandas_MapFlag_Mobinfo
+#endif // Pandas_MapFlag_MobInfo
 #ifdef Pandas_MapFlag_NoAutoLoot
 	MF_NOAUTOLOOT,
 #endif // Pandas_MapFlag_NoAutoLoot
@@ -784,9 +789,6 @@ enum e_mapflag : int16 {
 #ifdef Pandas_MapFlag_NoSlave
 	MF_NOSLAVE,
 #endif // Pandas_MapFlag_NoSlave
-#ifdef Pandas_MapFlag_NoBank
-	MF_NOBANK,
-#endif // Pandas_MapFlag_NoBank
 #ifdef Pandas_MapFlag_NoUseItem
 	MF_NOUSEITEM,
 #endif // Pandas_MapFlag_NoUseItem
@@ -840,14 +842,57 @@ struct s_drop_list {
 	enum e_nightmare_drop_type drop_type;
 };
 
+#ifdef Pandas_Mapflags
+struct s_mapflag_item_args {
+	int def_val;
+	int min;
+	int max;
+	const char* unit = nullptr;
+};
+
+struct s_mapflag_item {
+	const char* name;
+	bool turn_off_default;
+	bool block_atcmd;
+	std::vector<s_mapflag_item_args> args;
+};
+
+extern std::unordered_map<e_mapflag, s_mapflag_item> mapflag_config;
+#endif // Pandas_Mapflags
+
 /// Union for mapflag values
+#ifndef Pandas_Mapflags
 union u_mapflag_args {
+#else
+// 使用 union 会共享内存空间, 由于我们需要同时使用里面多个值,
+// 所以这里使用 struct 来代替 union 更合适
+struct u_mapflag_args {
+#endif // Pandas_Mapflags
 	struct point nosave;
 	struct s_drop_list nightmaredrop;
 	struct s_skill_damage skill_damage;
 	struct s_skill_duration skill_duration;
+#ifdef Pandas_Mapflags
+	// 熊猫自己拓展的地图标记可能需要支持更多的参数输入
+	// 在 rAthena 中单值通过 flag_val 来保存值, 部分例外的标记会使用
+	// 上面定义的类似 skill_damage 的结构体来存储更多输入值..
+	//
+	// 考虑到 rAthena 的做法比较不通用,
+	// 熊猫这里将全部拓展地图标记的传参都使用 input 来保存值,
+	// 不会使用 flag_val 避免存在阅读代码时存在的混淆
+	//
+	// 当解析 npc 脚本的时候, 如果碰到熊猫的拓展地图标记, 那么通常
+	// 将会使用 scanf 将地图标记的值提取到 input 中来保存.
+	std::vector<int> input;
+#endif // Pandas_Mapflags
 	int flag_val;
 };
+
+#ifndef Pandas_Mapflags
+typedef union u_mapflag_args pds_mapflag_args;
+#else
+typedef struct u_mapflag_args pds_mapflag_args;
+#endif // Pandas_Mapflags
 
 // used by map_setcell()
 enum cell_t{
@@ -921,18 +966,6 @@ struct iwall_data {
 	bool shootable;
 };
 
-#ifdef Pandas_Mapflags
-struct s_mapflag_params {
-	int param_first;
-	int param_second;
-};
-
-enum e_mapflag_params : int16 {
-	MP_PARAM_FIRST = 1,
-	MP_PARAM_SECOND
-};
-#endif // Pandas_Mapflags
-
 struct map_data {
 	char name[MAP_NAME_LENGTH];
 	uint16 index; // The map index used by the mapindex* functions.
@@ -973,7 +1006,7 @@ struct map_data {
 	std::vector<int> qi_npc;
 
 #ifdef Pandas_Mapflags
-	std::unordered_map<int16, s_mapflag_params> flag_params;
+	std::unordered_map<e_mapflag, std::vector<int>> mapflag_values;
 #endif // Pandas_Mapflags
 
 	/* speeds up clif_updatestatus processing by causing hpmeter to run only when someone with the permission can view it */
@@ -1365,13 +1398,13 @@ void map_removemobs(int16 m); // [Wizputer]
 void map_addmap2db(struct map_data *m);
 void map_removemapdb(struct map_data *m);
 
-void map_skill_damage_add(struct map_data *m, uint16 skill_id, union u_mapflag_args *args);
+void map_skill_damage_add(struct map_data *m, uint16 skill_id, pds_mapflag_args *args);
 void map_skill_duration_add(struct map_data *mapd, uint16 skill_id, uint16 per);
 
 enum e_mapflag map_getmapflag_by_name(char* name);
 bool map_getmapflag_name(enum e_mapflag mapflag, char* output);
-int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *args);
-bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_mapflag_args *args);
+int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, pds_mapflag_args *args);
+bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, pds_mapflag_args *args);
 #define map_getmapflag(m, mapflag) map_getmapflag_sub(m, mapflag, NULL)
 #define map_setmapflag(m, mapflag, status) map_setmapflag_sub(m, mapflag, status, NULL)
 
@@ -1412,7 +1445,7 @@ typedef struct s_elemental_data	TBL_ELEM;
 #define BL_CAST(type_, bl) \
 	( ((bl) == (struct block_list*)NULL || (bl)->type != (type_)) ? (T ## type_ *)NULL : (T ## type_ *)(bl) )
 
-#include "../common/sql.hpp"
+#include <common/sql.hpp>
 
 extern int db_use_sqldbs;
 
@@ -1447,12 +1480,9 @@ extern unsigned int clif_cryptKey_custom[3];
 #endif // Pandas_Support_Specify_PacketKeys
 
 #ifdef Pandas_Mapflags
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, union u_mapflag_args *args, int default_val);
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int default_val);
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int default_val);
-
-void map_setmapflag_param(int16 m, enum e_mapflag mapflag, enum e_mapflag_params param, int value);
-void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int value);
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index);
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int index, int value);
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, const std::vector<int>& values);
 #endif // Pandas_Mapflags
 
 void do_shutdown(void);

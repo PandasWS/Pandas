@@ -58,6 +58,8 @@ options = {
             'vmode' : '.',
             'for_type' : 0
         },
+    ],
+    r'^professional\.hpp$' : [
         {
             'regex' : r'#define Pandas_Commercial_Version "(.*)"',
             'replto' : r'#define Pandas_Commercial_Version "%s"',

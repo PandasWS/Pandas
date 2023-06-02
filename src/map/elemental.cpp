@@ -4,19 +4,21 @@
 #include "elemental.hpp"
 
 #include <cstring>
+#ifndef __STDCPP17_AND_NEWER
 #include <ctgmath> //floor
+#endif // __STDCPP17_AND_NEWER
 #include <math.h>
 #include <stdlib.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/malloc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/malloc.hpp>
+#include <common/mmo.hpp>
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utils.hpp>
 
 #include "battle.hpp"
 #include "clif.hpp"
@@ -482,7 +484,7 @@ bool elemental_skillnotok(uint16 skill_id, s_elemental_data *ed) {
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (ed && map_getmapflag(ed->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 0) & BL_ELEM) == BL_ELEM)
+		if ((map_getmapflag_param(ed->bl.m, MF_NOSKILL2, 1) & BL_ELEM) == BL_ELEM)
 			return false;
 	}
 #endif // Pandas_MapFlag_NoSkill2

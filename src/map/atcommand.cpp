@@ -9,19 +9,19 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/cli.hpp"
-#include "../common/malloc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/cli.hpp>
+#include <common/malloc.hpp>
+#include <common/mmo.hpp>
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -2834,12 +2834,12 @@ ACMD_FUNC(zeny)
 	}
 
 	if(zeny > 0){
-	    if((ret=pc_getzeny(sd,zeny,LOG_TYPE_COMMAND,NULL)) == 1)
+	    if((ret=pc_getzeny(sd,zeny,LOG_TYPE_COMMAND)) == 1)
 		clif_displaymessage(fd, msg_txt(sd,149)); // Unable to increase the number/value.
 	}
 	else {
 	    if( sd->status.zeny < -zeny ) zeny = -sd->status.zeny;
-	    if((ret=pc_payzeny(sd,-zeny,LOG_TYPE_COMMAND,NULL)) == 1)
+	    if((ret=pc_payzeny(sd,-zeny,LOG_TYPE_COMMAND)) == 1)
 		clif_displaymessage(fd, msg_txt(sd,41)); // Unable to decrease the number/value.
 	}
 	if(!ret) clif_displaymessage(fd, msg_txt(sd,176)); //ret=0 mean cmd success
@@ -4273,7 +4273,7 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt(sd,98)); // Monster database has been reloaded.
 	} else if (strstr(command, "skilldb") || strncmp(message, "skilldb", 4) == 0) {
 		skill_reload();
-		hom_reload_skill();
+		homunculus_db.reload();
 		clif_displaymessage(fd, msg_txt(sd,99)); // Skill database has been reloaded.
 	} else if (strstr(command, "atcommand") || strncmp(message, "atcommand", 4) == 0) {
 		atcommand_doload();
@@ -4646,131 +4646,75 @@ ACMD_FUNC(mapinfo) {
 	clif_displaymessage(fd, atcmd_output);
 
 #ifdef Pandas_Mapflags
-	strcpy(atcmd_output,msg_txt_cn(sd,100)); // Pandas地图标记:
-#ifdef Pandas_MapFlag_NoAutoLoot
-	if (map_getmapflag(m_id, MF_NOAUTOLOOT))
-		strcat(atcmd_output, " NoAutoLoot |");
-#endif // Pandas_MapFlag_NoAutoLoot
-#ifdef Pandas_MapFlag_NoToken
-	if (map_getmapflag(m_id, MF_NOTOKEN))
-		strcat(atcmd_output, " NoToken |");
-#endif // Pandas_MapFlag_NoToken
-#ifdef Pandas_MapFlag_NoCapture
-	if (map_getmapflag(m_id, MF_NOCAPTURE))
-		strcat(atcmd_output, " NoCapture |");
-#endif // Pandas_MapFlag_NoCapture
-#ifdef Pandas_MapFlag_HideGuildInfo
-	if (map_getmapflag(m_id, MF_HIDEGUILDINFO))
-		strcat(atcmd_output, " HideGuildInfo |");
-#endif // Pandas_MapFlag_HideGuildInfo
-#ifdef Pandas_MapFlag_HidePartyInfo
-	if (map_getmapflag(m_id, MF_HIDEPARTYINFO))
-		strcat(atcmd_output, " HidePartyInfo |");
-#endif // Pandas_MapFlag_HidePartyInfo
-#ifdef Pandas_MapFlag_NoMail
-	if (map_getmapflag(m_id, MF_NOMAIL))
-		strcat(atcmd_output, " NoMail |");
-#endif // Pandas_MapFlag_NoMail
-#ifdef Pandas_MapFlag_NoPet
-	if (map_getmapflag(m_id, MF_NOPET))
-		strcat(atcmd_output, " NoPet |");
-#endif // Pandas_MapFlag_NoPet
-#ifdef Pandas_MapFlag_NoHomun
-	if (map_getmapflag(m_id, MF_NOHOMUN))
-		strcat(atcmd_output, " NoHomun |");
-#endif // Pandas_MapFlag_NoHomun
-#ifdef Pandas_MapFlag_NoMerc
-	if (map_getmapflag(m_id, MF_NOMERC))
-		strcat(atcmd_output, " NoMerc |");
-#endif // Pandas_MapFlag_NoMerc
-#ifdef Pandas_MapFlag_Mobinfo
-	if (map_getmapflag(m_id, MF_MOBINFO)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " Mobinfo: %d |", map_getmapflag_param(m_id, MF_MOBINFO, 0));
-		strcat(atcmd_output, mes);
+	std::string atcmd_output_str(msg_txt_cn(sd, 100)); // 熊猫地图标记:
+	for (const auto& it : mapflag_config) {
+		int args_count = it.second.args.size();
+
+		if (map_getmapflag(m_id, it.first)) {
+			if (args_count == 0) {
+				std::string temp_str = atcmd_output_str + " " + it.second.name + " |";
+
+				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
+				// 那么就可以直接使用 temp_str 的内容
+				if (temp_str.size() < CHAT_SIZE_MAX - 1) {
+					atcmd_output_str = temp_str;
+				}
+				else {
+					// 先将 atcmd_output_str 放到 atcmd_output 中
+					strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+					atcmd_output[sizeof(atcmd_output) - 1] = '\0';
+
+					// 调用 clif_displaymessage 进行一次数据发送
+					clif_displaymessage(fd, atcmd_output);
+
+					// 清空 atcmd_output_str 缓冲区中的内容
+					atcmd_output_str.clear();
+
+					// 然后再尝试进行拼接工作
+					atcmd_output_str = std::string(it.second.name) + " |";
+				}
+			}
+			else {
+				std::string args_mes;
+				// 使用索引遍历 it.second.args
+				for (int i = 0; i < args_count; i++) {
+					const char* unit = it.second.args[i].unit;
+					if (unit == nullptr) {
+						unit = "";
+					}
+					args_mes += std::to_string(map_getmapflag_param(m_id, it.first, i + 1)) + unit;
+					// 如果不是最后一个参数, 那么在其末尾追加分隔符
+					if (i != args_count - 1) {
+						args_mes += ", ";
+					}
+				}
+
+				std::string temp_str = atcmd_output_str + " " + it.second.name + ": " + args_mes + " |";
+
+				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
+				// 那么就可以直接使用 temp_str 的内容
+				if (temp_str.size() < CHAT_SIZE_MAX - 1) {
+					atcmd_output_str = temp_str;
+				}
+				else {
+					// 先将 atcmd_output_str 放到 atcmd_output 中
+					strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+					atcmd_output[sizeof(atcmd_output) - 1] = '\0';
+
+					// 调用 clif_displaymessage 进行一次数据发送
+					clif_displaymessage(fd, atcmd_output);
+
+					// 清空 atcmd_output_str 缓冲区中的内容
+					atcmd_output_str.clear();
+
+					// 然后再尝试进行拼接工作
+					atcmd_output_str = std::string(it.second.name) + ": " + args_mes + " |";
+				}
+			}
+		}
 	}
-#endif // Pandas_MapFlag_Mobinfo
-#ifdef Pandas_MapFlag_MobDroprate
-	if (map_getmapflag(m_id, MF_MOBDROPRATE)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MobDroprate: %d%% |", map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MobDroprate
-#ifdef Pandas_MapFlag_MvpDroprate
-	if (map_getmapflag(m_id, MF_MVPDROPRATE)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MvpDroprate: %d%% |", map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MvpDroprate
-#ifdef Pandas_MapFlag_MaxHeal
-	if (map_getmapflag(m_id, MF_MAXHEAL)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxHeal: %d |", map_getmapflag_param(m_id, MF_MAXHEAL, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxHeal
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-	if (map_getmapflag(m_id, MF_MAXDMG_SKILL)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxDmg_Skill: %d |", map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxDmg_Skill
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-	if (map_getmapflag(m_id, MF_MAXDMG_NORMAL)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxDmg_Normal: %d |", map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxDmg_Normal
-#ifdef Pandas_MapFlag_NoSkill2
-	if (map_getmapflag(m_id, MF_NOSKILL2)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " NoSkill2: %d |", map_getmapflag_param(m_id, MF_NOSKILL2, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_NoSkill2
-#ifdef Pandas_MapFlag_NoAura
-	if (map_getmapflag(m_id, MF_NOAURA))
-		strcat(atcmd_output, " NoAura |");
-#endif // Pandas_MapFlag_NoAura
-#ifdef Pandas_MapFlag_MaxASPD
-	if (map_getmapflag(m_id, MF_MAXASPD)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxASPD: %d |", map_getmapflag_param(m_id, MF_MAXASPD, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxASPD
-#ifdef Pandas_MapFlag_NoSlave
-	if (map_getmapflag(m_id, MF_NOSLAVE))
-		strcat(atcmd_output, " NoSlave |");
-#endif // Pandas_MapFlag_NoSlave
-#ifdef Pandas_MapFlag_NoBank
-	if (map_getmapflag(m_id, MF_NOBANK))
-		strcat(atcmd_output, " NoBank |");
-#endif // Pandas_MapFlag_NoBank
-#ifdef Pandas_MapFlag_NoUseItem
-	if (map_getmapflag(m_id, MF_NOUSEITEM))
-		strcat(atcmd_output, " NoUseItem |");
-#endif // Pandas_MapFlag_NoUseItem
-#ifdef Pandas_MapFlag_HideDamage
-	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
-		strcat(atcmd_output, " HideDamage |");
-#endif // Pandas_MapFlag_HideDamage
-#ifdef Pandas_MapFlag_NoAttack
-	if (map_getmapflag(m_id, MF_NOATTACK))
-		strcat(atcmd_output, " NoAttack |");
-#endif // Pandas_MapFlag_NoAttack
-#ifdef Pandas_MapFlag_NoAttack2
-	if (map_getmapflag(m_id, MF_NOATTACK2)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " NoAttack2: %d |", map_getmapflag_param(m_id, MF_NOATTACK2, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_NoAttack2
-	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
+	strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+	atcmd_output[sizeof(atcmd_output) - 1] = '\0';
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
 
@@ -4830,6 +4774,8 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " NoTomb |");
 	if (map_getmapflag(m_id, MF_NOCOSTUME))
 		strcat(atcmd_output, " NoCostume |");
+	if (map_getmapflag(m_id, MF_NOBANK))
+		strcat(atcmd_output, " NoBank |");
 	clif_displaymessage(fd, atcmd_output);
 
 	switch (list) {
@@ -8375,7 +8321,7 @@ ACMD_FUNC(hominfo)
 ACMD_FUNC(homstats)
 {
 	struct homun_data *hd;
-	struct s_homunculus_db *db;
+	std::shared_ptr<s_homunculus_db> db;
 	struct s_homunculus *hom;
 	int lv, min, max, evo;
 
@@ -8933,7 +8879,7 @@ ACMD_FUNC(mapflag) {
 		clif_displaymessage(sd->fd,msg_txt(sd,1311)); // Enabled Mapflags in this map:
 		clif_displaymessage(sd->fd,"----------------------------------");
 		for( i = MF_MIN; i < MF_MAX; i++ ){
-			union u_mapflag_args args = {};
+			pds_mapflag_args args = {};
 
 			if( map_getmapflag_name(static_cast<e_mapflag>(i), flag_name) && map_getmapflag_sub( sd->bl.m, static_cast<e_mapflag>(i), &args ) ){
 				clif_displaymessage(sd->fd, flag_name);
@@ -8963,43 +8909,15 @@ ACMD_FUNC(mapflag) {
 												MF_SKILL_DAMAGE,
 												MF_SKILL_DURATION };
 
-#ifdef Pandas_MapFlag_Mobinfo
-			disabled_mf.insert(disabled_mf.begin(), MF_MOBINFO);
-#endif // Pandas_MapFlag_Mobinfo
-
-#ifdef Pandas_MapFlag_MobDroprate
-			disabled_mf.insert(disabled_mf.begin(), MF_MOBDROPRATE);
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-			disabled_mf.insert(disabled_mf.begin(), MF_MVPDROPRATE);
-#endif // Pandas_MapFlag_MvpDroprate
-
-#ifdef Pandas_MapFlag_MaxHeal
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXHEAL);
-#endif // Pandas_MapFlag_MaxHeal
-
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXDMG_SKILL);
-#endif // Pandas_MapFlag_MaxDmg_Skill
-
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXDMG_NORMAL);
-#endif // Pandas_MapFlag_MaxDmg_Normal
-
-#ifdef Pandas_MapFlag_NoSkill2
-			disabled_mf.insert(disabled_mf.begin(), MF_NOSKILL2);
-#endif // Pandas_MapFlag_NoSkill2
-
-#ifdef Pandas_MapFlag_MaxASPD
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXASPD);
-#endif // Pandas_MapFlag_MaxASPD
-
-#ifdef Pandas_MapFlag_NoAttack2
-			disabled_mf.insert(disabled_mf.begin(), MF_NOATTACK2);
-#endif // Pandas_MapFlag_NoAttack2
-
-			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
+#ifdef Pandas_Mapflags
+			// 遍历 mapflag_config 地图标记配置,
+			// 将其中 block_atcmd 为 true 的 mapflag 加入 disabled_mf
+			for (const auto& it : mapflag_config) {
+				if (it.second.block_atcmd) {
+					disabled_mf.insert(disabled_mf.begin(), it.first);
+				}
+			}
+#endif // Pandas_Mapflags
 
 			if (flag > 0 && util::vector_exists(disabled_mf, mapflag)) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
@@ -11116,7 +11034,7 @@ ACMD_FUNC( roulette ){
 #endif
 }
 
-#include "../custom/atcommand.inc"
+#include <custom/atcommand.inc>
 
 #ifdef Pandas_AtCommand_RecallMap
 /* ===========================================================
@@ -11396,7 +11314,7 @@ void atcommand_basecommands(void) {
 #endif // Pandas_AtCommand_ReloadLaphineDB
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
-#include "../custom/atcommand_def.inc"
+#include <custom/atcommand_def.inc>
 		ACMD_DEF2R("warp", mapmove, ATCMD_NOCONSOLE),
 		ACMD_DEF(where),
 		ACMD_DEF(jumpto),

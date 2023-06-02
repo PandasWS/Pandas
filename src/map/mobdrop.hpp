@@ -6,8 +6,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
 
 struct s_mobitem_fixed_ratio_item {
 	uint32 nameid;

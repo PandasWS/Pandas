@@ -2,7 +2,9 @@
 
 [![Travis](https://img.shields.io/travis/BYVoid/OpenCC.svg)](https://travis-ci.org/BYVoid/OpenCC)
 [![AppVeyor](https://img.shields.io/appveyor/ci/Carbo/OpenCC.svg)](https://ci.appveyor.com/project/Carbo/OpenCC)
-[![Python package](https://github.com/BYVoid/OpenCC/workflows/Python%20package/badge.svg?branch=master)](https://github.com/BYVoid/OpenCC/actions?query=workflow%3A%22Python+package%22)
+[![C/C++ CI](https://github.com/BYVoid/OpenCC/actions/workflows/cmake.yml/badge.svg)](https://github.com/BYVoid/OpenCC/actions/workflows/cmake.yml)
+[![Node.js CI](https://github.com/BYVoid/OpenCC/actions/workflows/nodejs.yml/badge.svg)](https://github.com/BYVoid/OpenCC/actions/workflows/nodejs.yml)
+[![Python CI](https://github.com/BYVoid/OpenCC/actions/workflows/python.yml/badge.svg)](https://github.com/BYVoid/OpenCC/actions/workflows/python.yml)
 
 ## Introduction 介紹
 
@@ -36,7 +38,7 @@ https://opencc.byvoid.com/
 
 ### Node.js
 
-[npm](https://www.npmjs.com/opencc) `npm i install opencc`
+[npm](https://www.npmjs.com/opencc) `npm install opencc`
 
 #### JavaScript
 ```js
@@ -81,6 +83,22 @@ int main() {
 }
 ```
 
+### C
+
+```c
+#include "opencc.h"
+
+int main() {
+  opencc_t opencc = opencc_open("s2t.json");
+  const char* input = "汉字";
+  char* converted = opencc_convert_utf8(opencc, input, strlen(input));  // 漢字
+  opencc_convert_utf8_free(converted);
+  opencc_close(opencc);
+  return 0;
+}
+
+```
+
 Document 文檔: https://byvoid.github.io/OpenCC/
 
 ### Command Line
@@ -92,10 +110,14 @@ Document 文檔: https://byvoid.github.io/OpenCC/
 ### Others (Unofficial)
 
 * Swift (iOS): [SwiftyOpenCC](https://github.com/XQS6LB3A/SwiftyOpenCC)
+* iOSOpenCC (pod): [iOSOpenCC](https://github.com/swiftdo/OpenCC)
 * Java: [opencc4j](https://github.com/houbb/opencc4j)
 * Android: [android-opencc](https://github.com/qichuan/android-opencc)
 * PHP: [opencc4php](https://github.com/nauxliu/opencc4php)
+* Pure JavaScript: [opencc-js](https://github.com/nk2028/opencc-js)
 * WebAssembly: [wasm-opencc](https://github.com/oyyd/wasm-opencc)
+* Browser Extension: [opencc-extension](https://github.com/tnychn/opencc-extension)
+* Go (Pure): [OpenCC for Go](https://github.com/longbridgeapp/opencc)
 
 ### Configurations 配置文件
 
@@ -105,14 +127,16 @@ Document 文檔: https://byvoid.github.io/OpenCC/
 * `t2s.json` Traditional Chinese to Simplified Chinese 繁體到簡體
 * `s2tw.json` Simplified Chinese to Traditional Chinese (Taiwan Standard) 簡體到臺灣正體
 * `tw2s.json` Traditional Chinese (Taiwan Standard) to Simplified Chinese 臺灣正體到簡體
-* `s2hk.json` Simplified Chinese to Traditional Chinese (Hong Kong Standard) 簡體到香港繁體（香港小學學習字詞表標準）
-* `hk2s.json` Traditional Chinese (Hong Kong Standard) to Simplified Chinese 香港繁體（香港小學學習字詞表標準）到簡體
+* `s2hk.json` Simplified Chinese to Traditional Chinese (Hong Kong variant) 簡體到香港繁體
+* `hk2s.json` Traditional Chinese (Hong Kong variant) to Simplified Chinese 香港繁體到簡體
 * `s2twp.json` Simplified Chinese to Traditional Chinese (Taiwan Standard) with Taiwanese idiom 簡體到繁體（臺灣正體標準）並轉換爲臺灣常用詞彙
 * `tw2sp.json` Traditional Chinese (Taiwan Standard) to Simplified Chinese with Mainland Chinese idiom 繁體（臺灣正體標準）到簡體並轉換爲中國大陸常用詞彙
 * `t2tw.json` Traditional Chinese (OpenCC Standard) to Taiwan Standard 繁體（OpenCC 標準）到臺灣正體
-* `t2hk.json` Traditional Chinese (OpenCC Standard) to Hong Kong Standard 繁體（OpenCC 標準）到香港繁體（香港小學學習字詞表標準）
+* `hk2t.json` Traditional Chinese (Hong Kong variant) to Traditional Chinese 香港繁體到繁體（OpenCC 標準）
+* `t2hk.json` Traditional Chinese (OpenCC Standard) to Hong Kong variant 繁體（OpenCC 標準）到香港繁體
 * `t2jp.json` Traditional Chinese Characters (Kyūjitai) to New Japanese Kanji (Shinjitai) 繁體（OpenCC 標準，舊字體）到日文新字體
 * `jp2t.json` New Japanese Kanji (Shinjitai) to Traditional Chinese Characters (Kyūjitai) 日文新字體到繁體（OpenCC 標準，舊字體）
+* `tw2t.json` Traditional Chinese (Taiwan standard) to Traditional Chinese 臺灣正體到繁體（OpenCC 標準）
 
 ## Build 編譯
 
@@ -152,24 +176,30 @@ test.cmd
 make benchmark
 ```
 
-Example results (from Travis CI):
+Example results (from Github CI):
 
 ```
 1: ------------------------------------------------------------------
 1: Benchmark                        Time             CPU   Iterations
 1: ------------------------------------------------------------------
-1: BM_Initialization/s2t     27325410 ns     27337754 ns           26
-1: BM_Initialization/t2s      1427929 ns      1428890 ns          492
-1: BM_Initialization/s2tw    26888809 ns     26900500 ns           26
-1: BM_Initialization/s2twp   27286513 ns     27297972 ns           25
-1: BM_Initialization/tw2s     1442091 ns      1442939 ns          475
-1: BM_Initialization/tw2sp    1737702 ns      1738815 ns          398
-1: BM_Initialization/s2hk    27070874 ns     27081523 ns           26
-1: BM_Initialization/hk2s     1515165 ns      1516135 ns          466
-1: BM_Initialization/t2jp      147005 ns       146864 ns         4850
-1: BM_Initialization/jp2t      246554 ns       246479 ns         2859
-1: BM_Convert                     531 ms          531 ms            1
-1/1 Test #1: performance ......................   Passed   11.52 sec
+1: BM_Initialization/hk2s        1.56 ms         1.56 ms          442
+1: BM_Initialization/hk2t       0.144 ms        0.144 ms         4878
+1: BM_Initialization/jp2t       0.260 ms        0.260 ms         2604
+1: BM_Initialization/s2hk        23.8 ms         23.8 ms           29
+1: BM_Initialization/s2t         25.6 ms         25.6 ms           28
+1: BM_Initialization/s2tw        24.0 ms         23.9 ms           30
+1: BM_Initialization/s2twp       24.6 ms         24.6 ms           28
+1: BM_Initialization/t2hk       0.052 ms        0.052 ms        12897
+1: BM_Initialization/t2jp       0.141 ms        0.141 ms         5012
+1: BM_Initialization/t2s         1.30 ms         1.30 ms          540
+1: BM_Initialization/tw2s        1.39 ms         1.39 ms          529
+1: BM_Initialization/tw2sp       1.69 ms         1.69 ms          426
+1: BM_Initialization/tw2t       0.089 ms        0.089 ms         7707
+1: BM_Convert2M                   582 ms          582 ms            1
+1: BM_Convert/100                1.07 ms         1.07 ms          636
+1: BM_Convert/1000               11.0 ms         11.0 ms           67
+1: BM_Convert/10000               113 ms          113 ms            6
+1: BM_Convert/100000             1176 ms         1176 ms            1
 ```
 
 ## Projects using OpenCC 使用 OpenCC 的項目
@@ -194,7 +224,7 @@ Apache License 2.0
 * [rapidjson](https://github.com/Tencent/rapidjson) MIT License
 * [Google Test](https://github.com/google/googletest) BSD License
 
-All these libraries are statically linked.
+All these libraries are statically linked by default.
 
 ## Change History 版本歷史
 
@@ -246,7 +276,8 @@ All these libraries are statically linked.
 * [Cychih](https://github.com/pi314)
 * [kyleskimo](https://github.com/kyleskimo)
 * [Ryuan Choi](https://github.com/bunhere)
+* [Prcuvu](https://github.com/Prcuvu)
 * [Tony Able](https://github.com/TonyAble)
 * [Xiao Liang](https://github.com/yxliang01)
 
-Please update this list you have contributed OpenCC.
+Please feel free to update this list if you have contributed OpenCC.

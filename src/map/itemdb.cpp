@@ -11,12 +11,12 @@
 #include <math.h>
 #include <unordered_map>
 
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/utils.hpp"
-#include "../common/utilities.hpp"
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/utils.hpp>
+#include <common/utilities.hpp>
 
 #include "battle.hpp" // struct battle_config
 #include "cashshop.hpp"
@@ -65,13 +65,13 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = strTrim(script);
+		item->pandas.script_plaintext.script = util::trim_copy(script);
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = strTrim(script);
+		item->pandas.script_plaintext.equip_script = util::trim_copy(script);
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = strTrim(script);
+		item->pandas.script_plaintext.unequip_script = util::trim_copy(script);
 		break;
 	default:
 		break;
@@ -1480,6 +1480,66 @@ std::string ItemDatabase::create_item_link(struct item& item) {
 	std::shared_ptr<item_data> data = this->find(item.nameid);
 
 	return this->create_item_link(item, data);
+}
+
+std::string ItemDatabase::create_item_link_for_mes( std::shared_ptr<item_data>& data, bool use_brackets, const char* name ){
+	if( data == nullptr ){
+		return "Unknown item";
+	}
+
+	std::string itemstr;
+
+// All these dates are unconfirmed
+#if PACKETVER >= 20100000
+	if( battle_config.feature_mesitemlink ){
+// It was changed in 2015-11-04, but Gravity actually broke the feature for this specific client, because they introduced the new itemlink feature [Lemongrass]
+// See the following github issues for more details:
+// * https://github.com/rathena/rathena/issues/1236
+// * https://github.com/rathena/rathena/issues/1873
+#if PACKETVER >= 20151104
+		const std::string start_tag = "<ITEM>";
+		const std::string closing_tag = "</ITEM>";
+#else
+		const std::string start_tag = "<ITEMLINK>";
+		const std::string closing_tag = "</ITEMLINK>";
+#endif
+
+		itemstr += start_tag;
+
+		if( use_brackets || battle_config.feature_mesitemlink_brackets ){
+			itemstr += "[";
+		}
+
+		if( name != nullptr && !battle_config.feature_mesitemlink_dbname ){
+			// Name was forcefully overwritten
+			itemstr += name;
+		}else{
+			// Use database name
+			itemstr += data->ename;
+		}
+
+		if( use_brackets || battle_config.feature_mesitemlink_brackets ){
+			itemstr += "]";
+		}
+
+		itemstr += "<INFO>";
+		itemstr += std::to_string( data->nameid );
+		itemstr += "</INFO>";
+
+		itemstr += closing_tag;
+
+		return itemstr;
+	}
+#endif
+
+	// This can be reached either because itemlinks are disabled via configuration or because the packet version does not support the feature
+	if( name != nullptr && !battle_config.feature_mesitemlink_dbname ){
+		// Name was forcefully overwritten
+		return name;
+	}else{
+		// Use database name
+		return data->ename;
+	}
 }
 
 ItemDatabase item_db;
@@ -3778,7 +3838,7 @@ uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
-			combo->script_plaintext = strTrim(script);
+			combo->script_plaintext = util::trim_copy(script);
 #endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 		} else {
 			if (!exists) {
@@ -4303,10 +4363,17 @@ static int itemdb_read_sqldb(void) {
 		uint32 total_columns = Sql_NumColumns(mmysql_handle);
 		uint64 total_rows = Sql_NumRows(mmysql_handle), rows = 0, count = 0;
 
+#ifndef Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
+		ShowStatus("Loading '" CL_WHITE "%" PRIdPTR CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'\n", total_rows, item_db_name[fi]);
+#else
+		ShowStatus("Loading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'\n", total_rows, item_db_name[fi]);
+#endif // Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
+
 		// process rows one by one
 		while( SQL_SUCCESS == Sql_NextRow(mmysql_handle) ) {
-			ShowStatus( "Loading [%" PRIu64 "/%" PRIu64 "] rows from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++rows, total_rows, item_db_name[fi] );
-
+#ifdef DETAILED_LOADING_OUTPUT
+			ShowStatus( "Loading [%" PRIu64 "/%" PRIu64 "] entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++rows, total_rows, item_db_name[fi] );
+#endif
 			std::vector<std::string> data = {};
 
 			for( uint32 i = 0; i < total_columns; ++i ) {
@@ -4411,7 +4478,7 @@ uint64 RandomOptionDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		randopt->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-		randopt->script_plaintext = strTrim(script);
+		randopt->script_plaintext = util::trim_copy(script);
 #endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 	}
 

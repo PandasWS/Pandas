@@ -9,20 +9,20 @@
 #include <string>
 #include <unordered_map>
 
-#include "../common/cli.hpp"
-#include "../common/core.hpp"
-#include "../common/malloc.hpp"
-#include "../common/md5calc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/msg_conf.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp" //ip2str
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
-#include "../config/core.hpp"
+#include <common/cli.hpp>
+#include <common/core.hpp>
+#include <common/malloc.hpp>
+#include <common/md5calc.hpp>
+#include <common/mmo.hpp>
+#include <common/msg_conf.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp> //ip2str
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
+#include <config/core.hpp>
 
 #include "account.hpp"
 #include "ipban.hpp"
@@ -946,6 +946,9 @@ void LoginServer::finalize(){
 }
 
 void LoginServer::handle_shutdown(){
+#ifdef Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	printf("\n");
+#endif // Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	ShowStatus("Shutting down...\n");
 	// TODO proper shutdown procedure; kick all characters, wait for acks, ...  [FlavioJS]
 	do_shutdown_loginchrif();

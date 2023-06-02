@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../common/database.hpp"
-#include "../common/mmo.hpp"
-#include "../common/timer.hpp"
+#include <common/database.hpp>
+#include <common/mmo.hpp>
+#include <common/timer.hpp>
 
 #include "map.hpp"
 #include "script.hpp"
@@ -165,8 +165,7 @@ struct s_enchantgradeoption{
 
 struct s_enchantgradelevel{
 	e_enchantgrade grade;
-	uint16 refine;
-	uint16 chance;
+	uint16 chances[MAX_REFINE + 1];
 	uint16 bonus;
 	bool announceSuccess;
 	bool announceFail;
@@ -186,7 +185,7 @@ struct s_enchantgrade{
 
 class EnchantgradeDatabase : public TypesafeYamlDatabase<uint16, s_enchantgrade>{
 public:
-	EnchantgradeDatabase() : TypesafeYamlDatabase( "ENCHANTGRADE_DB", 2, 1 ){
+	EnchantgradeDatabase() : TypesafeYamlDatabase( "ENCHANTGRADE_DB", 3 ){
 
 	}
 
@@ -1257,6 +1256,32 @@ enum sc_type : int16 {
 	SC_PORK_RIB_STEW,
 
 	SC_WEAPONBREAKER,
+
+	// 2021 Mutated Homunculus Skills
+	SC_TOXIN_OF_MANDARA,
+	SC_GOLDENE_TONE,
+	SC_TEMPERING,
+
+	SC_GRADUAL_GRAVITY,
+	SC_ALL_STAT_DOWN,
+	SC_KILLING_AURA,
+	SC_DAMAGE_HEAL,
+	SC_IMMUNE_PROPERTY_NOTHING,
+	SC_IMMUNE_PROPERTY_WATER,
+	SC_IMMUNE_PROPERTY_GROUND,
+	SC_IMMUNE_PROPERTY_FIRE,
+	SC_IMMUNE_PROPERTY_WIND,
+	SC_IMMUNE_PROPERTY_POISON,
+	SC_IMMUNE_PROPERTY_SAINT,
+	SC_IMMUNE_PROPERTY_DARKNESS,
+	SC_IMMUNE_PROPERTY_TELEKINESIS,
+	SC_IMMUNE_PROPERTY_UNDEAD,
+
+	SC_RELIEVE_ON,
+	SC_RELIEVE_OFF,
+
+	SC_RUSH_QUAKE1,
+	SC_RUSH_QUAKE2,
 
 #ifdef RENEWAL
 	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
@@ -3010,6 +3035,7 @@ enum e_status_change_flag : uint16 {
 	SCF_REMOVEONUNEQUIPWEAPON,
 	SCF_REMOVEONUNEQUIPARMOR,
 	SCF_REMOVEONHERMODE,
+	SCF_REQUIRENOWEAPON,
 	SCF_MAX
 };
 
@@ -3253,7 +3279,7 @@ public:
 	void deleteSCE(enum sc_type type);
 	void clearSCE(enum sc_type type);
 };
-
+#ifndef ONLY_CONSTANTS
 int status_damage( struct block_list *src, struct block_list *target, int64 dhp, int64 dsp, int64 dap, t_tick walkdelay, int flag, uint16 skill_id );
 static int status_damage( struct block_list *src, struct block_list *target, int64 dhp, int64 dsp, t_tick walkdelay, int flag, uint16 skill_id ){
 	return status_damage( src, target, dhp, dsp, 0, walkdelay, flag, skill_id );
@@ -3478,5 +3504,6 @@ uint16 status_efst_get_bl_type(enum efst_type efst);
 void status_readdb( bool reload = false );
 void do_init_status(void);
 void do_final_status(void);
+#endif /* ONLY_CONSTANTS */
 
 #endif /* STATUS_HPP */

@@ -1,7 +1,0 @@
-name: "CodeQL C++ Config"
-
-# paths:
-#   - src 
-# paths-ignore: 
-#   - src/node_modules
-#   - '**/*.test.js'

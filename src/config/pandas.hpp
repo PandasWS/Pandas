@@ -12,6 +12,16 @@
 
 #define Pandas
 
+#if defined(_MSVC_LANG) 
+	#if _MSVC_LANG >= 201703L
+		#define __STDCPP17_AND_NEWER
+	#endif // _MSVC_LANG >= 201703L
+#elif defined(__cplusplus)
+	#if __cplusplus >= 201703L
+		#define __STDCPP17_AND_NEWER
+	#endif // __cplusplus >= 201703L
+#endif
+
 #ifdef Pandas
 	#define Pandas_Basic
 	#define Pandas_DatabaseIncrease
@@ -67,7 +77,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.1.19.0"
+	#define Pandas_Version "1.2.1.0"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -911,7 +921,11 @@
 	// 修正 FAW 魔法傀儡 (技能编号: 2282) 重复扣减原石碎片的问题 [Sola丶小克]
 	#define Pandas_Fix_MagicDecoy_Twice_Deduction_Of_Ore
 
-	// 修正 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动的问题 [Sola丶小克]
+	// 修正 progressbar 某些情况下会导致角色无法移动的问题 [Sola丶小克]
+	//
+	// 可能的现象:
+	// - 在 progressbar 期间使用 @load 或 @jump 会导致角色传送后无法移动
+	// - 在 progressbar 之前使用了 menu / select 会导致打断进度条后角色无法移动
 	#define Pandas_Fix_Progressbar_Abort_Stuck
 
 	// 修正 progressbar 期间使用 @refresh 或 @refreshall 会导致角色无法移动的问题 [Sola丶小克]
@@ -1018,6 +1032,9 @@
 	//
 	// 特别感谢 "HongShin" 指出此问题
 	#define Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
+
+	// 修正启用 use_sql_db 之后终端加载信息出现来源数据表为 (null) 的问题 [Sola丶小克]
+	#define Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
 #endif // Pandas_Bugfix
 
 // ============================================================================
@@ -1180,7 +1197,7 @@
 	// VS2019 + Win32 启用 Pandas_Speedup_Map_Read_From_Cache 的情况下
 	// --------------------------------------------------------------
 	// 在 Debug 模式下提速约 64% (1250ms -> 760ms)
-	// 在 Release 模式下提速约 1 倍 (940ms -> 460ms)
+	// 在 Release 模式下地图加载信息默认不再显示 (通过 DETAILED_LOADING_OUTPUT 控制)
 	#ifdef _WIN32
 		#define Pandas_Speedup_Loading_Map_Status_Restrictor
 	#endif // _WIN32
@@ -1271,6 +1288,13 @@
 // ============================================================================
 
 #ifdef Pandas_UserExperience
+	// 对 C++17 及更新的标准中禁用 register 关键字 [Sola丶小克]
+	// 因为 register 关键字在 C++17 中已被废弃, 且在 C++20 中已被移除
+	// 详见: https://en.cppreference.com/w/cpp/keyword/register
+	#ifdef __STDCPP17_AND_NEWER
+		#define Pandas_UserExperience_Disable_Register_Keyword
+	#endif // __STDCPP17_AND_NEWER
+
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
 
@@ -1281,6 +1305,9 @@
 	// 调整 yaml2sql 辅助工具的询问确认流程 [Sola丶小克]
 	// 先询问是否能覆盖目标文件, 再尝试去加载来源数据文件, 以便优化体验
 	#define Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
+
+	// 调整 Yaml2sql 辅助工具在发布版本中的文件保存位置 [Sola丶小克]
+	#define Pandas_UserExperience_Yaml2Sql_SaveFile_Location
 
 	// 将 barters.yml 数据库从 npc 目录移动回 db 目录 [Sola丶小克]
 	#define Pandas_UserExperience_Move_BartersYml_To_DB
@@ -1299,6 +1326,11 @@
 
 	// 优化 map-server-generator 的输出信息 [Sola丶小克]
 	#define Pandas_UserExperience_MapServerGenerator_Output
+
+	// 在 Linux 平台上使用 Ctrl+C 输出 ^C 符号之后换一行 [Sola丶小克]
+	#ifndef _WIN32
+		#define Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	#endif // _WIN32
 #endif // Pandas_UserExperience
 
 // ============================================================================
@@ -1600,7 +1632,7 @@
 	// 该标记用于指定某地图的 show_mob_info 值, 以此控制该地图魔物名称的展现信息
 	// 此地图标记依赖 Pandas_MobInfomation_Extend 的拓展
 	#ifdef Pandas_MobInfomation_Extend
-		#define Pandas_MapFlag_Mobinfo
+		#define Pandas_MapFlag_MobInfo
 	#endif // Pandas_MobInfomation_Extend
 
 	// 是否启用 noautoloot 地图标记 [Sola丶小克]
@@ -1682,7 +1714,7 @@
 	#define Pandas_MapFlag_NoSlave
 
 	// 是否启用 nobank 地图标记 [聽風]
-	// 该标记用于禁止玩家在地图上使用银行系统 (包括存款 / 提现操作)
+	// rAthena 官方已经实现此标记, 当前宏定义所包含的代码用于处理体验细节
 	#define Pandas_MapFlag_NoBank
 
 	// 是否启用 nouseitem 地图标记 [HongShin]

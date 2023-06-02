@@ -11,7 +11,7 @@
 //= 1.0 首个版本. [Sola丶小克]
 //============================================================
 
-// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
+// PYHELP - NPCEVENT - INSERT POINT - <Section 1 / 41>
 pandas.hpp @ Filter 类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 2>
@@ -34,7 +34,7 @@ npc.cpp 中 Filter 类型的 NPCF_XXX 常量设置
 
 //============================================================
 
-// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
+// PYHELP - NPCEVENT - INSERT POINT - <Section 7 / 47>
 pandas.hpp @ Event  类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 8>
@@ -54,7 +54,7 @@ script_constants.hpp 中 Event  类型的 NPCE_XXX 常量导出定义
 
 //============================================================
 
-// PYHELP - NPCEVENT - INSERT POINT - <Section 13>
+// PYHELP - NPCEVENT - INSERT POINT - <Section 13 / 53>
 pandas.hpp @ Express 类型的宏定义
 
 // PYHELP - NPCEVENT - INSERT POINT - <Section 14>
@@ -85,6 +85,10 @@ import os
 from enum import IntEnum
 
 from libs import Common, Injecter, Inputer, Message
+
+# 工程文件的主目录相对此脚本文件的位置
+project_slndir = '../../'
+slndir_path = os.path.abspath(project_slndir)
 
 class InjectPoint(IntEnum):
     F_PANDAS_SWITCH_DEFINE = 1
@@ -353,15 +357,15 @@ def guide(inject):
     eventlist = [
         {
             'name' : 'Event 类型的标准事件',
-            'desc' : '0 - Event   类型的标准事件, 不能被 processhalt 指令打断'
+            'desc' : '0 - Event   标准事件, 不能被 processhalt 指令打断'
         },
         {
             'name' : 'Filter 类型的过滤事件',
-            'desc' : '1 - Filter  类型的过滤事件, 事件将会被立刻执行, 可以被 processhalt 指令打断'
+            'desc' : '1 - Filter  过滤事件, 事件立刻执行, 可以被 processhalt 指令打断'
         },
         {
             'name' : 'Express 类型的特殊事件',
-            'desc' : '2 - Express 类型的实时事件, 事件将会被立刻执行, 不能被 processhalt 指令打断'
+            'desc' : '2 - Express 实时事件, 事件立刻执行, 不能被 processhalt 指令打断'
         }
     ]
 
@@ -489,6 +493,7 @@ def main():
     Common.welcome('NPC事件添加助手')
 
     options = {
+        'is_pro' : Common.is_commercial_ver(slndir_path),
         'source_dirs' : '../../src',
         'process_exts' : ['.hpp', '.cpp'],
         'mark_format' : r'// PYHELP - NPCEVENT - INSERT POINT - <Section (\d{1,2})>',
@@ -496,7 +501,8 @@ def main():
         'mark_configure' : [
             {
                 'id' : InjectPoint.F_PANDAS_SWITCH_DEFINE,
-                'desc' : 'pandas.hpp @ Filter 类型的宏定义'
+                'desc' : 'pandas.hpp @ Filter 类型的宏定义',
+                'pro_offset' : 40
             },
             {
                 'id' : InjectPoint.F_NPC_CONSTANT_DEFINE,
@@ -525,7 +531,8 @@ def main():
 
             {
                 'id' : InjectPoint.E_PANDAS_SWITCH_DEFINE,
-                'desc' : 'pandas.hpp @ Event  类型的宏定义'
+                'desc' : 'pandas.hpp @ Event  类型的宏定义',
+                'pro_offset' : 40
             },
             {
                 'id' : InjectPoint.E_NPC_CONSTANT_DEFINE,
@@ -550,7 +557,8 @@ def main():
 
             {
                 'id' : InjectPoint.X_PANDAS_SWITCH_DEFINE,
-                'desc' : 'pandas.hpp @ Express 类型的宏定义'
+                'desc' : 'pandas.hpp @ Express 类型的宏定义',
+                'pro_offset' : 40
             },
             {
                 'id' : InjectPoint.X_NPC_CONSTANT_DEFINE,

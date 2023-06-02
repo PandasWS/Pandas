@@ -7,9 +7,9 @@
 #include <map>
 #include <vector>
 
-#include "../common/database.hpp"
-#include "../common/timer.hpp"
-#include "../config/core.hpp"
+#include <common/database.hpp>
+#include <common/timer.hpp>
+#include <config/core.hpp>
 
 #include "clif.hpp" //
 #include "map.hpp" // struct block_list
@@ -140,6 +140,20 @@ struct s_questinfo {
 	}
 };
 
+// Status of NPC view.
+enum e_npcv_status : uint8 {
+	NPCVIEW_DISABLE  = 0x01,
+	NPCVIEW_ENABLE   = 0x02,
+	NPCVIEW_HIDEOFF  = 0x04,
+	NPCVIEW_HIDEON   = 0x08,
+	NPCVIEW_CLOAKOFF = 0x10,
+	NPCVIEW_CLOAKON  = 0x20,
+
+	NPCVIEW_VISIBLE   = NPCVIEW_ENABLE | NPCVIEW_HIDEOFF | NPCVIEW_CLOAKOFF,
+	NPCVIEW_INVISIBLE = NPCVIEW_DISABLE | NPCVIEW_HIDEON | NPCVIEW_CLOAKON,
+	NPCVIEW_CLOAK     = NPCVIEW_CLOAKOFF | NPCVIEW_CLOAKON,
+};
+
 #ifdef Pandas_Redeclaration_Struct_Event_Data
 struct event_data {
 	struct npc_data* nd;
@@ -159,6 +173,7 @@ struct npc_data {
 	int chat_id,touching_id;
 	unsigned int next_walktime;
 	int instance_id;
+	e_npcv_status state{NPCVIEW_ENABLE};
 
 	unsigned size : 2;
 
@@ -238,6 +253,7 @@ struct npc_data {
 	struct navi_link navi; // for warps and the src of npcs
 	std::vector<navi_link> links; // for extra links, like warper npc
 #endif
+	bool is_invisible;
 
 #ifdef Pandas_ScriptCommand_ShowVend
 	struct {
@@ -2554,19 +2570,6 @@ bool npc_event_exists(const char* eventname);
 bool npc_event_exists(struct npc_data *nd, const char* eventname);
 #endif // Pandas_Helper_Common_Function
 
-// Status of NPC view.
-enum e_npcv_status : uint8 {
-	NPCVIEW_DISABLE  = 0x01,
-	NPCVIEW_ENABLE   = 0x02,
-	NPCVIEW_HIDEOFF  = 0x04,
-	NPCVIEW_HIDEON   = 0x08,
-	NPCVIEW_CLOAKOFF = 0x10,
-	NPCVIEW_CLOAKON  = 0x20,
-
-	NPCVIEW_VISIBLE   = 0x16,
-	NPCVIEW_INVISIBLE = 0x29,
-	NPCVIEW_CLOAK     = 0x30,
-};
 struct view_data* npc_get_viewdata(int class_);
 int npc_chat_sub(struct block_list* bl, va_list ap);
 int npc_event_dequeue(map_session_data* sd,bool free_script_stack=true);

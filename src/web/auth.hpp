@@ -5,7 +5,7 @@
 #define AUTH_HPP
 
 #include "http.hpp"
-#include "../common/cbasetypes.hpp"
+#include <common/cbasetypes.hpp>
 
 bool isAuthorized(const Request &request, bool checkGuildLeader=false);
 
