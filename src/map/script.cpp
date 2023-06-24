@@ -14525,6 +14525,9 @@ BUILDIN_FUNC(setmapflag)
 		args.input.resize(args_count);
 
 		switch (args_count) {
+		case 0:
+			// 地图标记参数的数量等于 0 那么什么都不用做 (感谢 "山有" 反馈)
+			break;
 		case 1:
 			FETCH(4, args.input[0]);
 			break;
