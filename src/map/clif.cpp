@@ -2371,11 +2371,13 @@ void clif_changemapserver(map_session_data* sd, const char* map, int x, int y, u
 #if PACKETVER >= 20170315
 	memset(WFIFOP(fd, 28), 0, 128); // Unknown
 #endif
+#ifndef Pandas_UserExperience_Debug_Hide_SubnetInfo
 #ifdef DEBUG
 	ShowDebug(
 		"Sending the client (%d %d.%d.%d.%d) to map-server with ip %d.%d.%d.%d and port %hu\n",
 		sd->status.account_id, CONVIP(session[fd]->client_addr), CONVIP(ip), port);
 #endif
+#endif // Pandas_UserExperience_Debug_Hide_SubnetInfo
 	WFIFOSET(fd,packet_len(cmd));
 }
 

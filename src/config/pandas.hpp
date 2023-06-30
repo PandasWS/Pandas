@@ -1311,6 +1311,9 @@
 	#ifndef _WIN32
 		#define Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	#endif // _WIN32
+
+	// 在 Debug 模式下隐藏玩家数据流转的子网掩码调试信息 [Sola丶小克]
+	#define Pandas_UserExperience_Debug_Hide_SubnetInfo
 #endif // Pandas_UserExperience
 
 // ============================================================================
