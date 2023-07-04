@@ -2774,24 +2774,6 @@ int status_calc_mob_(struct mob_data* md, uint8 opt)
 	status = md->base_status;
 	memcpy(status, &md->db->status, sizeof(struct status_data));
 
-#ifdef Pandas_MapFlag_MaxASPD
-	{
-		float adelay_bonus = 1.0f;
-		pec_ushort amotion_origin = md->db->status.amotion;
-
-		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
-			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
-			if (val) {
-				val = 2000 - val * 10;
-				val = max(val, md->status.amotion);
-				md->status.amotion = min(val, 2000);
-				adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
-				md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
-			}
-		}
-	}
-#endif // Pandas_MapFlag_MaxASPD
-
 	if (flag&(8|16))
 		mbl = map_id2bl(md->master_id);
 
@@ -3013,6 +2995,24 @@ int status_calc_mob_(struct mob_data* md, uint8 opt)
 
 	if (opt&SCO_FIRST) // Initial battle status
 		memcpy(&md->status, status, sizeof(struct status_data));
+
+#ifdef Pandas_MapFlag_MaxASPD
+	if (md && md->db) {
+		float adelay_bonus = 1.0f;
+		pec_ushort amotion_origin = md->db->status.amotion;
+
+		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
+			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
+			if (val) {
+				val = 2000 - val * 10;
+				val = max(val, md->status.amotion);
+				md->status.amotion = min(val, 2000);
+				adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
+				md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
+			}
+		}
+	}
+#endif // Pandas_MapFlag_MaxASPD
 
 	return 1;
 }
