@@ -6139,51 +6139,50 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		// All others do not need special treatment
 		default:
+#ifdef Pandas_Mapflags
+			auto conf = util::umap_find(mapflag_config, mapflag);
+			if (w4 && w4[0] != '\0' && conf != nullptr) {
+				pds_mapflag_args args = {};
+				int args_count = conf->args.size();
+				args.input.resize(args_count);
+
+				switch (args_count) {
+				case 1:
+					if (sscanf(w4, "%11d", &args.input[0]) < 1) {
+						args.input[0] = conf->args[0].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				case 2:
+					if (sscanf(w4, "%11d,%11d", &args.input[0], &args.input[1]) < 2) {
+						args.input[0] = conf->args[0].def_val;
+						args.input[1] = conf->args[1].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				case 3:
+					if (sscanf(w4, "%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2]) < 3) {
+						args.input[0] = conf->args[0].def_val;
+						args.input[1] = conf->args[1].def_val;
+						args.input[2] = conf->args[2].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				case 4:
+					if (sscanf(w4, "%11d,%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2], &args.input[3]) < 4) {
+						args.input[0] = conf->args[0].def_val;
+						args.input[1] = conf->args[1].def_val;
+						args.input[2] = conf->args[2].def_val;
+						args.input[3] = conf->args[3].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				}
+			}
+#endif // Pandas_Mapflags
 			map_setmapflag(m, mapflag, state);
 			break;
 	}
-
-#ifdef Pandas_Mapflags
-	auto conf = util::umap_find(mapflag_config, mapflag);
-	if (w4 && w4[0] != '\0' && conf != nullptr) {
-		pds_mapflag_args args = {};
-		int args_count = conf->args.size();
-		args.input.resize(args_count);
-
-		switch (args_count) {
-		case 1:
-			if (sscanf(w4, "%11d", &args.input[0]) < 1) {
-				args.input[0] = conf->args[0].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		case 2:
-			if (sscanf(w4, "%11d,%11d", &args.input[0], &args.input[1]) < 2) {
-				args.input[0] = conf->args[0].def_val;
-				args.input[1] = conf->args[1].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		case 3:
-			if (sscanf(w4, "%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2]) < 3) {
-				args.input[0] = conf->args[0].def_val;
-				args.input[1] = conf->args[1].def_val;
-				args.input[2] = conf->args[2].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		case 4:
-			if (sscanf(w4, "%11d,%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2], &args.input[3]) < 4) {
-				args.input[0] = conf->args[0].def_val;
-				args.input[1] = conf->args[1].def_val;
-				args.input[2] = conf->args[2].def_val;
-				args.input[3] = conf->args[3].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		}
-	}
-#endif // Pandas_Mapflags
 
 	return strchr(start,'\n');// continue
 }
