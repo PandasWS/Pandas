@@ -12,16 +12,6 @@
 
 #define Pandas
 
-#if defined(_MSVC_LANG) 
-	#if _MSVC_LANG >= 201703L
-		#define __STDCPP17_AND_NEWER
-	#endif // _MSVC_LANG >= 201703L
-#elif defined(__cplusplus)
-	#if __cplusplus >= 201703L
-		#define __STDCPP17_AND_NEWER
-	#endif // __cplusplus >= 201703L
-#endif
-
 #ifdef Pandas
 	#define Pandas_Basic
 	#define Pandas_DatabaseIncrease
@@ -982,9 +972,6 @@
 	// 备注: 单次获得的经验超过 long 的有效阈值范围后就会溢出成负数, 但最新的有效经验值区间是 int64
 	#define Pandas_Fix_GainExp_Display_Overflow
 
-	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
-	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
-
 	// 修正 inter_server.yml 中的 Max 超大时没有妥善处理的问题 [Sola丶小克]
 	// 启用后 Max 字段的值最多不能超过 MAX_STORAGE 的值
 	#define Pandas_Fix_INTER_SERVER_DB_Field_Verify
@@ -1288,13 +1275,6 @@
 // ============================================================================
 
 #ifdef Pandas_UserExperience
-	// 对 C++17 及更新的标准中禁用 register 关键字 [Sola丶小克]
-	// 因为 register 关键字在 C++17 中已被废弃, 且在 C++20 中已被移除
-	// 详见: https://en.cppreference.com/w/cpp/keyword/register
-	#ifdef __STDCPP17_AND_NEWER
-		#define Pandas_UserExperience_Disable_Register_Keyword
-	#endif // __STDCPP17_AND_NEWER
-
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
 

@@ -207,12 +207,9 @@ enum mail_attach_result mail_setitem(map_session_data *sd, short idx, uint32 amo
 				for( j = 0; j < MAIL_MAX_ITEM; j++ ){
 					if (sd->mail.item[j].nameid == 0)
 						continue;
-
-#ifdef Pandas_Fix_Mail_ItemAttachment_Check
-					if (!sd->inventory_data[sd->mail.item[j].index]) {
+					if (sd->inventory_data[sd->mail.item[j].index] == nullptr) {
 						return MAIL_ATTACH_ERROR;
 					}
-#endif // Pandas_Fix_Mail_ItemAttachment_Check
 					total += sd->mail.item[j].amount * ( sd->inventory_data[sd->mail.item[j].index]->weight / 10 );
 				}
 
@@ -242,11 +239,11 @@ enum mail_attach_result mail_setitem(map_session_data *sd, short idx, uint32 amo
 					if (sd->mail.item[j].nameid == 0) {
 						continue;
 					}
+#endif // Pandas_Fix_Mail_ItemAttachment_Check
 
-					if (!sd->inventory_data[sd->mail.item[j].index]) {
+					if (sd->inventory_data[sd->mail.item[j].index] == nullptr) {
 						return MAIL_ATTACH_ERROR;
 					}
-#endif // Pandas_Fix_Mail_ItemAttachment_Check
 					total += sd->mail.item[j].amount * ( sd->inventory_data[sd->mail.item[j].index]->weight / 10 );
 				}
 

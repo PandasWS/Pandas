@@ -114,7 +114,6 @@ static struct eri *timer_event_ers; //For the npc timer data. [Skotlex]
 
 /* hello */
 static char *npc_last_path;
-static char *npc_last_ref;
 
 struct npc_path_data {
 	char* path;
@@ -3967,7 +3966,6 @@ int npc_unload(struct npc_data* nd, bool single) {
 
 			if (npd == npc_last_npd) {
 				npc_last_npd = NULL;
-				npc_last_ref = NULL;
 				npc_last_path = NULL;
 			}
 		}
@@ -4233,10 +4231,9 @@ void npc_parsename(struct npc_data* nd, const char* name, const char* start, con
 		npd->references++;
 
 		npc_last_npd = npd;
-		npc_last_ref = npd->path;
-		npc_last_path = (char*) filepath;
+		npc_last_path = npd->path;
 	} else {
-		nd->path = npc_last_ref;
+		nd->path = npc_last_path;
 		if( npc_last_npd )
 			npc_last_npd->references++;
 	}
