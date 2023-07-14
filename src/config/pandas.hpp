@@ -1032,7 +1032,6 @@
 	//
 	// 特别感谢 "最美的Secret" 指出此问题
 	#define Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
-	
 #endif // Pandas_Bugfix
 
 // ============================================================================
