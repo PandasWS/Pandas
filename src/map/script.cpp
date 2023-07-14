@@ -5352,7 +5352,7 @@ bool script_cleararray_st(struct script_state* st, int loc, bool bslient = true)
 		//
 		// 因为在当前的脚本引擎中, 长度为 1 的数组 (单元素数组) 与非数组变量在存储上没有进行区分,
 		// 后续代码进行清理的前提都是目标变量是一个数组, 这会遗漏掉针对单元素数组的清理.
-		clear_reg(NULL, sd, reference_uid(varid, 0), varname, NULL);
+		clear_reg(st, sd, reference_uid(varid, 0), varname, NULL);
 	}
 #endif // Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
 
@@ -30140,6 +30140,16 @@ BUILDIN_FUNC(getareagid) {
 		return SCRIPT_CMD_FAILURE;
 	}
 
+#ifdef Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
+	if (retname) {
+		// 无论是不是数组，都要清除第一个元素
+		//
+		// 因为在当前的脚本引擎中, 长度为 1 的数组 (单元素数组) 与非数组变量在存储上没有进行区分,
+		// 后续代码进行清理的前提都是目标变量是一个数组, 这会遗漏掉针对单元素数组的清理.
+		clear_reg(st, sd, reference_uid(retid, 0), retname, NULL);
+	}
+#endif // Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
+
 	// 以下用于清空存放返回数据的数值型数组 (参考 script_cleararray_pc 的实现)
 	script_array_ensure_zero(st, NULL, retdata->u.num, reference_getref(retdata));
 	struct script_array* sa = static_cast<script_array *>(idb_get(src_reg_db->arrays, retid));
@@ -31365,6 +31375,16 @@ BUILDIN_FUNC(preg_search) {
 		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
+
+#ifdef Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
+	if (retname) {
+		// 无论是不是数组，都要清除第一个元素
+		//
+		// 因为在当前的脚本引擎中, 长度为 1 的数组 (单元素数组) 与非数组变量在存储上没有进行区分,
+		// 后续代码进行清理的前提都是目标变量是一个数组, 这会遗漏掉针对单元素数组的清理.
+		clear_reg(st, sd, reference_uid(retid, 0), retname, NULL);
+	}
+#endif // Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
 
 	// 以下用于清空存放返回数据的字符串数组 (参考 script_cleararray_pc 的实现)
 	script_array_ensure_zero(st, NULL, retdata->u.num, reference_getref(retdata));
