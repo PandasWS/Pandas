@@ -20,7 +20,7 @@ set( YAML_HEADERS
     "${YAML_INCLUDE_DIRS}/yaml-cpp/parser.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/ostream_wrapper.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/null.h"
-    "${YAML_INCLUDE_DIRS}/yaml-cpp/depthguard.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/noncopyable.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/noexcept.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/mark.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/exceptions.h"
@@ -31,6 +31,7 @@ set( YAML_HEADERS
     "${YAML_INCLUDE_DIRS}/yaml-cpp/emitterdef.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/emitfromevents.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/dll.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/depthguard.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/binary.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/anchor.h"
     "${YAML_INCLUDE_DIRS}/yaml-cpp/node/type.h"
@@ -47,6 +48,7 @@ set( YAML_HEADERS
 set( YAML_SOURCES
 	"${YAML_SOURCE_DIR}/binary.cpp"
   "${YAML_SOURCE_DIR}/convert.cpp"
+  "${YAML_SOURCE_DIR}/depthguard.cpp"
   "${YAML_SOURCE_DIR}/directives.cpp"
   "${YAML_SOURCE_DIR}/emit.cpp"
   "${YAML_SOURCE_DIR}/emitfromevents.cpp"
@@ -61,7 +63,6 @@ set( YAML_SOURCES
   "${YAML_SOURCE_DIR}/node_data.cpp"
   "${YAML_SOURCE_DIR}/nodeevents.cpp"
   "${YAML_SOURCE_DIR}/null.cpp"
-  "${YAML_SOURCE_DIR}/depthguard.cpp"
   "${YAML_SOURCE_DIR}/ostream_wrapper.cpp"
   "${YAML_SOURCE_DIR}/parse.cpp"
   "${YAML_SOURCE_DIR}/parser.cpp"
@@ -78,8 +79,9 @@ set( YAML_SOURCES
   "${YAML_SOURCE_DIR}/contrib/graphbuilder.cpp"
 	CACHE INTERNAL "yaml sources" )
 set( YAML_DEFINITIONS
-	"-std=c++17"
+	"-std=c++11"
 	CACHE INTERNAL "yaml definitions" )
 include_directories(${YAML_INCLUDE_DIRS} ${YAML_SOURCE_DIR})
 #message(STATUS "YAML_INCLUDE_DIRS : ${YAML_INCLUDE_DIRS}, YAML_SOURCE_DIR=${YAML_SOURCE_DIR}")
 ADD_LIBRARY(${this_target} STATIC ${YAML_SOURCES} )
+target_compile_definitions(${this_target} PUBLIC "-DYAML_CPP_STATIC_DEFINE")

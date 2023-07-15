@@ -114,7 +114,6 @@ static struct eri *timer_event_ers; //For the npc timer data. [Skotlex]
 
 /* hello */
 static char *npc_last_path;
-static char *npc_last_ref;
 
 struct npc_path_data {
 	char* path;
@@ -3967,7 +3966,6 @@ int npc_unload(struct npc_data* nd, bool single) {
 
 			if (npd == npc_last_npd) {
 				npc_last_npd = NULL;
-				npc_last_ref = NULL;
 				npc_last_path = NULL;
 			}
 		}
@@ -4233,10 +4231,9 @@ void npc_parsename(struct npc_data* nd, const char* name, const char* start, con
 		npd->references++;
 
 		npc_last_npd = npd;
-		npc_last_ref = npd->path;
-		npc_last_path = (char*) filepath;
+		npc_last_path = npd->path;
 	} else {
-		nd->path = npc_last_ref;
+		nd->path = npc_last_path;
 		if( npc_last_npd )
 			npc_last_npd->references++;
 	}
@@ -5941,6 +5938,20 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 		npc_delay_mob += data->num;
 	}
 
+#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+	if (mapdata) {
+		auto it = std::find(
+			mapdata->mobspawns.begin(),
+			mapdata->mobspawns.end(),
+			data
+		);
+
+		if (it == mapdata->mobspawns.end()) {
+			mapdata->mobspawns.push_back(data);
+		}
+	}
+#endif // Pandas_Struct_Map_Data_Mob_Spawns
+
 	npc_mob++;
 
 	return strchr(start,'\n');// continue
@@ -6142,51 +6153,50 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		// All others do not need special treatment
 		default:
+#ifdef Pandas_Mapflags
+			auto conf = util::umap_find(mapflag_config, mapflag);
+			if (w4 && w4[0] != '\0' && conf != nullptr) {
+				pds_mapflag_args args = {};
+				int args_count = conf->args.size();
+				args.input.resize(args_count);
+
+				switch (args_count) {
+				case 1:
+					if (sscanf(w4, "%11d", &args.input[0]) < 1) {
+						args.input[0] = conf->args[0].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				case 2:
+					if (sscanf(w4, "%11d,%11d", &args.input[0], &args.input[1]) < 2) {
+						args.input[0] = conf->args[0].def_val;
+						args.input[1] = conf->args[1].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				case 3:
+					if (sscanf(w4, "%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2]) < 3) {
+						args.input[0] = conf->args[0].def_val;
+						args.input[1] = conf->args[1].def_val;
+						args.input[2] = conf->args[2].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				case 4:
+					if (sscanf(w4, "%11d,%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2], &args.input[3]) < 4) {
+						args.input[0] = conf->args[0].def_val;
+						args.input[1] = conf->args[1].def_val;
+						args.input[2] = conf->args[2].def_val;
+						args.input[3] = conf->args[3].def_val;
+					}
+					map_setmapflag_sub(m, mapflag, state, &args);
+					break;
+				}
+			}
+#endif // Pandas_Mapflags
 			map_setmapflag(m, mapflag, state);
 			break;
 	}
-
-#ifdef Pandas_Mapflags
-	auto conf = util::umap_find(mapflag_config, mapflag);
-	if (w4 && w4[0] != '\0' && conf != nullptr) {
-		pds_mapflag_args args = {};
-		int args_count = conf->args.size();
-		args.input.resize(args_count);
-
-		switch (args_count) {
-		case 1:
-			if (sscanf(w4, "%11d", &args.input[0]) < 1) {
-				args.input[0] = conf->args[0].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		case 2:
-			if (sscanf(w4, "%11d,%11d", &args.input[0], &args.input[1]) < 2) {
-				args.input[0] = conf->args[0].def_val;
-				args.input[1] = conf->args[1].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		case 3:
-			if (sscanf(w4, "%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2]) < 3) {
-				args.input[0] = conf->args[0].def_val;
-				args.input[1] = conf->args[1].def_val;
-				args.input[2] = conf->args[2].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		case 4:
-			if (sscanf(w4, "%11d,%11d,%11d,%11d", &args.input[0], &args.input[1], &args.input[2], &args.input[3]) < 4) {
-				args.input[0] = conf->args[0].def_val;
-				args.input[1] = conf->args[1].def_val;
-				args.input[2] = conf->args[2].def_val;
-				args.input[3] = conf->args[3].def_val;
-			}
-			map_setmapflag_sub(m, mapflag, state, &args);
-			break;
-		}
-	}
-#endif // Pandas_Mapflags
 
 	return strchr(start,'\n');// continue
 }
@@ -7200,6 +7210,15 @@ int npc_reload(void) {
 			}
 		}
 	}
+
+#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+	for (int i = 0; i < map_num; i++) {
+		struct map_data* mapdata = map_getmapdata(i);
+		if (mapdata) {
+			mapdata->mobspawns.clear();
+		}
+	}
+#endif // Pandas_Struct_Map_Data_Mob_Spawns
 
 	// clear mob spawn lookup index
 	mob_clear_spawninfo();

@@ -119,7 +119,7 @@ static unsigned int status_calc_maxap_pc(map_session_data* sd);
 static int status_get_sc_interval(enum sc_type type);
 
 static bool status_change_isDisabledOnMap_(sc_type type, bool mapIsVS, bool mapIsPVP, bool mapIsGVG, bool mapIsBG, unsigned int mapZone, bool mapIsTE);
-#define status_change_isDisabledOnMap(type, m) ( status_change_isDisabledOnMap_((type), mapdata_flag_vs2((m)), m->flag[MF_PVP] != 0, mapdata_flag_gvg2_no_te((m)), m->flag[MF_BATTLEGROUND] != 0, (m->zone << 3) != 0, mapdata_flag_gvg2_te((m))) )
+#define status_change_isDisabledOnMap(type, m) ( status_change_isDisabledOnMap_((type), mapdata_flag_vs2((m)), m->getMapFlag(MF_PVP) != 0, mapdata_flag_gvg2_no_te((m)), m->getMapFlag(MF_BATTLEGROUND) != 0, (m->zone << 3) != 0, mapdata_flag_gvg2_te((m))) )
 
 const std::string RefineDatabase::getDefaultLocation(){
 	return std::string( db_path ) + "/refine.yml";
@@ -2774,24 +2774,6 @@ int status_calc_mob_(struct mob_data* md, uint8 opt)
 	status = md->base_status;
 	memcpy(status, &md->db->status, sizeof(struct status_data));
 
-#ifdef Pandas_MapFlag_MaxASPD
-	{
-		float adelay_bonus = 1.0f;
-		pec_ushort amotion_origin = md->db->status.amotion;
-
-		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
-			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
-			if (val) {
-				val = 2000 - val * 10;
-				val = max(val, md->status.amotion);
-				md->status.amotion = min(val, 2000);
-				adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
-				md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
-			}
-		}
-	}
-#endif // Pandas_MapFlag_MaxASPD
-
 	if (flag&(8|16))
 		mbl = map_id2bl(md->master_id);
 
@@ -3013,6 +2995,24 @@ int status_calc_mob_(struct mob_data* md, uint8 opt)
 
 	if (opt&SCO_FIRST) // Initial battle status
 		memcpy(&md->status, status, sizeof(struct status_data));
+
+#ifdef Pandas_MapFlag_MaxASPD
+	if (md && md->db) {
+		float adelay_bonus = 1.0f;
+		pec_ushort amotion_origin = md->db->status.amotion;
+
+		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
+			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
+			if (val) {
+				val = 2000 - val * 10;
+				val = max(val, md->status.amotion);
+				md->status.amotion = min(val, 2000);
+				adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
+				md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
+			}
+		}
+	}
+#endif // Pandas_MapFlag_MaxASPD
 
 	return 1;
 }
@@ -7883,7 +7883,7 @@ static pec_short status_calc_flee(struct block_list *bl, status_change *sc, int 
 
 		if( mapdata_flag_gvg(mapdata) )
 			flee -= flee * battle_config.gvg_flee_penalty/100;
-		else if( mapdata->flag[MF_BATTLEGROUND] )
+		else if( mapdata->getMapFlag(MF_BATTLEGROUND) )
 			flee -= flee * battle_config.bg_flee_penalty/100;
 	}
 
@@ -9532,9 +9532,9 @@ int status_get_emblem_id(struct block_list *bl)
 			break;
 		case BL_NPC:
 			if (((TBL_NPC*)bl)->subtype == NPCTYPE_SCRIPT && ((TBL_NPC*)bl)->u.scr.guild_id > 0) {
-				struct guild *g = guild_search(((TBL_NPC*)bl)->u.scr.guild_id);
+				auto g = guild_search(((TBL_NPC*)bl)->u.scr.guild_id);
 				if (g)
-					return g->emblem_id;
+					return g->guild.emblem_id;
 			}
 			break;
 		case BL_ELEM:
@@ -11145,7 +11145,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			break;
 		case SC_POISONREACT:
 #ifdef RENEWAL
-			val2=(val1 - ((val1-1) % 1 - 1)) / 2;
+			val2= (val1 + 1) / 2;
 #else
 			val2=(val1+1)/2 + val1/10; // Number of counters [Skotlex]
 #endif
@@ -15935,9 +15935,9 @@ void status_change_clear_onChangeMap(struct block_list *bl, status_change *sc)
 	if (sc && sc->count) {
 		struct map_data *mapdata = map_getmapdata(bl->m);
 		bool mapIsVS = mapdata_flag_vs2(mapdata);
-		bool mapIsPVP = mapdata->flag[MF_PVP] != 0;
+		bool mapIsPVP = mapdata->getMapFlag(MF_PVP) != 0;
 		bool mapIsGVG = mapdata_flag_gvg2_no_te(mapdata);
-		bool mapIsBG = mapdata->flag[MF_BATTLEGROUND] != 0;
+		bool mapIsBG = mapdata->getMapFlag(MF_BATTLEGROUND) != 0;
 		bool mapIsTE = mapdata_flag_gvg2_te(mapdata);
 
 		for (const auto &it : status_db) {

@@ -12,16 +12,6 @@
 
 #define Pandas
 
-#if defined(_MSVC_LANG) 
-	#if _MSVC_LANG >= 201703L
-		#define __STDCPP17_AND_NEWER
-	#endif // _MSVC_LANG >= 201703L
-#elif defined(__cplusplus)
-	#if __cplusplus >= 201703L
-		#define __STDCPP17_AND_NEWER
-	#endif // __cplusplus >= 201703L
-#endif
-
 #ifdef Pandas
 	#define Pandas_Basic
 	#define Pandas_DatabaseIncrease
@@ -77,7 +67,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.2.1.0"
+	#define Pandas_Version "1.2.2.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -231,6 +221,9 @@
 
 	// 使 status_change 能保存 cloak 是否正在进行中的状态 [Sola丶小克]
 	#define Pandas_Struct_Status_Change_Cloak_Reverting
+
+	// 使 map_data 能保存全部魔物的刷新点信息 [Sola丶小克]
+	#define Pandas_Struct_Map_Data_Mob_Spawns
 #endif // Pandas_StructIncrease
 
 // ============================================================================
@@ -982,9 +975,6 @@
 	// 备注: 单次获得的经验超过 long 的有效阈值范围后就会溢出成负数, 但最新的有效经验值区间是 int64
 	#define Pandas_Fix_GainExp_Display_Overflow
 
-	// 修正 bonus3 bAddEffOnSkill 中 PC_BONUS_CHK_SC 带入检测参数错误的问题 [Renee]
-	#define Pandas_Fix_bouns3_bAddEffOnSkill_PC_BONUS_CHK_SC_Error
-
 	// 修正 inter_server.yml 中的 Max 超大时没有妥善处理的问题 [Sola丶小克]
 	// 启用后 Max 字段的值最多不能超过 MAX_STORAGE 的值
 	#define Pandas_Fix_INTER_SERVER_DB_Field_Verify
@@ -1288,13 +1278,6 @@
 // ============================================================================
 
 #ifdef Pandas_UserExperience
-	// 对 C++17 及更新的标准中禁用 register 关键字 [Sola丶小克]
-	// 因为 register 关键字在 C++17 中已被废弃, 且在 C++20 中已被移除
-	// 详见: https://en.cppreference.com/w/cpp/keyword/register
-	#ifdef __STDCPP17_AND_NEWER
-		#define Pandas_UserExperience_Disable_Register_Keyword
-	#endif // __STDCPP17_AND_NEWER
-
 	// 优化使用 @version 指令的回显信息 [Sola丶小克]
 	#define Pandas_UserExperience_AtCommand_Version
 
@@ -1331,6 +1314,9 @@
 	#ifndef _WIN32
 		#define Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	#endif // _WIN32
+
+	// 在 Debug 模式下隐藏玩家数据流转的子网掩码调试信息 [Sola丶小克]
+	#define Pandas_UserExperience_Debug_Hide_SubnetInfo
 #endif // Pandas_UserExperience
 
 // ============================================================================
@@ -2163,11 +2149,17 @@
 
 	// 是否启用 getmapspawns 脚本指令 [Sola丶小克]
 	// 该指令用于获取指定地图的魔物刷新点信息
-	#define Pandas_ScriptCommand_GetMapSpawns
+	// 此选项开关需要依赖 Pandas_Struct_Map_Data_Mob_Spawns 的拓展
+	#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+		#define Pandas_ScriptCommand_GetMapSpawns
+	#endif // Pandas_Struct_Map_Data_Mob_Spawns
 
 	// 是否启用 getmobspawns 脚本指令 [Sola丶小克]
 	// 该指令用于查询指定魔物在不同地图的刷新点信息
-	#define Pandas_ScriptCommand_GetMobSpawns
+	// 此选项开关需要依赖 Pandas_Struct_Map_Data_Mob_Spawns 的拓展
+	#ifdef Pandas_Struct_Map_Data_Mob_Spawns
+		#define Pandas_ScriptCommand_GetMobSpawns
+	#endif // Pandas_Struct_Map_Data_Mob_Spawns
 
 	// 是否启用 getcalendartime 脚本指令 [Haru]
 	// 该指令用于获取下次出现指定时间的 UNIX 时间戳
