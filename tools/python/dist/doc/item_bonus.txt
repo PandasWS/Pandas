@@ -3,7 +3,7 @@
 //===== 维护人员 =============================================
 //= 熊猫模拟器开发团队 / 热心用户
 //===== 最后更新 =============================================
-//= 20230715 (不一定准)
+//= 20230720 (不一定准)
 //===== 文档描述 =============================================
 //= 本文中列出了模拟器所支持的全部 rAthena 官方效果调整器,
 //= 并尽可能的详细描述这些调整器的作用.
@@ -32,25 +32,26 @@
 * 状态效果 - Status effect (eff)
     Eff_Bleeding, Eff_Blind, Eff_Burning, Eff_Confusion, Eff_Crystalize, Eff_Curse, Eff_DPoison,
     Eff_Fear, Eff_Freeze, Eff_Poison, Eff_Silence, Eff_Sleep, Eff_Stone, Eff_Stun, Eff_Freezing,
-    Eff_Heat, Eff_Deepsleep
+    Eff_Heat, Eff_Deepsleep, Eff_WhiteImprison
 
-    Eff_Stone           //    石化(SC_STONEWAIT)        注: 无法回避/行动、MHP下降
-    Eff_Freeze          //    冰冻(SC_FREEZE)           注: 不可回避/行动、物理/魔法防御力减少
-    Eff_Stun            //    晕眩(SC_STUN)             注: 不可回避/行动
-    Eff_Sleep           //    睡眠(SC_SLEEP)            注: 不可回避/行动、暴击伤害几率增加
-    Eff_Poison          //    中毒(SC_POISON)           注: 视野变窄、物理防御力下降、每3秒MHP下降
-    Eff_Curse           //    诅咒(SC_CURSE)            注: 减少移动速度、物理攻击力、LUK 变为 0
-    Eff_Silence         //    沉默(SC_SILENCE)          注: 无法使用技能
-    Eff_Confusion       //    混乱(SC_CONFUSION)        注: 人物移动时，会随机移动。
-    Eff_Blind           //    漆黑(SC_BLIND)            注: 视野缩小、回避、完全回避减少
-    Eff_Bleeding        //    出血(SC_BLEEDING)         注: HP, SP 不能恢复、每10秒绘流失一定量的 HP
-    Eff_DPoison         //    猛毒(SC_DPOISON)          注: 抗毒属性减少、DEF减少、定期减少HP
-    Eff_Fear            //    恐怖(SC_FEAR)             注: 魔物无法移动 5 秒、玩家无法移动 2 秒
-    Eff_Burning         //    着火(SC_BURNING)          注: 2秒内法移动、命中率/回避率减少
-    Eff_Crystalize      //    晶化(SC_CRYSTALIZE)       注: 地属性状态、无法移动、使用道具与技能、MDEF减少、受到伤害时解除
-    Eff_Freezing        //    冰冻(SC_FREEZING)         注: 不可回避/行动、物理/魔法防御力减少
-    Eff_Heat            //    烫伤(SC_BURNT)            注: 受到火属性怪的伤害增加、对火属性抗性减少、周期性火属性伤害
-    Eff_Deepsleep       //    沉睡(SC_DEEPSLEEP)        注: 通常伤害的 1.5倍，每2秒可恢复一定量的 HP/SP
+    Eff_Stone           //    石化(SC_STONEWAIT)            注: 无法回避/行动、MHP下降
+    Eff_Freeze          //    冰冻(SC_FREEZE)               注: 不可回避/行动、物理/魔法防御力减少
+    Eff_Stun            //    晕眩(SC_STUN)                 注: 不可回避/行动
+    Eff_Sleep           //    睡眠(SC_SLEEP)                注: 不可回避/行动、暴击伤害几率增加
+    Eff_Poison          //    中毒(SC_POISON)               注: 视野变窄、物理防御力下降、每3秒MHP下降
+    Eff_Curse           //    诅咒(SC_CURSE)                注: 减少移动速度、物理攻击力、LUK 变为 0
+    Eff_Silence         //    沉默(SC_SILENCE)              注: 无法使用技能
+    Eff_Confusion       //    混乱(SC_CONFUSION)            注: 人物移动时，会随机移动。
+    Eff_Blind           //    漆黑(SC_BLIND)                注: 视野缩小、回避、完全回避减少
+    Eff_Bleeding        //    出血(SC_BLEEDING)             注: HP, SP 不能恢复、每10秒绘流失一定量的 HP
+    Eff_DPoison         //    猛毒(SC_DPOISON)              注: 抗毒属性减少、DEF减少、定期减少HP
+    Eff_Fear            //    恐怖(SC_FEAR)                 注: 魔物无法移动 5 秒、玩家无法移动 2 秒
+    Eff_Burning         //    着火(SC_BURNING)              注: 2秒内法移动、命中率/回避率减少
+    Eff_Crystalize      //    晶化(SC_CRYSTALIZE)           注: 地属性状态、无法移动、使用道具与技能、MDEF减少、受到伤害时解除
+    Eff_Freezing        //    冰冻(SC_FREEZING)             注: 不可回避/行动、物理/魔法防御力减少
+    Eff_Heat            //    烫伤(SC_BURNT)                注: 受到火属性怪的伤害增加、对火属性抗性减少、周期性火属性伤害
+    Eff_Deepsleep       //    沉睡(SC_DEEPSLEEP)            注: 通常伤害的 1.5倍，每2秒可恢复一定量的 HP/SP
+    Eff_WhiteImprison   //    白色监狱(SC_WHITEIMPRISON)    注: 无法移动、使用道具与技能、期间只能受到念属性和部分固定伤害
 
 * 属性 - Element (e)
     Ele_Dark, Ele_Earth, Ele_Fire, Ele_Ghost, Ele_Holy, Ele_Neutral, Ele_Poison,
