@@ -5091,6 +5091,10 @@ void script_cleararray_pc( map_session_data* sd, const char* varname ){
 	if( !(src = script_array_src(NULL,sd,varname,NULL) ) )
 		return;
 
+#ifdef Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
+	script_array_ensure_zero(NULL, sd, reference_uid(key, 0), src);
+#endif // Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
+
 	if( !(sa = static_cast<script_array *>(idb_get(src->arrays, key))) ) /* non-existent array, nothing to empty */
 		return;
 

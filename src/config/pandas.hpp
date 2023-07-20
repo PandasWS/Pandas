@@ -1025,6 +1025,10 @@
 
 	// 修正启用 use_sql_db 之后终端加载信息出现来源数据表为 (null) 的问题 [Sola丶小克]
 	#define Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
+
+	// 修正 script_cleararray_pc 无法清空单元素数组的问题 [Sola丶小克]
+	// 特别感谢 "最美的Secret" 指出此问题
+	#define Pandas_Fix_ClearArray_The_First_Element_Is_Ignored
 #endif // Pandas_Bugfix
 
 // ============================================================================
