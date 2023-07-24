@@ -205,10 +205,10 @@
         },
         "construct": {
             "hashes": [
-                "sha256:5e9cacbdedd2b6f706592352fa447ea90f6ca7e9fbb591f747548877d6d8b467"
+                "sha256:7b2a3fd8e5f597a5aa1d614c3bd516fa065db01704c72a1efaaeec6ef23d8b45"
             ],
             "index": "pypi",
-            "version": "==2.9.52"
+            "version": "==2.10.68"
         },
         "crcmod": {
             "hashes": [
