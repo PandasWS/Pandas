@@ -922,7 +922,13 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 FILE* fopen(const char* _FileName, const char* _Mode) {
 	std::string strMode(_Mode);
 	std::string strFilename(_FileName);
-	
+	bool bIsBinaryMode = false;
+
+	if (strchr(_Mode, 'b')) {
+		// 原始的打开模式就包含二进制模式的话, 打上标记
+		bIsBinaryMode = true;
+	}
+
 	if (strchr(_Mode, 'b') || strchr(_Mode, 'w') || strchr(_Mode, 'a')) {
 		// 若当前打开文件的模式已经是二进制, 那么无需修改打开模式
 		// 若当前打开文件的模式包含 Write 或者是 Append 模式, 那么也无需修改打开模式
@@ -941,7 +947,15 @@ FILE* fopen(const char* _FileName, const char* _Mode) {
 	}
 #endif // _WIN32
 
-	return ::fopen(strFilename.c_str(), strMode.c_str());
+	FILE* fp = ::fopen(strFilename.c_str(), strMode.c_str());
+
+	if (bIsBinaryMode) {
+		// 若文件最初就计划以二进制形式打开,
+		// 那么这里直接提前设置他的编码类型, 避免后续的 fread 等流程尝试探测文本编码
+		setModeMapping(fp, FILE_CHARSETMODE_ANSI);
+	}
+
+	return fp;
 }
 
 //************************************
