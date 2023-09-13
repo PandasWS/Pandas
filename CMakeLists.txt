@@ -1,5 +1,5 @@
 #####################################################################
-#test
+#
 # "Getting Started with CMake", a tutorial video by Eric Wing.
 #   Part 1 of 6: http://www.youtube.com/watch?v=CLvZTyji_Uw
 #   Part 2 of 6: http://www.youtube.com/watch?v=gUW-RrRQjEg

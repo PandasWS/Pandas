@@ -33038,6 +33038,229 @@ BUILDIN_FUNC(whodropitem) {
 }
 #endif // Pandas_ScriptCommand_WhoDropItem
 
+
+#ifdef Pandas_ScriptCommand_MobLootitems
+/* ===========================================================
+ * 指令: getmoblootitems
+ * 描述: 获取指定魔物的掠夺列表(魔物背包列表)
+ * 用法: getmoblootitems <mob_gid>,<角色编号>;
+ *		mob_gid		魔物唯一ID
+ *		角色编号	用于角色变量储存
+ * 返回: 成功则返回魔物掠夺背包的道具种类
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(getmoblootitems) {
+
+	struct mob_data* md;
+	struct block_list* bl;
+	int char_id = script_hasdata(st, 3) ? script_getnum(st, 3) : 0;
+
+	if (!script_rid2bl(2, bl))
+	{
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	md = map_id2md(bl->id);
+	if (!md) {
+		ShowWarning("buildin_getmoblootitems: Error in finding object BL_MOB!\n");
+		return SCRIPT_CMD_FAILURE;
+	}
+	int j = 0;
+
+	for (int i = 0; i < md->lootitem_count; i++) {
+		script_both_setreg(st, "mobloot_itemid", md->lootitems[i].item.nameid, true, j, char_id);								//itemID
+		script_both_setreg(st, "mobloot_itemcount", md->lootitems[i].item.amount, true, j, char_id);								//数量
+		script_both_setreg(st, "mobloot_refine", md->lootitems[i].item.refine, true, j, char_id);								//精炼值
+		script_both_setreg(st, "mobloot_attribute", md->lootitems[i].item.attribute, true, j, char_id);							//损坏
+		script_both_setreg(st, "mobloot_identify", md->lootitems[i].item.identify, true, j, char_id);							//鉴定
+		script_both_setreg(st, "mobloot_bound", md->lootitems[i].item.bound, true, j, char_id);									//绑定
+		script_both_setreg(st, "mobloot_enchantgrade", md->lootitems[i].item.enchantgrade, true, j, char_id);					//评级
+		script_both_setreg(st, "mobloot_expire_time", md->lootitems[i].item.expire_time, true, j, char_id);						//过期时间戳
+		script_both_setreg(st, "mobloot_unique_id", md->lootitems[i].item.unique_id, true, j, char_id);							//唯一ID
+
+		script_both_setreg(st, "mobloot_card1", md->lootitems[i].item.card[0], true, j, char_id);								//卡片1
+		script_both_setreg(st, "mobloot_card2", md->lootitems[i].item.card[1], true, j, char_id);								//卡片2
+		script_both_setreg(st, "mobloot_card3", md->lootitems[i].item.card[2], true, j, char_id);								//卡片3
+		script_both_setreg(st, "mobloot_card4", md->lootitems[i].item.card[3], true, j, char_id);								//卡片4
+
+		script_both_setreg(st, "mobloot_option1_id", md->lootitems[i].item.option[0].id, true, j, char_id);						//词条ID1
+		script_both_setreg(st, "mobloot_option2_id", md->lootitems[i].item.option[1].id, true, j, char_id);						//词条ID2
+		script_both_setreg(st, "mobloot_option3_id", md->lootitems[i].item.option[2].id, true, j, char_id);						//词条ID3
+		script_both_setreg(st, "mobloot_option4_id", md->lootitems[i].item.option[3].id, true, j, char_id);						//词条ID4
+		script_both_setreg(st, "mobloot_option5_id", md->lootitems[i].item.option[4].id, true, j, char_id);						//词条ID5
+		script_both_setreg(st, "mobloot_option1_value", md->lootitems[i].item.option[0].value, true, j, char_id);				//词条值1
+		script_both_setreg(st, "mobloot_option2_value", md->lootitems[i].item.option[1].value, true, j, char_id);				//词条值2
+		script_both_setreg(st, "mobloot_option3_value", md->lootitems[i].item.option[2].value, true, j, char_id);				//词条值3
+		script_both_setreg(st, "mobloot_option4_value", md->lootitems[i].item.option[3].value, true, j, char_id);				//词条值4
+		script_both_setreg(st, "mobloot_option5_value", md->lootitems[i].item.option[4].value, true, j, char_id);				//词条值5
+		script_both_setreg(st, "mobloot_option1_param", md->lootitems[i].item.option[0].param, true, j, char_id);				//词条参数1
+		script_both_setreg(st, "mobloot_option2_param", md->lootitems[i].item.option[1].param, true, j, char_id);				//词条参数2
+		script_both_setreg(st, "mobloot_option3_param", md->lootitems[i].item.option[2].param, true, j, char_id);				//词条参数3
+		script_both_setreg(st, "mobloot_option4_param", md->lootitems[i].item.option[3].param, true, j, char_id);				//词条参数4
+		script_both_setreg(st, "mobloot_option5_param", md->lootitems[i].item.option[4].param, true, j, char_id);				//词条参数5
+
+		j++;
+	}
+	script_both_setreg(st, "mobloot_count", md->lootitem_count, false, -1, char_id);
+	script_pushint(st, md->lootitem_count);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/* ===========================================================
+ * 指令: setmoblootitems
+ * 描述: 修改魔物掠夺列表道具(魔物背包)
+ * 用法: setmoblootitems <mob_gid>,<ID>,<数量>,<精炼值>,<鉴定>,<绑定>,<评级>,<过期时间戳>,<卡片1>,<卡片2>,<卡片3>,<卡片4>,<词条ID数组>,<词条值数组>,<词条参数数组>;;
+ * 返回: 返回修改后道具数量，失败返回-1
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(setmoblootitems) {
+	struct mob_data* md;
+	struct block_list* bl;
+	if (!script_rid2bl(2, bl))
+	{
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+	md = map_id2md(bl->id);
+	if (!md) {
+		ShowWarning("buildin_setmoblootitems: Error in finding object BL_MOB!\n");
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	t_itemid nameid;
+	const char* funcname = script_getfuncname(st);
+
+	if (script_isstring(st, 3)) {
+		const char* name = script_getstr(st, 3);
+		std::shared_ptr<item_data> item_data = item_db.searchname(name);
+
+		if (item_data) {
+			nameid = item_data->nameid;
+		}
+		else {
+			ShowError("buildin_setmoblootitems: Unknown item %s\n", name);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+	else {
+		nameid = (t_itemid)script_getnum(st, 3);
+
+		if (!item_db.exists(nameid)) {
+			ShowError("buildin_setmoblootitems: Unknown item id %u\n", nameid);
+			return SCRIPT_CMD_FAILURE;
+		}
+	}
+
+	int amount = script_getnum(st, 4);
+
+	struct item_data* id;
+
+	if ((id = itemdb_search(nameid))) {
+		struct item item_tmp = {};
+
+		item_tmp.nameid = nameid;
+
+		char ref = script_hasdata(st, 5) ? (char)script_getnum(st, 5) : 0;															//精炼
+		char iden = script_hasdata(st, 6) ? (char)script_getnum(st, 6) : 0;															//鉴定
+		int bound = script_hasdata(st, 7) ? script_getnum(st, 7) : 0;																//绑定
+		int grade = cap_value(script_getnum(st, 8), ENCHANTGRADE_NONE, MAX_ENCHANTGRADE - 1);										//评级
+		int tick = script_hasdata(st, 9) ? script_getnum(st, 9) : 0;																//过期时间戳
+
+		if (id->type == IT_WEAPON || id->type == IT_ARMOR || id->type == IT_SHADOWGEAR) {
+			if (ref > MAX_REFINE)
+				ref = MAX_REFINE;
+		}
+		else if (id->type == IT_PETEGG) {
+			iden = 1;
+			ref = 0;
+		}
+		else {
+			iden = 1;
+			ref = 0;
+		}
+		item_tmp.amount = amount;
+		item_tmp.identify = iden;
+
+		item_tmp.refine = ref;
+		item_tmp.card[0] = script_getnum(st, 10);
+		item_tmp.card[1] = script_getnum(st, 11);
+		item_tmp.card[2] = script_getnum(st, 12);
+		item_tmp.card[3] = script_getnum(st, 13);
+		item_tmp.enchantgrade = static_cast<e_enchantgrade>(grade);
+		item_tmp.bound = cap_value(bound, BOUND_NONE, BOUND_MAX - 1);
+		item_tmp.expire_time = (unsigned int)(tick);
+
+		if (script_hasdata(st, 14)) {
+			bool res = script_getitem_randomoption(st, nullptr, &item_tmp, funcname, 14);
+			if (!res) {
+				return SCRIPT_CMD_FAILURE;
+			}
+		}
+
+		if (md->lootitems == nullptr) {
+			md->lootitems = (struct s_mob_lootitem*)aCalloc(LOOTITEM_SIZE, sizeof(struct s_mob_lootitem));
+		}
+
+		int syi;
+		if (itemdb_isstackable2(itemdb_search(item_tmp.nameid)) && item_tmp.expire_time == 0) {
+			for (syi = 0; syi < md->lootitem_count; syi++) {
+				if (md->lootitems[syi].item.nameid == item_tmp.nameid
+					&& (script_hasdata(st, 5) ? md->lootitems[syi].item.refine == item_tmp.refine : 1)
+					&& (script_hasdata(st, 6) ? md->lootitems[syi].item.identify == item_tmp.identify : 1)
+					&& (script_hasdata(st, 7) ? md->lootitems[syi].item.bound == item_tmp.bound : 1)
+					&& (script_hasdata(st, 8) ? md->lootitems[syi].item.enchantgrade == item_tmp.enchantgrade : 1)
+					&& (script_hasdata(st, 10) ? memcmp(&md->lootitems[syi].item.card, item_tmp.card, sizeof(item_tmp.card)) == 0 : 1)
+					&& (script_hasdata(st, 14) ? memcmp(&md->lootitems[syi].item.option, item_tmp.option, sizeof(item_tmp.option)) == 0 : 1)
+					) {
+					md->lootitems[syi].item.amount += item_tmp.amount;
+					if (md->lootitems[syi].item.amount < 0) {
+						if (md->lootitems[syi].item.card[0] == CARD0_PET) {
+							intif_delete_petdata(MakeDWord(md->lootitems[syi].item.card[1], md->lootitems[syi].item.card[2]));
+						}
+						memmove(&md->lootitems[syi], &md->lootitems[syi + 1], (LOOTITEM_SIZE - 1 - syi) * sizeof(md->lootitems[0]));
+						md->lootitem_count--;
+					}
+					break;
+				}
+			}
+			if (syi >= md->lootitem_count && item_tmp.amount > 0) {
+				if (md->lootitem_count < LOOTITEM_SIZE) {
+					memcpy(&md->lootitems[md->lootitem_count].item, &item_tmp, sizeof(md->lootitems[0].item));
+					md->lootitem_count++;
+				}
+				else {
+					if (md->lootitems[0].item.card[0] == CARD0_PET) {
+						intif_delete_petdata(MakeDWord(md->lootitems[0].item.card[1], md->lootitems[0].item.card[2]));
+					}
+					memmove(&md->lootitems[0], &md->lootitems[1], (LOOTITEM_SIZE - 1) * sizeof(md->lootitems[0]));
+					memcpy(&md->lootitems[LOOTITEM_SIZE - 1].item, &item_tmp, sizeof(md->lootitems[0].item));
+				}
+			}
+		}
+		else if (item_tmp.amount > 0) {
+			item_tmp.amount = 1;
+			if (md->lootitem_count < LOOTITEM_SIZE) {
+				memcpy(&md->lootitems[md->lootitem_count].item, &item_tmp, sizeof(md->lootitems[0].item));
+				md->lootitem_count++;
+			}
+			else {
+				if (md->lootitems[0].item.card[0] == CARD0_PET) {
+					intif_delete_petdata(MakeDWord(md->lootitems[0].item.card[1], md->lootitems[0].item.card[2]));
+				}
+				memmove(&md->lootitems[0], &md->lootitems[1], (LOOTITEM_SIZE - 1) * sizeof(md->lootitems[0]));
+				memcpy(&md->lootitems[LOOTITEM_SIZE - 1].item, &item_tmp, sizeof(md->lootitems[0].item));
+			}
+		}
+
+
+		script_pushint(st, md->lootitem_count);
+	}
+	else {
+		script_pushint(st, -1);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+
+#endif // Pandas_ScriptCommand_MobLootitems
+
 // PYHELP - SCRIPTCMD - INSERT POINT - <Section 2>
 
 /// script command definitions
@@ -34034,6 +34257,10 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+#ifdef Pandas_ScriptCommand_MobLootitems
+		BUILDIN_DEF(getmoblootitems, "i?"),						//取魔物背包列表
+		BUILDIN_DEF(setmoblootitems, "iii????????????"),		//魔物背包列表添加/删除道具
+#endif // Pandas_ScriptCommand_MobLootitems
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include <custom/script_def.inc>

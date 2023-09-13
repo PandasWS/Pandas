@@ -3426,3 +3426,69 @@ NPC名称:
 	setmapflag("prontera",mf_something,5,6,7,8);
 
 --------------------------------------------------------------
+*getmoblootitems <gid>{,<角色ID>};
+
+获取指定魔物背包的道具列表
+		gid			魔物唯一ID
+		角色ID		用于角色变量储存列表数组
+					没有角色ID时用全局变量储存$@
+					
+	返回: 成功则返回魔物掠夺背包的道具种类
+		默认魔物背包格子上限是10,魔物背包最多存放10种不同的道具
+	
+	sy_mobloot_count					//道具种类数量
+	
+ 	@sy_mobloot_itemid[]				//itemID
+	@sy_mobloot_itemcount[]				//数量
+	@sy_mobloot_refine[]				//精炼值
+	@sy_mobloot_attribute[]				//损坏
+	@sy_mobloot_identify[]				//鉴定
+	@sy_mobloot_bound[]					//绑定
+	@sy_mobloot_enchantgrade[]			//评级
+	@sy_mobloot_expire_time[]			//过期时间戳
+	@sy_mobloot_unique_id[]				//唯一ID
+	@sy_mobloot_card1[]					//卡片1
+	@sy_mobloot_card2[]					//卡片2
+	@sy_mobloot_card3[]					//卡片3
+	@sy_mobloot_card4[]					//卡片4
+	@sy_mobloot_option1_id[]			//词条ID1
+	@sy_mobloot_option2_id[]			//词条ID2
+	@sy_mobloot_option3_id[]			//词条ID3
+	@sy_mobloot_option4_id[]			//词条ID4
+	@sy_mobloot_option5_id[]			//词条ID5
+	@sy_mobloot_option1_value[]			//词条值1
+	@sy_mobloot_option2_value[]			//词条值2
+	@sy_mobloot_option3_value[]			//词条值3
+	@sy_mobloot_option4_value[]			//词条值4
+	@sy_mobloot_option5_value[]			//词条值5
+	@sy_mobloot_option1_param[]			//词条参数1
+	@sy_mobloot_option2_param[]			//词条参数2
+	@sy_mobloot_option3_param[]			//词条参数3
+	@sy_mobloot_option4_param[]			//词条参数4
+	@sy_mobloot_option5_param[]			//词条参数5
+--------------------------------------------------------------------------------
+*setmoblootitems <mob_gid>,<itemID>,<数量>{,<精炼值>,<鉴定>,<绑定>,<评级>,<过期时间戳>,<卡片1>,<卡片2>,<卡片3>,<卡片4>,<词条ID数组>,<词条值数组>,<词条参数数组>};
+	向魔物背包加入道具
+	加入的道具如果是可叠加的将会自动叠加
+	不可叠加的道具讲占用1个新的格子
+	默认魔物背包格子上限是10
+
+	添加数量可以是负数,从魔物背包内删除
+		附加参数有就判断是否相同，省略默认为相同
+		例如魔物背包中只有1个角色绑定的+10长剑
+			删除1个长剑					sy_setmoblootitems .@gid,1101,-1;
+			删除1个+10长剑				sy_setmoblootitems .@gid,1101,-1,10;
+			删除1个+10角色绑定长剑		sy_setmoblootitems .@gid,1101,-1,10,1,Bound_Char;
+			3种方式都会成功删除角色绑定的+10长剑
+			条件越多删除的越精确
+			如果有多个相同ID的道具，将删除匹配的第一道具
+			
+	超过10个时删除延用拾取规则，删除第一个格子(最先加入)的道具
+	魔物背包的道具会在魔物死亡后掉出来
+	返回: 返回修改后道具数量，失败返回-1
+			取消了是否损坏的参数，感觉很难会用上
+	注意：如果魔物有拾取行为,极端情况下,魔物拾取的时候,可能会造成背包道具信息变动
+		
+			官方默认魔物拾取的所有道具都不可叠加
+			本函数添加的道具叠加。
+---------------------------------------------------------------------------------------
