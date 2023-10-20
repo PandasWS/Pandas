@@ -6458,7 +6458,7 @@ bool pc_dropitem(map_session_data *sd,int n,int amount)
 	}
 
 #ifndef Pandas_Fix_Item_Trade_FloorDropable
-	if (!map_addflooritem(&sd->inventory.u.items_inventory[n], amount, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 2, 0))
+	if (!map_addflooritem(&sd->inventory.u.items_inventory[n], amount, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 2|4, 0))
 		return false;
 #else
 	if (!map_addflooritem(&sd->inventory.u.items_inventory[n], amount, sd->bl.m, sd->bl.x, sd->bl.y, 0, 0, 0, 2, 0, false, sd))
