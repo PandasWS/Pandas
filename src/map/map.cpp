@@ -1965,34 +1965,15 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
  * @param canShowEffect: enable pillar effect on the dropped item (if set in the database)
  * @return 0:failure, x:item_gid [MIN_FLOORITEM;MAX_FLOORITEM]==[2;START_ACCOUNT_NUM]
  *------------------------------------------*/
-#ifndef Pandas_Fix_Item_Trade_FloorDropable
 int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect)
-#else
-int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id, bool canShowEffect, map_session_data *sd)
-#endif // Pandas_Fix_Item_Trade_FloorDropable
 {
 	int r;
 	struct flooritem_data *fitem = NULL;
 
 	nullpo_ret(item);
 
-#ifndef Pandas_Fix_Item_Trade_FloorDropable
 	if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid).trade))
 		return 0; //can't be dropped
-#else
-	if (sd) {
-		// 这里 Pandas 做了修改, 为 map_addflooritem 拓展增加了 sd 参数,
-		// 正常情况下 rAthena 调用 map_addflooritem 时都不会携带 sd (此时 sd 参数为空指针),
-		// 若 sd 不是空指针, 那么说明需要走 “基于 GM 等级判断” 的可否掉落检测 [Sola丶小克]
-		if (!(flags&4) && battle_config.item_onfloor && !itemdb_isdropable(item, pc_get_group_level(sd)))
-			return 0; //can't be dropped
-	}
-	else {
-		// 若没有携带 sd 参数或 sd 参数为空指针, 那么走 rAthena 的默认检测流程
-		if (!(flags&4) && battle_config.item_onfloor && (itemdb_traderight(item->nameid).trade))
-			return 0; //can't be dropped
-	}
-#endif // Pandas_Fix_Item_Trade_FloorDropable
 
 	if (!map_searchrandfreecell(m,&x,&y,flags&2?1:0))
 		return 0;
