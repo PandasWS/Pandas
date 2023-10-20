@@ -838,9 +838,6 @@
 	// 例如: "凯撒"中的"凯"字, "聽風"中的"聽"字等
 	#define Pandas_Fix_Chinese_Character_Trimmed
 
-	// 修复 item_trade 中限制物品掉落后, 权限足够的 GM 也无法绕过限制的问题 [Sola丶小克]
-	#define Pandas_Fix_Item_Trade_FloorDropable
-
 	// 修正使用 duplicate 或 copynpc 复制商店类型的 NPC 时, 由于没有完整的复制出售的商品列表, 
 	// 导致使用 npcshop* 系列指令调整复制后的商店内容时, 原商店的内容也会同步受到影响的问题. 
 	// 目前根据各位脚本大神的反馈, 更希望各个商店 NPC 的商品列表内容是各自独立的 [Sola丶小克]
