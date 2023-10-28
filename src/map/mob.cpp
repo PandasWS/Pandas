@@ -4673,6 +4673,27 @@ s_mob_db::s_mob_db()
 	status.amotion = cap_value(0, battle_config.monster_max_aspd, 2000);
 	status.mode = static_cast<e_mode>(MONSTER_TYPE_06);
 
+#ifdef Pandas_BattleConfig_MobDB_DamageMotion_Min
+	if (battle_config.mob_default_damagemotion) {
+		uint16 speed = battle_config.mob_default_damagemotion;
+
+		if (battle_config.monster_damage_delay_rate != 100)
+			speed = speed * battle_config.monster_damage_delay_rate / 100;
+
+		status.dmotion = speed;
+
+		if (battle_config.mob_default_damagemotion == 1 &&
+			battle_config.monster_damage_delay_rate < 100 && speed == 0) {
+			// 避免在 mob_default_damagemotion 设置为 1 且 monster_damage_delay_rate 在小于 100 的时候,
+			// 值会被修正成了 0 从而导致客户端跳过播放受伤动画的问题
+			status.dmotion = 1;
+		}
+	}
+	else {
+		status.dmotion = 0;
+	}
+#endif // Pandas_BattleConfig_MobDB_DamageMotion_Min
+
 	vd.class_ = id;
 }
 
