@@ -5,7 +5,7 @@
 #include "showmsg.hpp"
 
 #ifdef Pandas_Console_Translate
-#include "../common/translate.hpp"
+#include <common/translate.hpp>
 #define strcat(a, b) ::strcat(a, translate(b).c_str())
 #endif // Pandas_Console_Translate
 

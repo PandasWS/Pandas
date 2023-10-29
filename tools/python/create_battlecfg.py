@@ -11,7 +11,7 @@
 //= 1.0 首个版本. [Sola丶小克]
 //============================================================
 
-// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
+// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1 / 11>
 pandas.hpp @ 宏定义
 
 // PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
@@ -20,7 +20,7 @@ battle.hpp @ 战斗配置选项的变量声明
 // PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 battle.cpp @ 战斗配置选项的关联和默认值配置
 
-// PYHELP - BATTLECONFIG - INSERT POINT - <Section 4>
+// PYHELP - BATTLECONFIG - INSERT POINT - <Section 4 / 14>
 pandas.conf @ 战斗配置选项的默认添加位置
 '''
 
@@ -34,6 +34,9 @@ from enum import IntEnum
 
 from libs import Common, Injecter, Inputer, Message
 
+# 工程文件的主目录相对此脚本文件的位置
+project_slndir = '../../'
+slndir_path = os.path.abspath(project_slndir)
 
 class InjectPoint(IntEnum):
     PANDAS_SWITCH_DEFINE = 1
@@ -183,6 +186,7 @@ def main():
     Common.welcome('战斗配置选项添加助手')
 
     options = {
+        'is_pro' : Common.is_commercial_ver(slndir_path),
         'source_dirs' : ['../../src', '../../conf/battle'],
         'process_exts' : ['.hpp', '.cpp', '.conf'],
         'mark_format' : r'// PYHELP - BATTLECONFIG - INSERT POINT - <Section (\d{1,2})>',
@@ -190,7 +194,8 @@ def main():
         'mark_configure' : [
             {
                 'id' : InjectPoint.PANDAS_SWITCH_DEFINE,
-                'desc' : 'pandas.hpp @ 宏定义'
+                'desc' : 'pandas.hpp @ 宏定义',
+                'pro_offset' : 10
             },
             {
                 'id' : InjectPoint.BATTLE_VAR_DEFINE,
@@ -202,7 +207,8 @@ def main():
             },
             {
                 'id' : InjectPoint.PANDAS_CONF_INSERT,
-                'desc' : 'pandas.conf @ 战斗配置选项的默认添加位置'
+                'desc' : 'pandas.conf @ 战斗配置选项的默认添加位置',
+                'pro_offset' : 10
             }
         ]
     }

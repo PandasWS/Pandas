@@ -6,9 +6,9 @@
 
 #include <bitset>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/mmo.hpp"
-#include "../config/core.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/mmo.hpp>
+#include <config/core.hpp>
 
 #include "map.hpp" //ELE_MAX
 #include "skill.hpp"
@@ -564,6 +564,9 @@ struct Battle_Config
 	int update_enemy_position;
 	int devotion_rdamage;
 	int feature_itemlink;
+	int feature_mesitemlink;
+	int feature_mesitemlink_brackets;
+	int feature_mesitemlink_dbname;
 
 	// autotrade persistency
 	int feature_autotrade;
@@ -726,6 +729,8 @@ struct Battle_Config
 	int mob_respawn_time;
 
 	int feature_stylist;
+	int feature_banking_state_enforce;
+	int instance_allow_reconnect;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
@@ -816,7 +821,7 @@ struct Battle_Config
 	int mob_setunitdata_persistence;		// 是否高优先级持久化保存 setunitdata 对魔物的设置
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
-#include "../custom/battle_config_struct.inc"
+#include <custom/battle_config_struct.inc>
 };
 
 extern struct Battle_Config battle_config;

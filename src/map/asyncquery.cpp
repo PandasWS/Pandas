@@ -3,9 +3,9 @@
 #include "map.hpp"
 #include "log.hpp"
 
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/future.hpp"
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/future.hpp>
 
 #include <thread>
 
@@ -130,7 +130,7 @@ void doQuery(dbJob& job) {
 
 // DB Thread Function
 void db_runtime(void) {
-	while (global_core->get_status() != e_core_status::SERVER_FINALIZING) {
+	while (global_core->is_running()) {
 		// 此线程函数每 50 毫秒执行一次 dbJobs.Run 方法
 		this_thread::sleep_for(chrono::milliseconds(50));
 

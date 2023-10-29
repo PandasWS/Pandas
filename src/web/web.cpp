@@ -9,21 +9,21 @@
 #include <string>
 #include <thread>
 
-#include "../common/cli.hpp"
-#include "../common/core.hpp"
-#include "../common/malloc.hpp"
-#include "../common/md5calc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/msg_conf.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp" //ip2str
-#include "../common/sql.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
-#include "../config/core.hpp"
+#include <common/cli.hpp>
+#include <common/core.hpp>
+#include <common/malloc.hpp>
+#include <common/md5calc.hpp>
+#include <common/mmo.hpp>
+#include <common/msg_conf.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp> //ip2str
+#include <common/sql.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
+#include <config/core.hpp>
 
 #include "charconfig_controller.hpp"
 #include "emblem_controller.hpp"
@@ -418,6 +418,9 @@ int web_sql_close(void)
  *  dealloc..., function called at exit of the web-server
  */
 void WebServer::finalize(){
+#ifdef Pandas_UserExperience_Linux_Ctrl_C_WarpLine
+	printf("\n");
+#endif // Pandas_UserExperience_Linux_Ctrl_C_WarpLine
 	ShowStatus("Terminating...\n");
 #ifdef WEB_SERVER_ENABLE
 	http_server->stop();

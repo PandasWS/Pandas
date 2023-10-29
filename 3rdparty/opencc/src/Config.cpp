@@ -20,7 +20,7 @@
 #include <list>
 #include <unordered_map>
 
-#include "document.h"
+#include <rapidjson/document.h>
 
 #include "Config.hpp"
 #include "ConversionChain.hpp"
@@ -105,7 +105,8 @@ public:
   DictPtr LoadDictFromFile(const std::string& type,
                            const std::string& fileName) {
     if (type == "text") {
-      return LoadDictWithPaths<TextDict>(fileName);
+      DictPtr dict = LoadDictWithPaths<TextDict>(fileName);
+      return MarisaDict::NewFromDict(*dict.get());
     }
 #ifdef ENABLE_DARTS
     if (type == "ocd") {
@@ -254,10 +255,14 @@ ConverterPtr Config::NewFromString(const std::string& json,
   }
 
   ConfigInternal* impl = (ConfigInternal*)internal;
-  if (configDirectory.back() == '/' || configDirectory.back() == '\\')
-    impl->configDirectory = configDirectory;
-  else
-    impl->configDirectory = configDirectory + '/';
+  if (!configDirectory.empty()) {
+    if (configDirectory.back() == '/' || configDirectory.back() == '\\')
+      impl->configDirectory = configDirectory;
+    else
+      impl->configDirectory = configDirectory + '/';
+  } else {
+    impl->configDirectory.clear();
+  }
 
   // Required: segmentation
   SegmentationPtr segmentation =

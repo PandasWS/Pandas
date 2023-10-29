@@ -35,7 +35,7 @@ project( Pandas )
 if( CYGWIN )
 	unset( WIN32 )
 endif()
-set(CMAKE_CXX_STANDARD 11) # C++11...
+set(CMAKE_CXX_STANDARD 17) # C++17...
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 #set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
 
@@ -118,8 +118,8 @@ if( NOT WIN32 )
 			message(FATAL_ERROR "GCC version must be at least 8.0 !")
 		endif()
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
-			message(FATAL_ERROR "Clang version must be at least 6.0 !")
+		if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
+			message(FATAL_ERROR "Clang version must be at least 7.0 !")
 		endif()
 	endif()
 endif()
@@ -146,6 +146,14 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC)
   set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -fno-strict-aliasing" )
   #set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -O2" ); #need more test to enable this
+endif()
+
+
+#
+# Disable some warnings for Clang compiler
+#
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -Wno-register" )
 endif()
 
 
@@ -258,26 +266,6 @@ endif()
 message( STATUS "Detecting dynamic loading library (dl) - done" )
 endif()
 
-#
-# Boost C++ libraries
-#
-set( Boost_NO_SYSTEM_PATHS ON ) # 不搜索系统自带的 Boost 库
-set( Boost_USE_STATIC_LIBS ON ) # 使用静态库
-set( Boost_USE_MULTITHREADED ON ) # 使用多线程(MT)
-set( Boost_USE_STATIC_RUNTIME OFF ) # 不使用 runtime 静态库
-set( BOOST_ROOT 3rdparty/boost ) # 从指定的位置搜索 Boost 库
-
-# 寻找名为 Boost 的库, 要求携带指定的多个组件, 失败则报错
-find_package(Boost COMPONENTS regex locale filesystem date_time REQUIRED)
-
-# 如果成功找到 Boost 库, 那么进行相关的设置操作
-if( Boost_FOUND )
-	# 将 ${Boost_INCLUDE_DIRS} 放到 ${GLOBAL_INCLUDE_DIRS} 中去
-	set_property( CACHE GLOBAL_INCLUDE_DIRS  PROPERTY VALUE ${GLOBAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
-
-	# 将 ${Boost_LIBRARIES} 放到 ${GLOBAL_LIBRARIES} 中去
-	set_property( CACHE GLOBAL_LIBRARIES  PROPERTY VALUE ${GLOBAL_LIBRARIES} ${Boost_LIBRARIES} )
-endif()
 
 #
 # networking library (Solaris/MinGW)
@@ -383,6 +371,17 @@ endif()
 
 
 #
+# Enable EPOLL (default=OFF)
+# Only for Linux
+#
+option( ENABLE_EXTRA_SOCKET_POLL "enable SOCKET_EPOLL (default=OFF)" OFF )
+if( ENABLE_EXTRA_SOCKET_POLL )
+	set_property( CACHE GLOBAL_DEFINITIONS  PROPERTY VALUE "${GLOBAL_DEFINITIONS} -DSOCKET_EPOLL" )
+	message( STATUS "Enabled SOCKET_EPOLL" )
+endif()
+
+
+#
 # Enable builtin memory manager (default=default)
 #
 set( MEMMGR_OPTIONS "default;yes;no" )
@@ -451,6 +450,16 @@ elseif( ENABLE_MEMORY STREQUAL "gcollect" )
 
 else()
 	message( FATAL_ERROR "invalid option ENABLE_MEMORY=${ENABLE_MEMORY} (valid options: ${MEMORY_OPTIONS})" )
+endif()
+
+
+#
+# Enable filesystem library for GCC < 9
+#
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+        set_property( CACHE GLOBAL_LIBRARIES PROPERTY VALUE ${GLOBAL_LIBRARIES} stdc++fs )
+    endif()
 endif()
 
 

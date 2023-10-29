@@ -20,38 +20,40 @@
 #include <ryml_std.hpp>
 #include <ryml.hpp>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/core.hpp"
-#include "../common/malloc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/core.hpp>
+#include <common/malloc.hpp>
+#include <common/mmo.hpp>
+#include <common/nullpo.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 #ifdef WIN32
-#include "../common/winapi.hpp"
+#include <common/winapi.hpp>
 #endif
 
 // Only for constants - do not use functions of it or linking will fail
-#include "../map/achievement.hpp"
-#include "../map/battle.hpp"
-#include "../map/battleground.hpp"
-#include "../map/cashshop.hpp"
-#include "../map/channel.hpp"
-#include "../map/chat.hpp"
-#include "../map/date.hpp"
-#include "../map/elemental.hpp"
-#include "../map/instance.hpp"
-#include "../map/mercenary.hpp"
-#include "../map/mob.hpp"
-#include "../map/npc.hpp"
-#include "../map/pc.hpp"
-#include "../map/pet.hpp"
-#include "../map/quest.hpp"
-#include "../map/script.hpp"
-#include "../map/skill.hpp"
-#include "../map/storage.hpp"
+#define ONLY_CONSTANTS
+#include <map/achievement.hpp>
+#include <map/battle.hpp>
+#include <map/battleground.hpp>
+#include <map/cashshop.hpp>
+#include <map/channel.hpp>
+#include <map/chat.hpp>
+#include <map/date.hpp>
+#include <map/elemental.hpp>
+#include <map/homunculus.hpp>
+#include <map/instance.hpp>
+#include <map/mercenary.hpp>
+#include <map/mob.hpp>
+#include <map/npc.hpp>
+#include <map/pc.hpp>
+#include <map/pet.hpp>
+#include <map/quest.hpp>
+#include <map/script.hpp>
+#include <map/skill.hpp>
+#include <map/storage.hpp>
 
 using namespace rathena;
 using namespace rathena::server_core;
@@ -157,7 +159,11 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 	for( const std::string& path : paths ){
 		const std::string name_ext = name + ".yml";
 		const std::string from = path + name_ext;
+#ifndef Pandas_UserExperience_Yaml2Sql_SaveFile_Location
 		const std::string to = "sql-files/" + to_table + ".sql";
+#else
+		std::string to = "sql-files/" + to_table + ".sql";
+#endif // Pandas_UserExperience_Yaml2Sql_SaveFile_Location
 
 		if( fileExists( from ) ){
 #ifndef CONVERT_ALL
@@ -167,6 +173,49 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 #else
 			ShowMessage("Found the file \"%s\", converting from yml to sql.\n", from.c_str());
 #endif
+
+#ifdef Pandas_UserExperience_Yaml2Sql_SaveFile_Location
+#ifdef RENEWAL
+			const std::string mode = "renewal";
+#else
+			const std::string mode = "pre-renewal";
+#endif // RENEWAL
+
+			if (!fileExists("src/config/pandas.hpp")) {
+				std::unordered_map<std::string, const char*> relocation;
+
+				relocation["item_db_re_equip"] = "03";
+				relocation["item_db_re_etc"] = "04";
+				relocation["item_db_re_usable"] = "05";
+				relocation["mob_db_re"] = "06";
+				relocation["mob_db2_re"] = "07";
+
+				relocation["item_db_equip"] = "03";
+				relocation["item_db_etc"] = "04";
+				relocation["item_db_usable"] = "05";
+				relocation["mob_db"] = "06";
+				relocation["mob_db2"] = "07";
+
+				// 当 to_table 存在于字典中的时候, 对输出的目录进行额外处理
+				if (relocation.find(to_table) != relocation.end()) {
+					to = "sql-files/main/creation/use_sql_db/" + mode + "/" + relocation[to_table] + "." + to_table + ".sql";
+				}
+
+				// 读取当前程序所在路径
+				std::string current_path;
+				if (getExecuteFileDirectory(current_path)) {
+
+					// 将当前目录与 to 组装成绝对路径
+					std::string absolute_path = current_path + to;
+
+					// 标准化路径分隔符
+					standardizePathSep(absolute_path);
+
+					// 确保文件的对应目录存在
+					ensureDirectories(absolute_path);
+				}
+			}
+#endif // Pandas_UserExperience_Yaml2Sql_SaveFile_Location
 
 #ifdef Pandas_UserExperience_Yaml2Sql_AskConfirmation_Order
 #ifndef CONVERT_ALL
@@ -215,13 +264,6 @@ bool process( const std::string& type, uint32 version, const std::vector<std::st
 
 			prepareHeader(outFile, table.compare(to_table) == 0 ? table : to_table);
 
-#ifdef Pandas_Fix_Yaml2Sql_NoBodyNode_Break
-			if (!inNode["Body"].IsDefined()) {
-				outFile.close();
-				return true;
-			}
-#endif // Pandas_Fix_Yaml2Sql_NoBodyNode_Break
-
 			if( !lambda( path, name_ext, table ) ){
 				outFile.close();
 				return false;
@@ -256,7 +298,7 @@ bool Yaml2SqlTool::initialize( int argc, char* argv[] ){
 	};
 
 	// Load constants
-	#include "../map/script_constants.hpp"
+	#include <map/script_constants.hpp>
 
 	for( const std::string& suffix : item_table_suffixes ){
 		if (!process("ITEM_DB", 1, { path_db_mode }, "item_db_" + suffix, item_table_name + "_" + suffix, item_table_name, [](const std::string& path, const std::string& name_ext, const std::string& table) -> bool {
@@ -975,8 +1017,15 @@ static bool mob_db_yaml2sql(const std::string &file, const std::string &table) {
 
 		outFile << "REPLACE INTO `" + table + "` (" + column + ") VALUES (" + value + ");\n";
 		entries++;
+
+#ifdef Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+		ShowStatus("Converting %" PRIdPTR " mobs in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", entries, file.c_str());
+#endif // Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
 	}
 
+#ifdef Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
+	ShowMessage(CL_CLL);
+#endif // Pandas_UserExperience_Yaml2Sql_LoadFile_Tips
 	ShowStatus("Done converting '" CL_WHITE "%zu" CL_RESET "' mobs in '" CL_WHITE "%s" CL_RESET "'.\n", entries, file.c_str());
 
 	return true;

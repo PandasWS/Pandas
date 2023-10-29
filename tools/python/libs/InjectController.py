@@ -15,6 +15,7 @@ class Injecter:
     def __init__(self, options):
         self.__options__ = options
         self.mark_dict = {}
+        self.is_pro = (False if 'is_pro' not in options else options['is_pro'])
 
         if not self.detect(self.__options__['source_dirs']):
             Message.ShowError('无法成功定位所有需要的代码注入点, 程序终止!')
@@ -79,9 +80,12 @@ class Injecter:
 
         bMarkPassed = True
         for configure in self.__options__['mark_configure']:
-            if str(int(configure['id'])) not in self.mark_dict:
+            mark_id = int(configure['id'])
+            if self.is_pro and ('pro_offset' in configure):
+                mark_id += int(configure['pro_offset'])
+            if str(mark_id) not in self.mark_dict:
                 Message.ShowError('无法定位代码注入点: {index} : {constant} : {desc}'.format(
-                    index = str(int(configure['id'])),
+                    index = str(mark_id),
                     constant = str(configure['id']),
                     desc = configure['desc']
                 ))
@@ -98,7 +102,15 @@ class Injecter:
             ))
 
     def insert(self, index, content):
-        mark = self.mark_dict[str(int(index))]
+        mark_id = int(index)
+        
+        if self.is_pro:
+            for configure in self.__options__['mark_configure']:
+                if int(configure['id']) == mark_id:
+                    if 'pro_offset' in configure:
+                        mark_id += int(configure['pro_offset'])
+        
+        mark = self.mark_dict[str(mark_id)]
         filepath = mark['filepath']
         insert_content = ('\n'.join(content)) + '\n'
 
@@ -112,7 +124,7 @@ class Injecter:
             wfile.writelines(filecontent)
 
         for mark_index, mark_value in self.mark_dict.items():
-            if mark_index == index:
+            if mark_index == mark_id:
                 continue
 
             if mark_value['filepath'].lower() != filepath.lower():

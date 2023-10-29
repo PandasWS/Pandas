@@ -8,16 +8,16 @@
 
 #include <stdlib.h>
 
-#include "../common/db.hpp"
-#include "../common/ers.hpp"
-#include "../common/malloc.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/db.hpp>
+#include <common/ers.hpp>
+#include <common/malloc.hpp>
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -629,13 +629,13 @@ int16 pet_get_card3_intimacy( int intimacy ){
 /**
  * Set the value of the pet's intimacy.
  * @param pd : pet requesting
- * @param value : new intimacy value
+ * @param value : new intimacy value. Will be bounded by PET_INTIMATE_NONE and PET_INTIMATE_MAX
  */
 void pet_set_intimate(struct pet_data *pd, int value)
 {
 	nullpo_retv(pd);
 
-	pd->pet.intimate = min(value, PET_INTIMATE_MAX);
+	pd->pet.intimate = cap_value(value, PET_INTIMATE_NONE, PET_INTIMATE_MAX);
 
 	map_session_data *sd = pd->master;
 
@@ -712,7 +712,7 @@ int pet_attackskill(struct pet_data *pd, int target_id)
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (pd && map_getmapflag(pd->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 0) & BL_PET) == BL_PET)
+		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 1) & BL_PET) == BL_PET)
 			return 0;
 	}
 #endif // Pandas_MapFlag_NoSkill2
@@ -870,7 +870,6 @@ static TIMER_FUNC(pet_hungry){
 		pet_set_intimate(pd, pd->pet.intimate + pet_db_ptr->hungry_intimacy_dec);
 
 		if( pd->pet.intimate <= PET_INTIMATE_NONE ) {
-			pet_set_intimate(pd, PET_INTIMATE_NONE);
 			pd->status.speed = pd->get_pet_walk_speed();
 		}
 
@@ -1032,7 +1031,9 @@ bool pet_data_init(map_session_data *sd, struct s_pet *pet)
 		return false;
 	}
 
-	sd->pd = pd = (struct pet_data *)aCalloc(1,sizeof(struct pet_data));
+	pd = (struct pet_data *)aCalloc(1,sizeof(struct pet_data));
+	new(pd) pet_data();
+	sd->pd = pd;
 	pd->bl.type = BL_PET;
 	pd->bl.id = npc_get_new_npc_id();
 
@@ -1517,7 +1518,7 @@ int pet_change_name_ack(map_session_data *sd, char* name, int flag)
 		return 0;
 	}
 
-	memcpy(pd->pet.name, name, NAME_LENGTH);
+	safestrncpy(pd->pet.name, name, NAME_LENGTH);
 	clif_name_area(&pd->bl);
 	pd->pet.rename_flag = 1;
 	clif_pet_equip_area(pd);
@@ -1662,7 +1663,6 @@ int pet_food(map_session_data *sd, struct pet_data *pd)
 	if (pd->pet.hungry > PET_HUNGRY_SATISFIED) {
 		pet_set_intimate(pd, pd->pet.intimate + pet_db_ptr->r_full);
 		if (pd->pet.intimate <= PET_INTIMATE_NONE) {
-			pet_set_intimate(pd, PET_INTIMATE_NONE);
 			pet_stop_attack(pd);
 			pd->status.speed = pd->get_pet_walk_speed();
 		}
@@ -1674,7 +1674,7 @@ int pet_food(map_session_data *sd, struct pet_data *pd)
 			k = pet_db_ptr->r_hungry;
 
 		if( pd->pet.hungry > PET_HUNGRY_NEUTRAL) {
-			k >>= 1;
+			k /= 2;
 			k = max(k, 1);
 		}
 
@@ -1797,7 +1797,7 @@ static int pet_ai_sub_hard(struct pet_data *pd, map_session_data *sd, t_tick tic
 		if (DIFF_TICK(tick, pd->ud.canmove_tick) < 0)
 			return 0; // Can't move yet.
 
-		pd->status.speed = (sd->battle_status.speed>>1);
+		pd->status.speed = (sd->battle_status.speed / 2);
 
 		if(pd->status.speed == 0)
 			pd->status.speed = 1;
@@ -2184,7 +2184,7 @@ TIMER_FUNC(pet_skill_support_timer){
 
 #ifdef Pandas_MapFlag_NoSkill2
 	if (pd && map_getmapflag(pd->bl.m, MF_NOSKILL2)) {
-		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 0) & BL_PET) == BL_PET)
+		if ((map_getmapflag_param(pd->bl.m, MF_NOSKILL2, 1) & BL_PET) == BL_PET)
 			return 1;
 	}
 #endif // Pandas_MapFlag_NoSkill2

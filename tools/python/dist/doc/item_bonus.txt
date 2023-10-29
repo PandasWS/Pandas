@@ -3,7 +3,7 @@
 //===== 维护人员 =============================================
 //= 熊猫模拟器开发团队 / 热心用户
 //===== 最后更新 =============================================
-//= 20220514 (不一定准)
+//= 20230720 (不一定准)
 //===== 文档描述 =============================================
 //= 本文中列出了模拟器所支持的全部 rAthena 官方效果调整器,
 //= 并尽可能的详细描述这些调整器的作用.
@@ -18,6 +18,8 @@
 //= 20220509 更新关于取最高值&叠加注解 [SSBoyz]
 //= 20220514 移除一些冗言赘字 [SSBoyz]
 //= 20220514 更新一些注解信息，使得更贴近现版本(yml)相关 [SSBoyz]
+//= 20230526 移除属性注解信息 ELE_RANDOM、ELE_ENDOWED 项目 [SSBoyz]
+//= 20230526 合并 rAthena EP17.2 Monster Race(mr) [SSBoyz]
 //============================================================
 //= 谢绝任何其他模拟器抄袭、借鉴, 部分复制此文件的译文,
 //= 未经许可进行以上操作的, 保留在官网、各大社区无限期公告鄙视的权利.
@@ -30,25 +32,26 @@
 * 状态效果 - Status effect (eff)
     Eff_Bleeding, Eff_Blind, Eff_Burning, Eff_Confusion, Eff_Crystalize, Eff_Curse, Eff_DPoison,
     Eff_Fear, Eff_Freeze, Eff_Poison, Eff_Silence, Eff_Sleep, Eff_Stone, Eff_Stun, Eff_Freezing,
-    Eff_Heat, Eff_Deepsleep
+    Eff_Heat, Eff_Deepsleep, Eff_WhiteImprison
 
-    Eff_Stone           //    石化(SC_STONEWAIT)        注: 无法回避/行动、MHP下降
-    Eff_Freeze          //    冰冻(SC_FREEZE)           注: 不可回避/行动、物理/魔法防御力减少
-    Eff_Stun            //    晕眩(SC_STUN)             注: 不可回避/行动
-    Eff_Sleep           //    睡眠(SC_SLEEP)            注: 不可回避/行动、暴击伤害几率增加
-    Eff_Poison          //    中毒(SC_POISON)           注: 视野变窄、物理防御力下降、每3秒MHP下降
-    Eff_Curse           //    诅咒(SC_CURSE)            注: 减少移动速度、物理攻击力、LUK 变为 0
-    Eff_Silence         //    沉默(SC_SILENCE)          注: 无法使用技能
-    Eff_Confusion       //    混乱(SC_CONFUSION)        注: 人物移动时，会随机移动。
-    Eff_Blind           //    漆黑(SC_BLIND)            注: 视野缩小、回避、完全回避减少
-    Eff_Bleeding        //    出血(SC_BLEEDING)         注: HP, SP 不能恢复、每10秒绘流失一定量的 HP
-    Eff_DPoison         //    猛毒(SC_DPOISON)          注: 抗毒属性减少、DEF减少、定期减少HP
-    Eff_Fear            //    恐怖(SC_FEAR)             注: 魔物无法移动 5 秒、玩家无法移动 2 秒
-    Eff_Burning         //    着火(SC_BURNING)          注: 2秒内法移动、命中率/回避率减少
-    Eff_Crystalize      //    晶化(SC_CRYSTALIZE)       注: 地属性状态、无法移动、使用道具与技能、MDEF减少、受到伤害时解除
-    Eff_Freezing        //    冰冻(SC_FREEZING)         注: 不可回避/行动、物理/魔法防御力减少
-    Eff_Heat            //    烫伤(SC_BURNT)            注: 受到火属性怪的伤害增加、对火属性抗性减少、周期性火属性伤害
-    Eff_Deepsleep       //    沉睡(SC_DEEPSLEEP)        注: 通常伤害的 1.5倍，每2秒可恢复一定量的 HP/SP
+    Eff_Stone           //    石化(SC_STONEWAIT)            注: 无法回避/行动、MHP下降
+    Eff_Freeze          //    冰冻(SC_FREEZE)               注: 不可回避/行动、物理/魔法防御力减少
+    Eff_Stun            //    晕眩(SC_STUN)                 注: 不可回避/行动
+    Eff_Sleep           //    睡眠(SC_SLEEP)                注: 不可回避/行动、暴击伤害几率增加
+    Eff_Poison          //    中毒(SC_POISON)               注: 视野变窄、物理防御力下降、每3秒MHP下降
+    Eff_Curse           //    诅咒(SC_CURSE)                注: 减少移动速度、物理攻击力、LUK 变为 0
+    Eff_Silence         //    沉默(SC_SILENCE)              注: 无法使用技能
+    Eff_Confusion       //    混乱(SC_CONFUSION)            注: 人物移动时，会随机移动。
+    Eff_Blind           //    漆黑(SC_BLIND)                注: 视野缩小、回避、完全回避减少
+    Eff_Bleeding        //    出血(SC_BLEEDING)             注: HP, SP 不能恢复、每10秒绘流失一定量的 HP
+    Eff_DPoison         //    猛毒(SC_DPOISON)              注: 抗毒属性减少、DEF减少、定期减少HP
+    Eff_Fear            //    恐怖(SC_FEAR)                 注: 魔物无法移动 5 秒、玩家无法移动 2 秒
+    Eff_Burning         //    着火(SC_BURNING)              注: 2秒内法移动、命中率/回避率减少
+    Eff_Crystalize      //    晶化(SC_CRYSTALIZE)           注: 地属性状态、无法移动、使用道具与技能、MDEF减少、受到伤害时解除
+    Eff_Freezing        //    冰冻(SC_FREEZING)             注: 不可回避/行动、物理/魔法防御力减少
+    Eff_Heat            //    烫伤(SC_BURNT)                注: 受到火属性怪的伤害增加、对火属性抗性减少、周期性火属性伤害
+    Eff_Deepsleep       //    沉睡(SC_DEEPSLEEP)            注: 通常伤害的 1.5倍，每2秒可恢复一定量的 HP/SP
+    Eff_WhiteImprison   //    白色监狱(SC_WHITEIMPRISON)    注: 无法移动、使用道具与技能、期间只能受到念属性和部分固定伤害
 
 * 属性 - Element (e)
     Ele_Dark, Ele_Earth, Ele_Fire, Ele_Ghost, Ele_Holy, Ele_Neutral, Ele_Poison,
@@ -66,8 +69,6 @@
     Ele_Undead          //    不死属性
     Ele_All             //    全部属性
     ELE_WEAPON          //    武器属性                  注: 当前武器属性
-    ELE_ENDOWED         //    状态属性                  注: 状态赋予属性(例如: 洒水祈福)
-    ELE_RANDOM          //    随机属性                  注: 攻击时随机赋予任意属性
 
 * 种族 - Race (r)
     RC_Angel, RC_Brute, RC_DemiHuman, RC_Demon, RC_Dragon, RC_Fish, RC_Formless,
@@ -93,7 +94,7 @@
     RC2_Treasure, RC2_BioLab, RC2_Manuk, RC2_Splendide, RC2_Scaraba, RC2_OGH_ATK_DEF, RC2_OGH_Hidden,
     RC2_Bio5_Swordman_Thief, RC2_Bio5_Acolyte_Merchant, RC2_Bio5_Mage_Archer, RC2_Bio5_MVP,
     RC2_Clocktower, RC2_Thanatos, RC2_Faceworm, RC2_Hearthunter, RC2_Rockridge, RC2_Werner_Lab,
-    RC2_Temple_Demon, RC2_Illusion_Vampire, RC2_Malangdo
+    RC2_Temple_Demon, RC2_Illusion_Vampire, RC2_Malangdo, RC2_EP172ALPHA, RC2_EP172BETA, RC2_EP172BATH
 
     RC2_Goblin                    //    哥布林
     RC2_Kobold                    //    犬妖
@@ -123,6 +124,9 @@
     RC2_Temple_Demon              //    魔神殿
     RC2_Illusion_Vampire          //    幻影调查团
     RC2_Malangdo                  //    绵绵岛
+    RC2_EP172ALPHA                //    EP17.2贤者遗产, Mob_db.yml 中 RaceGroups 标记 EP172ALPHA 系列
+    RC2_EP172BETA                 //    EP17.2贤者遗产, Mob_db.yml 中 RaceGroups 标记 EP172BETA 系列
+    RC2_EP172BATH                 //    EP17.2贤者遗产, Mob_db.yml 中 RaceGroups 标记 RC2_EP172BATH 系列
 
     注: 根据 mob_db.yml - RaceGroups 项目进行判别
 
@@ -162,19 +166,19 @@
     受影响的目标:
     ATF_SELF       = 触发的效果最终最用在自己身上
     ATF_TARGET     = 触发的效果最终最用在目标身上
-	(若不指定, 默认为: ATF_TARGET)
+    (若不指定, 默认为: ATF_TARGET)
     
     攻击距离标准:
     ATF_SHORT      = 近距离物理攻击
     ATF_LONG       = 远距离物理攻击
-	(若不指定, 默认为: BF_SHORT+BF_LONG)
+    (若不指定, 默认为: BF_SHORT+BF_LONG)
     
     技能/攻击类型标准:
     ATF_SKILL      = 使用物理 / 魔法技能触发(ATF_MAGIC|ATF_MISC)
     ATF_WEAPON     = 物理攻击 / 物理技能
     ATF_MAGIC      = 魔法攻击 / 魔法技能
     ATF_MISC       = 其他特殊攻击(例如: 猎鹰、陷井)
-	(若不指定, 默认为: ATF_WEAPON)
+    (若不指定, 默认为: ATF_WEAPON)
 
 * 其他类型的值 - Other values:
     技能(sk): 请参考 'db/(pre-)re/skill_db.yml' (提示: 可以使用技能编号和技能名称, 使用技能名称时需要用双引号括起来)
@@ -449,27 +453,34 @@ bonus3 bAddEff,eff,n,atf;               攻击时将有 n/100% 的几率在 atf 
 bonus4 bAddEff,eff,n,atf,t;             攻击时将有 n/100% 的几率在 atf 条件下生成 eff 状态, 持续 t 秒
 bonus3 bAddEffWhenHit,eff,n,atf;        受到攻击时将有 n/100% 的几率在 atf 条件下生成 eff 状态
 bonus4 bAddEffWhenHit,eff,n,atf,t;      受到攻击时将有 n/100% 的几率在 atf 条件下生成 eff 状态, 持续 t秒
-                                        参数 aft 为触发标准:
-                                            受影响的目标: (若不指定, 默认为: ATF_TARGET)
-                                            ATF_SELF   = 触发的效果最终最用在自己身上
-                                            ATF_TARGET = 触发的效果最终最用在攻击目标身上
+                                        -----------------------------------------
+                                        上述 4 个 bonus 的 aft 参数为触发标准:
+                                        -----------------------------------------
+										
+                                        受影响的目标: (若不指定, 默认为: ATF_TARGET)
+                                        - ATF_SELF   = 触发的效果最终最用在自己身上
+                                        - ATF_TARGET = 触发的效果最终最用在攻击目标身上
 
-                                            攻击距离标准: (若不指定, 默认为: BF_SHORT+BF_LONG)
-                                            ATF_SHORT  = 近距离攻击时触发
-                                            ATF_LONG   = 远距离攻击时触发
+                                        攻击距离标准: (若不指定, 默认为: BF_SHORT+BF_LONG)
+                                        - ATF_SHORT  = 近距离攻击时触发
+                                        - ATF_LONG   = 远距离攻击时触发
 
-                                            技能/攻击类型标准: (若不指定, 默认为: ATF_WEAPON)
-                                            ATF_SKILL  = 使用"技能"时触发
-                                            ATF_WEAPON = 使用物理攻击 / 物理伤害型技能时触发
-                                            ATF_MAGIC  = 使用魔法攻击 / 魔法伤害型技能时触发
-                                            ATF_MISC   = 使用其他特殊攻击时触发
+                                        技能/攻击类型标准: (若不指定, 默认为: ATF_WEAPON)
+                                        - ATF_SKILL  = 使用"技能"时触发
+                                        - ATF_WEAPON = 使用物理攻击 / 物理伤害型技能时触发
+                                        - ATF_MAGIC  = 使用魔法攻击 / 魔法伤害型技能时触发
+                                        - ATF_MISC   = 使用其他特殊攻击时触发
+                                        -----------------------------------------
 
 bonus3 bAddEffOnSkill,sk,eff,n;         n/100% 的几率在使用 sk 技能时, 可以使技能施放的目标单位生成 eff 状态
 bonus4 bAddEffOnSkill,sk,eff,n,atf;     n/100% 的几率在使用 sk 技能时, 可以使 atf 单位生成 eff 状态
 bonus5 bAddEffOnSkill,sk,eff,n,atf,t;   n/100% 的几率在使用 sk 技能时, 可以使 atf 单位生成 eff 状态, 持续 t 秒
-                                        参数 aft 为触发标准:
-                                            ATF_SELF   = 触发效果最终 - 在[自己]身上
-                                            ATF_TARGET = 触发效果最终 - 在[目标]身上
+                                        -----------------------------------------
+                                        上述 2 个 bonus 的 aft 参数为触发标准:
+                                        -----------------------------------------
+                                        - ATF_SELF   = 触发效果最终 - 在[自己]身上
+                                        - ATF_TARGET = 触发效果最终 - 在[目标]身上
+                                        -----------------------------------------
 
 bonus2 bComaClass,c,n;                  攻击 c 类别单位时, 有 n/100% 几率使对方[濒死状态]
 bonus2 bComaRace,r,n;                   攻击 r 种族单位时, 有 n/100% 几率使对方[濒死状态]
@@ -486,7 +497,7 @@ bonus2 bWeaponComaRace,r,n;             物理攻击 r 种族的单位时, 有 n
 提示:
   - 所有的自动咏唱效果调整器, 在默认情况下咏唱的技能都不会检查与目标的距离.
   - 若开启 conf/battle/battle.conf 文档中的 autospell_check_range 选项, 则会强制检查目标必须在技能的可施放范围内, 才会触发自动咏唱.
-  - 自动咏唱的效果调整器如果指定了施法目标, 那麽不会理会这个技能是自身技能还是辅助技能(inf = 4/16), 都会施加在指定的目标身上.
+  - 自动咏唱的效果调整器如果指定了施法目标, 那么不会理会这个技能是自身技能还是辅助技能(inf = 4/16), 都会施加在指定的目标身上.
 
 bonus3 bAutoSpell,sk,y,n;               攻击时有 n/10% 的几率自动咏唱 y 级技能 sk (支持技能名)
 bonus3 bAutoSpellWhenHit,sk,y,n;        被攻击时有 n/10% 的几率自动咏唱 y 级技能 sk (支持技能名)
@@ -585,8 +596,8 @@ bonus3 bAddClassDropItem,iid,c,n;        杀死 c 类别的魔物时, 将有 n/1
 bonus2 bAddMonsterDropItemGroup,ig,n;    杀死魔物时, 将有 n/100% 的几率得到 ig 物品群组中的 1 个物品
 bonus3 bAddMonsterDropItemGroup,ig,r,n;  杀死 r 种族的魔物时, 将有 n/100% 的几率得到 ig 物品群组中的 1 个物品
 bonus3 bAddClassDropItemGroup,ig,c,n;    杀死 c 类别的魔物时, 将有 n/100% 的几率得到 ig 物品群组中的 1 个物品
-                                         提示: 当参数 n 为负数的时候, 那麽概率公式将变成:
-                                               概率 = -n 乘以 (击杀的魔物等级/10)+1
+                                         提示: 当参数 n 为负数的时候, 那么机率公式将变成:
+                                               机率 = -n 乘以 (击杀的魔物等级/10)+1
                                          限制: 这些名称包含 DropItem 字样的效果调整器最多只能设置 10 个, 超过的将会被自动忽略.
 
 bonus2 bGetZenyNum,x,n;                  杀死魔物, 有 n% 几率掉落 1 ~ x Zeny    注: 同项目只取最高进行计算

@@ -9,19 +9,19 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/cli.hpp"
-#include "../common/malloc.hpp"
-#include "../common/mmo.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/socket.hpp"
-#include "../common/strlib.hpp"
-#include "../common/timer.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/cli.hpp>
+#include <common/malloc.hpp>
+#include <common/mmo.hpp>
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/socket.hpp>
+#include <common/strlib.hpp>
+#include <common/timer.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 
 #include "achievement.hpp"
 #include "battle.hpp"
@@ -839,7 +839,7 @@ ACMD_FUNC(who) {
 				}
 				default: {
 					struct party_data *p = party_search(pl_sd->status.party_id);
-					struct guild *g = pl_sd->guild;
+					auto &g = pl_sd->guild;
 
 					StringBuf_Printf(&buf, msg_txt(sd,343), pl_sd->status.name); // "Name: %s "
 					if (pc_get_group_id(pl_sd) > 0) // Player title, if exists
@@ -847,7 +847,7 @@ ACMD_FUNC(who) {
 					if (p != NULL)
 						StringBuf_Printf(&buf, msg_txt(sd,345), p->party.name); // " | Party: '%s'"
 					if (g != NULL)
-						StringBuf_Printf(&buf, msg_txt(sd,346), g->name); // " | Guild: '%s'"
+						StringBuf_Printf(&buf, msg_txt(sd,346), g->guild.name); // " | Guild: '%s'"
 					break;
 				}
 			}
@@ -891,7 +891,6 @@ ACMD_FUNC(whogm)
 	int level;
 	char match_text[CHAT_SIZE_MAX];
 	char player_name[NAME_LENGTH];
-	struct guild *g;
 	struct party_data *p;
 
 	nullpo_retr(-1, sd);
@@ -944,10 +943,10 @@ ACMD_FUNC(whogm)
 		clif_displaymessage(fd, atcmd_output);
 
 		p = party_search(pl_sd->status.party_id);
-		g = pl_sd->guild;
+		auto &g = pl_sd->guild;
 
 		sprintf(atcmd_output,msg_txt(sd,916),	// Party: '%s' | Guild: '%s'
-			p?p->party.name:msg_txt(sd,917), g?g->name:msg_txt(sd,917));	// None.
+			p?p->party.name:msg_txt(sd,917), g?g->guild.name:msg_txt(sd,917));	// None.
 
 		clif_displaymessage(fd, atcmd_output);
 		count++;
@@ -2412,6 +2411,18 @@ ACMD_FUNC(refine)
 		clif_displaymessage(fd, atcmd_output);
 		sprintf(atcmd_output, msg_txt(sd,1006), EQP_HEAD_MID); // %d: Mid Headgear
 		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1521), EQP_SHADOW_ARMOR); // %d: Shadow Armor
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1522), EQP_SHADOW_WEAPON); // %d: Shadow Weapon
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1523), EQP_SHADOW_SHIELD); // %d: Shadow Shield
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1524), EQP_SHADOW_SHOES); // %d: Shadow Shoes
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1525), EQP_SHADOW_ACC_R); // %d: Shadow Right Accessory
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1526), EQP_SHADOW_ACC_L); // %d: Shadow Left Accessory
+		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 
@@ -2834,12 +2845,12 @@ ACMD_FUNC(zeny)
 	}
 
 	if(zeny > 0){
-	    if((ret=pc_getzeny(sd,zeny,LOG_TYPE_COMMAND,NULL)) == 1)
+	    if((ret=pc_getzeny(sd,zeny,LOG_TYPE_COMMAND)) == 1)
 		clif_displaymessage(fd, msg_txt(sd,149)); // Unable to increase the number/value.
 	}
 	else {
 	    if( sd->status.zeny < -zeny ) zeny = -sd->status.zeny;
-	    if((ret=pc_payzeny(sd,-zeny,LOG_TYPE_COMMAND,NULL)) == 1)
+	    if((ret=pc_payzeny(sd,-zeny,LOG_TYPE_COMMAND)) == 1)
 		clif_displaymessage(fd, msg_txt(sd,41)); // Unable to decrease the number/value.
 	}
 	if(!ret) clif_displaymessage(fd, msg_txt(sd,176)); //ret=0 mean cmd success
@@ -3068,7 +3079,6 @@ ACMD_FUNC(trait_all) {
 ACMD_FUNC(guildlevelup) {
 	int level = 0;
 	short added_level;
-	struct guild *guild_info;
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message || sscanf(message, "%11d", &level) < 1 || level == 0) {
@@ -3076,7 +3086,9 @@ ACMD_FUNC(guildlevelup) {
 		return -1;
 	}
 
-	if (sd->status.guild_id <= 0 || (guild_info = sd->guild) == NULL) {
+	auto &guild_info = sd->guild;
+
+	if (sd->status.guild_id <= 0 || guild_info == nullptr) {
 		clif_displaymessage(fd, msg_txt(sd,43)); // You're not in a guild.
 		return -1;
 	}
@@ -3086,13 +3098,13 @@ ACMD_FUNC(guildlevelup) {
 	//}
 
 	added_level = (short)level;
-	if (level > 0 && (level > MAX_GUILDLEVEL || added_level > ((short)MAX_GUILDLEVEL - guild_info->guild_lv))) // fix positive overflow
-		added_level = (short)MAX_GUILDLEVEL - guild_info->guild_lv;
-	else if (level < 0 && (level < -MAX_GUILDLEVEL || added_level < (1 - guild_info->guild_lv))) // fix negative overflow
-		added_level = 1 - guild_info->guild_lv;
+	if (level > 0 && (level > MAX_GUILDLEVEL || added_level > ((short)MAX_GUILDLEVEL - guild_info->guild.guild_lv))) // fix positive overflow
+		added_level = (short)MAX_GUILDLEVEL - guild_info->guild.guild_lv;
+	else if (level < 0 && (level < -MAX_GUILDLEVEL || added_level < (1 - guild_info->guild.guild_lv))) // fix negative overflow
+		added_level = 1 - guild_info->guild.guild_lv;
 
 	if (added_level != 0) {
-		intif_guild_change_basicinfo(guild_info->guild_id, GBI_GUILDLV, &added_level, sizeof(added_level));
+		intif_guild_change_basicinfo(guild_info->guild.guild_id, GBI_GUILDLV, &added_level, sizeof(added_level));
 		clif_displaymessage(fd, msg_txt(sd,179)); // Guild level changed.
 	} else {
 		clif_displaymessage(fd, msg_txt(sd,45)); // Guild level change failed.
@@ -3874,12 +3886,10 @@ ACMD_FUNC(breakguild)
 	nullpo_retr(-1, sd);
 
 	if (sd->status.guild_id) { // Check if the player has a guild
-		struct guild *g;
-		g = sd->guild; // Search the guild
-		if (g) { // Check if guild was found
+		if (sd->guild) { // Check if guild was found
 			if (sd->state.gmaster_flag) { // Check if player is guild master
 				int ret = 0;
-				ret = guild_break(sd, g->name); // Break guild
+				ret = guild_break(sd, sd->guild->guild.name); // Break guild
 				if (ret) { // Check if anything went wrong
 					return 0; // Guild was broken
 				} else {
@@ -4104,7 +4114,6 @@ ACMD_FUNC(guildrecall)
 	struct s_mapiterator* iter;
 	int count;
 	char guild_name[NAME_LENGTH];
-	struct guild *g;
 	nullpo_retr(-1, sd);
 
 	memset(guild_name, '\0', sizeof(guild_name));
@@ -4120,9 +4129,8 @@ ACMD_FUNC(guildrecall)
 		return -1;
 	}
 
-	if ((g = guild_searchname(guild_name)) == NULL && // name first to avoid error when name begin with a number
-	    (g = guild_search(atoi(message))) == NULL)
-	{
+	auto g = guild_searchnameid(guild_name);
+	if (!g) {
 		clif_displaymessage(fd, msg_txt(sd,94)); // Incorrect name/ID, or no one from the guild is online.
 		return -1;
 	}
@@ -4132,7 +4140,7 @@ ACMD_FUNC(guildrecall)
 	iter = mapit_getallusers();
 	for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
 	{
-		if (sd->status.account_id != pl_sd->status.account_id && pl_sd->status.guild_id == g->guild_id)
+		if (sd->status.account_id != pl_sd->status.account_id && pl_sd->status.guild_id == g->guild.guild_id)
 		{
 			if (pc_get_group_level(pl_sd) > pc_get_group_level(sd) || (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y))
 				continue; // Skip GMs greater than you...             or chars already on the cell
@@ -4150,7 +4158,7 @@ ACMD_FUNC(guildrecall)
 	}
 	mapit_free(iter);
 
-	sprintf(atcmd_output, msg_txt(sd,93), g->name); // All online characters of the %s guild have been recalled to your position.
+	sprintf(atcmd_output, msg_txt(sd,93), g->guild.name); // All online characters of the %s guild have been recalled to your position.
 	clif_displaymessage(fd, atcmd_output);
 	if (count) {
 		sprintf(atcmd_output, msg_txt(sd,1033), count); // Because you are not authorized to warp from some maps, %d player(s) have not been recalled.
@@ -4273,7 +4281,7 @@ ACMD_FUNC(reload) {
 		clif_displaymessage(fd, msg_txt(sd,98)); // Monster database has been reloaded.
 	} else if (strstr(command, "skilldb") || strncmp(message, "skilldb", 4) == 0) {
 		skill_reload();
-		hom_reload_skill();
+		homunculus_db.reload();
 		clif_displaymessage(fd, msg_txt(sd,99)); // Skill database has been reloaded.
 	} else if (strstr(command, "atcommand") || strncmp(message, "atcommand", 4) == 0) {
 		atcommand_doload();
@@ -4531,7 +4539,7 @@ ACMD_FUNC(mapinfo) {
 	}
 
 	/* Skill damage adjustment info [Cydh] */
-	if (mapdata->flag[MF_SKILL_DAMAGE]) {
+	if (mapdata->getMapFlag(MF_SKILL_DAMAGE)) {
 		clif_displaymessage(fd,msg_txt(sd,1052)); // Skill Damage Adjustments:
 		sprintf(atcmd_output, msg_txt(sd, 1053), // > [Map] %d%%, %d%%, %d%%, %d%% | Caster:%d
 			mapdata->damage_adjust.rate[SKILLDMG_PC],
@@ -4606,6 +4614,10 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " NoGo |"); //
 	if (map_getmapflag(m_id, MF_NOMEMO))
 		strcat(atcmd_output, "  NoMemo |");
+	if (map_getmapflag(m_id, MF_PRIVATEAIRSHIP_SOURCE))
+		strcat(atcmd_output, " PrivateAirship_Source |");
+	if (map_getmapflag(m_id, MF_PRIVATEAIRSHIP_DESTINATION))
+		strcat(atcmd_output, " PrivateAirship_Destination |");
 	clif_displaymessage(fd, atcmd_output);
 
 	sprintf(atcmd_output, msg_txt(sd,1065),  // No Exp Penalty: %s | No Zeny Penalty: %s
@@ -4646,131 +4658,75 @@ ACMD_FUNC(mapinfo) {
 	clif_displaymessage(fd, atcmd_output);
 
 #ifdef Pandas_Mapflags
-	strcpy(atcmd_output,msg_txt_cn(sd,100)); // Pandas地图标记:
-#ifdef Pandas_MapFlag_NoAutoLoot
-	if (map_getmapflag(m_id, MF_NOAUTOLOOT))
-		strcat(atcmd_output, " NoAutoLoot |");
-#endif // Pandas_MapFlag_NoAutoLoot
-#ifdef Pandas_MapFlag_NoToken
-	if (map_getmapflag(m_id, MF_NOTOKEN))
-		strcat(atcmd_output, " NoToken |");
-#endif // Pandas_MapFlag_NoToken
-#ifdef Pandas_MapFlag_NoCapture
-	if (map_getmapflag(m_id, MF_NOCAPTURE))
-		strcat(atcmd_output, " NoCapture |");
-#endif // Pandas_MapFlag_NoCapture
-#ifdef Pandas_MapFlag_HideGuildInfo
-	if (map_getmapflag(m_id, MF_HIDEGUILDINFO))
-		strcat(atcmd_output, " HideGuildInfo |");
-#endif // Pandas_MapFlag_HideGuildInfo
-#ifdef Pandas_MapFlag_HidePartyInfo
-	if (map_getmapflag(m_id, MF_HIDEPARTYINFO))
-		strcat(atcmd_output, " HidePartyInfo |");
-#endif // Pandas_MapFlag_HidePartyInfo
-#ifdef Pandas_MapFlag_NoMail
-	if (map_getmapflag(m_id, MF_NOMAIL))
-		strcat(atcmd_output, " NoMail |");
-#endif // Pandas_MapFlag_NoMail
-#ifdef Pandas_MapFlag_NoPet
-	if (map_getmapflag(m_id, MF_NOPET))
-		strcat(atcmd_output, " NoPet |");
-#endif // Pandas_MapFlag_NoPet
-#ifdef Pandas_MapFlag_NoHomun
-	if (map_getmapflag(m_id, MF_NOHOMUN))
-		strcat(atcmd_output, " NoHomun |");
-#endif // Pandas_MapFlag_NoHomun
-#ifdef Pandas_MapFlag_NoMerc
-	if (map_getmapflag(m_id, MF_NOMERC))
-		strcat(atcmd_output, " NoMerc |");
-#endif // Pandas_MapFlag_NoMerc
-#ifdef Pandas_MapFlag_Mobinfo
-	if (map_getmapflag(m_id, MF_MOBINFO)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " Mobinfo: %d |", map_getmapflag_param(m_id, MF_MOBINFO, 0));
-		strcat(atcmd_output, mes);
+	std::string atcmd_output_str(msg_txt_cn(sd, 100)); // 熊猫地图标记:
+	for (const auto& it : mapflag_config) {
+		int args_count = it.second.args.size();
+
+		if (map_getmapflag(m_id, it.first)) {
+			if (args_count == 0) {
+				std::string temp_str = atcmd_output_str + " " + it.second.name + " |";
+
+				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
+				// 那么就可以直接使用 temp_str 的内容
+				if (temp_str.size() < CHAT_SIZE_MAX - 1) {
+					atcmd_output_str = temp_str;
+				}
+				else {
+					// 先将 atcmd_output_str 放到 atcmd_output 中
+					strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+					atcmd_output[sizeof(atcmd_output) - 1] = '\0';
+
+					// 调用 clif_displaymessage 进行一次数据发送
+					clif_displaymessage(fd, atcmd_output);
+
+					// 清空 atcmd_output_str 缓冲区中的内容
+					atcmd_output_str.clear();
+
+					// 然后再尝试进行拼接工作
+					atcmd_output_str = std::string(it.second.name) + " |";
+				}
+			}
+			else {
+				std::string args_mes;
+				// 使用索引遍历 it.second.args
+				for (int i = 0; i < args_count; i++) {
+					const char* unit = it.second.args[i].unit;
+					if (unit == nullptr) {
+						unit = "";
+					}
+					args_mes += std::to_string(map_getmapflag_param(m_id, it.first, i + 1)) + unit;
+					// 如果不是最后一个参数, 那么在其末尾追加分隔符
+					if (i != args_count - 1) {
+						args_mes += ", ";
+					}
+				}
+
+				std::string temp_str = atcmd_output_str + " " + it.second.name + ": " + args_mes + " |";
+
+				// 如果 temp_str 的长度加上现在 atcmd_output 的长度不超过 CHAT_SIZE_MAX - 1,
+				// 那么就可以直接使用 temp_str 的内容
+				if (temp_str.size() < CHAT_SIZE_MAX - 1) {
+					atcmd_output_str = temp_str;
+				}
+				else {
+					// 先将 atcmd_output_str 放到 atcmd_output 中
+					strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+					atcmd_output[sizeof(atcmd_output) - 1] = '\0';
+
+					// 调用 clif_displaymessage 进行一次数据发送
+					clif_displaymessage(fd, atcmd_output);
+
+					// 清空 atcmd_output_str 缓冲区中的内容
+					atcmd_output_str.clear();
+
+					// 然后再尝试进行拼接工作
+					atcmd_output_str = std::string(it.second.name) + ": " + args_mes + " |";
+				}
+			}
+		}
 	}
-#endif // Pandas_MapFlag_Mobinfo
-#ifdef Pandas_MapFlag_MobDroprate
-	if (map_getmapflag(m_id, MF_MOBDROPRATE)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MobDroprate: %d%% |", map_getmapflag_param(m_id, MF_MOBDROPRATE, 100));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MobDroprate
-#ifdef Pandas_MapFlag_MvpDroprate
-	if (map_getmapflag(m_id, MF_MVPDROPRATE)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MvpDroprate: %d%% |", map_getmapflag_param(m_id, MF_MVPDROPRATE, 100));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MvpDroprate
-#ifdef Pandas_MapFlag_MaxHeal
-	if (map_getmapflag(m_id, MF_MAXHEAL)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxHeal: %d |", map_getmapflag_param(m_id, MF_MAXHEAL, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxHeal
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-	if (map_getmapflag(m_id, MF_MAXDMG_SKILL)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxDmg_Skill: %d |", map_getmapflag_param(m_id, MF_MAXDMG_SKILL, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxDmg_Skill
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-	if (map_getmapflag(m_id, MF_MAXDMG_NORMAL)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxDmg_Normal: %d |", map_getmapflag_param(m_id, MF_MAXDMG_NORMAL, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxDmg_Normal
-#ifdef Pandas_MapFlag_NoSkill2
-	if (map_getmapflag(m_id, MF_NOSKILL2)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " NoSkill2: %d |", map_getmapflag_param(m_id, MF_NOSKILL2, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_NoSkill2
-#ifdef Pandas_MapFlag_NoAura
-	if (map_getmapflag(m_id, MF_NOAURA))
-		strcat(atcmd_output, " NoAura |");
-#endif // Pandas_MapFlag_NoAura
-#ifdef Pandas_MapFlag_MaxASPD
-	if (map_getmapflag(m_id, MF_MAXASPD)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " MaxASPD: %d |", map_getmapflag_param(m_id, MF_MAXASPD, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_MaxASPD
-#ifdef Pandas_MapFlag_NoSlave
-	if (map_getmapflag(m_id, MF_NOSLAVE))
-		strcat(atcmd_output, " NoSlave |");
-#endif // Pandas_MapFlag_NoSlave
-#ifdef Pandas_MapFlag_NoBank
-	if (map_getmapflag(m_id, MF_NOBANK))
-		strcat(atcmd_output, " NoBank |");
-#endif // Pandas_MapFlag_NoBank
-#ifdef Pandas_MapFlag_NoUseItem
-	if (map_getmapflag(m_id, MF_NOUSEITEM))
-		strcat(atcmd_output, " NoUseItem |");
-#endif // Pandas_MapFlag_NoUseItem
-#ifdef Pandas_MapFlag_HideDamage
-	if (map_getmapflag(m_id, MF_HIDEDAMAGE))
-		strcat(atcmd_output, " HideDamage |");
-#endif // Pandas_MapFlag_HideDamage
-#ifdef Pandas_MapFlag_NoAttack
-	if (map_getmapflag(m_id, MF_NOATTACK))
-		strcat(atcmd_output, " NoAttack |");
-#endif // Pandas_MapFlag_NoAttack
-#ifdef Pandas_MapFlag_NoAttack2
-	if (map_getmapflag(m_id, MF_NOATTACK2)) {
-		char mes[256] = { 0 };
-		snprintf(mes, sizeof(mes), " NoAttack2: %d |", map_getmapflag_param(m_id, MF_NOATTACK2, 0));
-		strcat(atcmd_output, mes);
-	}
-#endif // Pandas_MapFlag_NoAttack2
-	// PYHELP - MAPFLAG - INSERT POINT - <Section 8>
+	strncpy(atcmd_output, atcmd_output_str.c_str(), sizeof(atcmd_output) - 1);
+	atcmd_output[sizeof(atcmd_output) - 1] = '\0';
 	clif_displaymessage(fd, atcmd_output);
 #endif // Pandas_Mapflags
 
@@ -4795,9 +4751,6 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " Reset |");
 	if (map_getmapflag(m_id, MF_HIDEMOBHPBAR))
 		strcat(atcmd_output, " HideMobHPBar |");
-	clif_displaymessage(fd, atcmd_output);
-
-	strcpy(atcmd_output,msg_txt(sd,1051)); // Other Flags2:
 	if (map_getmapflag(m_id, MF_NOCOMMAND))
 		strcat(atcmd_output, " NoCommand |");
 	if (map_getmapflag(m_id, MF_NOBASEEXP))
@@ -4808,12 +4761,18 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " NoMobLoot |");
 	if (map_getmapflag(m_id, MF_NOMVPLOOT))
 		strcat(atcmd_output, " NoMVPLoot |");
+	if (map_getmapflag(m_id, MF_NORENEWALEXPPENALTY))
+		strcat(atcmd_output, " NoRenewalExpPenalty |");
+	if (map_getmapflag(m_id, MF_NORENEWALDROPPENALTY))
+		strcat(atcmd_output, " NoRenewalDropPenalty |");
 	if (map_getmapflag(m_id, MF_PARTYLOCK))
 		strcat(atcmd_output, " PartyLock |");
 	if (map_getmapflag(m_id, MF_GUILDLOCK))
 		strcat(atcmd_output, " GuildLock |");
 	if (map_getmapflag(m_id, MF_LOADEVENT))
 		strcat(atcmd_output, " Loadevent |");
+	if (map_getmapflag(m_id, MF_NODYNAMICNPC))
+		strcat(atcmd_output, " NoDynamicNPC |");
 	if (map_getmapflag(m_id, MF_NOMAPCHANNELAUTOJOIN))
 		strcat(atcmd_output, " NoMapChannelAutoJoin |");
 	if (map_getmapflag(m_id, MF_NOUSECART))
@@ -4830,6 +4789,14 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " NoTomb |");
 	if (map_getmapflag(m_id, MF_NOCOSTUME))
 		strcat(atcmd_output, " NoCostume |");
+	if (map_getmapflag(m_id, MF_NOBANK))
+		strcat(atcmd_output, " NoBank |");
+	if (map_getmapflag(m_id, MF_NOCASHSHOP))
+		strcat(atcmd_output, " NoCashShop |");
+	if (map_getmapflag(m_id, MF_NORODEX))
+		strcat(atcmd_output, " NoRODex |");
+	if (map_getmapflag(m_id, MF_NOPETCAPTURE))
+		strcat(atcmd_output, " NoPetCapture |");
 	clif_displaymessage(fd, atcmd_output);
 
 	switch (list) {
@@ -4992,7 +4959,6 @@ ACMD_FUNC(mount_peco)
 ACMD_FUNC(guildspy)
 {
 	char guild_name[NAME_LENGTH];
-	struct guild *g;
 	nullpo_retr(-1, sd);
 
 	memset(guild_name, '\0', sizeof(guild_name));
@@ -5008,20 +4974,20 @@ ACMD_FUNC(guildspy)
 		return -1;
 	}
 
-	if ((g = guild_searchname(guild_name)) != NULL || // name first to avoid error when name begin with a number
-	    (g = guild_search(atoi(message))) != NULL) {
-		if (sd->guildspy == g->guild_id) {
-			sd->guildspy = 0;
-			sprintf(atcmd_output, msg_txt(sd,103), g->name); // No longer spying on the %s guild.
-			clif_displaymessage(fd, atcmd_output);
-		} else {
-			sd->guildspy = g->guild_id;
-			sprintf(atcmd_output, msg_txt(sd,104), g->name); // Spying on the %s guild.
-			clif_displaymessage(fd, atcmd_output);
-		}
-	} else {
+	auto g = guild_searchnameid(guild_name);
+	if (!g) {
 		clif_displaymessage(fd, msg_txt(sd,94)); // Incorrect name/ID, or no one from the specified guild is online.
 		return -1;
+	}
+
+	if (sd->guildspy == g->guild.guild_id) {
+		sd->guildspy = 0;
+		sprintf(atcmd_output, msg_txt(sd,103), g->guild.name); // No longer spying on the %s guild.
+		clif_displaymessage(fd, atcmd_output);
+	} else {
+		sd->guildspy = g->guild.guild_id;
+		sprintf(atcmd_output, msg_txt(sd,104), g->guild.name); // Spying on the %s guild.
+		clif_displaymessage(fd, atcmd_output);
 	}
 
 	return 0;
@@ -5709,8 +5675,6 @@ ACMD_FUNC(disguiseguild)
 {
 	int id = 0, i;
 	char monster[NAME_LENGTH], guild[NAME_LENGTH];
-	
-	struct guild *g;
 
 	memset(monster, '\0', sizeof(monster));
 	memset(guild, '\0', sizeof(guild));
@@ -5736,14 +5700,15 @@ ACMD_FUNC(disguiseguild)
 		return -1;
 	}
 
-	if( (g = guild_searchname(guild)) == NULL && (g = guild_search(atoi(guild))) == NULL ) {
+	auto g = guild_searchnameid(guild);
+	if (!g) {
 		clif_displaymessage(fd, msg_txt(sd,94)); // Incorrect name/ID, or no one from the guild is online.
 		return -1;
 	}
 
-	for( i = 0; i < g->max_member; i++ ){
+	for( i = 0; i < g->guild.max_member; i++ ){
 		map_session_data *pl_sd;
-		if( (pl_sd = g->member[i].sd) && !pc_isriding(pl_sd) )
+		if( (pl_sd = g->guild.member[i].sd) && !pc_isriding(pl_sd) )
 			pc_disguise(pl_sd, id);
 	}
 
@@ -5795,7 +5760,6 @@ ACMD_FUNC(undisguiseall)
 ACMD_FUNC(undisguiseguild)
 {
 	char guild_name[NAME_LENGTH];
-	struct guild *g;
 	int i;
 	nullpo_retr(-1, sd);
 
@@ -5806,14 +5770,15 @@ ACMD_FUNC(undisguiseguild)
 		return -1;
 	}
 
-	if( (g = guild_searchname(guild_name)) == NULL && (g = guild_search(atoi(message))) == NULL ) {
+	auto g = guild_searchnameid(guild_name);
+	if (!g) {
 		clif_displaymessage(fd, msg_txt(sd,94)); // Incorrect name/ID, or no one from the guild is online.
 		return -1;
 	}
 
-	for(i = 0; i < g->max_member; i++){
+	for(i = 0; i < g->guild.max_member; i++){
 		map_session_data *pl_sd;
-		if( (pl_sd = g->member[i].sd) && pl_sd->disguise )
+		if( (pl_sd = g->guild.member[i].sd) && pl_sd->disguise )
 			pc_disguise(pl_sd, 0);
 	}
 
@@ -6231,13 +6196,10 @@ ACMD_FUNC(clearstorage)
 ACMD_FUNC(cleargstorage)
 {
 	int i, j;
-	struct guild *g;
 	struct s_storage *gstorage;
 	nullpo_retr(-1, sd);
 
-	g = sd->guild;
-
-	if (g == NULL) {
+	if (!sd->guild) {
 		clif_displaymessage(fd, msg_txt(sd,43)); // You're not in a guild.
 		return -1;
 	}
@@ -6710,13 +6672,12 @@ ACMD_FUNC(autotrade) {
  *------------------------------------------*/
 ACMD_FUNC(changegm)
 {
-	struct guild *g;
 	map_session_data *pl_sd;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
 
-	if (sd->status.guild_id == 0 || (g = sd->guild) == NULL || strcmp(g->master,sd->status.name)) {
+	if (sd->status.guild_id == 0 || sd->guild == NULL || strcmp(sd->guild->guild.master,sd->status.name)) {
 		clif_displaymessage(fd, msg_txt(sd,1181)); // You need to be a Guild Master to use this command.
 		return -1;
 	}
@@ -6745,7 +6706,7 @@ ACMD_FUNC(changegm)
 		return -1;
 	}
 
-	if( battle_config.guild_leaderchange_delay && DIFF_TICK(time(NULL),sd->guild->last_leader_change) < battle_config.guild_leaderchange_delay ){
+	if( battle_config.guild_leaderchange_delay && DIFF_TICK(time(NULL),sd->guild->guild.last_leader_change) < battle_config.guild_leaderchange_delay ){
 #if PACKETVER >= 20151001
 		clif_msg(sd, GUILD_MASTER_DELAY);
 #else
@@ -8375,7 +8336,7 @@ ACMD_FUNC(hominfo)
 ACMD_FUNC(homstats)
 {
 	struct homun_data *hd;
-	struct s_homunculus_db *db;
+	std::shared_ptr<s_homunculus_db> db;
 	struct s_homunculus *hom;
 	int lv, min, max, evo;
 
@@ -8824,7 +8785,6 @@ ACMD_FUNC(sizeguild)
 	int size = SZ_SMALL, i;
 	char guild[NAME_LENGTH];
 	map_session_data *pl_sd;
-	struct guild *g;
 	nullpo_retr(-1, sd);
 
 	memset(guild, '\0', sizeof(guild));
@@ -8834,15 +8794,16 @@ ACMD_FUNC(sizeguild)
 		return -1;
 	}
 
-	if( (g = guild_searchname(guild)) == NULL && (g = guild_search(atoi(guild))) == NULL ) {
+	auto g = guild_searchnameid(guild);
+	if (!g) {
 		clif_displaymessage(fd, msg_txt(sd,94)); // Incorrect name/ID, or no one from the guild is online.
 		return -1;
 	}
 
 	size = cap_value(size,SZ_SMALL,SZ_BIG);
 
-	for( i = 0; i < g->max_member; i++ ) {
-		if( (pl_sd = g->member[i].sd) && pl_sd->state.size != size ) {
+	for( i = 0; i < g->guild.max_member; i++ ) {
+		if( (pl_sd = g->guild.member[i].sd) && pl_sd->state.size != size ) {
 			if( pl_sd->state.size ) {
 				pl_sd->state.size = SZ_SMALL;
 				pc_setpos(pl_sd, pl_sd->mapindex, pl_sd->bl.x, pl_sd->bl.y, CLR_TELEPORT);
@@ -8933,7 +8894,7 @@ ACMD_FUNC(mapflag) {
 		clif_displaymessage(sd->fd,msg_txt(sd,1311)); // Enabled Mapflags in this map:
 		clif_displaymessage(sd->fd,"----------------------------------");
 		for( i = MF_MIN; i < MF_MAX; i++ ){
-			union u_mapflag_args args = {};
+			pds_mapflag_args args = {};
 
 			if( map_getmapflag_name(static_cast<e_mapflag>(i), flag_name) && map_getmapflag_sub( sd->bl.m, static_cast<e_mapflag>(i), &args ) ){
 				clif_displaymessage(sd->fd, flag_name);
@@ -8963,43 +8924,15 @@ ACMD_FUNC(mapflag) {
 												MF_SKILL_DAMAGE,
 												MF_SKILL_DURATION };
 
-#ifdef Pandas_MapFlag_Mobinfo
-			disabled_mf.insert(disabled_mf.begin(), MF_MOBINFO);
-#endif // Pandas_MapFlag_Mobinfo
-
-#ifdef Pandas_MapFlag_MobDroprate
-			disabled_mf.insert(disabled_mf.begin(), MF_MOBDROPRATE);
-#endif // Pandas_MapFlag_MobDroprate
-
-#ifdef Pandas_MapFlag_MvpDroprate
-			disabled_mf.insert(disabled_mf.begin(), MF_MVPDROPRATE);
-#endif // Pandas_MapFlag_MvpDroprate
-
-#ifdef Pandas_MapFlag_MaxHeal
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXHEAL);
-#endif // Pandas_MapFlag_MaxHeal
-
-#ifdef Pandas_MapFlag_MaxDmg_Skill
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXDMG_SKILL);
-#endif // Pandas_MapFlag_MaxDmg_Skill
-
-#ifdef Pandas_MapFlag_MaxDmg_Normal
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXDMG_NORMAL);
-#endif // Pandas_MapFlag_MaxDmg_Normal
-
-#ifdef Pandas_MapFlag_NoSkill2
-			disabled_mf.insert(disabled_mf.begin(), MF_NOSKILL2);
-#endif // Pandas_MapFlag_NoSkill2
-
-#ifdef Pandas_MapFlag_MaxASPD
-			disabled_mf.insert(disabled_mf.begin(), MF_MAXASPD);
-#endif // Pandas_MapFlag_MaxASPD
-
-#ifdef Pandas_MapFlag_NoAttack2
-			disabled_mf.insert(disabled_mf.begin(), MF_NOATTACK2);
-#endif // Pandas_MapFlag_NoAttack2
-
-			// PYHELP - MAPFLAG - INSERT POINT - <Section 4>
+#ifdef Pandas_Mapflags
+			// 遍历 mapflag_config 地图标记配置,
+			// 将其中 block_atcmd 为 true 的 mapflag 加入 disabled_mf
+			for (const auto& it : mapflag_config) {
+				if (it.second.block_atcmd) {
+					disabled_mf.insert(disabled_mf.begin(), it.first);
+				}
+			}
+#endif // Pandas_Mapflags
 
 			if (flag > 0 && util::vector_exists(disabled_mf, mapflag)) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
@@ -11116,7 +11049,82 @@ ACMD_FUNC( roulette ){
 #endif
 }
 
-#include "../custom/atcommand.inc"
+/**
+ * Replaces a card ID in an equip
+ * Usage: @setcard <equip position> <slot> <card_id>
+ */
+ACMD_FUNC(setcard)
+{
+	nullpo_retr(-1, sd);
+
+	int position = 0, slot, card_id;
+
+	if (!message || !*message || sscanf(message, "%11d %11d %11d", &position, &slot, &card_id) < 3) {
+		memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+		clif_displaymessage(fd, msg_txt(sd,1527)); // Please enter the position, the slot number and the card ID (usage: @setcard <equip position> <slot> <card_id>).
+		sprintf(atcmd_output, msg_txt(sd,997), EQP_HEAD_LOW); // %d: Lower Headgear
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,998), EQP_HAND_R); // %d: Right Hand
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,999), EQP_GARMENT); // %d: Garment
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1000), EQP_ACC_L); // %d: Left Accessory
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1001), EQP_ARMOR); // %d: Body Armor
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1002), EQP_HAND_L); // %d: Left Hand
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1003), EQP_SHOES); // %d: Shoes
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1004), EQP_ACC_R); // %d: Right Accessory
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1005), EQP_HEAD_TOP); // %d: Top Headgear
+		clif_displaymessage(fd, atcmd_output);
+		sprintf(atcmd_output, msg_txt(sd,1006), EQP_HEAD_MID); // %d: Mid Headgear
+		return -1;
+	}
+	if (position < EQP_HEAD_LOW || position > EQP_HEAD_MID) {
+		clif_displaymessage(fd, msg_txt(sd,1531)); // Invalid position.
+		return -1;
+	}
+	if (slot < 0 || slot >= MAX_SLOTS) {
+		clif_displaymessage(fd, msg_txt(sd,1532)); // Invalid slot number.
+		return -1;
+	}
+	if (card_id != 0) {
+		std::shared_ptr<item_data> item_data = item_db.find( card_id );
+
+		if (item_data == nullptr) {
+			clif_displaymessage(fd, msg_txt(sd,1530)); // Invalid card ID.
+			return -1;
+		}
+		if (item_data->type != IT_CARD) {
+			clif_displaymessage(fd, msg_txt(sd,1529)); // The item type must be a card or enchant.
+			return -1;
+		}
+	}
+
+	int16 i = pc_checkequip(sd, position);
+
+	if (i < 0) {
+		clif_displaymessage(fd, msg_txt(sd,1528)); // You are not wearing any equipment in this position.
+		return -1;
+	}
+
+	int current_position = sd->inventory.u.items_inventory[i].equip;
+
+	pc_unequipitem(sd, i, 3);
+	log_pick_pc( sd, LOG_TYPE_COMMAND, -1, &sd->inventory.u.items_inventory[i] );
+	sd->inventory.u.items_inventory[i].card[slot] = card_id;
+	log_pick_pc( sd, LOG_TYPE_COMMAND, 1, &sd->inventory.u.items_inventory[i] );
+	clif_delitem(sd, i, 1, 0);
+	clif_additem(sd, i, 1, 0);
+	pc_equipitem(sd, i, current_position);
+	return 0;
+}
+
+#include <custom/atcommand.inc>
 
 #ifdef Pandas_AtCommand_RecallMap
 /* ===========================================================
@@ -11396,7 +11404,7 @@ void atcommand_basecommands(void) {
 #endif // Pandas_AtCommand_ReloadLaphineDB
 		// PYHELP - ATCMD - INSERT POINT - <Section 3>
 
-#include "../custom/atcommand_def.inc"
+#include <custom/atcommand_def.inc>
 		ACMD_DEF2R("warp", mapmove, ATCMD_NOCONSOLE),
 		ACMD_DEF(where),
 		ACMD_DEF(jumpto),
@@ -11711,6 +11719,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(addfame),
 		ACMD_DEFR(enchantgradeui, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(roulette, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
+		ACMD_DEF(setcard),
 	};
 	AtCommandInfo* atcommand;
 	int i;

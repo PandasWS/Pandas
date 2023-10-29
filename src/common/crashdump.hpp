@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../config/pandas.hpp"	// GIT_BRANCH, GIT_HASH
+#include <config/pandas.hpp>	// GIT_BRANCH, GIT_HASH
 
 #ifndef CRASHRPT_APPID
 	#define CRASHRPT_APPID ""

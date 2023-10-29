@@ -4,6 +4,7 @@
 #include "crashdump.hpp"
 
 #include <string> // std::string, std::wstring
+#include <fmt/core.h>
 
 #include "cryptopp.hpp"
 #include "assistant.hpp" // boost, makeDirectories, wstring2string
@@ -112,7 +113,7 @@ void breakpad_status() {
 void params_dosign(std::map<std::string, std::string> & params)
 {
 	std::string sign, token;
-	std::string timestamp = boost::str(boost::format("%1%") % time(NULL));
+	std::string timestamp = fmt::format("{}", time(NULL));
 
 	// 加入一个当前服务器的时间戳
 	params.insert(std::make_pair("timestamp", timestamp));
@@ -184,9 +185,8 @@ bool breakpad_callback(const wchar_t* dump_path, const wchar_t* minidump_id, voi
 	if (!succeeded) return succeeded;
 
 	// 崩溃转储文件的本地保存路径
-	std::string filepath = boost::str(
-		boost::format("%1%/%2%.dmp") %
-		wideStrToStr(dump_path) % wideStrToStr(minidump_id)
+	std::string filepath = fmt::format(
+		"{}/{}.dmp", wideStrToStr(dump_path), wideStrToStr(minidump_id)
 	);
 
 	// 将崩溃转储文件存入一个 std::map 中等待发送请求使用

@@ -1,7 +1,0 @@
-name: "CodeQL Python Config"
-
-paths:
-  - tools/python 
-# paths-ignore: 
-#   - src/node_modules
-#   - '**/*.test.js'

@@ -11,12 +11,12 @@
 #include <math.h>
 #include <unordered_map>
 
-#include "../common/nullpo.hpp"
-#include "../common/random.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/utils.hpp"
-#include "../common/utilities.hpp"
+#include <common/nullpo.hpp>
+#include <common/random.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/utils.hpp>
+#include <common/utilities.hpp>
 
 #include "battle.hpp" // struct battle_config
 #include "cashshop.hpp"
@@ -65,13 +65,13 @@ inline static void item_script_process(std::shared_ptr<item_data> item, e_script
 	switch (script_type)
 	{
 	case SCRIPT_TYPE_USED:
-		item->pandas.script_plaintext.script = strTrim(script);
+		item->pandas.script_plaintext.script = util::trim_copy(script);
 		break;
 	case SCRIPT_TYPE_EQUIP:
-		item->pandas.script_plaintext.equip_script = strTrim(script);
+		item->pandas.script_plaintext.equip_script = util::trim_copy(script);
 		break;
 	case SCRIPT_TYPE_UNEQUIP:
-		item->pandas.script_plaintext.unequip_script = strTrim(script);
+		item->pandas.script_plaintext.unequip_script = util::trim_copy(script);
 		break;
 	default:
 		break;
@@ -286,6 +286,8 @@ uint64 ItemDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			item->subtype = 0;
 	}
 
+	bool has_buy = false, has_sell = false;
+
 	if (this->nodeExists(node, "Buy")) {
 		uint32 buy;
 
@@ -297,6 +299,7 @@ uint64 ItemDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			buy = MAX_ZENY;
 		}
 
+		has_buy = true;
 		item->value_buy = buy;
 	} else {
 		if (!exists) {
@@ -315,12 +318,15 @@ uint64 ItemDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			sell = MAX_ZENY;
 		}
 
+		has_sell = true;
 		item->value_sell = sell;
 	} else {
 		if (!exists) {
 			item->value_sell = 0;
 		}
 	}
+
+	hasPriceValue[item->nameid] = { has_buy, has_sell };
 
 	if (this->nodeExists(node, "Weight")) {
 		uint32 weight;
@@ -1278,9 +1284,9 @@ void ItemDatabase::loadingFinished(){
 		}
 
 		// When a particular price is not given, we should base it off the other one
-		if (item->value_buy == 0 && item->value_sell > 0)
+		if (!hasPriceValue[item->nameid].has_buy && hasPriceValue[item->nameid].has_sell)
 			item->value_buy = item->value_sell * 2;
-		else if (item->value_buy > 0 && item->value_sell == 0)
+		else if (hasPriceValue[item->nameid].has_buy && !hasPriceValue[item->nameid].has_sell)
 			item->value_sell = item->value_buy / 2;
 
 		if (item->value_buy / 124. < item->value_sell / 75.) {
@@ -1311,6 +1317,7 @@ void ItemDatabase::loadingFinished(){
 	}
 
 	TypesafeCachedYamlDatabase::loadingFinished();
+	hasPriceValue.clear();
 }
 
 /**
@@ -1480,6 +1487,66 @@ std::string ItemDatabase::create_item_link(struct item& item) {
 	std::shared_ptr<item_data> data = this->find(item.nameid);
 
 	return this->create_item_link(item, data);
+}
+
+std::string ItemDatabase::create_item_link_for_mes( std::shared_ptr<item_data>& data, bool use_brackets, const char* name ){
+	if( data == nullptr ){
+		return "Unknown item";
+	}
+
+	std::string itemstr;
+
+// All these dates are unconfirmed
+#if PACKETVER >= 20100000
+	if( battle_config.feature_mesitemlink ){
+// It was changed in 2015-11-04, but Gravity actually broke the feature for this specific client, because they introduced the new itemlink feature [Lemongrass]
+// See the following github issues for more details:
+// * https://github.com/rathena/rathena/issues/1236
+// * https://github.com/rathena/rathena/issues/1873
+#if PACKETVER >= 20151104
+		const std::string start_tag = "<ITEM>";
+		const std::string closing_tag = "</ITEM>";
+#else
+		const std::string start_tag = "<ITEMLINK>";
+		const std::string closing_tag = "</ITEMLINK>";
+#endif
+
+		itemstr += start_tag;
+
+		if( use_brackets || battle_config.feature_mesitemlink_brackets ){
+			itemstr += "[";
+		}
+
+		if( name != nullptr && !battle_config.feature_mesitemlink_dbname ){
+			// Name was forcefully overwritten
+			itemstr += name;
+		}else{
+			// Use database name
+			itemstr += data->ename;
+		}
+
+		if( use_brackets || battle_config.feature_mesitemlink_brackets ){
+			itemstr += "]";
+		}
+
+		itemstr += "<INFO>";
+		itemstr += std::to_string( data->nameid );
+		itemstr += "</INFO>";
+
+		itemstr += closing_tag;
+
+		return itemstr;
+	}
+#endif
+
+	// This can be reached either because itemlinks are disabled via configuration or because the packet version does not support the feature
+	if( name != nullptr && !battle_config.feature_mesitemlink_dbname ){
+		// Name was forcefully overwritten
+		return name;
+	}else{
+		// Use database name
+		return data->ename;
+	}
 }
 
 ItemDatabase item_db;
@@ -3389,43 +3456,58 @@ uint64 ItemGroupDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			const auto& listNode = subit["List"];
 
 			for (const auto& listit : listNode) {
+				uint32 index;
+
+				if (!this->asUInt32(listit, "Index", index))
+					continue;
+
 				if (this->nodeExists(listit, "Clear")) {
-					std::string item_name;
+					bool active;
 
-					if (!this->asString(listit, "Clear", item_name))
+					if (!this->asBool(listit, "Clear", active) || !active)
 						continue;
 
-					std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
-
-					if (item == nullptr) {
-						this->invalidWarning(listit["Clear"], "Unknown Item %s. Clear failed.\n", item_name.c_str());
-						continue;
-					}
-
-					if (random->data.erase(item->nameid) == 0)
-						this->invalidWarning(listit["Clear"], "Item %hu doesn't exist in the SubGroup %hu (group %s). Clear failed.\n", item->nameid, subgroup, group_name.c_str());
+					if (random->data.erase(index) == 0)
+						this->invalidWarning(listit["Clear"], "Index %u doesn't exist in the SubGroup %hu (group %s). Clear failed.\n", index, subgroup, group_name.c_str());
 
 					continue;
 				}
 
-				std::string item_name;
-
-				if (!this->asString(listit, "Item", item_name))
-					continue;
-
-				std::shared_ptr<item_data> item = item_db.search_aegisname( item_name.c_str() );
-
-				if (item == nullptr) {
-					this->invalidWarning(listit["Item"], "Unknown Item %s.\n", item_name.c_str());
-					continue;
-				}
-
-				std::shared_ptr<s_item_group_entry> entry = util::umap_find(random->data, item->nameid);
+				std::shared_ptr<s_item_group_entry> entry = util::umap_find(random->data, index);
 				bool entry_exists = entry != nullptr;
 
 				if (!entry_exists) {
+					if (!this->nodesExist(listit, { "Item" }))
+						return 0;
+
 					entry = std::make_shared<s_item_group_entry>();
-					random->data[item->nameid] = entry;
+					random->data[index] = entry;
+				}
+
+				std::shared_ptr<item_data> item = nullptr;
+
+				if (this->nodeExists(listit, "Item")) {
+					std::string item_name;
+
+					if (!this->asString(listit, "Item", item_name))
+						continue;
+
+					item = item_db.search_aegisname( item_name.c_str() );
+
+					if (item == nullptr) {
+						this->invalidWarning(listit["Item"], "Unknown Item %s.\n", item_name.c_str());
+						continue;
+					}
+				} else {
+					if (!entry_exists) {
+						item = item_db.find( entry->nameid );
+					}
+				}
+
+				// (shouldn't happen)
+				if (item == nullptr) {
+					this->invalidWarning(listit["index"], "Missing Item definition for Index %u.\n", index);
+					continue;
 				}
 
 				entry->nameid = item->nameid;
@@ -3778,7 +3860,7 @@ uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			combo->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Item_Combo_With_Plaintext
-			combo->script_plaintext = strTrim(script);
+			combo->script_plaintext = util::trim_copy(script);
 #endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 		} else {
 			if (!exists) {
@@ -4303,10 +4385,17 @@ static int itemdb_read_sqldb(void) {
 		uint32 total_columns = Sql_NumColumns(mmysql_handle);
 		uint64 total_rows = Sql_NumRows(mmysql_handle), rows = 0, count = 0;
 
+#ifndef Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
+		ShowStatus("Loading '" CL_WHITE "%" PRIdPTR CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'\n", total_rows, item_db_name[fi]);
+#else
+		ShowStatus("Loading '" CL_WHITE "%" PRIu64 CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'\n", total_rows, item_db_name[fi]);
+#endif // Pandas_Fix_Use_SQL_DB_Make_Terminal_Show_Null
+
 		// process rows one by one
 		while( SQL_SUCCESS == Sql_NextRow(mmysql_handle) ) {
-			ShowStatus( "Loading [%" PRIu64 "/%" PRIu64 "] rows from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++rows, total_rows, item_db_name[fi] );
-
+#ifdef DETAILED_LOADING_OUTPUT
+			ShowStatus( "Loading [%" PRIu64 "/%" PRIu64 "] entries in '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++rows, total_rows, item_db_name[fi] );
+#endif
 			std::vector<std::string> data = {};
 
 			for( uint32 i = 0; i < total_columns; ++i ) {
@@ -4347,11 +4436,11 @@ bool itemdb_isNoEquip(struct item_data *id, uint16 m) {
 	struct map_data *mapdata = map_getmapdata(m);
 
 	if ((id->flag.no_equip&1 && !mapdata_flag_vs2(mapdata)) || // Normal
-		(id->flag.no_equip&2 && mapdata->flag[MF_PVP]) || // PVP
+		(id->flag.no_equip&2 && mapdata->getMapFlag(MF_PVP)) || // PVP
 		(id->flag.no_equip&4 && mapdata_flag_gvg2_no_te(mapdata)) || // GVG
-		(id->flag.no_equip&8 && mapdata->flag[MF_BATTLEGROUND]) || // Battleground
+		(id->flag.no_equip&8 && mapdata->getMapFlag(MF_BATTLEGROUND)) || // Battleground
 		(id->flag.no_equip&16 && mapdata_flag_gvg2_te(mapdata)) || // WOE:TE
-		(id->flag.no_equip&(mapdata->zone) && mapdata->flag[MF_RESTRICTED]) // Zone restriction
+		(id->flag.no_equip&(mapdata->zone) && mapdata->getMapFlag(MF_RESTRICTED)) // Zone restriction
 		)
 		return true;
 	return false;
@@ -4411,7 +4500,7 @@ uint64 RandomOptionDatabase::parseBodyNode(const ryml::NodeRef& node) {
 		randopt->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
 
 #ifdef Pandas_Struct_S_Random_Opt_Data_With_Plaintext
-		randopt->script_plaintext = strTrim(script);
+		randopt->script_plaintext = util::trim_copy(script);
 #endif // Pandas_Struct_S_Random_Opt_Data_With_Plaintext
 	}
 

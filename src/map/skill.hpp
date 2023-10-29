@@ -7,11 +7,11 @@
 #include <array>
 #include <bitset>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/db.hpp"
-#include "../common/mmo.hpp" // MAX_SKILL, struct square
-#include "../common/timer.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/db.hpp>
+#include <common/mmo.hpp> // MAX_SKILL, struct square
+#include <common/timer.hpp>
 
 #include "map.hpp" // struct block_list
 
@@ -603,6 +603,8 @@ int skill_vfcastfix(struct block_list *bl, double time, uint16 skill_id, uint16 
 #endif
 int skill_delayfix(struct block_list *bl, uint16 skill_id, uint16 skill_lv);
 void skill_toggle_magicpower(struct block_list *bl, uint16 skill_id);
+//Check sc of bl [Muh]
+int skill_check_bl_sc(struct block_list *target, va_list ap);
 
 // Skill conditions check and remove [Inkfish]
 bool skill_check_condition_castbegin(map_session_data *sd, uint16 skill_id, uint16 skill_lv);
@@ -1957,6 +1959,9 @@ enum e_skill {
 	ECLAGE_RECALL,
 
 	ALL_PRONTERA_RECALL = 3042,
+	ALL_GLASTHEIM_RECALL,
+	ALL_THANATOS_RECALL,
+	ALL_LIGHTHALZEN_RECALL,
 
 	GC_DARKCROW = 5001,
 	RA_UNLIMIT,
@@ -2385,6 +2390,22 @@ enum e_skill {
 	MH_LAVA_SLIDE,
 	MH_PYROCLASTIC,
 	MH_VOLCANIC_ASH,
+	MH_BLAST_FORGE,
+	MH_TEMPERING,
+	MH_CLASSY_FLUTTER,
+	MH_TWISTER_CUTTER,
+	MH_ABSOLUTE_ZEPHYR,
+	MH_BRUSHUP_CLAW,
+	MH_BLAZING_AND_FURIOUS,
+	MH_THE_ONE_FIGHTER_RISES,
+	MH_POLISHING_NEEDLE,
+	MH_TOXIN_OF_MANDARA,
+	MH_NEEDLE_STINGER,
+	MH_LICHT_GEHORN,
+	MH_GLANZEN_SPIES,
+	MH_HEILIGE_PFERD,
+	MH_GOLDENE_TONE,
+	MH_BLAZING_LAVA,
 
 	MS_BASH = 8201,
 	MS_MAGNUM,

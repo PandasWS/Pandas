@@ -376,10 +376,10 @@ def get_community_ver(slndir, prefix = None, origin = False):
 
 def get_commercial_ver(slndir, prefix = None, origin = False):
     '''
-    读取当前 Pandas 在 src/config/pandas.hpp 定义的商业版版本号
+    读取当前 Pandas 在 src/config/professional.hpp 定义的商业版版本号
     若读取不到版本号则返回 None
     '''
-    filepath = os.path.abspath(slndir + '/src/config/pandas.hpp')
+    filepath = os.path.abspath(slndir + '/src/config/professional.hpp')
     if not is_file_exists(filepath):
         return None
     matchgroup = match_file_regex(filepath, r'#define Pandas_Commercial_Version "(.*)"')
@@ -401,7 +401,7 @@ def is_commercial_ver(slndir):
     '''
     当前是否为专业版 (商业版)
     '''
-    filepath = os.path.abspath(slndir + '/src/config/pandas.hpp')
+    filepath = os.path.abspath(slndir + '/src/config/professional.hpp')
     if not is_file_exists(filepath):
         return False
     matchgroup = match_file_regex(filepath, r'#define Pandas_Commercial_Version "(.*)"')

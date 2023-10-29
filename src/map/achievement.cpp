@@ -9,14 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/malloc.hpp"
-#include "../common/nullpo.hpp"
-#include "../common/showmsg.hpp"
-#include "../common/strlib.hpp"
-#include "../common/utilities.hpp"
-#include "../common/utils.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/malloc.hpp>
+#include <common/nullpo.hpp>
+#include <common/showmsg.hpp>
+#include <common/strlib.hpp>
+#include <common/utilities.hpp>
+#include <common/utils.hpp>
 
 #include "battle.hpp"
 #include "chrif.hpp"
@@ -872,8 +872,8 @@ int *achievement_level(map_session_data *sd, bool flag)
 	return info;
 }
 
-bool achievement_check_condition( struct script_code* condition, map_session_data* sd ){
 #ifndef Pandas_ScriptEngine_MutliStackBackup
+bool achievement_check_condition( struct script_code* condition, map_session_data* sd ){
 	// Save the old script the player was attached to
 	struct script_state* previous_st = sd->st;
 
@@ -882,7 +882,6 @@ bool achievement_check_condition( struct script_code* condition, map_session_dat
 		// Detach the player from the current script
 		script_detach_rid(previous_st);
 	}
-#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	run_script( condition, 0, sd->bl.id, fake_nd->bl.id );
 
@@ -893,14 +892,9 @@ bool achievement_check_condition( struct script_code* condition, map_session_dat
 	if( st != nullptr ){
 		value = script_getnum( st, 2 );
 
-#ifdef Pandas_ScriptEngine_MutliStackBackup
-		script_detach_state(st, false);
-#endif // Pandas_ScriptEngine_MutliStackBackup
-
 		script_free_state(st);
 	}
 
-#ifndef Pandas_ScriptEngine_MutliStackBackup
 	// If an old script is present
 	if( previous_st != nullptr ){
 		// Because of detach the RID will be removed, so we need to restore it
@@ -909,10 +903,37 @@ bool achievement_check_condition( struct script_code* condition, map_session_dat
 		// Reattach the player to it, so that the limitations of that script kick back in
 		script_attach_state( previous_st );
 	}
-#endif // Pandas_ScriptEngine_MutliStackBackup
 
 	return value != 0;
 }
+#else
+bool achievement_check_condition(struct script_code* condition, map_session_data* sd) {
+	// 执行条件脚本之前, 先备份一下当前玩家的 st 指针
+	struct script_state* origin_st = sd->st;
+
+	// run_script 会隐含的创建一个新的 st 指针
+	run_script(condition, 0, sd->bl.id, fake_nd->bl.id);
+
+	// 执行条件脚本之后, 再记录一下当前玩家的 st 指针
+	struct script_state* st = sd->st;
+
+	int value = 0;
+
+	if (st != nullptr) {
+		value = script_getnum(st, 2);
+
+		script_detach_state(st, false);
+
+		// 只有当执行 run_script 前后的 st 指针不相同,
+		// 才意味着这个 st 是 run_script 为了执行本次条件脚本而创建的.
+		// 这种情况下才需要执行释放工作.
+		if (st != origin_st)
+			script_free_state(st);
+	}
+
+	return value != 0;
+}
+#endif // Pandas_ScriptEngine_MutliStackBackup
 
 /**
  * Check to see if an achievement's target count is complete

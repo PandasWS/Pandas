@@ -167,6 +167,7 @@ bool YamlDatabase::load(const std::string& path) {
 		ShowError( "Failed to load %s database file from '" CL_WHITE "%s" CL_RESET "'.\n", this->type.c_str(), path.c_str() );
 		ShowError( "There is likely a syntax error in the file.\n" );
 		ShowError( "Error message: %s\n", e.what() );
+		aFree(buf);
 		return false;
 	}
 
@@ -207,13 +208,18 @@ void YamlDatabase::parse( const ryml::Tree& tree ){
 	if( this->nodeExists( tree.rootref(), "Body" ) ){
 		const ryml::NodeRef& bodyNode = tree["Body"];
 		size_t childNodesCount = bodyNode.num_children();
-		size_t childNodesProgressed = 0;
 		const char* fileName = this->currentFile.c_str();
+#ifdef DEBUG
+		size_t childNodesProgressed = 0;
+#endif
+
+		ShowStatus("Loading '" CL_WHITE "%" PRIdPTR CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'\n", childNodesCount, fileName);
 
 		for( const ryml::NodeRef &node : bodyNode ){
 			count += this->parseBodyNode( node );
-
+#ifdef DETAILED_LOADING_OUTPUT
 			ShowStatus( "Loading [%" PRIdPTR "/%" PRIdPTR "] entries from '" CL_WHITE "%s" CL_RESET "'" CL_CLL "\r", ++childNodesProgressed, childNodesCount, fileName );
+#endif
 		}
 
 #ifndef Pandas_Speedup_Print_TimeConsuming_Of_KeySteps
@@ -260,6 +266,12 @@ void YamlDatabase::parseImports( const ryml::Tree& rootNode ){
 
 #ifdef RENEWAL
 					std::string compiledMode = "Renewal";
+
+					// RENEWAL mode with RENEWAL_ASPD off, load pre-re ASPD
+#ifndef RENEWAL_ASPD
+					if (importFile.find("job_aspd.yml") != std::string::npos)
+						compiledMode = "Prerenewal";
+#endif
 #else
 					std::string compiledMode = "Prerenewal";
 #endif
@@ -473,7 +485,7 @@ void on_yaml_error( const char* msg, size_t len, ryml::Location loc, void *user_
 	std::shared_ptr<char> mes(new char[len + 1], std::default_delete<char[]>());
 	memset(mes.get(), 0, len + 1);
 	memcpy(mes.get(), msg, len);
-	std::string text = strTrim(mes.get());
+	std::string text = util::trim_copy(std::string(mes.get()));
 	throw std::runtime_error(text.c_str());
 #endif // Pandas_UserExperience_Yaml_Error
 }

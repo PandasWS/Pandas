@@ -8,9 +8,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "../common/cbasetypes.hpp"
-#include "../common/database.hpp"
-#include "../common/sql.hpp"
+#include <common/cbasetypes.hpp>
+#include <common/database.hpp>
+#include <common/sql.hpp>
 
 #ifdef Pandas_InterConfig_HideServerIpAddress
 	extern int pandas_inter_hide_server_ipaddress;

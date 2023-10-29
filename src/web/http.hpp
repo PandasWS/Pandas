@@ -7,11 +7,11 @@
 #include <string>
 
 #ifdef WIN32
-#include "../common/winapi.hpp"
+#include <common/winapi.hpp>
 #endif
 
 #include <httplib.h>
-#include "../config/pandas.hpp"
+#include <config/pandas.hpp>
 #include "webutils.hpp"	 // 其他引入了 http.hpp 的文件需要用到
 
 typedef httplib::Request Request;

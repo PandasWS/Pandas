@@ -81,12 +81,21 @@
     <ClInclude Include="src\token.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\yaml-cpp\depthguard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\yaml-cpp\noexcept.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\binary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\convert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\depthguard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\directives.cpp">
@@ -171,6 +180,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\contrib\graphbuilderadapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\depthguard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

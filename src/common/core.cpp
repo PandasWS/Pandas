@@ -3,7 +3,7 @@
 
 #include "core.hpp"
 
-#include "../config/core.hpp"
+#include <config/core.hpp>
 
 #ifndef MINICORE
 #include "database.hpp"
@@ -29,12 +29,12 @@
 #include "future.hpp"
 
 #ifndef DEPRECATED_COMPILER_SUPPORT
-	#if defined( _MSC_VER ) && _MSC_VER < 1900
-		#error "Visual Studio versions older than Visual Studio 2015 are not officially supported anymore"
+	#if defined( _MSC_VER ) && _MSC_VER < 1914
+		#error "Visual Studio versions older than Visual Studio 2017 are not officially supported anymore"
 	#elif defined( __clang__ ) && __clang_major__ < 6
 		#error "clang versions older than clang 6.0 are not officially supported anymore"
-	#elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 5
-		#error "GCC versions older than GCC 5 are not officially supported anymore"
+	#elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 6
+		#error "GCC versions older than GCC 6 are not officially supported anymore"
 	#endif
 #endif
 
@@ -429,6 +429,9 @@ int Core::start( int argc, char **argv ){
 #endif // Pandas_Setup_Console_Output_Codepage
 
 #ifdef Pandas_Google_Breakpad
+#ifndef MINICORE
+	signals_init();
+#endif // MINICORE
 	breakpad_initialize();
 #endif // Pandas_Google_Breakpad
 
@@ -466,11 +469,9 @@ int Core::start( int argc, char **argv ){
 #ifndef MINICORE
 	Sql_Init();
 	db_init();
-#if (!defined(Pandas_Google_Breakpad) || defined(_WIN32))
-	// 若在 Linux 环境下, Breakpad 会接管一部分信号以便进行错误处理
-	// 此处我们不需要再自己进行信号接管了, 否则当程序崩溃的时候 Breakpad 无法生成转储文件
+#ifndef Pandas_Google_Breakpad
 	signals_init();
-#endif // (defined(Pandas_Google_Breakpad) && !defined(_WIN32))
+#endif // Pandas_Google_Breakpad
 	do_init_database();
 #ifdef _WIN32
 	cevents_init();
@@ -602,8 +603,6 @@ void Core::signal_crash(){
 		this->handle_crash();
 	}
 
-	// Now stop the process
-	exit( EXIT_FAILURE );
 }
 
 void Core::signal_shutdown(){
