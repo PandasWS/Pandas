@@ -7194,7 +7194,11 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	}
 
 	// base skill success chance (percentual)
+#ifndef Pandas_Fix_StealItem_Formula_Overflow
 	rate = (sd_status->dex - md_status->dex)/2 + skill_lv*6 + 4;
+#else
+	rate = (static_cast<double>(sd_status->dex) - static_cast<double>(md_status->dex)) / 2 + skill_lv * 6 + 4;
+#endif // Pandas_Fix_StealItem_Formula_Overflow
 	rate += sd->bonus.add_steal_rate;
 
 	if( rate < 1
