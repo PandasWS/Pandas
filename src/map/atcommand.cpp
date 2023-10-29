@@ -11885,13 +11885,14 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 	char atcmd_msg[CHAT_SIZE_MAX * 2];
 
 	TBL_PC * ssd = NULL; //sd for target
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-	int psAid = 0; //玩家AID
-	int ptAid = 0; //目标AID
-#endif // Pandas_NpcFilter_PCUSECOMMAND
 	AtCommandInfo * info;
 
 	bool is_atcommand = true; // false if it's a charcommand
+
+#ifdef Pandas_NpcFilter_USECOMMAND
+	int src_player_aid = 0;		// 使用 GM 指令的玩家账号编号
+	int target_player_aid = 0;	// 指令所作用的目标玩家账号编号
+#endif // Pandas_NpcFilter_USECOMMAND
 
 	nullpo_retr(false, sd);
 
@@ -11924,17 +11925,22 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 		}
 	}
 
+#ifdef Pandas_NpcFilter_USECOMMAND
+	// 记录一下使用 GM 指令的玩家的账号编号
+	src_player_aid = sd->bl.id;
+#endif // Pandas_NpcFilter_USECOMMAND
+
 	if (*message == charcommand_symbol)
 		is_atcommand = false;
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-	psAid = sd->bl.id;
-#endif // Pandas_NpcFilter_PCUSECOMMAND
+
 	if (is_atcommand) { // @command
 		sprintf(atcmd_msg, "%s", message);
 		ssd = sd;
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-		ptAid = sd->bl.id;
-#endif // Pandas_NpcFilter_PCUSECOMMAND
+
+#ifdef Pandas_NpcFilter_USECOMMAND
+		// 若使用的是 @ 开头的指令, 则目标玩家为自己 (此处记录的是玩家自己的账号编号)
+		target_player_aid = sd->bl.id;
+#endif // Pandas_NpcFilter_USECOMMAND
 	} else { // #command
 		char charname[NAME_LENGTH];
 		int n;
@@ -11972,9 +11978,12 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 			clif_displaymessage(fd, output);
 			return true;
 		}
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-		ptAid = ssd->bl.id;
-#endif // Pandas_NpcFilter_PCUSECOMMAND
+
+#ifdef Pandas_NpcFilter_USECOMMAND
+		// 若使用的是 # 开头的指令, 则目标玩家为指定的玩家 (此处记录的是目标玩家的账号编号)
+		target_player_aid = ssd->bl.id;
+#endif // Pandas_NpcFilter_USECOMMAND
+
 		if (n > 2)
 			sprintf(atcmd_msg, "%s %s", command, params);
 		else
@@ -12055,15 +12064,22 @@ bool is_atcommand(const int fd, map_session_data* sd, const char* message, int t
 			return true;
 		}
 	}
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-	pc_setreg(sd, add_str("@cmd_aid"), psAid);
-	pc_setregstr(sd, add_str("@cmd_name$"), command);
-	pc_setregstr(sd, add_str("@cmd_params$"), params);
-	pc_setreg(sd, add_str("@cmd_target_aid"), ptAid);
-	if (npc_script_filter(sd, NPCF_PCUSECOMMAND)) {
-		return false;
+#ifdef Pandas_NpcFilter_USECOMMAND
+	mapreg_setreg(add_str("$@cmd_from"), type);
+	mapreg_setreg(add_str("$@cmd_src_aid"), src_player_aid);
+	mapreg_setreg(add_str("$@cmd_target_aid"), target_player_aid);
+	mapreg_setregstr(add_str("$@cmd_name$"), command);
+	mapreg_setregstr(add_str("$@cmd_params$"), params);
+
+	// 兼容其他模拟器的参数
+	mapreg_setreg(add_str("$@cmd_type"), type);
+	mapreg_setreg(add_str("$@cmd_aid"), src_player_aid);
+
+	if (npc_script_filter(sd, NPCF_USECOMMAND)) {
+		// 告诉外部视为 GM 指令执行成功, 不要发送任何东西到聊天窗口
+		return true;
 	}
-#endif // Pandas_NpcFilter_PCUSECOMMAND
+#endif // Pandas_NpcFilter_USECOMMAND
 	//Attempt to use the command
 	if ( (info->func(fd, ssd, command, params) != 0) )
 	{

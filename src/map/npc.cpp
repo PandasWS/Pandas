@@ -6587,9 +6587,9 @@ bool npc_event_is_filter(enum npce_event eventtype) {
 		NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
 
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-		NPCF_PCUSECOMMAND,	// pcusecommand_filter_name	// OnPCUseCommandFilter		// 当玩家使用GM指令时触发 [聽風]
-#endif // Pandas_NpcFilter_PCUSECOMMAND
+#ifdef Pandas_NpcFilter_USECOMMAND
+		NPCF_USECOMMAND,	// usecommand_filter_name	// OnPCUseCommandFilter		// 当玩家使用 GM 指令时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_USECOMMAND
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 20>
 	};
 
@@ -6976,10 +6976,10 @@ const char *npc_get_script_event_name(int npce_index)
 		return script_config.favorite_del_filter_name;	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
 
-#ifdef Pandas_NpcFilter_PCUSECOMMAND
-	case NPCF_PCUSECOMMAND:
-		return script_config.pcusecommand_filter_name;	// OnPCUseCommandFilter		// 当玩家使用GM指令时触发 [聽風]
-#endif // Pandas_NpcFilter_PCUSECOMMAND
+#ifdef Pandas_NpcFilter_USECOMMAND
+	case NPCF_USECOMMAND:
+		return script_config.usecommand_filter_name;	// OnPCUseCommandFilter		// 当玩家使用 GM 指令时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_USECOMMAND
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 3>
 
 	/************************************************************************/

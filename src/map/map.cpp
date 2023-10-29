@@ -4367,6 +4367,12 @@ int parse_console(const char* buf){
 
 	strcpy(sd.status.name, "console");
 
+#ifdef Pandas_NpcFilter_USECOMMAND
+	// 顺便初始化一下 sd 的游戏单位编号,
+	// 避免在调用 OnPCUseCommandFilter 的时候 $@cmd_src_aid 的值出现意外
+	sd.bl.id = 0;
+#endif // Pandas_NpcFilter_USECOMMAND
+
 	if( ( n = sscanf(buf, "%63[^:]:%63[^:]:%11s %6hd %6hd[^\n]", type, command, mapname, &x, &y) ) < 5 ){
 		if( ( n = sscanf(buf, "%63[^:]:%63[^\n]", type, command) ) < 2 )		{
 			if((n = sscanf(buf, "%63[^\n]", type))<1) return -1; //nothing to do no arg
