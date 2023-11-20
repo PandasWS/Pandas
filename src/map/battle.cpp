@@ -11000,6 +11000,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	{ "mob_setunitdata_persistence",        &battle_config.mob_setunitdata_persistence,     1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
+#ifdef Pandas_BattleConfig_Npc_Timeout
+	{ "npc_timeout",    &battle_config.npc_timeout,    0,    0,    1,    },
+#endif // Pandas_BattleConfig_Npc_Timeout
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include <custom/battle_config_init.inc>
 };

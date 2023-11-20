@@ -1453,7 +1453,11 @@ TIMER_FUNC(npc_secure_timeout_timer){
 	}
 
 	if( DIFF_TICK(cur_tick,sd->npc_idle_tick) > (timeout*1000) ) {
-		pc_close_npc(sd,1);
+#ifdef Pandas_BattleConfig_Npc_Timeout
+		if (battle_config.npc_timeout) {
+			pc_close_npc(sd, 1);
+		}
+#endif // Pandas_BattleConfig_Npc_Timeout
 	} else if(sd->st && (sd->st->state == END || sd->st->state == CLOSE)){
 		// stop timer the script is already ending
 		if( sd->npc_idle_timer != INVALID_TIMER ){
