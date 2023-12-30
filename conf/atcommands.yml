@@ -382,6 +382,10 @@ Body:
     Help: |
       参数: [<物品类型>]
       把角色身上指定类型的物品全部丢到地上(无论是否已装备). 若没有指定物品类型, 则丢弃全部物品
+  - Command: stockall
+    Help: |
+      Params: [<item type>]
+      Transfer items from cart to your inventory. No type specified will transfer all items.
   - Command: storeall
     Help: |
       将角色背包中的所有物品存到仓库中去.
