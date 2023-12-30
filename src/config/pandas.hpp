@@ -1332,16 +1332,6 @@
 // ============================================================================
 
 #ifdef Pandas_Cleanup
-	// 清理读取 sql.db_hostname 选项的相关代码 [Sola丶小克]
-	// 
-	// 在 rAthena 官方的代码中原本预留了一个数据库默认连接的配置组, 
-	// 这些选项以 sql. 开头, 配置在 conf/inter_athena.conf 中的话就会被程序读取.
-	// 但是整个服务端只有 login-server 会尝试去读取这个配置, 所以非常鸡肋.
-	// 以至于目前 rAthena 在官方的 conf/inter_athena.conf 中都把相关配置删了.
-	//
-	// 所以我们也干脆删了吧!! Oh yeah!
-	#define Pandas_Cleanup_Useless_SQL_Global_Configure
-
 	// 清理掉一些没啥作用看着还心烦的终端提示信息 [Sola丶小克]
 	#define Pandas_Cleanup_Useless_Message
 #endif // Pandas_Cleanup

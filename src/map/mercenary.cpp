@@ -472,7 +472,7 @@ bool mercenary_dead(s_mercenary_data *md, struct block_list *src, uint16 skill_i
 void mercenary_killbonus(s_mercenary_data *md) {
 	std::vector<sc_type> scs = { SC_MERC_FLEEUP, SC_MERC_ATKUP, SC_MERC_HPUP, SC_MERC_SPUP, SC_MERC_HITUP };
 
-	sc_start(&md->bl,&md->bl, util::vector_random(scs), 100, rnd() % 5, 600000);
+	sc_start(&md->bl,&md->bl, util::vector_random(scs), 100, rnd_value(1, 5), 600000);
 }
 
 /**

@@ -22,7 +22,7 @@ extern std::string map_server_id;
 extern std::string map_server_pw;
 extern std::string map_server_db;
 
-extern int log_db_port;
+extern uint16 log_db_port;
 extern std::string log_db_ip;
 extern std::string log_db_id;
 extern std::string log_db_pw;
