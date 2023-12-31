@@ -8,7 +8,7 @@
 //= 此文档对熊猫模拟器添加的效果调整器进行说明.
 //============================================================
 
-bonus bNoFieldGemStone;
+*bonus bNoFieldGemStone;
 
 使火, 水, 风, 地四大元素领域技能无需消耗魔力矿石
 
@@ -17,7 +17,7 @@ bonus bNoFieldGemStone;
 
 --------------------------------------------------------------
 
-bonus3 bRebirthWithHeal,r,h,s;
+*bonus3 bRebirthWithHeal,r,h,s;
 
 当玩家死亡时有 r/100% 的机率复活并恢复 h% 的 HP 和 s% 的 SP [聽風]
 
@@ -44,7 +44,7 @@ bonus3 bRebirthWithHeal,r,h,s;
 
 --------------------------------------------------------------
 
-bonus2 bAddSkillRange,sk,n;
+*bonus2 bAddSkillRange,sk,n;
 
 增加 sk 技能 n 格攻击距离 [聽風]
 
@@ -63,7 +63,7 @@ bonus2 bAddSkillRange,sk,n;
 
 --------------------------------------------------------------
 
-bonus2 bSkillNoRequire,sk,n;
+*bonus2 bSkillNoRequire,sk,n;
 
 解除 sk 技能中由 n 指定的前置施法条件限制 [聽風]
 
@@ -161,7 +161,7 @@ bonus2 bSkillNoRequire,sk,n;
 
 --------------------------------------------------------------
 
-bonus4 bStatusAddDamage,sc,n,r,bf;
+*bonus4 bStatusAddDamage,sc,n,r,bf;
 
 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n [聽風]
 
@@ -200,10 +200,14 @@ bonus4 bStatusAddDamage,sc,n,r,bf;
 	此效果调整器每个角色最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
 	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
 	多条规则之间的触发概率各自判定.
+	
+	此效果调整器的计算优先级比 bStatusAddDamageRate 更高,
+	若您同时使用了这两个调整器, 程序将会先计算 bStatusAddDamage 对伤害
+	进行固定值加成, 再使用 bStatusAddDamageRate 增加伤害比例.
 
 --------------------------------------------------------------
 
-bonus4 bStatusAddDamageRate,sc,n,r,bf;
+*bonus4 bStatusAddDamageRate,sc,n,r,bf;
 
 攻击拥有 sc 状态的目标时, 使用 bf 攻击有 r/100% 的概率使伤害增加 n% [聽風]
 
@@ -243,6 +247,10 @@ bonus4 bStatusAddDamageRate,sc,n,r,bf;
 	此效果调整器每个角色最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
 	若希望普通攻击和技能攻击都有效, 应该使用 BF_NORMAL| BF_SKILL
 	多条规则之间的触发概率各自判定.
+	
+	此效果调整器的计算优先级比 bStatusAddDamage 更低,
+	若您同时使用了这两个调整器, 程序将会先计算 bStatusAddDamage 对伤害
+	进行固定值加成, 再使用 bStatusAddDamageRate 增加伤害比例.
 
 --------------------------------------------------------------
 
@@ -318,27 +326,6 @@ bonus4 bStatusAddDamageRate,sc,n,r,bf;
 	全段修正就是在所有计算完毕后, 再单独计算本指令增加的伤害.
 	此效果调整器每个 Class 最多只能定义 50 条 (源码中可通过 MAX_PC_BONUS 修改).
 	
---------------------------------------------------------------
-
-*bonus bAbsorbDmgMaxHP2,n;
-
-受到超过自己总血量 n% 的伤害时只会受到总血量 n% 的伤害
-
-参数说明:
-	n%			单次承伤不超过总血量的百分比
-				最终生效值的有效区间 0 ~ 100
-				不可叠加, 只会保留 n 最大的那次设定.
-
-提示信息:
-	总血量是指承伤单位的 MaxHP
-
-注意事项:
-	结算优先级如下, 越靠前优先级越高.
-	高优先级的调整器将会覆盖低优先级调整器的伤害修正结果.
-	- bonus2 bAbsorbDmgMaxHP,n,x;
-	- bonus bAbsorbDmgMaxHP2,n;
-	- bonus bAbsorbDmgMaxHP,n;
-
 --------------------------------------------------------------
 
 *bonus2 bAbsorbDmgMaxHP,n,x;
