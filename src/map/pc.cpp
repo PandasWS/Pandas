@@ -4580,6 +4580,12 @@ void pc_bonus(map_session_data *sd,int type,int val)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
+#ifdef Pandas_Bonus_bAddMaximumAspd
+		case SP_ADD_MAXIMUM_ASPD:
+			if (sd->state.lr_flag != 2)
+				sd->bonus.add_maximum_aspd += val;
+			break;
+#endif // Pandas_Bonus_bAddMaximumAspd
 		// PYHELP - BONUS - INSERT POINT - <Section 6>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
