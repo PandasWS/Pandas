@@ -42,7 +42,7 @@ set (PACKAGE_URL https://github.com/BYVoid/Opencc)
 set (PACKAGE_BUGREPORT https://github.com/BYVoid/Opencc/issues)
 set (OPENCC_VERSION_MAJOR 1)
 set (OPENCC_VERSION_MINOR 1)
-set (OPENCC_VERSION_REVISION 5)
+set (OPENCC_VERSION_REVISION 7)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   set (version_suffix .Debug)
@@ -105,6 +105,10 @@ set (DIR_SHARE_LOCALE ${DIR_SHARE}/locale/)
 
 ######## Configuration
 
+include(CMakePackageConfigHelpers)
+
+set(targets_export_name OpenCCTargets)
+
 configure_file(
   opencc.pc.in
   opencc.pc
@@ -116,6 +120,27 @@ install(
     ${CMAKE_CURRENT_BINARY_DIR}/opencc.pc
   DESTINATION
     ${DIR_LIBRARY}/pkgconfig
+)
+
+write_basic_package_version_file(
+  OpenCCConfigVersion.cmake
+  VERSION ${OPENCC_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+  OpenCCConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/OpenCCConfig.cmake
+  INSTALL_DESTINATION ${DIR_LIBRARY}/cmake/opencc
+  PATH_VARS DIR_INCLUDE
+)
+
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/OpenCCConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/OpenCCConfigVersion.cmake
+  DESTINATION
+    ${DIR_LIBRARY}/cmake/opencc
 )
 
 ######## Compiler flags
