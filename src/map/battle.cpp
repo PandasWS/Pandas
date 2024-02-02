@@ -11083,6 +11083,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	{ "mob_setunitdata_persistence",        &battle_config.mob_setunitdata_persistence,     1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
+#ifdef Pandas_BattleConfig_Steal_Special
+	{ "steal_special",        &battle_config.steal_special,     0,      0,      10000,              },
+#endif // Pandas_BattleConfig_Steal_Special
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include <custom/battle_config_init.inc>
 };

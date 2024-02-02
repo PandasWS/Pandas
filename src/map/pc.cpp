@@ -7179,6 +7179,10 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	unsigned char flag = 0;
 	struct status_data *sd_status, *md_status;
 	struct mob_data *md;
+//0偷几率判定值
+#ifdef Pandas_BattleConfig_Steal_Special
+	bool rate_special;
+#endif
 
 	if(!sd || !bl || bl->type!=BL_MOB)
 		return false;
@@ -7207,10 +7211,17 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	rate = (static_cast<double>(sd_status->dex) - static_cast<double>(md_status->dex)) / 2 + skill_lv * 6 + 4;
 #endif // Pandas_Fix_StealItem_Formula_Overflow
 	rate += sd->bonus.add_steal_rate;
+//偷窃几率正好为0的情况下，0偷几率
+#ifdef Pandas_BattleConfig_Steal_Special
+	rate_special = !rate && rnd() % 10000 < battle_config.steal_special;
+#endif
 
 	if( rate < 1
 #ifdef RENEWAL
 		|| rnd()%100 >= rate
+#endif
+#ifdef Pandas_BattleConfig_Steal_Special //追加0偷判定
+		&& !rate_special
 #endif
 	)
 		return false;
@@ -7218,6 +7229,12 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	// Try dropping one item, in the order from first to last possible slot.
 	// Droprate is affected by the skill success rate.
 	for( i = 0; i < MAX_MOB_DROP; i++ )
+#ifdef Pandas_BattleConfig_Steal_Special     //0偷物品选择
+	if(rate_special) {
+		if( !md->db->dropitem[i].steal_protected && rnd() % MAX_MOB_DROP < 1) 
+			break;
+	} else
+#endif
 		if( item_db.exists(md->db->dropitem[i].nameid) && !md->db->dropitem[i].steal_protected && rnd() % 10000 < md->db->dropitem[i].rate
 #ifndef RENEWAL
 		* rate/100.
@@ -7226,7 +7243,11 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 			break;
 	if( i == MAX_MOB_DROP )
 		return false;
-
+#ifdef Pandas_BattleConfig_Steal_Special     //物品不存在的情况下偷到苹果
+	if (!item_db.exists(md->db->dropitem[i].nameid))
+		itemid = 512;
+	else
+#endif
 	itemid = md->db->dropitem[i].nameid;
 	struct item tmp_item = {};
 	tmp_item.nameid = itemid;
