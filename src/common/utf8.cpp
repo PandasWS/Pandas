@@ -37,6 +37,7 @@
 #endif // _WIN32
 
 #include <unordered_map>
+#include <set>
 
 #include "../../3rdparty/uchardet/src/uchardet.h"
 
@@ -912,6 +913,37 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 }
 
 //************************************
+// Method:      isBinaryFileExtension
+// Description: 判断文件的扩展名是否为二进制文件
+// Parameter:   const std::string & filePath
+// Returns:     bool
+// Author:      Sola丶小克(CairoLee)  2024/02/10 23:32
+//************************************
+static bool isBinaryFileExtension(const std::string& filePath) {
+	// 定义一个包含常见二进制文件后缀的集合
+	const std::set<std::string> binaryFileExtensions = {
+		".dat"
+	};
+
+	// 查找最后一个点字符，即文件扩展名的开始位置
+	size_t dotPosition = filePath.rfind('.');
+
+	if (dotPosition == std::string::npos) {
+		return false; // 没有找到文件扩展名
+	}
+
+	// 提取文件扩展名
+	std::string extension = filePath.substr(dotPosition);
+
+	// 转换扩展名为小写（为了使比较不区分大小写）
+	std::transform(extension.begin(), extension.end(), extension.begin(),
+		[](unsigned char c) { return std::tolower(c); });
+
+	// 检查扩展名是否在二进制文件后缀集合中
+	return binaryFileExtensions.find(extension) != binaryFileExtensions.end();
+}
+
+//************************************
 // Method:      fopen
 // Description: 能够在原有的打开模式中追加二进制模式的 fopen 函数
 // Parameter:   const char * _FileName
@@ -922,12 +954,7 @@ enum e_file_charsetmode fmode(std::ifstream& ifs) {
 FILE* fopen(const char* _FileName, const char* _Mode) {
 	std::string strMode(_Mode);
 	std::string strFilename(_FileName);
-	bool bIsBinaryMode = false;
-
-	if (strchr(_Mode, 'b')) {
-		// 原始的打开模式就包含二进制模式的话, 打上标记
-		bIsBinaryMode = true;
-	}
+	bool bBypassChardet = strchr(_Mode, 'b') && isBinaryFileExtension(strFilename);
 
 	if (strchr(_Mode, 'b') || strchr(_Mode, 'w') || strchr(_Mode, 'a')) {
 		// 若当前打开文件的模式已经是二进制, 那么无需修改打开模式
@@ -949,8 +976,8 @@ FILE* fopen(const char* _FileName, const char* _Mode) {
 
 	FILE* fp = ::fopen(strFilename.c_str(), strMode.c_str());
 
-	if (bIsBinaryMode) {
-		// 若文件最初就计划以二进制形式打开,
+	if (bBypassChardet) {
+		// 若文件最初就计划以二进制形式打开 (并且文件后缀为 .dat),
 		// 那么这里直接提前设置他的编码类型, 避免后续的 fread 等流程尝试探测文本编码
 		setModeMapping(fp, FILE_CHARSETMODE_ANSI);
 	}
