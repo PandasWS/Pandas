@@ -820,6 +820,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	int mob_setunitdata_persistence;		// 是否高优先级持久化保存 setunitdata 对魔物的设置
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
+#ifdef Pandas_BattleConfig_Strict_Parameters_Of_Rand
+	int strict_parameters_of_rand;			// 是否对 rand 脚本指令进行严格的参数检查
+#endif // Pandas_BattleConfig_Strict_Parameters_Of_Rand
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 #include <custom/battle_config_struct.inc>
 };
