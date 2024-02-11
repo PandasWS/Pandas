@@ -6540,11 +6540,18 @@ BUILDIN_FUNC(rand)
 		}
 	}
 
+#ifndef Pandas_ScriptCommand_Rand_AllowEqualMinMax
 	if( minimum == maximum ){
 		ShowError( "buildin_rand: minimum (%" PRId64 ") and maximum (%" PRId64 ") are equal. No randomness possible.\n", minimum, maximum );
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
 	}
+#else
+	if (minimum == maximum) {
+		script_pushint64(st, minimum);
+		return SCRIPT_CMD_SUCCESS;
+	}
+#endif // Pandas_ScriptCommand_Rand_AllowEqualMinMax
 
 	script_pushint64( st, rnd_value( minimum, maximum ) );
 

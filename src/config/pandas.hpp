@@ -2224,6 +2224,10 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否允许 rand 脚本指令接受最小值和最大值相等的情况 [Sola丶小克]
+	// 启用此选项后使用 rand(10,10) 将会返回 10, 而不是直接报错并终止掉脚本程序
+	#define Pandas_ScriptCommand_Rand_AllowEqualMinMax
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 
