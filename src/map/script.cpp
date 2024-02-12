@@ -6510,6 +6510,9 @@ BUILDIN_FUNC(rand)
 	int64 minimum;
 	int64 maximum;
 
+#ifdef Pandas_BattleConfig_Strict_Parameters_Of_Rand
+	if (battle_config.strict_parameters_of_rand) {
+#endif // Pandas_BattleConfig_Strict_Parameters_Of_Rand
 	// min,max
 	if( script_hasdata( st, 3 ) ){
 		minimum = script_getnum64( st, 2 );
@@ -6545,6 +6548,27 @@ BUILDIN_FUNC(rand)
 		st->state = END;
 		return SCRIPT_CMD_FAILURE;
 	}
+#ifdef Pandas_BattleConfig_Strict_Parameters_Of_Rand
+	}
+	else {
+		// 如果不严格校验参数，那么就放弃检查参数的合法性
+		if (script_hasdata(st, 3)) {
+			minimum = script_getnum64(st, 2);
+			maximum = script_getnum64(st, 3);
+		} else {
+			minimum = 0;
+			maximum = script_getnum64(st, 2);
+
+			// The range version is exclusive maximum
+			maximum -= 1;
+
+			if (maximum < 1) {
+				script_pushint64(st, 0);
+				return SCRIPT_CMD_SUCCESS;
+			}
+		}
+	}
+#endif // Pandas_BattleConfig_Strict_Parameters_Of_Rand
 
 	script_pushint64( st, rnd_value( minimum, maximum ) );
 
