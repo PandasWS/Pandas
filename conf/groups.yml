@@ -22,18 +22,18 @@
 # Player Group Settings
 #
 ###########################################################################
-# - Id                    Group ID.
-#   Name                  Group name.
-#   Level                 GM Level used for ranking groups. (Default: 0)
-#   LogCommands           Whether atcommands should be logged or not. (Default: false)
-#   Commands:             List of atcommands that can be used by this group. (Default: none)
-#     <atcommand name>    Whether the specified atcommand can be used by this group or not.
-#   CharCommands:         List of charcommands that can be used by this group. (Default: none)
-#     <charcommand name>  Whether the specified charcommand can be used by this group or not.
-#   Permissions:          List of permissions the group has. (Default: none)
-#     <permission name>   Whether the group has this permission or not.
-#   Inherit:              List of groups that will be inherited. (Default: none)
-#     <group name>        Whether this group will be inherited or not.
+# - Id                    玩家组别 ID.
+#   Name                  玩家组别 名称.
+#   Level                 login表 groups等级. (默认: 0)
+#   LogCommands           是否记录日志到 atcommandlog. (默认: false)
+#   Commands:             该组别可使用的atcommands命令列表. (默认: none)
+#     <atcommand name>    atcommands命令列表.
+#   CharCommands:         该组别可使用的charcommands命令列表. (默认: none)
+#     <charcommand name>  charcommands命令列表.
+#   Permissions:          该组别拥有的权限列表. (默认: none)
+#     <permission name>   权限列表.
+#   Inherit:              继承的组别列表. (默认: none)
+#     <group name>        组别列表.
 ###########################################################################
 
 Header:
@@ -42,25 +42,25 @@ Header:
 
 Body:
   - Id: 0
-    # group 0 is the default group for every new account
+    # 每个新账号默认的组别为0
     Name: Player
     Level: 0
     Commands:
       changedress: true
       resurrect: true
     Permissions:
-      # without this basic permissions regular players could not trade or party
+      # 没有这些基本权限，普通玩家就无法进行交易或组队
       can_trade: true
       can_party: true
       attendance: true
   - Id: 1
     Name: Super Player
-    # Can do everything Players can and more
+    # 继承普通玩家 Player 组别
     Inherit:
       Player: true
     Level: 0
     Commands:
-      # Informational commands
+      # 信息类 命令
       commands: true
       charcommands: true
       help: true
@@ -78,7 +78,7 @@ Body:
       showexp: true
       showzeny: true
       whereis: true
-      # Feature commands
+      # 特殊类 命令
       refresh: true
       noask: true
       noks: true
@@ -175,7 +175,7 @@ Body:
       any_warp: true
   - Id: 5
     Name: VIP
-    # Can do everything Players can
+    # 继承普通玩家 Player 组别
     Inherit:
       Player: true
     Level: 0
