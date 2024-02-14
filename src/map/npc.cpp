@@ -6259,6 +6259,7 @@ int npc_parsesrcfile(const char* filepath)
 	}
 	fclose(fp);
 
+#ifndef Pandas_Support_UTF8BOM_Files
 	if ((unsigned char)buffer[0] == 0xEF && (unsigned char)buffer[1] == 0xBB && (unsigned char)buffer[2] == 0xBF) {
 		// UTF-8 BOM. This is most likely an error on the user's part, because:
 		// - BOM is discouraged in UTF-8, and the only place where you see it is Notepad and such.
@@ -6269,6 +6270,7 @@ int npc_parsesrcfile(const char* filepath)
 		aFree(buffer);
 		return 0;
 	}
+#endif // Pandas_Support_UTF8BOM_Files
 
 	int lines = 0;
 
