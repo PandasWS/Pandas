@@ -44,3 +44,291 @@
 Header:
   Type: BARTER_DB
   Version: 1
+
+Body:
+   - Name: Grace_Armor
+     Items:
+       - Index: 0
+         Item: Grace_Breath_Armor
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 1
+         Item: Grace_Knight_Armor
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 2
+         Item: Grace_Spear_Armor
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 3
+         Item: Grace_Genesis_Armor
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 4
+         Item: Grace_Sharp_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 5
+         Item: Grace_Aim_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 6
+         Item: Grace_Severe_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 7
+         Item: Grace_Reverb_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 8
+         Item: Grace_Adora_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 9
+         Item: Grace_Duple_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 10
+         Item: Grace_Tonado_Armor
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 11
+         Item: Grace_Vulcan_Armor
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 12
+         Item: Grace_Kart_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 13
+         Item: Grace_Kart_Suit2
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 14
+         Item: Grace_Rolling_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 15
+         Item: Grace_Assasin_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 16
+         Item: Grace_Fatal_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 17
+         Item: Grace_Stalker_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 18
+         Item: Grace_Picky_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 19
+         Item: Grace_Carrot_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 20
+         Item: Grace_Trip_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 21
+         Item: Grace_Firerain_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 22
+         Item: Grace_Crimson_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 23
+         Item: Grace_Frost_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 24
+         Item: Grace_Psychic_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 25
+         Item: Grace_Dust_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 26
+         Item: Grace_Sun_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 27
+         Item: Grace_Moon_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 28
+         Item: Grace_Ninja_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 29
+         Item: Grace_Kunai_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 30
+         Item: Grace_Swhoo_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 31
+         Item: Grace_Explosion_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 32
+         Item: Grace_Knuckle_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 33
+         Item: Grace_Tiger_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 34
+         Item: Grace_Snovice_Suit
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 35
+         Item: Grace_Snovice_Robe
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 36
+         Item: Grace_Attack_Manteau
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 37
+         Item: Grace_Magic_Manteau
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 38
+         Item: Grace_Attack_Boots
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 39
+         Item: Grace_Magic_Boots
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 40
+         Item: Grace_Attack_Ring
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+       - Index: 41
+         Item: Grace_Magic_Ring
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 20
+   - Name: Grace_Armor_Refine_Garment
+     Items:
+       - Index: 0
+         Item: Grace_Convert1
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 10
+       - Index: 1
+         Item: Grace_Convert1
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 10
+       - Index: 2
+         Item: Grace_Convert3
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 10
+       - Index: 3
+         Item: Grace_Convert4
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT02
+             Amount: 10
+       - Index: 4
+         Item: Grace_Rifine_Ticket
+         RequiredItems:
+           - Index: 0
+             Item: EP17_1_EVT39
+             Amount: 10
