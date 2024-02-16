@@ -31747,7 +31747,7 @@ BUILDIN_FUNC(unlockcmd) {
  * 指令: batrec_query
  * 描述: 查询指定单位的战斗记录, 查看与交互目标单位产生的具体记录值
  * 用法: batrec_query <记录宿主的单位编号>,<交互目标的单位编号>,<记录类型>{,<聚合规则>};
- * 返回: 返回 -1 表示查无记录, 含 0 正整数表示伤害值
+ * 返回: 返回 -1 表示查无记录或发生错误, 含 0 正整数表示伤害值
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(batrec_query) {
@@ -31761,11 +31761,13 @@ BUILDIN_FUNC(batrec_query) {
 	int rec_type = script_getnum(st, 4);
 	if (rec_type != BRT_DMG_RECEIVE && rec_type != BRT_DMG_CAUSE) {
 		ShowError("%s: The battle record type is not invalid.\n", __func__);
+		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
 	int aggregation = BRA_COMBINE;
 	if (!script_get_optnum(st, 5, "Aggregation strategy", aggregation, true, BRA_COMBINE)) {
+		script_pushint(st, -1);
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -32291,6 +32293,7 @@ BUILDIN_FUNC(bonus_script_info) {
 BUILDIN_FUNC(expandinventory_adjust) {
 	TBL_PC* sd = nullptr;
 	if (!script_rid2sd(sd)) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 
