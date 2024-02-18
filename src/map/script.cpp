@@ -31988,31 +31988,33 @@ BUILDIN_FUNC(disable_batrec) {
  * 作者: Sola丶小克
  * -----------------------------------------------------------*/
 BUILDIN_FUNC(login) {
-	script_pushint(st, 0);
-
 	uint32 charid = 0;
 	charid = script_getnum(st, 2);
 
 	int sit = 0;
 	if (!script_get_optnum(st, 3, "Sitdown or not", sit, true, 0)) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 	sit = cap_value(sit, 0, 1);
 
 	int body_dir = DIR_SOUTH;
 	if (!script_get_optnum(st, 4, "Body Direction", body_dir, true, DIR_SOUTH)) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 	body_dir = cap_value(body_dir, 0, 7);
 
 	int head_dir = 0;
 	if (!script_get_optnum(st, 5, "Head Direction", head_dir, true, 0)) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 	head_dir = cap_value(head_dir, 0, 2);
 
 	int mode = SUSPEND_MODE_NONE;
 	if (!script_get_optnum(st, 6, "Login Mode", mode, true, SUSPEND_MODE_NORMAL)) {
+		script_pushint(st, 0);
 		return SCRIPT_CMD_FAILURE;
 	}
 	if (!suspend_mode_valid(mode)) {
@@ -32021,6 +32023,9 @@ BUILDIN_FUNC(login) {
 
 	if (suspend_recall(charid, (e_suspend_mode)mode, body_dir, head_dir, sit)) {
 		script_pushint(st, 1);
+	}
+	else {
+		script_pushint(st, 0);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
