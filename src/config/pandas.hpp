@@ -2228,6 +2228,17 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否扩充 StrMobInfo 脚本指令 [人鱼姬的思念]
+	// 主要包括了查询返回值的信息扩充, 
+	// 
+	//    8 - 获得魔物数据库中 CLASS 与 MODE: MVP属性
+	//			 返回值 0 :普通魔物
+	//			 返回值 1 :拥有boss属性
+	//			 返回值 2 :拥有MVP属性
+	// 
+	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
+	#define Pandas_ScriptCommand_StrMobInfo
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

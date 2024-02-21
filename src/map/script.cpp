@@ -15537,6 +15537,9 @@ BUILDIN_FUNC(strmobinfo)
 	case 5: script_pushint(st,mob->status.max_sp); break;
 	case 6: script_pushint(st,mob->base_exp); break;
 	case 7: script_pushint(st,mob->job_exp); break;
+#ifdef Pandas_ScriptCommand_GetInventoryList
+	case 8: script_pushint(st, mob->get_bosstype()); break;
+#endif //ifdef Pandas_ScriptCommand_GetInventoryList
 	default:
 		script_pushint(st,0);
 		break;
