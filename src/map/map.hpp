@@ -620,6 +620,9 @@ enum _sp {
 	#ifdef Pandas_Bonus3_bFinalAddClass
 		SP_PANDAS_FINALADDCLASS,	// 调整器名称: bFinalAddClass / 说明: 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	#endif // Pandas_Bonus3_bFinalAddClass
+#ifdef Pandas_Bonus3_bSkillAttribute
+		SP_PANDAS_SKILLATTRIBUTE,	// 调整器名称: bSkillAttribute / 说明: 技能 sk 变为 ele 属性(即元素之心效果)
+#endif // Pandas_Bonus3_bSkillAttribute
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
