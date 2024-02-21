@@ -267,6 +267,24 @@ struct s_final_damage {
 };
 #endif // defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 
+#ifdef Pandas_Bonus3_bStatusAddBonus
+struct s_sc_addbonus3 {
+	sc_type type;
+	short bonus;
+	int val;
+};
+struct s_sc_addbonus4 {
+	sc_type type;
+	short bonus;
+	int val, r;
+};
+struct s_sc_addbonus5 {
+	sc_type type;
+	short bonus;
+	int val, x, r;
+};
+#endif // Pandas_Bonus3_bStatusAddBonus
+
 /// Miscellaneous item bonus struct
 struct s_item_bonus {
 	uint16 id;
@@ -703,6 +721,11 @@ public:
 #ifdef Pandas_Bonus3_bFinalAddClass
 	std::vector<s_final_damage> finaladd_class[CLASS_MAX];
 #endif // Pandas_Bonus3_bFinalAddClass
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	std::vector<s_sc_addbonus3> statsadd_bonus3;
+	std::vector<s_sc_addbonus4> statsadd_bonus4;
+	std::vector<s_sc_addbonus5> statsadd_bonus5;
+#endif // Pandas_Bonus3_bStatusAddBonus
 
 	// zeroed structures start here
 	struct s_regen {
