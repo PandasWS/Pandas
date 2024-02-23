@@ -1,0 +1,77 @@
+version: "3.9"
+services:
+    mysql:
+        image: mysql
+        volumes:
+            - mysql:/var/lib/mysql
+            - ./sql-files/main.sql:/sql-files/main.sql
+            - ./sql-files/logs.sql:/sql-files/logs.sql
+            - ./sql-files/docker_init.sh:/docker-entrypoint-initdb.d/docker_init.sh
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "123456"
+    login:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: login
+        ports:
+            - "6900:6900"
+        links:
+            - "mysql:mysql"
+        volumes:
+            - ./conf:/app/conf
+            - ./npc:/app/npc
+            - ./db:/app/db
+        depends_on:
+            - "mysql"
+    char:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: char
+        ports:
+            - "6121:6121"
+        links:
+            - "mysql:mysql"
+            - "login:login"
+        volumes:
+            - ./conf:/app/conf
+            - ./npc:/app/npc
+            - ./db:/app/db
+        depends_on:
+            - "mysql"
+    map:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: map
+        ports:
+            - "5121:5121"
+        links:
+            - "mysql:mysql"
+            - "char:char"
+        volumes:
+            - ./conf:/app/conf
+            - ./npc:/app/npc
+            - ./db:/app/db
+        depends_on:
+            - "mysql"
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: web
+        ports:
+            - "3000:3000"
+        links:
+            - "mysql:mysql"
+        volumes:
+            - ./conf:/app/conf
+            - ./npc:/app/npc
+            - ./db:/app/db
+        depends_on:
+            - "mysql"
+volumes:
+    mysql:
