@@ -930,6 +930,9 @@ void clif_pvpset(map_session_data *sd, int pvprank, int pvpnum,int type);
 void clif_map_property_mapall(int map, enum map_property property);
 void clif_refine(int fd, int fail, int index, int val);
 void clif_upgrademessage( map_session_data* sd, int result, t_itemid item_id );
+#ifdef Pandas_ScriptCommand_Refineui_Result
+void clif_refineui_info(map_session_data* sd, uint16 index);
+#endif // Pandas_ScriptCommand_Refineui_Result
 
 //petsystem
 void clif_catch_process(map_session_data *sd);

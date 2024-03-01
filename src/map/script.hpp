@@ -278,6 +278,10 @@ struct Script_Config {
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	const char* favorite_del_filter_name;	// NPCF_FAVORITE_DEL	// OnPCFavoriteDelFilter	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_REFINEUI
+	const char* refineui_filter_name;	// NPCF_REFINEUI	// OnPCRefineUIFilter	// 准备使用精炼UI时触发事件, 可通过修改 @refine_rate 变量修改精炼成功率 [聽風]
+#endif // Pandas_NpcFilter_REFINEUI
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 4>
 
 	/************************************************************************/
@@ -311,6 +315,10 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	const char* unequip_event_name;	// NPCE_UNEQUIP	// OnPCUnequipEvent	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_REFINEUI
+	const char* refineui_event_name;	// NPCE_REFINEUI	// OnPCRefineUIEvent	// 使用精炼UI精炼完成后触发事件 [聽風]
+#endif // Pandas_NpcEvent_REFINEUI
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 10>
 
 	/************************************************************************/
