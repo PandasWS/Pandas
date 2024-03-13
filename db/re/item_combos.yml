@@ -27,6 +27,11 @@
 #       - <item name>       AEGIS name of the item
 #   Script                  Script to execute when one of the combos is equipped. (Default: null)
 #   Clear                   Remove the defined combos from database. (Default: false)
+#   ScriptByCount:          根據套裝的數量來執行Script
+#       - Count:            如果Max小於Min，Max會自動設定為Min，反之亦然。Min值不得低於1。
+#           Min:            數量的最小值(預設0)
+#           Max:            數量的最大值(預設0)
+#         Script:             希望執行的Script
 ###########################################################################
 
 Header:

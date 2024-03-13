@@ -39,6 +39,9 @@ ItemGroupDatabase itemdb_group;
 
 struct s_roulette_db rd;
 
+std::map<std::set<t_itemid>, std::shared_ptr<s_item_combo>> s_item_combo::combo_by_count_db;
+std::set<t_itemid> s_item_combo::combo_by_count_allitem;
+
 static void itemdb_jobid2mapid(uint64 bclass[3], e_mapid jobmask, bool active);
 
 #ifdef Pandas_Struct_Item_Data_Pandas
@@ -3868,6 +3871,50 @@ uint64 ComboDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			}
 		}
 
+		// 按照套裝數量來給予Script
+		if (this->nodeExists(node, "ScriptByCount")) {
+			for (const auto& sub_node : node["ScriptByCount"]) {
+				if (!this->nodesExist(sub_node, { "Count", "Script" }))
+					return 0;
+
+				s_item_combo::combo_count count_key;
+				
+				if (this->nodeExists(sub_node["Count"], "Min")) {
+					if (!this->asInt32(sub_node["Count"], "Min", count_key.min_))
+						return 0;
+				}
+				
+				if (this->nodeExists(sub_node["Count"], "Max")) {
+					if (!this->asInt32(sub_node["Count"], "Max", count_key.max_))
+						return 0;
+				}
+
+				count_key.min_ = std::min(count_key.max_, count_key.min_);
+				count_key.max_ = std::max(count_key.max_, count_key.min_);
+
+				if (count_key.min_ < 1) {
+					this->invalidWarning(sub_node["Count"], "Min count must be greater than 0.\n");
+					return 0;
+				}
+
+				std::string script;
+
+				if (!this->asString(sub_node, "Script", script))
+					return 0;
+
+				combo->script_by_count[count_key] = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(sub_node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+			}
+
+			std::set<t_itemid> itemlist;
+
+			for (const auto& item_id : combo->nameid) {
+				itemlist.insert(item_id);
+			}
+
+			s_item_combo::combo_by_count_db[itemlist] = combo;
+			s_item_combo::combo_by_count_allitem.insert(itemlist.begin(), itemlist.end());
+		}
+
 		if (!exists)
 			this->put( combo->id, combo );
 
@@ -5023,6 +5070,7 @@ void itemdb_reload(void) {
 */
 void do_final_itemdb(void) {
 	item_db.clear();
+	s_item_combo::combo_by_count_db.clear();
 	itemdb_combo.clear();
 	itemdb_group.clear();
 	random_option_db.clear();
