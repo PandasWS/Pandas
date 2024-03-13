@@ -5,8 +5,10 @@
 #define ITEMDB_HPP
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include <common/database.hpp>
 #include <common/db.hpp>
@@ -2083,6 +2085,13 @@ enum e_delay_consume : uint8 {
 
 /// Item combo struct
 struct s_item_combo {
+	struct combo_count {
+		int min_ = 0, max_ = 0;
+
+		bool operator<(const combo_count& rhs) const {
+			return std::tie(min_, max_) < std::tie(rhs.min_, rhs.max_);
+		}
+	};
 	std::vector<t_itemid> nameid;
 	script_code *script;
 	uint16 id;
@@ -2091,10 +2100,38 @@ struct s_item_combo {
 	std::string script_plaintext;
 #endif // Pandas_Struct_S_Item_Combo_With_Plaintext
 
+	std::map<combo_count, script_code*> script_by_count;
+
+	static std::map<std::set<t_itemid>, std::shared_ptr<s_item_combo>> combo_by_count_db;
+	static std::set<t_itemid> combo_by_count_allitem;
+
+	int count_item(const std::set<t_itemid>& items) const {
+		int count = 0;
+		
+		for (const auto& item : items)
+			if (std::find(nameid.begin(), nameid.end(), item) != nameid.end())
+				count++;
+
+		return count;
+	}
+
+	void do_script_by_count(int count, std::function<void (script_code*)> func) const {
+		for (const auto& [range, script] : script_by_count)
+			if (count >= range.min_ && count <= range.max_)
+				func(script);
+	}
+
 	~s_item_combo() {
 		if (this->script) {
 			script_free_code(this->script);
 			this->script = nullptr;
+		}
+
+		for (auto& [_, script] : script_by_count) {
+			if (script) {
+				script_free_code(script);
+				script = nullptr;
+			}
 		}
 
 		this->nameid.clear();
