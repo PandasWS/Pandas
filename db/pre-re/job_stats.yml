@@ -4265,3 +4265,312 @@ Body:
         Dex: 1
       - Level: 50
         Dex: 1
+  - Jobs:
+      Baby_Ninja: true
+    MaxWeight: 26000
+    HpFactor: 80
+    HpMultiplicator: 0
+    SpFactor: 540
+    BaseASPD:
+      Fist: 400
+      Dagger: 500
+      Huuma: 750
+    BonusStats:
+      - Level: 1
+        Agi: 1
+      - Level: 2
+        Agi: 1
+      - Level: 10
+        Dex: 1
+      - Level: 11
+        Agi: 1
+      - Level: 20
+        Int: 1
+      - Level: 21
+        Agi: 1
+      - Level: 22
+        Dex: 1
+      - Level: 29
+        Int: 1
+      - Level: 30
+        Luk: 1
+      - Level: 31
+        Agi: 1
+      - Level: 32
+        Dex: 1
+      - Level: 40
+        Luk: 1
+      - Level: 41
+        Agi: 1
+      - Level: 42
+        Int: 1
+      - Level: 43
+        Dex: 1
+      - Level: 50
+        Int: 1
+      - Level: 51
+        Agi: 1
+      - Level: 52
+        Luk: 1
+      - Level: 53
+        Dex: 1
+      - Level: 59
+        Str: 1
+      - Level: 60
+        Vit: 1
+      - Level: 61
+        Agi: 1
+      - Level: 62
+        Int: 1
+      - Level: 63
+        Dex: 1
+      - Level: 64
+        Luk: 1
+  - Jobs:
+      Baby_Taekwon: true
+    MaxWeight: 28000
+    HpFactor: 70
+    SpFactor: 200
+    BaseASPD:
+      Fist: 400
+    BonusStats:
+      - Level: 1
+        Str: 1
+      - Level: 2
+        Str: 1
+      - Level: 3
+        Str: 1
+      - Level: 4
+        Str: 1
+      - Level: 5
+        Str: 1
+      - Level: 6
+        Str: 1
+      - Level: 10
+        Dex: 1
+      - Level: 11
+        Dex: 1
+      - Level: 12
+        Dex: 1
+      - Level: 13
+        Dex: 1
+      - Level: 14
+        Dex: 1
+      - Level: 15
+        Dex: 1
+      - Level: 20
+        Agi: 1
+      - Level: 21
+        Agi: 1
+      - Level: 22
+        Agi: 1
+      - Level: 23
+        Agi: 1
+      - Level: 24
+        Agi: 1
+      - Level: 25
+        Agi: 1
+  - Jobs:
+      Baby_Star_Gladiator: true
+      Baby_Star_Gladiator2: true
+    MaxWeight: 28000
+    HpFactor: 90
+    HpMultiplicator: 650
+    SpFactor: 470
+    BaseASPD:
+      Fist: 400
+      Book: 500
+    BonusStats:
+      - Level: 1
+        Str: 1
+      - Level: 2
+        Str: 1
+      - Level: 3
+        Str: 1
+      - Level: 4
+        Str: 1
+      - Level: 5
+        Str: 1
+      - Level: 6
+        Str: 1
+      - Level: 7
+        Str: 1
+      - Level: 8
+        Str: 1
+      - Level: 9
+        Str: 1
+      - Level: 10
+        Str: 1
+      - Level: 11
+        Str: 1
+      - Level: 12
+        Str: 1
+      - Level: 20
+        Dex: 1
+      - Level: 21
+        Dex: 1
+      - Level: 22
+        Dex: 1
+      - Level: 23
+        Dex: 1
+      - Level: 24
+        Dex: 1
+      - Level: 25
+        Dex: 1
+      - Level: 39
+        Agi: 1
+      - Level: 40
+        Agi: 1
+      - Level: 41
+        Agi: 1
+      - Level: 42
+        Agi: 1
+      - Level: 43
+        Agi: 1
+      - Level: 44
+        Agi: 1
+      - Level: 45
+        Agi: 1
+      - Level: 46
+        Agi: 1
+      - Level: 47
+        Agi: 1
+      - Level: 48
+        Agi: 1
+      - Level: 49
+        Agi: 1
+      - Level: 50
+        Agi: 1
+  - Jobs:
+      Baby_Soul_Linker: true
+    MaxWeight: 24000
+    HpFactor: 75
+    SpFactor: 900
+    BaseASPD:
+      Fist: 500
+      Dagger: 575
+      Staff: 625
+      2hStaff: 625
+    BonusStats:
+      - Level: 1
+        Int: 1
+      - Level: 2
+        Int: 1
+      - Level: 3
+        Int: 1
+      - Level: 4
+        Int: 1
+      - Level: 5
+        Int: 1
+      - Level: 6
+        Int: 1
+      - Level: 7
+        Int: 1
+      - Level: 8
+        Int: 1
+      - Level: 9
+        Int: 1
+      - Level: 10
+        Int: 1
+      - Level: 11
+        Int: 1
+      - Level: 12
+        Int: 1
+      - Level: 20
+        Vit: 1
+      - Level: 21
+        Vit: 1
+      - Level: 22
+        Vit: 1
+      - Level: 23
+        Vit: 1
+      - Level: 24
+        Vit: 1
+      - Level: 25
+        Vit: 1
+      - Level: 39
+        Dex: 1
+      - Level: 40
+        Dex: 1
+      - Level: 41
+        Dex: 1
+      - Level: 42
+        Dex: 1
+      - Level: 43
+        Dex: 1
+      - Level: 44
+        Dex: 1
+      - Level: 45
+        Dex: 1
+      - Level: 46
+        Dex: 1
+      - Level: 47
+        Dex: 1
+      - Level: 48
+        Dex: 1
+      - Level: 49
+        Dex: 1
+      - Level: 50
+        Dex: 1
+  - Jobs:
+      Baby_Gunslinger: true
+    MaxWeight: 28000
+    HpFactor: 89
+    HpMultiplicator: 0
+    SpFactor: 469
+    BaseASPD:
+      Fist: 500
+      Revolver: 700
+      Rifle: 750
+      Gatling: 700
+      Shotgun: 1500
+      Grenade: 1500
+    BonusStats:
+      - Level: 1
+        Dex: 1
+      - Level: 2
+        Luk: 1
+      - Level: 4
+        Luk: 1
+      - Level: 6
+        Dex: 1
+      - Level: 11
+        Dex: 1
+      - Level: 12
+        Luk: 1
+      - Level: 17
+        Dex: 1
+      - Level: 21
+        Luk: 1
+      - Level: 25
+        Dex: 1
+      - Level: 31
+        Luk: 1
+      - Level: 32
+        Str: 1
+      - Level: 35
+        Dex: 1
+      - Level: 41
+        Str: 1
+      - Level: 45
+        Dex: 1
+      - Level: 50
+        Str: 1
+      - Level: 51
+        Luk: 1
+      - Level: 52
+        Int: 1
+      - Level: 55
+        Dex: 1
+      - Level: 59
+        Agi: 1
+      - Level: 60
+        Vit: 1
+      - Level: 61
+        Int: 1
+      - Level: 62
+        Dex: 1
+      - Level: 63
+        Luk: 1
+      - Level: 64
+        Str: 1
