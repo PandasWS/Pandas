@@ -620,7 +620,7 @@ char storage_guild_storageopen(map_session_data* sd)
 		return GSTORAGE_NO_GUILD;
 
 #ifdef OFFICIAL_GUILD_STORAGE
-	if (!guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE))
+	if (!guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE) && !battle_config.guild_storage_ingore_skill)
 		return GSTORAGE_NO_STORAGE; // Can't open storage if the guild has not learned the skill
 #endif
 
