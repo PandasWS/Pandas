@@ -68,6 +68,8 @@ const char* map_msg_txt(map_session_data *sd,int msg_number);
 void map_do_final_msg(void);
 void map_msg_reload(void);
 
+extern bool guild_storage_ingore_skill;
+
 #define MAX_NPC_PER_MAP 512
 #define AREA_SIZE battle_config.area_size
 #ifdef Pandas_BattleConfig_Dead_Area_Size

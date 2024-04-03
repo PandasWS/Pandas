@@ -11083,7 +11083,6 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	{ "mob_setunitdata_persistence",        &battle_config.mob_setunitdata_persistence,     1,      0,      1,              },
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
-	{ "guild_storage_ingore_skill",         &battle_config.guild_storage_ingore_skill,      0,      0,      1,              },
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include <custom/battle_config_init.inc>
 };

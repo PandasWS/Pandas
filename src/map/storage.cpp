@@ -620,7 +620,7 @@ char storage_guild_storageopen(map_session_data* sd)
 		return GSTORAGE_NO_GUILD;
 
 #ifdef OFFICIAL_GUILD_STORAGE
-	if (!guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE) && !battle_config.guild_storage_ingore_skill)
+	if (!guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE) && !guild_storage_ingore_skill)
 		return GSTORAGE_NO_STORAGE; // Can't open storage if the guild has not learned the skill
 #endif
 
@@ -643,7 +643,7 @@ char storage_guild_storageopen(map_session_data* sd)
 
 	if((gstor = guild2storage2(sd->status.guild_id)) == nullptr
 #ifdef OFFICIAL_GUILD_STORAGE
-		|| (gstor->max_amount != guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE) * 100)
+		|| (gstor->max_amount != (guild_storage_ingore_skill ? MAX_STORAGE : guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE) * 100))
 #endif
 	) {
 		intif_request_guild_storage(sd->status.account_id,sd->status.guild_id);

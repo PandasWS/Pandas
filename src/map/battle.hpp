@@ -821,7 +821,6 @@ struct Battle_Config
 	int mob_setunitdata_persistence;		// 是否高优先级持久化保存 setunitdata 对魔物的设置
 #endif // Pandas_BattleConfig_Mob_SetUnitData_Persistence
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
-	int guild_storage_ingore_skill;
 #include <custom/battle_config_struct.inc>
 };
 

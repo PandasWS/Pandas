@@ -56,6 +56,7 @@ std::string default_codepage = ""; //Feature by irmin.
 char char_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
 unsigned int party_share_level = 10;
+bool guild_storage_ingore_skill = false;
 
 #ifdef Pandas_InterConfig_HideServerIpAddress
 	// 是否不主动返回服务器的 IP 地址给到客户端
@@ -891,6 +892,8 @@ int inter_config_read(const char* cfgName)
 		else if (!strcmpi(w1, "hide_server_ipaddress"))
 			pandas_inter_hide_server_ipaddress = config_switch(w2);
 #endif // Pandas_InterConfig_HideServerIpAddress
+		else if (strcmpi(w1, "guild_storage_ingore_skill") == 0)
+			guild_storage_ingore_skill = config_switch(w2);
 	}
 	fclose(fp);
 

@@ -5588,7 +5588,7 @@ bool script_getstorage(struct script_state* st, map_session_data* sd, struct s_s
 		}
 
 #ifdef OFFICIAL_GUILD_STORAGE
-		if (!guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE)) {
+		if (!guild_checkskill(sd->guild->guild, GD_GUILD_STORAGE) && !guild_storage_ingore_skill) {
 			ShowError("buildin_%s: player's guild has not learned the GD_GUILD_STORAGE skill (CID: %d).\n", command, sd->status.char_id);
 			return false;
 		}
