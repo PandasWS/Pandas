@@ -1242,10 +1242,10 @@
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
 #endif // Pandas_Bonus3_bFinalAddClass
-#ifdef Pandas_Bonus_bAddMaximumAspd
+#ifdef Pandas_Bonus_bSellingpricerate
 	// 攻速上限增加 x (可突破conf的配置的攻速上限)
-	export_constant2("bAddMaximumAspd", SP_ADD_MAXIMUM_ASPD);
-#endif // Pandas_Bonus_bAddMaximumAspd
+	export_constant2("bSellingpricerate", SP_SELLINGPRICERATE);
+#endif // Pandas_Bonus_bSellingpricerate
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses

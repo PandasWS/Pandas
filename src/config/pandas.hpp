@@ -1822,7 +1822,7 @@
 	// 常量名称: SP_ADD_MAXIMUM_ASPD / 调整器名称: bAddMaximumAspd
 	// 变量位置: map_session_data.bonus / 变量名称: add_maximum_aspd
 	// 使用原型: bonus bAspd,n;
-	#define Pandas_Bonus_bAddMaximumAspd
+	#define Pandas_Bonus_bSellingpricerate
 	// PYHELP - BONUS - INSERT POINT - <Section 1>
 #endif // Pandas_Bonuses
 

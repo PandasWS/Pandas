@@ -4580,12 +4580,12 @@ void pc_bonus(map_session_data *sd,int type,int val)
 				sd->special_state.nofieldgemstone = 1;
 			break;
 #endif // Pandas_Bonus_bNoFieldGemStone
-#ifdef Pandas_Bonus_bAddMaximumAspd
-		case SP_ADD_MAXIMUM_ASPD:
+#ifdef Pandas_Bonus_bSellingpricerate
+		case SP_SELLINGPRICERATE:
 			if (sd->state.lr_flag != 2)
-				sd->bonus.add_maximum_aspd += val;
+				sd->bonus.Sellingpricerate += val;
 			break;
-#endif // Pandas_Bonus_bAddMaximumAspd
+#endif // Pandas_Bonus_bSellingpricerate
 		// PYHELP - BONUS - INSERT POINT - <Section 6>
 		default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -5962,6 +5962,11 @@ int pc_modifysellvalue(map_session_data *sd,int orig_value)
 		val = (int)((double)orig_value*(double)(100+rate)/100.);
 	if (val < battle_config.min_shop_sell)
 		val = battle_config.min_shop_sell;
+
+#ifdef Pandas_Bonus_bSellingpricerate
+	if (sd->bonus.Sellingpricerate)
+		val = val * max(0,(1000 + sd->bonus.Sellingpricerate)) / 1000;
+#endif // Pandas_Bonus_bSellingpricerate
 
 	return val;
 }
