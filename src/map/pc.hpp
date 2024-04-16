@@ -771,6 +771,9 @@ public:
 #ifdef Pandas_Bonus2_bAbsorbDmgMaxHP
 		uint8 absorb_dmg_trigger_hpratio, absorb_dmg_cap_ratio;
 #endif // Pandas_Bonus2_bAbsorbDmgMaxHP
+#ifdef Pandas_Bonus_bSellingpricerate
+		int Sellingpricerate;
+#endif // Pandas_Bonus_bSellingpricerate
 		// PYHELP - BONUS - INSERT POINT - <Section 5>
 	} bonus;
 	// zeroed vars end here.

@@ -6281,7 +6281,8 @@ void status_calc_bl_main(struct block_list *bl, std::bitset<SCB_MAX> flag)
 			amotion += sd->bonus.aspd_add;
 #endif
 			amotion = status_calc_fix_aspd(bl, sc, amotion);
-			status->amotion = cap_value(amotion,pc_maxaspd(sd),2000);
+
+			status->amotion = cap_value(amotion, pc_maxaspd(sd), 2000);
 
 			status->adelay = 2 * status->amotion;
 		} else { // Mercenary and mobs

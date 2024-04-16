@@ -620,6 +620,16 @@ enum _sp {
 	#ifdef Pandas_Bonus3_bFinalAddClass
 		SP_PANDAS_FINALADDCLASS,	// 调整器名称: bFinalAddClass / 说明: 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	#endif // Pandas_Bonus3_bFinalAddClass
+	#ifdef Pandas_Bonus_bSellingpricerate
+		SP_SELLINGPRICERATE,	// 调整器名称: bSellingpricerate / 说明: 对在商店商店出售道具价格的价格进行修正
+	#endif // Pandas_Bonus_bSellingpricerate
+
+
+
+
+
+
+
 	// PYHELP - BONUS - INSERT POINT - <Section 2>
 	SP_PANDAS_EXTEND_BONUS_END,
 #endif // Pandas_Bonuses
