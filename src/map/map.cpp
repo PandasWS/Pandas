@@ -412,7 +412,7 @@ int map_addblock(struct block_list* bl)
 
 	struct map_data *mapdata = map_getmapdata(m);
 
-	if (mapdata->cell == nullptr) // Player warped to a freed map. Stop them!
+	if (mapdata == nullptr || mapdata->cell == nullptr) // Player warped to a freed map. Stop them!
 		return 1;
 
 	if( x < 0 || x >= mapdata->xs || y < 0 || y >= mapdata->ys )
@@ -487,6 +487,8 @@ int map_delblock(struct block_list* bl)
 
 	struct map_data *mapdata = map_getmapdata(bl->m);
 
+	nullpo_ret(mapdata);
+
 #ifdef Pandas_Crashfix_MapBlock_Operation
 	if (mapdata == nullptr) {
 		ShowError("map_delblock: trying to remove a block from non-existent map (map id: %d).\n", bl->m);
@@ -516,8 +518,10 @@ int map_delblock(struct block_list* bl)
 	if (bl->prev == &bl_head) {
 	//Since the head of the list, update the block_list map of []
 		if (bl->type == BL_MOB) {
+			nullpo_ret(mapdata->block_mob);
 			mapdata->block_mob[pos] = bl->next;
 		} else {
+			nullpo_ret(mapdata->block);
 			mapdata->block[pos] = bl->next;
 		}
 	} else {
@@ -541,6 +545,8 @@ int map_delblock(struct block_list* bl)
  */
 int map_moveblock(struct block_list *bl, int x1, int y1, t_tick tick)
 {
+	nullpo_ret(bl);
+
 	int x0 = bl->x, y0 = bl->y;
 	status_change *sc = NULL;
 	int moveblock = ( x0/BLOCK_SIZE != x1/BLOCK_SIZE || y0/BLOCK_SIZE != y1/BLOCK_SIZE);

@@ -41,6 +41,7 @@
     <ClInclude Include="nullpo.hpp" />
     <ClInclude Include="performance.hpp" />
     <ClInclude Include="processmutex.hpp" />
+    <ClInclude Include="packets.hpp" />
     <ClInclude Include="random.hpp" />
     <ClInclude Include="showmsg.hpp" />
     <ClInclude Include="socket.hpp" />
