@@ -3343,8 +3343,8 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type, uint16 skill
 					achievement_update_objective(sd, AG_BATTLE, 1, md->mob_id);
 			}
 
-			// The master or Mercenary can increase the kill count
-			if (sd->md && src && (src->type == BL_PC || src->type == BL_MER) && mob->lv > sd->status.base_level / 2)
+			// The master or Mercenary can increase the kill count, if the monster level is greater or equal than half the baselevel of the master
+			if (sd->md && src && (src->type == BL_PC || src->type == BL_MER) && mob->lv >= sd->status.base_level / 2)
 				mercenary_kills(sd->md);
 		}
 
@@ -6058,8 +6058,7 @@ uint64 MobChatDatabase::parseBodyNode(const ryml::NodeRef& node) {
 /*==========================================
  * processes one mob_skill_db entry
  *------------------------------------------*/
-static bool mob_parse_row_mobskilldb(char** str, int columns, int current)
-{
+static bool mob_parse_row_mobskilldb( char** str, size_t columns, size_t current ){
 	static const struct {
 		char str[32];
 		enum MobSkillState id;
