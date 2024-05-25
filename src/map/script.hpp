@@ -2421,8 +2421,13 @@ enum e_hat_effects : int16{
 	HAT_EF_AUTUMN_FULL_MOON,
 	HAT_EF_NIFLHEIM_NIGHT_SKY,
 	HAT_EF_C_ROS2023_CAPE_1,
+	HAT_EF_BLACK_THUNDER_,
 	HAT_EF_C_ROS2023_CAPE_2,
 	HAT_EF_C_15TH_NOV_HELMET,
+	HAT_EF_COSMIC_CONNECTION,
+	HAT_EF_C_BABY_GLOOM,
+	HAT_EF_WINTERNIGHTBELLS,
+	HAT_EF_NIGHTSKYOFRUTIE,
 	HAT_EF_MAX
 };
 
@@ -2478,6 +2483,13 @@ enum e_iteminfo : uint8 {
 	ITEMINFO_AEGISNAME,	// 18
 	ITEMINFO_ARMORLEVEL,
 	ITEMINFO_SUBTYPE,
+};
+
+/* geteleminfo script command */
+enum e_eleminfo : uint8 {
+	ELEMINFO_ID = 0,
+	ELEMINFO_GAMEID,
+	ELEMINFO_CLASS,
 };
 
 class ConstantDatabase : public YamlDatabase {

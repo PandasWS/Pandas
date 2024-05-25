@@ -439,15 +439,8 @@ int Core::start( int argc, char **argv ){
 		char *p1;
 		if((p1 = strrchr(argv[0], '/')) != NULL ||  (p1 = strrchr(argv[0], '\\')) != NULL ){
 			char *pwd = NULL; //path working directory
-			int n=0;
 			SERVER_NAME = ++p1;
-			n = p1-argv[0]; //calc dir name len
-
-#ifdef Pandas_CodeAnalysis_Suggestion
-			// 对通过参数传入的工作路径进行长度限制判断 (暂定为 1kb 的长度)
-			n = (n > 1024 ? 1024 : n);
-#endif // Pandas_CodeAnalysis_Suggestion
-
+			size_t n = p1-argv[0]; //calc dir name len
 			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
 			if(chdir(pwd) != 0)
 				ShowError("Couldn't change working directory to %s for %s, runtime will probably fail",pwd,SERVER_NAME);
