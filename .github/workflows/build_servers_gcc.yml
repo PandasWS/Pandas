@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        gcc: [9, 10, 11]
+        gcc: [9, 10, 11, 12, 13]
 
     steps:
       - name: Checkout repository

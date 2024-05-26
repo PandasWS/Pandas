@@ -1656,7 +1656,7 @@
 	//export_constant(SC_IGNOREDEF);
 	export_constant(SC_HELLPOWER);
 	export_constant(SC_INVINCIBLE);
-	export_constant(SC_INVINCIBLEOFF);
+	//export_constant(SC_INVINCIBLEOFF);
 	export_constant(SC_MANU_ATK);
 	export_constant(SC_MANU_DEF);
 	export_constant(SC_SPL_ATK);
@@ -2308,10 +2308,11 @@
 	export_constant(SC_GRENADE_FRAGMENT_6);
 	export_constant(SC_AUTO_FIRING_LAUNCHER);
 	export_constant(SC_HIDDEN_CARD);
-
-#ifdef RENEWAL
+	export_constant(SC_PERIOD_RECEIVEITEM_2ND);
+	export_constant(SC_PERIOD_PLUSEXP_2ND);
 	export_constant(SC_EXTREMITYFIST2);
-#endif
+	export_constant(SC_POWERUP);
+	export_constant(SC_AGIUP);
 
 	/* status icons */
 	export_deprecated_constant2("SI_BLANK",-1);

@@ -4,7 +4,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <stdio.h> // FILE*
+#include <cstdio> // FILE*
 
 #include "cbasetypes.hpp"
 #include "assistant.hpp" // 引入 Pandas 的辅助函数库 - 重定向 localtime 函数

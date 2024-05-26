@@ -56781,7 +56781,8 @@ Body:
       NoMail: true
       NoAuction: true
     Script: |
-      itemskill "RK_LUXANIMA",1;
+      if ((eaclass()&EAJ_THIRDMASK) == EAJ_RUNE_KNIGHT)
+         itemskill "RK_LUXANIMA",1;
   - Id: 22541
     AegisName: PCBang_Coupon_Box6
     Name: PC Room Coupon Box VI
@@ -70737,7 +70738,8 @@ Body:
       NoMail: true
       NoAuction: true
     Script: |
-      /* TODO */
+      sc_start SC_PERIOD_RECEIVEITEM_2ND,604800000,50;
+      sc_start SC_PERIOD_PLUSEXP_2ND,604800000,50;
   - Id: 100914
     AegisName: EXP_Drop_Up_1Hours
     Name: Kafra Buff(1 Hour)
@@ -70750,8 +70752,9 @@ Body:
       NoGuildStorage: true
       NoMail: true
       NoAuction: true
-#   Script: |
-#     /* TODO */
+    Script: |
+      sc_start SC_PERIOD_RECEIVEITEM_2ND,86400000,50;
+      sc_start SC_PERIOD_PLUSEXP_2ND,86400000,50;
   - Id: 100917
     AegisName: Hero_Weapon_Hammer_4
     Name: Modified Hero's Weapon Refinement Hammer IV
@@ -70859,6 +70862,9 @@ Body:
       NoGuildStorage: true
       NoMail: true
       NoAuction: true
+    Script: |
+      sc_start SC_PERIOD_RECEIVEITEM_2ND,86400000,50;
+      sc_start SC_PERIOD_PLUSEXP_2ND,86400000,50;
   - Id: 100950
     AegisName: Evt_RagFes_Box
     Name: Ragfest Commemorative Box
@@ -73313,6 +73319,9 @@ Body:
       NoGuildStorage: true
       NoMail: true
       NoAuction: true
+    Script: |
+      sc_start SC_PERIOD_RECEIVEITEM_2ND,604800000,50;
+      sc_start SC_PERIOD_PLUSEXP_2ND,604800000,50;
   - Id: 101240
     AegisName: Season_Evt_Reward_1
     Name: January Event's Reward Box

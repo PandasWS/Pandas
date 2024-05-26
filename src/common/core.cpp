@@ -3,6 +3,9 @@
 
 #include "core.hpp"
 
+#include <cstdlib>
+#include <csignal>
+
 #include <config/core.hpp>
 
 #ifndef MINICORE
@@ -12,8 +15,7 @@
 #include "timer.hpp"
 #include "sql.hpp"
 #endif
-#include <stdlib.h>
-#include <signal.h>
+
 #ifndef _WIN32
 #include <unistd.h>
 #else
@@ -26,7 +28,10 @@
 #include "mmo.hpp"
 #include "showmsg.hpp"
 #include "strlib.hpp"
+
+#ifdef Pandas_Support_Future_Execution
 #include "future.hpp"
+#endif // Pandas_Support_Future_Execution
 
 #ifndef DEPRECATED_COMPILER_SUPPORT
 	#if defined( _MSC_VER ) && _MSC_VER < 1914
@@ -57,7 +62,7 @@ Core* global_core = nullptr;
 char db_path[12] = "db"; /// relative path for db from server
 char conf_path[12] = "conf"; /// relative path for conf from server
 
-char *SERVER_NAME = NULL;
+char *SERVER_NAME = nullptr;
 
 #ifndef MINICORE	// minimalist Core
 // Added by Gabuzomeu
@@ -191,7 +196,7 @@ const char* get_svn_revision(void) {
 	// - ignores database file structure
 	// - assumes the data in NODES.dav_cache column ends with "!svn/ver/<revision>/<path>)"
 	// - since it's a cache column, the data might not even exist
-	if( (fp = fopen(".svn" PATHSEP_STR "wc.db", "rb")) != NULL || (fp = fopen(".." PATHSEP_STR ".svn" PATHSEP_STR "wc.db", "rb")) != NULL )
+	if( (fp = fopen(".svn" PATHSEP_STR "wc.db", "rb")) != nullptr || (fp = fopen(".." PATHSEP_STR ".svn" PATHSEP_STR "wc.db", "rb")) != nullptr )
 	{
 	#ifndef SVNNODEPATH
 		//not sure how to handle branches, so i'll leave this overridable define until a better solution comes up
@@ -234,7 +239,7 @@ const char* get_svn_revision(void) {
 	}
 
 	// subversion 1.6 and older?
-	if ((fp = fopen(".svn/entries", "r")) != NULL)
+	if ((fp = fopen(".svn/entries", "r")) != nullptr)
 	{
 		char line[1024];
 		int rev;
@@ -253,8 +258,8 @@ const char* get_svn_revision(void) {
 			else
 			{
 				// Bin File format
-				if ( fgets(line, sizeof(line), fp) == NULL ) { printf("Can't get bin name\n"); } // Get the name
-				if ( fgets(line, sizeof(line), fp) == NULL ) { printf("Can't get entries kind\n"); } // Get the entries kind
+				if ( fgets(line, sizeof(line), fp) == nullptr ) { printf("Can't get bin name\n"); } // Get the name
+				if ( fgets(line, sizeof(line), fp) == nullptr ) { printf("Can't get entries kind\n"); } // Get the entries kind
 				if(fgets(line, sizeof(line), fp)) // Get the rev numver
 				{
 					snprintf(svn_version_buffer, sizeof(svn_version_buffer), "%d", atoi(line));
@@ -281,8 +286,8 @@ const char *get_git_hash (void) {
 	if( GitHash[0] != '\0' )
 		return GitHash;
 
-	if( (fp = fopen(".git/refs/remotes/origin/master", "r")) != NULL || // Already pulled once
-		(fp = fopen(".git/refs/heads/master", "r")) != NULL ) { // Cloned only
+	if( (fp = fopen(".git/refs/remotes/origin/master", "r")) != nullptr || // Already pulled once
+		(fp = fopen(".git/refs/heads/master", "r")) != nullptr ) { // Cloned only
 		char line[64];
 		char *rev = (char*)malloc(sizeof(char) * 50);
 
@@ -437,8 +442,8 @@ int Core::start( int argc, char **argv ){
 
 	{// initialize program arguments
 		char *p1;
-		if((p1 = strrchr(argv[0], '/')) != NULL ||  (p1 = strrchr(argv[0], '\\')) != NULL ){
-			char *pwd = NULL; //path working directory
+		if((p1 = strrchr(argv[0], '/')) != nullptr ||  (p1 = strrchr(argv[0], '\\')) != nullptr ){
+			char *pwd = nullptr; //path working directory
 			SERVER_NAME = ++p1;
 			size_t n = p1-argv[0]; //calc dir name len
 			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
@@ -546,10 +551,12 @@ void Core::handle_main( t_tick next ){
 	// By default we handle all socket packets
 	do_sockets( next );
 
+#ifdef Pandas_Support_Future_Execution
 	// 如果是地图服务器的话那么顺带需要执行异步任务
 	if (this->get_type() == e_core_type::MAP) {
 		do_future();
 	}
+#endif // Pandas_Support_Future_Execution
 #endif
 }
 
