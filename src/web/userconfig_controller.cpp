@@ -53,7 +53,7 @@ HANDLER_FUNC(userconfig_save) {
 
 	if (SqlStmt_NumRows(stmt) > 0) {
 		char databuf[SQL_BUFFER_SIZE];
-		if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
+		if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), nullptr, nullptr)
 			|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 		) {
 			SqlStmt_ShowDebug(stmt);
@@ -154,7 +154,7 @@ HANDLER_FUNC(userconfig_load) {
 
 	char databuf[SQL_BUFFER_SIZE];
 
-	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
+	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), nullptr, nullptr)
 		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
 	) {
 		SqlStmt_ShowDebug(stmt);

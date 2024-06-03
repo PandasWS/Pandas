@@ -771,6 +771,12 @@
 	// 是否扩展 e_job_types 枚举类型的可选值 [Sola丶小克]
 	// 此项目会影响默认可用的 NPC 外观数量, 提取自客户端 npcidentity.lub 文件
 	#define Pandas_Update_NPC_Identity_Information
+
+	// 是否支持 future 封装以便执行异步任务 [Sola丶小克]
+	// 
+	// 此功能由 inhyositsu <inhyositsu@gmail.com> 实现,
+	// 后续由 Sola丶小克 进行微调并汇入熊猫模拟器
+	#define Pandas_Support_Future_Execution
 #endif // Pandas_CreativeWork
 
 // ============================================================================
@@ -2228,6 +2234,19 @@
 	//
 	// 更多详细用法请移步 doc/pandas_script_commands.txt 文件
 	#define Pandas_ScriptCommand_GetInventoryList
+
+	// 是否支持异步查询数据库的脚本指令 [Sola丶小克]
+	// 此选项开关需要依赖 Pandas_Support_Future_Execution 的拓展
+	//
+	// 当前涉及到的脚本指令有以下几个:
+	// - query_sql_async
+	// - query_logsql_async
+	// 
+	// 此功能由 inhyositsu <inhyositsu@gmail.com> 实现,
+	// 后续由 Sola丶小克 进行微调并汇入熊猫模拟器
+	#ifdef Pandas_Support_Future_Execution
+		#define Pandas_ScriptCommand_QuerySql_Async
+	#endif // Pandas_Support_Future_Execution
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 1>
 #endif // Pandas_ScriptCommands
 

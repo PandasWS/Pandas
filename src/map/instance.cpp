@@ -3,8 +3,8 @@
 
 #include "instance.hpp"
 
-#include <stdlib.h>
-#include <math.h>
+#include <cstdlib>
+#include <cmath>
 
 #include <common/cbasetypes.hpp>
 #include <common/db.hpp>
@@ -1087,7 +1087,7 @@ bool instance_destroy(int instance_id, bool skip_erase)
 
 	if( idata->regs.vars ) {
 		db_destroy(idata->regs.vars);
-		idata->regs.vars = NULL;
+		idata->regs.vars = nullptr;
 	}
 
 	if( idata->regs.arrays )

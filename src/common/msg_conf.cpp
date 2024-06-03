@@ -3,9 +3,9 @@
 
 #include "msg_conf.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "malloc.hpp"
 #include "showmsg.hpp"
@@ -27,7 +27,7 @@ const char* disabled_msg_txt(int msg_number) {
 const char* _msg_txt(int msg_number,int size, char ** msg_table)
 {
 	if (msg_number >= 0 && msg_number < size &&
-		msg_table[msg_number] != NULL && msg_table[msg_number][0] != '\0')
+		msg_table[msg_number] != nullptr && msg_table[msg_number][0] != '\0')
 	return msg_table[msg_number];
 
 	return "??";
@@ -48,7 +48,7 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 	FILE *fp;
 	static int called = 1;
 
-	if ((fp = fopen(cfgName, "r")) == NULL) {
+	if ((fp = fopen(cfgName, "r")) == nullptr) {
 		ShowError("Messages file not found: %s\n", cfgName);
 		return -1;
 	}
@@ -89,7 +89,7 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 			// 这里只需要判断闭区间即可: https://lgtm.com/rules/2165180573/
 			if (msg_number < size) {
 #endif // Pandas_CodeAnalysis_Suggestion
-				if (msg_table[msg_number] != NULL)
+				if (msg_table[msg_number] != nullptr)
 					aFree(msg_table[msg_number]);
 				size_t len = strnlen(w2,sizeof(w2)) + 1;
 				msg_table[msg_number] = (char *) aMalloc(len * sizeof (char));
