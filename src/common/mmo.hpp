@@ -186,8 +186,8 @@ const t_itemid WEDDING_RING_F = 2635;
 #define MAX_SKILLCOOLDOWN 20
 
 #ifdef Pandas_Extract_SSOPacket_MacAddress
-	#define MACADDRESS_LENGTH (18 + 1)	// 00-00-00-00-00-00 + 零结尾
-	#define IP4ADDRESS_LENGTH (16 + 1)	// 000.000.000.000 + 零结尾
+	#define MACADDRESS_LENGTH (17 + 1)	// 00-00-00-00-00-00 + 零结尾
+	#define IP4ADDRESS_LENGTH (15 + 1)	// 000.000.000.000 + 零结尾
 #endif // Pandas_Extract_SSOPacket_MacAddress
 
 //Size of the fame list arrays.

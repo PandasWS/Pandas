@@ -359,8 +359,8 @@ static bool logclif_parse_reqauth_sso( int fd, login_session_data& sd ){
 	sd.passwdenc = 0;
 
 #ifdef Pandas_Extract_SSOPacket_MacAddress
-	safestrncpy(session[fd]->mac_address, p->mac, sizeof(p->mac));
-	safestrncpy(session[fd]->lan_address, p->ip, sizeof(p->ip));
+	safestrncpy(session[fd]->mac_address, p->mac, MACADDRESS_LENGTH);
+	safestrncpy(session[fd]->lan_address, p->ip, IP4ADDRESS_LENGTH);
 #endif // Pandas_Extract_SSOPacket_MacAddress
 
 	int result = login_mmo_auth( &sd, false );
