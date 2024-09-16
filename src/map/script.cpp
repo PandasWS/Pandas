@@ -29263,8 +29263,8 @@ BUILDIN_FUNC(gethotkey) {
 	}
 
 	int hotkey_idx = script_getnum(st, 2);
-	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS) {
-		ShowError("buildin_gethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS);
+	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS_DB) {
+		ShowError("buildin_gethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS_DB);
 		script_pushint(st, -1);
 		return SCRIPT_CMD_SUCCESS;
 	}
@@ -29317,8 +29317,8 @@ BUILDIN_FUNC(sethotkey) {
 	}
 
 	int hotkey_idx = script_getnum(st, 2);
-	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS) {
-		ShowError("buildin_sethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS);
+	if (hotkey_idx < 0 || hotkey_idx > MAX_HOTKEYS_DB) {
+		ShowError("buildin_sethotkey: hotkey index %d is out of range (0..%d).\n", hotkey_idx, MAX_HOTKEYS_DB);
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}
