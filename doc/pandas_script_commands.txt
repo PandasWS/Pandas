@@ -2489,15 +2489,29 @@ NPC名称:
 		
 		可能的返回值:
 		----------------
-		NK_SPLASH				/// 
-		NK_SPLASHSPLIT			/// 
-		NK_IGNOREATKCARD		/// 
-		NK_IGNOREELEMENT		/// 
-		NK_IGNOREDEFENSE		/// 
-		NK_IGNOREFLEE			/// 
-		NK_IGNOREDEFCARD		/// 
-		NK_CRITICAL				/// 
-		NK_IGNORELONGCARD		/// 
+		NK_NODAMAGE				/// 对应 DamageFlags 的 NoDamage 字段
+		NK_SPLASH				/// 对应 DamageFlags 的 Splash 字段
+		NK_SPLASHSPLIT			/// 对应 DamageFlags 的 SplashSplit 字段
+		NK_IGNOREATKCARD		/// 对应 DamageFlags 的 IgnoreAtkCard 字段
+		NK_IGNOREELEMENT		/// 对应 DamageFlags 的 IgnoreElement 字段
+		NK_IGNOREDEFENSE		/// 对应 DamageFlags 的 IgnoreDefense 字段
+		NK_IGNOREFLEE			/// 对应 DamageFlags 的 IgnoreFlee 字段
+		NK_IGNOREDEFCARD		/// 对应 DamageFlags 的 IgnoreDefCard 字段
+		NK_CRITICAL				/// 对应 DamageFlags 的 Critical 字段
+		NK_IGNORELONGCARD		/// 对应 DamageFlags 的 IgnoreLongCard 字段
+		
+		例子:
+		----------------
+		以下示例代码是在 v1.2.4 版本调整后的最新用法
+		
+		getskillinfo SKI_DAMAGEFLAGS,"PR_ASPERSIO";
+		
+		if (@skill_damage_flags[NK_SPLASH]) {
+			dispbottom "此技能拥有 Splash 伤害标志位"; // PR_ASPERSIO 没有这个标记位, 不会输出这一行
+		}
+		if (@skill_damage_flags[NK_IGNOREELEMENT]) {
+			dispbottom "此技能拥有 IgnoreElement 伤害标志位";
+		}
 		
 	SKI_MAXLEVEL
 		技能最大等级
@@ -2658,6 +2672,16 @@ NPC名称:
 		INF2_IGNORECICADA			/// 
 		INF2_SHOWSCALE				/// 
 		
+		例子:
+		----------------
+		以下示例代码是在 v1.2.4 版本调整后的最新用法
+		
+		getskillinfo SKI_FLAGS,"CR_DEVOTION";
+		
+		if (@skill_flags[INF2_NOTARGETSELF]) {
+			dispbottom "此技能拥有 NoTargetSelf 标志位";
+		}
+		
 	SKI_CASTCANCEL
 		技能在咏唱期间是否会被打断
 		
@@ -2817,6 +2841,16 @@ NPC名称:
 		UF_REMOVEDBYFIRERAIN		/// removed by Fire Rain
 		UF_KNOCKBACKGROUP			/// knockback skill unit with its group instead of single unit
 		UF_HIDDENTRAP				/// Hidden trap [Cydh]
+		
+		例子:
+		----------------
+		以下示例代码是在 v1.2.4 版本调整后的最新用法
+		
+		getskillinfo SKI_UNIT_FLAG,"RA_MAGENTATRAP";
+		
+		if (@skill_unit_flag[UF_NOPC]) {
+			dispbottom "此技能拥有 NoPc 伤害标志位";
+		}
 		
 	SKI_REQUIRES_HPCOST
 		技能施法条件 - 需要扣减多少点 HP 才能施法
