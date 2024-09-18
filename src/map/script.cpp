@@ -32816,27 +32816,21 @@ BUILDIN_FUNC(getskillinfo) {
 			break;
 		case SKI_DAMAGEFLAGS:
 			for (i = 0; i < NK_MAX; i++) {
-				if (!skill->nk[i]) continue;
-				script_both_setreg(st, "skill_damage_flags", skill->nk[i], true, j, char_id);
-				j++;
+				script_both_setreg(st, "skill_damage_flags", skill->nk[i], true, i, char_id);
 			}
-			script_pushint(st, j);
+			script_pushint(st, NK_MAX);
 			break;
 		case SKI_FLAGS:
 			for (i = 0; i < INF2_MAX; i++) {
-				if (!skill->inf2[i]) continue;
-				script_both_setreg(st, "skill_flags", skill->inf2[i], true, j, char_id);
-				j++;
+				script_both_setreg(st, "skill_flags", skill->inf2[i], true, i, char_id);
 			}
-			script_pushint(st, j);
+			script_pushint(st, INF2_MAX);
 			break;
 		case SKI_UNIT_FLAG:
 			for (i = 0; i < UF_MAX; i++) {
-				if (!skill->unit_flag[i]) continue;
-				script_both_setreg(st, "skill_unit_flag", skill->unit_flag[i], true, j, char_id);
-				j++;
+				script_both_setreg(st, "skill_unit_flag", skill->unit_flag[i], true, i, char_id);
 			}
-			script_pushint(st, j);
+			script_pushint(st, UF_MAX);
 			break;
 		case SKI_REQUIRES_EQUIPMENT:
 			for (const auto& item : skill->require.eqItem) {
