@@ -3963,6 +3963,8 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 	running_npc_stat_calc_event = false;
 #endif // Pandas_NpcExpress_STATCALC
 
+	std::set<t_itemid> equipped_item_id_list;
+
 	// Parse equipment
 	for (i = 0; i < EQI_MAX; i++) {
 		current_equip_item_index = index = sd->equip_index[i]; // We pass INDEX to current_equip_item_index - for EQUIP_SCRIPT (new cards solution) [Lupus]
@@ -3976,6 +3978,7 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 		if (!sd->inventory_data[index])
 			continue;
 
+		equipped_item_id_list.insert(sd->inventory_data[index]->nameid);
 		base_status->def += sd->inventory_data[index]->def;
 
 		// Items may be equipped, their effects however are nullified.
@@ -4104,6 +4107,7 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 	if(sd->equip_index[EQI_AMMO] >= 0) {
 		index = sd->equip_index[EQI_AMMO];
 		if(sd->inventory_data[index]) { // Arrows
+			equipped_item_id_list.insert(sd->inventory_data[index]->nameid);
 			sd->bonus.arrow_atk += sd->inventory_data[index]->atk;
 			sd->state.lr_flag = 2;
 			if( !itemdb_group.item_exists(IG_THROWABLE, sd->inventory_data[index]->nameid) ) // Don't run scripts on throwable items
@@ -4169,6 +4173,8 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 			continue;
 
 		if (sd->inventory_data[index]) {
+			equipped_item_id_list.insert(sd->inventory_data[index]->nameid);
+
 			int j;
 
 			// Card script execution.
@@ -4205,6 +4211,32 @@ int status_calc_pc_sub(map_session_data* sd, uint8 opt)
 		}
 	}
 	current_equip_card_id = 0; // Clear stored card ID [Secret]
+
+	std::set<std::set<t_itemid>> combo_by_count_list;
+
+	// 先針對身上所有穿戴中的裝備、卡片、箭矢，篩選出item_list
+	for (const auto& item_id : equipped_item_id_list) {
+		if (s_item_combo::combo_by_count_allitem.find(item_id) != s_item_combo::combo_by_count_allitem.end()) {
+			for (const auto& [item_list, _] : s_item_combo::combo_by_count_db) {
+				if (item_list.find(item_id) == item_list.end())
+					continue;
+
+				combo_by_count_list.insert(item_list);
+			}
+			break;
+		}
+	}
+
+	for (const auto& item_list : combo_by_count_list) {
+		auto combo = s_item_combo::combo_by_count_db[item_list];
+
+		if (combo == nullptr)
+			continue;
+
+		combo->do_script_by_count(combo->count_item(equipped_item_id_list), [sd] (auto script) {
+			run_script(script, 0, sd->bl.id, 0);
+		});
+	}
 
 	// Parse random options
 	for (i = 0; i < EQI_MAX; i++) {
