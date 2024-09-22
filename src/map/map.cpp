@@ -174,6 +174,7 @@ bool agit_flag = false;
 bool agit2_flag = false;
 bool agit3_flag = false;
 int night_flag = 0; // 0=day, 1=night [Yor]
+bool guild_storage_ingore_skill = false;
 
 struct charid_request {
 	struct charid_request* next;
@@ -4519,6 +4520,8 @@ int map_config_read(const char *cfgName)
 				ShowNotice("Console Commands are enabled.\n");
 		} else if (strcmpi(w1, "enable_spy") == 0)
 			enable_spy = config_switch(w2);
+		else if (strcmpi(w1, "guild_storage_ingore_skill") == 0)
+			guild_storage_ingore_skill = config_switch(w2);
 		else if (strcmpi(w1, "use_grf") == 0)
 			enable_grf = config_switch(w2);
 		else if (strcmpi(w1, "console_msg_log") == 0)

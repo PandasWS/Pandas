@@ -549,7 +549,7 @@ uint16 inter_guild_storagemax(int guild_id)
 		return 0;
 	}
 
-	max = guild_checkskill(g, GD_GUILD_STORAGE);
+	max = guild_storage_ingore_skill ? MAX_GUILD_STORAGE : guild_checkskill(g, GD_GUILD_STORAGE);
 	if (max)
 		max *= 100;
 
