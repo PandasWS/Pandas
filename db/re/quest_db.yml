@@ -9279,7 +9279,7 @@ Body:
   - Id: 12521
     Title: Villa of Deception Hard
   - Id: 12522
-    Title: Cooldown: Villa of Deception
+    Title: "Cooldown: Villa of Deception"
     TimeLimit: 4h
   - Id: 12531
     Title: Future General Candidate
