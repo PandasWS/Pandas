@@ -3378,6 +3378,92 @@ static void pc_bonus_final_damage(std::vector<s_final_damage>& dmgrule, int8 typ
 }
 #endif // defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 
+#ifdef Pandas_Bonus3_bStatusAddBonus
+static void pc_bonus_status_addbonus3(std::vector<s_sc_addbonus3>& dmgrule, enum sc_type sc, short bonus, int val)
+{
+	if (dmgrule.size() == MAX_PC_BONUS) {
+		ShowWarning("pc_bonus_status_addbonus3: Reached max (%d) number of add status damage rule per character!\n", MAX_PC_BONUS);
+		return;
+	}
+
+	if (!bonus)
+		return;
+
+	for (auto& it : dmgrule) {
+		if (it.type == sc) {
+			it.bonus = bonus;
+			it.val = rathena::util::safe_addition_cap(it.val, val, INT_MAX);
+			return;
+		}
+	}
+
+	struct s_sc_addbonus3 entry = {};
+
+	entry.type = sc;
+	entry.bonus = bonus;
+	entry.val = val;
+
+	dmgrule.push_back(entry);
+}
+static void pc_bonus_status_addbonus4(std::vector<s_sc_addbonus4>& dmgrule, enum sc_type sc, short bonus, int r, int val)
+{
+	if (dmgrule.size() == MAX_PC_BONUS) {
+		ShowWarning("pc_bonus_status_addbonus4: Reached max (%d) number of add status damage rule per character!\n", MAX_PC_BONUS);
+		return;
+	}
+
+	if (!bonus)
+		return;
+
+	for (auto& it : dmgrule) {
+		if (it.type == sc) {
+			it.bonus = bonus;
+			it.r = r;
+			it.val = rathena::util::safe_addition_cap(it.val, val, INT_MAX);
+			return;
+		}
+	}
+
+	struct s_sc_addbonus4 entry = {};
+
+	entry.type = sc;
+	entry.bonus = bonus;
+	entry.r = r;
+	entry.val = val;
+
+	dmgrule.push_back(entry);
+}
+static void pc_bonus_status_addbonus5(std::vector<s_sc_addbonus5>& dmgrule, enum sc_type sc, short bonus, int x, int r, int val)
+{
+	if (dmgrule.size() == MAX_PC_BONUS) {
+		ShowWarning("pc_bonus_status_addbonus5: Reached max (%d) number of add status damage rule per character!\n", MAX_PC_BONUS);
+		return;
+	}
+
+	if (!bonus)
+		return;
+
+	for (auto& it : dmgrule) {
+		if (it.type == sc) {
+			it.bonus = bonus;
+			it.x = x;
+			it.r = r;
+			it.val = rathena::util::safe_addition_cap(it.val, val, INT_MAX);
+			return;
+		}
+	}
+
+	struct s_sc_addbonus5 entry = {};
+
+	entry.type = sc;
+	entry.bonus = bonus;
+	entry.x = x;
+	entry.r = r;
+	entry.val = val;
+
+	dmgrule.push_back(entry);
+}
+#endif // Pandas_Bonus3_bStatusAddBonus
 /**
  * Adjust/add drop rate modifier for player
  * @param drop: Player's sd->add_drop (struct s_add_drop)
@@ -5451,6 +5537,12 @@ void pc_bonus3(map_session_data *sd,int type,int type2,int type3,int val)
 		pc_bonus_final_damage(sd->finaladd_class[type2], type2, val, type3);
 		break;
 #endif // Pandas_Bonus3_bFinalAddClass
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	case SP_PANDAS_STATUSADDBONUS: // bonus3 bStatusAddBonus,sc,bonus,n;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_addbonus3(sd->statsadd_bonus3, (sc_type)type2, type3, val);
+		break;
+#endif // Pandas_Bonus3_bStatusAddBonus
 		// PYHELP - BONUS - INSERT POINT - <Section 8>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -5558,6 +5650,12 @@ void pc_bonus4(map_session_data *sd,int type,int type2,int type3,int type4,int v
 			pc_bonus_status_damage(sd->status_damagerate_adjust, (sc_type)type2, type4, val, type3);
 		break;
 #endif // Pandas_Bonus4_bStatusAddDamageRate
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	case SP_PANDAS_STATUSADDBONUS: // bonus4 bStatusAddBonus,sc,bonus,r,n;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_addbonus4(sd->statsadd_bonus4, (sc_type)type2, type3, type4, val);
+		break;
+#endif // Pandas_Bonus3_bStatusAddBonus
 		// PYHELP - BONUS - INSERT POINT - <Section 9>
 	default:
 #ifdef Pandas_NpcExpress_STATCALC
@@ -5617,6 +5715,12 @@ void pc_bonus5(map_session_data *sd,int type,int type2,int type3,int type4,int t
 		if( sd->state.lr_flag != 2 )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, type4, type2, type5, val);
 		break;
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	case SP_PANDAS_STATUSADDBONUS: // bonus5 bStatusAddBonus,sc,bonus,x,r,n;
+		if (sd->state.lr_flag != 2)
+			pc_bonus_status_addbonus5(sd->statsadd_bonus5, (sc_type)type2, type3, type4, type5, val);
+		break;
+#endif // Pandas_Bonus3_bStatusAddBonus
 		// PYHELP - BONUS - INSERT POINT - <Section 10>
 
 	default:
