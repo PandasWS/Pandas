@@ -2473,6 +2473,10 @@ enum npce_event : uint8 {
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	NPCF_FAVORITE_DEL,	// favorite_del_filter_name	// OnPCFavoriteDelFilter		// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_USECOMMAND
+	NPCF_USECOMMAND,	// usecommand_filter_name	// OnPCUseCommandFilter		// 当玩家使用 GM 指令时触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_USECOMMAND
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 2>
 
 	/************************************************************************/
