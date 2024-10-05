@@ -258,6 +258,20 @@
 	export_constant(INV_EQUIPSWITCH);
 	export_constant(INV_ALL);
 #endif // Pandas_ScriptCommand_GetInventoryList
+#ifdef Pandas_ScriptCommand_Script4Each
+	export_constant(SFE_ALL);
+	export_constant(SFE_MAP);
+	export_constant(SFE_MAP_RANGE);
+	export_constant(SFE_MAP_PARTY);
+	export_constant(SFE_MAP_GUILD);
+	export_constant(SFE_MAP_AREA);
+	export_constant(SFE_PARTY);
+	export_constant(SFE_GUILD);
+	export_constant(SFE_MAP_TRIBE);	//阵营系统预留
+	export_constant(SFE_TRIBE);	//阵营系统预留
+	export_constant(SFE_MAP_BG);
+	export_constant(SFE_BG);
+#endif // Pandas_ScriptCommand_Script4Each
 
 	/* min and maximum variable value */
 	export_constant(INT_MIN);
