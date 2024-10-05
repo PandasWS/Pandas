@@ -267,6 +267,14 @@ struct s_final_damage {
 };
 #endif // defined(Pandas_Bonus3_bFinalAddRace) || defined(Pandas_Bonus3_bFinalAddClass)
 
+#ifdef Pandas_Bonus3_bSkillAttribute
+struct s_skillattribute {
+	short id;
+	int ele;
+	int n;
+};
+#endif // Pandas_Bonus3_bSkillAttribute
+
 /// Miscellaneous item bonus struct
 struct s_item_bonus {
 	uint16 id;
@@ -685,6 +693,9 @@ public:
 #ifdef Pandas_Bonus2_bSkillNoRequire
 	std::vector<s_item_bonus> skillnorequire;
 #endif // Pandas_Bonus2_bSkillNoRequire
+#ifdef Pandas_Bonus3_bSkillAttribute
+	std::vector<s_skillattribute> skillattribute;
+#endif // Pandas_Bonus3_bSkillAttribute
 	std::vector<s_add_drop> add_drop;
 	std::vector<s_addele2> subele2;
 	std::vector<s_vanish_bonus> sp_vanish, hp_vanish;
