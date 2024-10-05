@@ -442,6 +442,9 @@ bool cashshop_buylist( map_session_data* sd, uint32 kafrapoints, int n, struct P
 	uint32 totalcash = 0;
 	uint32 totalweight = 0;
 	int i,new_;
+#if defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
+	int key_nameid = 0, key_quantity = 0, key_price = 0, key_type = 0;
+#endif // defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
 
 	if( sd == nullptr || item_list == nullptr ){
 		clif_cashshop_result( sd, 0, CASHSHOP_RESULT_ERROR_UNKNOWN );
@@ -522,6 +525,13 @@ bool cashshop_buylist( map_session_data* sd, uint32 kafrapoints, int n, struct P
 
 		totalcash += cash_item->price * quantity;
 		totalweight += itemdb_weight( nameid ) * quantity;
+
+#if defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
+		script_setarray_pc(sd, "@cashshop_nameid", i, nameid, &key_nameid);
+		script_setarray_pc(sd, "@cashshop_quantity", i, quantity, &key_quantity);
+		script_setarray_pc(sd, "@cashshop_price", i, cash_item->price, &key_price);
+		script_setarray_pc(sd, "@cashshop_type", i, tab, &key_type);
+#endif // defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
 	}
 
 	if( ( totalweight + sd->weight ) > sd->max_weight ){
@@ -536,6 +546,18 @@ bool cashshop_buylist( map_session_data* sd, uint32 kafrapoints, int n, struct P
 		clif_cashshop_result( sd, 0, CASHSHOP_RESULT_ERROR_SHORTTAGE_CASH );
 		return false;
 	}
+
+#if defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
+	pc_setreg(sd, add_str("@cashshop_kafra"), kafrapoints);
+	pc_setreg(sd, add_str("@cashshop_count"), n);
+#endif // defined(Pandas_NpcFilter_CASHSHOPBUY) || defined(Pandas_NpcEvent_CASHSHOPBUY)
+
+#ifdef Pandas_NpcFilter_CASHSHOPBUY
+	if (npc_script_filter(sd, NPCF_CASHSHOPBUY)) {
+		clif_cashshop_result(sd, 0, CASHSHOP_RESULT_SUCCESS);
+		return false;
+	}
+#endif // Pandas_NpcFilter_CASHSHOPBUY
 
 	for( i = 0; i < n; ++i ){
 		t_itemid nameid = item_list[i].itemId;
@@ -619,6 +641,10 @@ bool cashshop_buylist( map_session_data* sd, uint32 kafrapoints, int n, struct P
 #endif
 		}
 	}
+
+#ifdef Pandas_NpcEvent_CASHSHOPBUY
+	npc_script_event(sd, NPCE_CASHSHOPBUY);
+#endif // Pandas_NpcEvent_CASHSHOPBUY
 
 	return true;
 }

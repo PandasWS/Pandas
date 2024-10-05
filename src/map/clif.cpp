@@ -18128,6 +18128,11 @@ void clif_cashshop_open( map_session_data* sd, int tab ){
 	p.tab = tab;
 #endif
 
+#ifdef Pandas_NpcFilter_CASHSHOPOPEN
+	if (npc_script_filter(sd, NPCF_CASHSHOPOPEN))
+		return;
+#endif // Pandas_NpcFilter_CASHSHOPOPEN
+
 	clif_send( &p, sizeof( p ), &sd->bl, SELF );
 #endif
 }
@@ -18162,6 +18167,10 @@ void clif_parse_cashshop_close( int fd, map_session_data* sd ){
 	sd->npc_shopid = 0; // Reset npc_shopid when using cash shop from "cash shop" button [Aelys|Susu] bugreport:96
 	// No need to do anything here
 #endif
+
+#ifdef Pandas_NpcEvent_CASHSHOPCLOSE
+	npc_script_event(sd, NPCE_CASHSHOPCLOSE);
+#endif // Pandas_NpcEvent_CASHSHOPCLOSE
 }
 
 //0846 <tabid>.W (CZ_REQ_SE_CASH_TAB_CODE))

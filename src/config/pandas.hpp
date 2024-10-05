@@ -1492,6 +1492,16 @@
 		// 事件类型: Filter / 事件名称: OnPCFavoriteDelFilter
 		// 常量名称: NPCF_FAVORITE_DEL / 变量名称: favorite_del_filter_name
 		#define Pandas_NpcFilter_FAVORITE_DEL
+
+		// 打开商城前触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCCashShopOpenFilter
+		// 常量名称: NPCF_CASHSHOPOPEN / 变量名称: cashshop_open_filter_name
+		#define Pandas_NpcFilter_CASHSHOPOPEN
+
+		// 点击购买按钮后还没有扣除CASH点数和拿到物品前触发过滤器 [聽風]
+		// 事件类型: Filter / 事件名称: OnPCCashShopBuyFilter
+		// 常量名称: NPCF_CASHSHOPBUY / 变量名称: cashshop_buy_filter_name
+		#define Pandas_NpcFilter_CASHSHOPBUY
 		// PYHELP - NPCEVENT - INSERT POINT - <Section 1>
 	#endif // Pandas_Struct_Map_Session_Data_EventHalt
 
@@ -1533,6 +1543,16 @@
 	// 事件类型: Event / 事件名称: OnPCUnequipEvent
 	// 常量名称: NPCE_UNEQUIP / 变量名称: unequip_event_name
 	#define Pandas_NpcEvent_UNEQUIP
+
+	// 商城购买成功后触发该事件 [聽風]
+	// 事件类型: Event / 事件名称: OnPCCashShopBuyEvent
+	// 常量名称: NPCE_CASHSHOPBUY / 变量名称: cashshop_buy_event_name
+	#define Pandas_NpcEvent_CASHSHOPBUY
+
+	// 关闭商城后触发的事件 [聽風]
+	// 事件类型: Event / 事件名称: OnPCCashShopCloseEvent
+	// 常量名称: NPCE_CASHSHOPCLOSE / 变量名称: cashshop_close_event_name
+	#define Pandas_NpcEvent_CASHSHOPCLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 7>
 
 	/************************************************************************/

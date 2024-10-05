@@ -415,6 +415,14 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcFilter_FAVORITE_DEL
 	"OnPCFavoriteDelFilter",	// NPCF_FAVORITE_DEL		// favorite_del_filter_name	// 当玩家准备将道具从收藏栏位移出时触发过滤器 [香草]
 #endif // Pandas_NpcFilter_FAVORITE_DEL
+
+#ifdef Pandas_NpcFilter_CASHSHOPOPEN
+	"OnPCCashShopOpenFilter",	// NPCF_CASHSHOPOPEN		// cashshop_open_filter_name	// 打开商城前触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_CASHSHOPOPEN
+
+#ifdef Pandas_NpcFilter_CASHSHOPBUY
+	"OnPCCashShopBuyFilter",	// NPCF_CASHSHOPBUY		// cashshop_buy_filter_name	// 点击购买按钮后还没有扣除CASH点数和拿到物品前触发过滤器 [聽風]
+#endif // Pandas_NpcFilter_CASHSHOPBUY
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 5>
 
 	/************************************************************************/
@@ -448,6 +456,14 @@ struct Script_Config script_config = {
 #ifdef Pandas_NpcEvent_UNEQUIP
 	"OnPCUnequipEvent",	// NPCE_UNEQUIP		// unequip_event_name	// 当玩家成功脱下一件装备时触发事件
 #endif // Pandas_NpcEvent_UNEQUIP
+
+#ifdef Pandas_NpcEvent_CASHSHOPBUY
+	"OnPCCashShopBuyEvent",	// NPCE_CASHSHOPBUY		// cashshop_buy_event_name	// 商城购买成功后触发事件 [聽風]
+#endif // Pandas_NpcEvent_CASHSHOPBUY
+
+#ifdef Pandas_NpcEvent_CASHSHOPCLOSE
+	"OnPCCashShopCloseEvent",	// NPCE_CASHSHOPCLOSE		// cashshop_close_event_name	// 关闭商城后触发事件 [聽風]
+#endif // Pandas_NpcEvent_CASHSHOPCLOSE
 	// PYHELP - NPCEVENT - INSERT POINT - <Section 11>
 
 	/************************************************************************/
