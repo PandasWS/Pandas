@@ -1242,6 +1242,10 @@
 	// 使用 bf 攻击时 c 类型目标时增加 x% 的伤害 (在最终伤害上全段修正)
 	export_constant2("bFinalAddClass", SP_PANDAS_FINALADDCLASS);
 #endif // Pandas_Bonus3_bFinalAddClass
+#ifdef Pandas_Bonus3_bStatusAddBonus
+	// 当自己拥有 sc 状态的时候, 会增加 bonus 参数为 n / r,n / x,r,n
+	export_constant2("bStatusAddBonus", SP_PANDAS_STATUSADDBONUS);
+#endif // Pandas_Bonus3_bStatusAddBonus
 	// PYHELP - BONUS - INSERT POINT - <Section 3>
 
 #endif // Pandas_Bonuses
