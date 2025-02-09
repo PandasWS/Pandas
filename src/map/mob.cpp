@@ -1551,7 +1551,7 @@ static int mob_ai_sub_hard_slavemob(struct mob_data *md,t_tick tick)
 
 	bl=map_id2bl(md->master_id);
 
-	if (!bl || status_isdead(bl)) {
+	if (!bl || status_isdead(*bl)) {
 		status_kill(&md->bl);
 		return 1;
 	}
@@ -1674,7 +1674,7 @@ int mob_unlocktarget(struct mob_data *md, t_tick tick)
 		break;
 	default:
 		mob_stop_attack(md);
-		mob_stop_walking(md,1); //Stop chasing.
+		unit_stop_walking_soon(md->bl); //Stop chasing.
 		if (status_has_mode(&md->status,MD_ANGRY) && !md->state.aggressive)
 			md->state.aggressive = 1; //Restore angry state when switching to idle
 		md->state.skillstate = MSS_IDLE;
@@ -2016,6 +2016,8 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 			md->state.skillstate = MSS_LOOT;
 			if (!unit_walktobl(&md->bl, tbl, 0, 0))
 				mob_unlocktarget(md, tick); //Can't loot...
+			else
+				unit_set_target(&md->ud, tbl->id); //Remember current loot target
 			return true;
 		}
 		//Within looting range.
@@ -2040,7 +2042,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, t_tick tick)
 
 		if (pcdb_checkid(md->vd->class_))
 		{	//Give them walk act/delay to properly mimic players. [Skotlex]
-			clif_takeitem(&md->bl,tbl);
+			clif_takeitem(md->bl,*tbl);
 			md->ud.canact_tick = tick + md->status.amotion;
 			unit_set_walkdelay(&md->bl, tick, md->status.amotion, 1);
 		}

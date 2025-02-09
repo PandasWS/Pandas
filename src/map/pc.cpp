@@ -876,7 +876,7 @@ void pc_addspiritball(map_session_data *sd,int interval,int max)
 	sd->spirit_timer[i] = tid;
 	sd->spiritball++;
 	if( (sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD )
-		clif_millenniumshield(&sd->bl,sd->spiritball);
+		clif_millenniumshield( sd->bl, sd->spiritball );
 	else
 		clif_spiritball(&sd->bl);
 }
@@ -919,7 +919,7 @@ void pc_delspiritball(map_session_data *sd,int count,int type)
 
 	if(!type) {
 		if( (sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD )
-			clif_millenniumshield(&sd->bl,sd->spiritball);
+			clif_millenniumshield( sd->bl, sd->spiritball );
 		else
 			clif_spiritball(&sd->bl);
 	}
@@ -1841,11 +1841,33 @@ uint8 pc_isequip(map_session_data *sd,int n)
 
 	if(item == nullptr)
 		return ITEM_EQUIP_ACK_FAIL;
-	if(item->elv && sd->status.base_level < (unsigned int)item->elv)
+
+	if (sd->sc.count && sd->sc.getSCE(SC_SPIRIT) && sd->sc.getSCE(SC_SPIRIT)->val2 == SL_SUPERNOVICE) {
+		//Spirit of Super Novice equip bonuses. [Skotlex]
+		if (sd->status.base_level >= 90 && item->equip & EQP_HELM)
+			return ITEM_EQUIP_ACK_OK; //Can equip all helms
+
+		if (sd->status.base_level >= 96 && item->equip & EQP_ARMS && item->type == IT_WEAPON && item->weapon_level == 4)
+			switch (item->subtype) { //In weapons, the look determines type of weapon.
+				case W_DAGGER: //All level 4 - Daggers
+				case W_1HSWORD: //All level 4 - 1H Swords
+				case W_1HAXE: //All level 4 - 1H Axes
+				case W_MACE: //All level 4 - 1H Maces
+				case W_STAFF: //All level 4 - 1H Staves
+				case W_2HSTAFF: //All level 4 - 2H Staves
+					return ITEM_EQUIP_ACK_OK;
+			}
+	}
+
+	if(item->elv && sd->status.base_level < static_cast<unsigned int>(item->elv))
 		return ITEM_EQUIP_ACK_FAILLEVEL;
-	if(item->elvmax && sd->status.base_level > (unsigned int)item->elvmax)
+	if(item->elvmax && sd->status.base_level > static_cast<unsigned int>(item->elvmax))
 		return ITEM_EQUIP_ACK_FAILLEVEL;
 	if(item->sex != SEX_BOTH && sd->status.sex != item->sex)
+		return ITEM_EQUIP_ACK_FAIL;
+
+	// Broken equip
+	if (sd->inventory.u.items_inventory[n].attribute == 1)
 		return ITEM_EQUIP_ACK_FAIL;
 
 	//fail to equip if item is restricted
@@ -1914,23 +1936,6 @@ uint8 pc_isequip(map_session_data *sd,int n)
 			return ITEM_EQUIP_ACK_FAIL;
 		if(item->equip && (sd->sc.getSCE(SC_KYOUGAKU) || sd->sc.getSCE(SC_SUHIDE)))
 			return ITEM_EQUIP_ACK_FAIL;
-
-		if (sd->sc.getSCE(SC_SPIRIT) && sd->sc.getSCE(SC_SPIRIT)->val2 == SL_SUPERNOVICE) {
-			//Spirit of Super Novice equip bonuses. [Skotlex]
-			if (sd->status.base_level > 90 && item->equip & EQP_HELM)
-				return ITEM_EQUIP_ACK_OK; //Can equip all helms
-
-			if (sd->status.base_level > 96 && item->equip & EQP_ARMS && item->type == IT_WEAPON && item->weapon_level == 4)
-				switch(item->subtype) { //In weapons, the look determines type of weapon.
-					case W_DAGGER: //All level 4 - Daggers
-					case W_1HSWORD: //All level 4 - 1H Swords
-					case W_1HAXE: //All level 4 - 1H Axes
-					case W_MACE: //All level 4 - 1H Maces
-					case W_STAFF: //All level 4 - 1H Staves
-					case W_2HSTAFF: //All level 4 - 2H Staves
-						return ITEM_EQUIP_ACK_OK;
-				}
-		}
 	}
 
 	//Not equipable by class. [Skotlex]
@@ -6538,7 +6543,7 @@ bool pc_takeitem(map_session_data *sd,struct flooritem_data *fitem)
 
 	//Display pickup animation.
 	pc_stop_attack(sd);
-	clif_takeitem(&sd->bl,&fitem->bl);
+	clif_takeitem(sd->bl,fitem->bl);
 
 	if (fitem->mob_id &&
 		(itemdb_search(fitem->item.nameid))->flag.broadcast &&
@@ -7205,7 +7210,6 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	t_itemid itemid;
 	double rate;
 	unsigned char flag = 0;
-	struct status_data *sd_status, *md_status;
 	struct mob_data *md;
 
 	if(!sd || !bl || bl->type!=BL_MOB)
@@ -7216,8 +7220,8 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	if(md->state.steal_flag == UCHAR_MAX || ( md->sc.opt1 && md->sc.opt1 != OPT1_BURNING ) ) //already stolen from / status change check
 		return false;
 
-	sd_status= status_get_status_data(&sd->bl);
-	md_status= status_get_status_data(bl);
+	status_data* sd_status = status_get_status_data(sd->bl);
+	status_data* md_status = status_get_status_data(*bl);
 
 	if (md->master_id || status_has_mode(md_status, MD_STATUSIMMUNE) || util::vector_exists(status_get_race2(&md->bl), RC2_TREASURE) ||
 		map_getmapflag(bl->m, MF_NOMOBLOOT) || // check noloot map flag [Lorky]
@@ -7644,6 +7648,16 @@ enum e_setpos pc_setpos(map_session_data* sd, unsigned short mapindex, int x, in
 
 	if( hom_is_active(sd->hd) )
 	{
+		if (sd->state.changemap)
+			status_db.removeByStatusFlag(&sd->hd->bl, { SCF_REMOVEFROMHOMONMAPWARP });
+		else
+			status_db.removeByStatusFlag(&sd->hd->bl, { SCF_REMOVEFROMHOMONWARP });
+
+		if (battle_config.hom_delay_reset_warp) {
+			sd->hd->blockskill.clear();
+			sd->hd->blockskill.shrink_to_fit();
+		}
+
 		sd->hd->bl.m = m;
 		sd->hd->bl.x = sd->hd->ud.to_x = x;
 		sd->hd->bl.y = sd->hd->ud.to_y = y;
@@ -7676,11 +7690,11 @@ enum e_setpos pc_setpos(map_session_data* sd, unsigned short mapindex, int x, in
 		}
 		else {
 			pc_setdir(sd, sd->pandas.at_dir, sd->pandas.at_head_dir);
-			clif_changed_dir(&sd->bl, AREA_WOS);
+			clif_changed_dir(sd->bl, AREA_WOS);
 			if (sd->pandas.at_sit) {
 				pc_setsit(sd);
 				skill_sit(sd, 1);
-				clif_sitting(&sd->bl);
+				clif_sitting(sd->bl);
 			}
 		}
 
@@ -8885,7 +8899,7 @@ static void pc_calcexp(map_session_data *sd, t_exp *base_exp, t_exp *job_exp, st
 	int bonus = 0, vip_bonus_base = 0, vip_bonus_job = 0;
 
 	if (src) {
-		struct status_data *status = status_get_status_data(src);
+		status_data* status = status_get_status_data(*src);
 
 		if( sd->indexed_bonus.expaddrace[status->race] )
 			bonus += sd->indexed_bonus.expaddrace[status->race];
@@ -12670,7 +12684,7 @@ bool pc_equipitem(map_session_data *sd,short n,int req_pos,bool equipswitch, boo
 		return false;
 	}
 
-	if (!(pos&req_pos) || sd->inventory.u.items_inventory[n].equip != 0 || sd->inventory.u.items_inventory[n].attribute==1 ) { // [Valaris]
+	if (!(pos&req_pos) || sd->inventory.u.items_inventory[n].equip != 0) {
 		if( equipswitch ){
 			clif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );
 		}else{
@@ -13827,7 +13841,7 @@ bool pc_setstand(map_session_data *sd, bool force){
 
 	status_change_end(&sd->bl, SC_TENSIONRELAX);
 	clif_status_load(&sd->bl,EFST_SIT,0);
-	clif_standing(&sd->bl); //Inform area PC is standing
+	clif_standing(sd->bl); //Inform area PC is standing
 	//Reset sitting tick.
 	sd->ssregen.tick.hp = sd->ssregen.tick.sp = 0;
 	if( pc_isdead( sd ) ){
@@ -13936,7 +13950,7 @@ static TIMER_FUNC(pc_spiritcharm_timer){
 	if (sd->spiritcharm <= 0)
 		sd->spiritcharm_type = CHARM_TYPE_NONE;
 
-	clif_spiritcharm(sd);
+	clif_spiritcharm( *sd );
 
 	return 0;
 }
@@ -13982,7 +13996,7 @@ void pc_addspiritcharm(map_session_data *sd, int interval, int max, int type)
 	sd->spiritcharm++;
 	sd->spiritcharm_type = type;
 
-	clif_spiritcharm(sd);
+	clif_spiritcharm( *sd );
 }
 
 /**
@@ -14031,7 +14045,7 @@ void pc_delspiritcharm(map_session_data *sd, int count, int type)
 	if (sd->spiritcharm <= 0)
 		sd->spiritcharm_type = CHARM_TYPE_NONE;
 
-	clif_spiritcharm(sd);
+	clif_spiritcharm( *sd );
 }
 
 #if defined(RENEWAL_DROP) || defined(RENEWAL_EXP)

@@ -112246,8 +112246,7 @@ Body:
     Defense: 30
     Slots: 1
     Classes:
-      All_Third: true
-      Fourth: true
+      All: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -112276,8 +112275,7 @@ Body:
     Defense: 30
     Slots: 1
     Classes:
-      All_Third: true
-      Fourth: true
+      All: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -112306,8 +112304,7 @@ Body:
     Defense: 30
     Slots: 1
     Classes:
-      All_Third: true
-      Fourth: true
+      All: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -139535,7 +139532,7 @@ Body:
     AegisName: Ein_BHAXE
     Name: Saw Axe
     Type: Weapon
-    SubType: 1hAxe
+    SubType: 2hAxe
     Weight: 5000
     Attack: 350
     Range: 1
@@ -169200,6 +169197,8 @@ Body:
     Defense: 12
     Slots: 1
     Jobs:
+      Crusader: true
+      Knight: true
       Swordman: true
     Classes:
       All_Upper: true
@@ -169220,6 +169219,8 @@ Body:
     Defense: 12
     Slots: 1
     Jobs:
+      Crusader: true
+      Knight: true
       Swordman: true
     Classes:
       All_Upper: true
@@ -171325,6 +171326,14 @@ Body:
          bonus bDelayrate,-20;
       }
       /*Todo : SkillAtk SS_KAGEGARI, SS_KAGENOMAI, SS_KAGEGISSEN, SS_KAGEAKUMU, 1% Per 10 BaseLevel (Not List in SkillDB)*/
+  - Id: 400604
+    AegisName: aegis_400604
+    Name: Costume Black Ribbon Beret    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+    ArmorLevel: 1
+    View: 2507
   - Id: 400605
     AegisName: C_VIP_Poring_Cake_Cap
     Name: Costume Birthday Cake Hat
@@ -172090,7 +172099,7 @@ Body:
          bonus bVariableCastrate,-15;
          if (.@r>=9) {
             bonus2 bMagicAtkEle,Ele_All,10;
-            bonus2 bLongAtkRate,Ele_All,10;
+            bonus bLongAtkRate,10;
             if (.@r>=11) {
                bonus2 bMagicAddRace,RC_All,5;
                bonus2 bMagicAddRace,RC_Player_Human,-5;
@@ -172111,7 +172120,7 @@ Body:
          bonus bCon,5;
          if (.@g>=ENCHANTGRADE_C) {
             bonus2 bMagicAtkEle,Ele_All,10;
-            bonus2 bLongAtkRate,Ele_All,10;
+            bonus bLongAtkRate,10;
             if (.@g>=ENCHANTGRADE_B) {
                bonus2 bMagicAddRace,RC_All,5;
                bonus2 bMagicAddRace,RC_Player_Human,-5;
@@ -172123,7 +172132,7 @@ Body:
                bonus bAtkRate,5;
                if (.@g>=ENCHANTGRADE_A) {
                   bonus2 bMagicAtkEle,Ele_All,15;
-                  bonus2 bLongAtkRate,Ele_All,15;
+                  bonus bLongAtkRate,15;
                   bonus bPAtk,5;
                   bonus bSMatk,5;
                }
@@ -172410,6 +172419,187 @@ Body:
             }
          }
       }
+  - Id: 400673
+    AegisName: FuriousCirclet_TR
+    Name: Furious Crown (Troubadour & Trouvere)
+    Type: Armor
+    Weight: 300
+    Defense: 30
+    Slots: 1
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Locations:
+      Head_Top: true
+    ArmorLevel: 2
+    EquipLevelMin: 235
+    Refineable: true
+    Gradable: true
+    View: 2415
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatk,10*(.@r/2);
+      bonus bBaseAtk,10*(.@r/2);
+      bonus2 bSkillAtk,"TR_ROSEBLOSSOM",4*(.@r/3);
+      bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",4*(.@r/3);
+      bonus2 bSkillAtk,"TR_METALIC_FURY",4*(.@r/3);
+      if (.@r>=7) {
+         bonus bVariableCastrate,-15;
+         if (.@r>=9) {
+            bonus bLongAtkRate,10;
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@r>=11) {
+               bonus2 bMagicAddEle,Ele_All,5;
+               bonus2 bAddEle,Ele_All,5;
+               bonus bMatkRate,5;
+               bonus bAtkRate,5;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,3;
+         bonus bSMatk,3;
+         bonus bPow,5;
+         bonus bSpl,5;
+         bonus bCon,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus bLongAtkRate,10;
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bAddRace,RC_All,5;
+               bonus2 bAddRace,RC_Player_Human,-5;
+               bonus2 bAddRace,RC_Player_Doram,-5;
+               bonus2 bMagicAddRace,RC_All,5;
+               bonus2 bMagicAddRace,RC_Player_Human,-5;
+               bonus2 bMagicAddRace,RC_Player_Doram,-5;
+               bonus bMatkRate,5;
+               bonus bAtkRate,5;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bLongAtkRate,15;
+                  bonus2 bMagicAtkEle,Ele_All,15;
+                  bonus bPAtk,5;
+                  bonus bSMatk,5;
+               }
+            }
+         }
+      }
+  - Id: 400674
+    AegisName: FuriousCirclet_BO
+    Name: Furious Crown (Biolo)
+    Type: Armor
+    Weight: 300
+    Defense: 30
+    Slots: 1
+    Jobs:
+      Alchemist: true
+    Classes:
+      Fourth: true
+    Locations:
+      Head_Top: true
+    ArmorLevel: 2
+    EquipLevelMin: 235
+    Refineable: true
+    Gradable: true
+    View: 2415
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bBaseAtk,10*(.@r/2);
+      bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",4*(.@r/3);
+      bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",4*(.@r/3);
+      if (.@r>=7) {
+         bonus bVariableCastrate,-15;
+         if (.@r>=9) {
+            bonus bShortAtkRate,10;
+            bonus bCritAtkRate,10;
+            if (.@r>=11) {
+               bonus2 bAddEle,Ele_All,5;
+               bonus bAtkRate,5;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,3;
+         bonus bPow,5;
+         bonus bCon,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus bShortAtkRate,10;
+            bonus bCritAtkRate,10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bAddRace,RC_All,5;
+               bonus2 bAddRace,RC_Player_Human,-5;
+               bonus2 bAddRace,RC_Player_Doram,-5;
+               bonus bAtkRate,5;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bShortAtkRate,15;
+                  bonus bCritAtkRate,15;
+                  bonus bPAtk,5;
+               }
+            }
+         }
+      }
+  - Id: 400675
+    AegisName: FuriousCirclet_HN
+    Name: Furious Crown (Hyper Novice)
+    Type: Armor
+    Weight: 300
+    Defense: 30
+    Slots: 1
+    Jobs:
+      SuperNovice: true
+    Classes:
+      Fourth: true
+    Locations:
+      Head_Top: true
+    ArmorLevel: 2
+    EquipLevelMin: 235
+    Refineable: true
+    Gradable: true
+    View: 2415
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatk,10*(.@r/2);
+      bonus bBaseAtk,10*(.@r/2);
+      bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",4*(.@r/3);
+      bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",4*(.@r/3);
+      bonus2 bSkillAtk,"HN_HELLS_DRIVE",4*(.@r/3);
+      if (.@r>=7) {
+         bonus bVariableCastrate,-15;
+         if (.@r>=9) {
+            bonus bShortAtkRate,10;
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@r>=11) {
+               bonus bFixedCast,-300;
+               bonus bMatkRate,5;
+               bonus bAtkRate,5;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,3;
+         bonus bSMatk,3;
+         bonus bPow,5;
+         bonus bSpl,5;
+         bonus bCon,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus bShortAtkRate,10;
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bFixedCast,-200;
+               bonus bMatkRate,5;
+               bonus bAtkRate,5;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bShortAtkRate,15;
+                  bonus2 bMagicAtkEle,Ele_All,15;
+                  bonus bPAtk,5;
+                  bonus bSMatk,5;
+               }
+            }
+         }
+      }
   - Id: 400676
     AegisName: aegis_400676
     Name: Flaward Hat
@@ -172570,6 +172760,164 @@ Body:
                   bonus2 bVariableCastrate,"SL_KAIZEL",-50;
                   bonus2 bVariableCastrate,"SL_KAUPE",-50;
              }
+         }
+      }
+  - Id: 400694
+    AegisName: FuriousCirclet_AG
+    Name: Furious Crown (Arch Mage)    # !todo check english name
+    Type: Armor
+    Weight: 300
+    Defense: 30
+    Slots: 1
+    Jobs:
+      Wizard: true
+    Classes:
+      Fourth: true
+    Locations:
+      Head_Top: true
+    ArmorLevel: 2
+    EquipLevelMin: 235
+    Refineable: true
+    Gradable: true
+    View: 2415
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatk,10*(.@r/2);
+      bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",4*(.@r/3);
+      bonus2 bSkillAtk,"AG_FLORAL_FLARE_ROAD",4*(.@r/3);
+      bonus2 bSkillAtk,"AG_MYSTERY_ILLUSION",4*(.@r/3);
+      bonus2 bSkillAtk,"AG_CRIMSON_ARROW",4*(.@r/3);
+      bonus2 bSkillAtk,"AG_CRIMSON_ARROW_ATK",4*(.@r/3);
+      if (.@r>=7) {
+         bonus bVariableCastrate,-15;
+         if (.@r>=9) {
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@r>=11) {
+               bonus bFixedCast,-300;
+               bonus bMatkRate,5;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bSMatk,3;
+         bonus bSpl,5;
+         bonus bCon,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bFixedCast,-200;
+               bonus bMatkRate,5;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus2 bMagicAtkEle,Ele_All,15;
+                  bonus bSMatk,5;
+               }
+            }
+         }
+      }
+  - Id: 400695
+    AegisName: FuriousCirclet_IQ
+    Name: Furious Crown (Inquisitor)    # !todo check english name
+    Type: Armor
+    Weight: 300
+    Defense: 30
+    Slots: 1
+    Jobs:
+      Monk: true
+    Classes:
+      Fourth: true
+    Locations:
+      Head_Top: true
+    ArmorLevel: 2
+    EquipLevelMin: 235
+    Refineable: true
+    Gradable: true
+    View: 2415
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bBaseAtk,10*(.@r/2);
+      bonus2 bSkillAtk,"IQ_THIRD_PUNISH",4*(.@r/3);
+      bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",4*(.@r/3);
+      if (.@r>=7) {
+         bonus bCritical,15;
+         if (.@r>=9) {
+            bonus bShortAtkRate,10;
+            bonus bCritAtkRate,10;
+            if (.@r>=11) {
+               bonus bFixedCast,-300;
+               bonus bAtkRate,5;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,3;
+         bonus bPow,5;
+         bonus bCon,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus bShortAtkRate,10;
+            bonus bLongAtkRate,10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bFixedCast,-200;
+               bonus bAtkRate,5;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bShortAtkRate,15;
+                  bonus bLongAtkRate,15;
+                  bonus bPAtk,5;
+               }
+            }
+         }
+      }
+  - Id: 400696
+    AegisName: FuriousCirclet_NW
+    Name: Furious Crown (Night's Watch)    # !todo check english name
+    Type: Armor
+    Weight: 300
+    Defense: 30
+    Slots: 1
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Head_Top: true
+    ArmorLevel: 2
+    EquipLevelMin: 235
+    Refineable: true
+    Gradable: true
+    View: 2415
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bBaseAtk,10*(.@r/2);
+      bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",4*(.@r/3);
+      bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",4*(.@r/3);
+      if (.@r>=7) {
+         bonus bDelayrate,-10;
+         if (.@r>=9) {
+            bonus bLongAtkRate,10;
+            bonus bCritAtkRate,10;
+            if (.@r>=11) {
+               bonus bFixedCast,-300;
+               bonus bAtkRate,5;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,3;
+         bonus bPow,5;
+         bonus bCon,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus bLongAtkRate,10;
+            bonus bCritAtkRate,10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bFixedCast,-200;
+               bonus bAtkRate,5;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bLongAtkRate,15;
+                  bonus bPAtk,5;
+               }
+            }
          }
       }
   - Id: 410000
@@ -176215,6 +176563,14 @@ Body:
          bonus2 bAddClass,Class_Boss,10;
          bonus2 bVariableCastrate,"AB_CHEAL",-100;
       }
+  - Id: 410338
+    AegisName: aegis_410338
+    Name: Costume God of the Sun    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Mid: true
+    ArmorLevel: 1
+    View: 2555
   - Id: 420000
     AegisName: Isabella_Carrot
     Name: Isabella Carrot
@@ -187297,7 +187653,7 @@ Body:
       bonus2 bSkillAtk,"GC_CROSSIMPACT",20*(.@r/3);
       bonus2 bSkillAtk,"GC_ROLLINGCUTTER",20*(.@r/3);
       bonus2 bSkillAtk,"SC_TRIANGLESHOT",20*(.@r/3);
-      bonus2 bSkillAtk,"SC_STARTMARK",20*(.@r/3);
+      bonus2 bSkillAtk,"SC_FATALMENACE",20*(.@r/3);
       if (.@r>=9) {
          bonus bLongAtkRate,10;
          bonus bShortAtkRate,10;
@@ -194871,6 +195227,90 @@ Body:
              }
          }
       }
+  - Id: 470250
+    AegisName: Z_Boost_Set1_Boots_01
+    Name: Boosting Boots Type A
+    Type: Armor
+    Defense: 23
+    Locations:
+      Shoes: true
+    ArmorLevel: 1
+    EquipLevelMin: 1
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bSPrecovRate,25;
+      if (.@r>=7) {
+         bonus bAtkRate,1;
+         bonus bMatkRate,1;
+         if (.@r>=9) {
+             bonus2 bAddSize,Size_All,3;
+             bonus2 bMagicAddSize,Size_All,3;
+         }
+      }
+  - Id: 470251
+    AegisName: Z_Boost_Set2_Boots_01
+    Name: Boosting Boots Type B
+    Type: Armor
+    Defense: 25
+    Locations:
+      Shoes: true
+    ArmorLevel: 1
+    EquipLevelMin: 1
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bSPrecovRate,25;
+      if (.@r>=7) {
+         bonus bAtkRate,1;
+         bonus bMatkRate,1;
+         if (.@r>=9) {
+             bonus2 bAddSize,Size_All,3;
+             bonus2 bMagicAddSize,Size_All,3;
+         }
+      }
+  - Id: 470252
+    AegisName: Z_Boost_Set3_Boots_01
+    Name: Boosting Boots Type C
+    Type: Armor
+    Defense: 23
+    Locations:
+      Shoes: true
+    ArmorLevel: 1
+    EquipLevelMin: 1
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bSPrecovRate,25;
+      if (.@r>=7) {
+         bonus bAtkRate,1;
+         bonus bMatkRate,1;
+         if (.@r>=9) {
+             bonus2 bAddSize,Size_All,3;
+             bonus2 bMagicAddSize,Size_All,3;
+         }
+      }
+  - Id: 470253
+    AegisName: Z_Boost_Set4_Boots_01
+    Name: Boosting Boots Type D
+    Type: Armor
+    Defense: 18
+    Locations:
+      Shoes: true
+    ArmorLevel: 1
+    EquipLevelMin: 1
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bSPrecovRate,25;
+      if (.@r>=7) {
+         bonus bAtkRate,1;
+         bonus bMatkRate,1;
+         if (.@r>=9) {
+             bonus2 bAddSize,Size_All,3;
+             bonus2 bMagicAddSize,Size_All,3;
+         }
+      }
   - Id: 470254
     AegisName: aegis_470254
     Name: Will of Sword and Zen
@@ -194997,90 +195437,6 @@ Body:
          bonus bFixedCast,-500;
       if (.@r>=11)
          bonus bDelayrate,-10;
-  - Id: 470250
-    AegisName: Z_Boost_Set1_Boots_01
-    Name: Boosting Boots Type A
-    Type: Armor
-    Defense: 23
-    Locations:
-      Shoes: true
-    ArmorLevel: 1
-    EquipLevelMin: 1
-    Refineable: true
-    Script: |
-      .@r = getrefine();
-      bonus bSPrecovRate,25;
-      if (.@r>=7) {
-         bonus bAtkRate,1;
-         bonus bMatkRate,1;
-         if (.@r>=9) {
-             bonus2 bAddSize,Size_All,3;
-             bonus2 bMagicAddSize,Size_All,3;
-         }
-      }
-  - Id: 470251
-    AegisName: Z_Boost_Set2_Boots_01
-    Name: Boosting Boots Type B
-    Type: Armor
-    Defense: 25
-    Locations:
-      Shoes: true
-    ArmorLevel: 1
-    EquipLevelMin: 1
-    Refineable: true
-    Script: |
-      .@r = getrefine();
-      bonus bSPrecovRate,25;
-      if (.@r>=7) {
-         bonus bAtkRate,1;
-         bonus bMatkRate,1;
-         if (.@r>=9) {
-             bonus2 bAddSize,Size_All,3;
-             bonus2 bMagicAddSize,Size_All,3;
-         }
-      }
-  - Id: 470252
-    AegisName: Z_Boost_Set3_Boots_01
-    Name: Boosting Boots Type C
-    Type: Armor
-    Defense: 23
-    Locations:
-      Shoes: true
-    ArmorLevel: 1
-    EquipLevelMin: 1
-    Refineable: true
-    Script: |
-      .@r = getrefine();
-      bonus bSPrecovRate,25;
-      if (.@r>=7) {
-         bonus bAtkRate,1;
-         bonus bMatkRate,1;
-         if (.@r>=9) {
-             bonus2 bAddSize,Size_All,3;
-             bonus2 bMagicAddSize,Size_All,3;
-         }
-      }
-  - Id: 470253
-    AegisName: Z_Boost_Set4_Boots_01
-    Name: Boosting Boots Type D
-    Type: Armor
-    Defense: 18
-    Locations:
-      Shoes: true
-    ArmorLevel: 1
-    EquipLevelMin: 1
-    Refineable: true
-    Script: |
-      .@r = getrefine();
-      bonus bSPrecovRate,25;
-      if (.@r>=7) {
-         bonus bAtkRate,1;
-         bonus bMatkRate,1;
-         if (.@r>=9) {
-             bonus2 bAddSize,Size_All,3;
-             bonus2 bMagicAddSize,Size_All,3;
-         }
-      }
   - Id: 470259
     AegisName: Comp_Zodiac_Boots_MG
     Name: "[Not For Sale] Zodiac Boots (Mage)"
@@ -202056,6 +202412,14 @@ Body:
       Costume_Garment: true
     ArmorLevel: 1
     View: 210
+  - Id: 480429
+    AegisName: aegis_480429
+    Name: Costume cat donuts    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    View: 212
   - Id: 480430
     AegisName: aegis_480430
     Name: Costume Blooming Staff
@@ -202140,7 +202504,7 @@ Body:
     ArmorLevel: 1
     View: 219
   - Id: 480439
-    AegisName: aegis_480439 
+    AegisName: aegis_480439
     Name: Black Mithril Manteau
     Type: Armor
     Weight: 2500
@@ -210117,6 +210481,29 @@ Body:
          bonus bPerfectHitAddRate,10;
       if (readparam(bLuk)>=90)
          bonus bCritAtkRate,10;
+  - Id: 490557
+    AegisName: Sesrumnir_Evt_Ring
+    Name: Sesrumnir Commemoration Ring
+    Type: Armor
+    Weight: 100
+    Slots: 1
+    Locations:
+      Left_Accessory: true
+    ArmorLevel: 1
+    EquipLevelMin: 100
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      bonus bMatkRate,5;
+      bonus bAtkRate,5;
+      bonus bAspdRate,5;
+      bonus bVariableCastrate,-5;
+      bonus bCritical,5;
   - Id: 500000
     AegisName: IDTest_weapon
     Name: IDTest weapon
@@ -212642,6 +213029,180 @@ Body:
                bonus bShortAtkRate,10;
                if (.@g>=ENCHANTGRADE_A) {
                   bonus bPAtk,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 500101
+    AegisName: Lapier_Furious
+    Name: Furious Rapier
+    Type: Weapon
+    SubType: 1hSword
+    Weight: 1400
+    Attack: 210
+    Range: 1
+    Slots: 2
+    Jobs:
+      Alchemist: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bShortAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",10;
+            if (.@r>=10) {
+               bonus bShortAtkRate,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bShortAtkRate,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"BO_EXPLOSIVE_POWDER",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 500102
+    AegisName: SharpSword_Furious
+    Name: Furious Sharp Sword
+    Type: Weapon
+    SubType: 1hSword
+    Weight: 1400
+    Attack: 205
+    Range: 1
+    Slots: 2
+    Jobs:
+      Alchemist: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bCritAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",10;
+            if (.@r>=10) {
+               bonus bCritical,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bCritAtkRate,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"BO_MAYHEMIC_THORNS",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 500103
+    AegisName: WhiteSword_Furious
+    Name: Furious White Sword
+    Type: Weapon
+    SubType: 1hSword
+    Weight: 1200
+    Attack: 205
+    Range: 1
+    Slots: 2
+    Jobs:
+      SuperNovice: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bShortAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",10;
+            if (.@r>=10) {
+               bonus bDelayrate,-10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bShortAtkRate,15;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"HN_DOUBLEBOWLINGBASH",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
                }
             }
          }
@@ -220617,6 +221178,9 @@ Body:
       bonus2 bSkillAtk,"MG_LIGHTNINGBOLT",100;
       bonus2 bSkillAtk,"MG_FIREBOLT",100;
       bonus2 bSkillAtk,"MG_COLDBOLT",100;
+      bonus2 bSkillFixedCast,"MG_LIGHTNINGBOLT",2500;
+      bonus2 bSkillFixedCast,"MG_FIREBOLT",2500;
+      bonus2 bSkillFixedCast,"MG_COLDBOLT",2500;
       if (BaseLevel>=210) {
          bonus bMatkRate,4;
          bonus bMatk,40;
@@ -225443,6 +226007,131 @@ Body:
             }
          }
       }
+  - Id: 550148
+    AegisName: Stick_Furious
+    Name: Furious Stick
+    Type: Weapon
+    SubType: Staff
+    Weight: 1100
+    Attack: 100
+    MagicAttack: 195
+    Range: 1
+    Slots: 2
+    Jobs:
+      SuperNovice: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bUnbreakableWeapon;
+      bonus2 bSkillAtk,"HN_HELLS_DRIVE",10;
+      if (BaseLevel>=210) {
+         bonus bMatkRate,4;
+         bonus bMatk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",10;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bMagicAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_Wind,10;
+         bonus2 bMagicAtkEle,Ele_Earth,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"HN_HELLS_DRIVE",10;
+            if (.@r>=10) {
+               bonus bDelayrate,-10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",15;
+                  bonus2 bSkillAtk,"HN_HELLS_DRIVE",15;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus2 bMagicAtkEle,Ele_Wind,10;
+         bonus2 bMagicAtkEle,Ele_Earth,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"HN_HELLS_DRIVE",10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
+                  bonus bMatkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 550150
+    AegisName: Specter_Furious
+    Name: Furious Vision    # !todo check english name
+    Type: Weapon
+    SubType: Staff
+    Weight: 1400
+    Attack: 100
+    MagicAttack: 185
+    Range: 1
+    Slots: 2
+    Jobs:
+      Wizard: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bUnbreakableWeapon;
+      bonus2 bSkillAtk,"AG_MYSTERY_ILLUSION",5;
+      if (BaseLevel>=210) {
+         bonus bMatkRate,4;
+         bonus bMatk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bMagicAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_Ghost,10;
+         bonus2 bMagicAtkEle,Ele_Dark,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"AG_MYSTERY_ILLUSION",10;
+            if (.@r>=10) {
+               bonus bVariableCastrate,-10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus2 bMagicAtkEle,Ele_Ghost,10;
+         bonus2 bMagicAtkEle,Ele_Dark,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"AG_MYSTERY_ILLUSION",10;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
+                  bonus bMatkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 560000
     AegisName: Boost_Knuckle
     Name: Booster Knuckles
@@ -226935,6 +227624,123 @@ Body:
             }
          }
       }
+  - Id: 560067
+    AegisName: GaleClaw_Furious
+    Name: Furious Gale Claw    # !todo check english name
+    Type: Weapon
+    SubType: Knuckle
+    Weight: 2000
+    Attack: 215
+    Range: 1
+    Slots: 2
+    Jobs:
+      Monk: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bCritAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",10;
+            if (.@r>=10) {
+               bonus bCritical,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bCritAtkRate,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"IQ_EXPOSION_BLASTER",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 560068
+    AegisName: Exterminate_Furious
+    Name: Furious Annihilation    # !todo check english name
+    Type: Weapon
+    SubType: Knuckle
+    Weight: 1800
+    Attack: 215
+    Range: 1
+    Slots: 2
+    Jobs:
+      Monk: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"IQ_THIRD_PUNISH",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"IQ_THIRD_PUNISH",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bShortAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"IQ_THIRD_PUNISH",10;
+            if (.@r>=10) {
+               bonus bPerfectHitAddRate,10;
+               bonus bCritical,5;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"IQ_THIRD_PUNISH",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bShortAtkRate,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"IQ_THIRD_PUNISH",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"IQ_THIRD_PUNISH",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 570000
     AegisName: Boost_Guitar
     Name: Booster Guitar
@@ -228383,6 +229189,134 @@ Body:
                bonus bLongAtkRate,10;
                if (.@g>=ENCHANTGRADE_A) {
                   bonus bPAtk,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 570072
+    AegisName: MetalVilolin_Furious
+    Name: Furious Metal Violin
+    Type: Weapon
+    SubType: Musical
+    Weight: 1200
+    Attack: 100
+    MagicAttack: 185
+    Range: 1
+    Slots: 2
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Gender: Male
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"WM_REVERBERATION",70;
+      bonus2 bSkillAtk,"TR_METALIC_FURY",5;
+      if (BaseLevel>=210) {
+         bonus bMatkRate,4;
+         bonus bMatk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"WM_REVERBERATION",50;
+         bonus2 bSkillAtk,"TR_METALIC_FURY",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bMagicAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_All,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"TR_METALIC_FURY",10;
+            if (.@r>=10) {
+               bonus2 bMagicAtkEle,Ele_All,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"WM_REVERBERATION",50;
+                  bonus2 bSkillAtk,"TR_METALIC_FURY",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus2 bMagicAtkEle,Ele_All,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"WM_REVERBERATION",30;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"TR_METALIC_FURY",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
+                  bonus bMatkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 570073
+    AegisName: Harp_Furious
+    Name: Furious Harp
+    Type: Weapon
+    SubType: Musical
+    Weight: 1300
+    Attack: 190
+    Range: 1
+    Slots: 2
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Gender: Male
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"TR_ROSEBLOSSOM",5;
+      bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"TR_ROSEBLOSSOM",5;
+         bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bLongAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM",10;
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",10;
+            if (.@r>=10) {
+               bonus bLongAtkRate,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"TR_ROSEBLOSSOM",10;
+                  bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bLongAtkRate,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM",5;
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"TR_ROSEBLOSSOM",10;
+               bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
                }
             }
          }
@@ -229857,6 +230791,134 @@ Body:
                bonus bLongAtkRate,10;
                if (.@g>=ENCHANTGRADE_A) {
                   bonus bPAtk,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 580072
+    AegisName: MetalWhip_Furious
+    Name: Furious Metal Whip
+    Type: Weapon
+    SubType: Whip
+    Weight: 1200
+    Attack: 100
+    MagicAttack: 185
+    Range: 2
+    Slots: 2
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Gender: Female
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"WM_REVERBERATION",70;
+      bonus2 bSkillAtk,"TR_METALIC_FURY",5;
+      if (BaseLevel>=210) {
+         bonus bMatkRate,4;
+         bonus bMatk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"WM_REVERBERATION",50;
+         bonus2 bSkillAtk,"TR_METALIC_FURY",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bMagicAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_All,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"TR_METALIC_FURY",10;
+            if (.@r>=10) {
+               bonus2 bMagicAtkEle,Ele_All,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"WM_REVERBERATION",50;
+                  bonus2 bSkillAtk,"TR_METALIC_FURY",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus2 bMagicAtkEle,Ele_All,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"WM_REVERBERATION",30;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"TR_METALIC_FURY",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
+                  bonus bMatkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 580073
+    AegisName: Whip_Furious
+    Name: Furious Whip
+    Type: Weapon
+    SubType: Whip
+    Weight: 1200
+    Attack: 190
+    Range: 2
+    Slots: 2
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Gender: Female
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"TR_ROSEBLOSSOM",5;
+      bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,4;
+         bonus bBaseAtk,40;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"TR_ROSEBLOSSOM",5;
+         bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bLongAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM",10;
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",10;
+            if (.@r>=10) {
+               bonus bLongAtkRate,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"TR_ROSEBLOSSOM",10;
+                  bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bLongAtkRate,10;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM",5;
+            bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"TR_ROSEBLOSSOM",10;
+               bonus2 bSkillAtk,"TR_ROSEBLOSSOM_ATK",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+                  bonus bAtkRate,3*(.@r/2);
                }
             }
          }
@@ -238260,6 +239322,72 @@ Body:
             }
          }
       }
+  - Id: 640053
+    AegisName: Flame_Staff_Furious
+    Name: Furious Flame Staff    # !todo check english name
+    Type: Weapon
+    SubType: 2hStaff
+    Weight: 2000
+    Attack: 100
+    MagicAttack: 270
+    Range: 1
+    Slots: 2
+    Jobs:
+      Wizard: true
+    Classes:
+      Fourth: true
+    Locations:
+      Both_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bUnbreakableWeapon;
+      bonus2 bSkillAtk,"AG_FLORAL_FLARE_ROAD",10;
+      if (BaseLevel>=210) {
+         bonus bMatkRate,7;
+         bonus bMatk,70;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"AG_CRIMSON_ARROW",5;
+         bonus2 bSkillAtk,"AG_CRIMSON_ARROW_ATK",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bMagicAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_Fire,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"AG_FLORAL_FLARE_ROAD",10;
+            bonus2 bSkillAtk,"AG_CRIMSON_ARROW",10;
+            bonus2 bSkillAtk,"AG_CRIMSON_ARROW_ATK",10;
+            if (.@r>=10) {
+               bonus bVariableCastrate,-10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"AG_FLORAL_FLARE_ROAD",10;
+                  bonus2 bSkillAtk,"AG_CRIMSON_ARROW",10;
+                  bonus2 bSkillAtk,"AG_CRIMSON_ARROW_ATK",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus2 bMagicAtkEle,Ele_Fire,15;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"AG_FLORAL_FLARE_ROAD",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"AG_CRIMSON_ARROW",10;
+               bonus2 bSkillAtk,"AG_CRIMSON_ARROW_ATK",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,4*(.@r/2);
+                  bonus bMatkRate,4*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 650000
     AegisName: Woe_Huuma1_Z
     Name: Lesser Guild Member's Huuma Shuriken
@@ -243689,6 +244817,64 @@ Body:
             }
          }
       }
+  - Id: 810042
+    AegisName: Rifle_Furious
+    Name: Furious Rifle    # !todo check english name
+    Type: Weapon
+    SubType: Rifle
+    Weight: 2400
+    Attack: 250
+    Range: 9
+    Slots: 2
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Both_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",5;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,7;
+         bonus bBaseAtk,70;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bCritAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",10;
+            if (.@r>=10) {
+               bonus bCritical,10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bCritAtkRate,15;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,4*(.@r/2);
+                  bonus bAtkRate,4*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 820000
     AegisName: Ep172_1h_Shotgun
     Name: Lust Shatter
@@ -245208,6 +246394,64 @@ Body:
          bonus2 bIgnoreDefRaceRate,RC_Player_Human,-25;
          if (.@r>=9) {
              bonus2 bSubSize,Size_All,7;
+         }
+      }
+  - Id: 830038
+    AegisName: Gatling_Furious
+    Name: Furious Knight Gatling Gun    # !todo check english name
+    Type: Weapon
+    SubType: Gatling
+    Weight: 3200
+    Attack: 330
+    Range: 9
+    Slots: 2
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Both_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 205
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",10;
+      if (BaseLevel>=210) {
+         bonus bAtkRate,7;
+         bonus bBaseAtk,70;
+      }
+      if (BaseLevel>=220) {
+         bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",5;
+      }
+      if (BaseLevel>=230) {
+         bonus2 bAddSize,Size_All,10;
+      }
+      if (.@r>=7) {
+         bonus bLongAtkRate,10;
+         if (.@r>=9) {
+            bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",10;
+            if (.@r>=10) {
+               bonus bDelayrate,-10;
+               if (.@r>=11) {
+                  bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",10;
+               }
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bLongAtkRate,15;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",5;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bSkillAtk,"NW_THE_VIGILANTE_AT_NIGHT",10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,4*(.@r/2);
+                  bonus bAtkRate,4*(.@r/2);
+               }
+            }
          }
       }
   - Id: 840000

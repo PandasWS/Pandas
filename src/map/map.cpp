@@ -5627,6 +5627,14 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, pds_mapfla
 			} else
 				mapdata->setMapFlag(mapflag, false);
 			break;
+		case MF_SPECIALPOPUP:
+			if (status) {
+				nullpo_retr(false, args);
+
+				mapdata->setMapFlag(mapflag, args->flag_val);
+			} else
+				mapdata->setMapFlag(mapflag, false);
+			break;
 		case MF_BATTLEGROUND:
 			if (status) {
 				nullpo_retr(false, args);

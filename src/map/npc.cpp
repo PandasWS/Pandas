@@ -934,8 +934,8 @@ uint64 BarterDatabase::parseBodyNode( const ryml::NodeRef& node ){
 						return 0;
 					}
 
-					if( requirement_index >= MAX_BARTER_REQUIREMENTS ){
-						this->invalidWarning( requiredItemNode["Index"], "barter_parseBodyNode: Index %hu is out of bounds. Barters support up to %d requirements.\n", requirement_index, MAX_BARTER_REQUIREMENTS );
+					if( item->requirements.size() >= MAX_BARTER_REQUIREMENTS ){
+						this->invalidWarning( requiredItemNode["Index"], "barter_parseBodyNode: Failed at Index %hu. Too many requirements, Barters support up to %d.\n", requirement_index, MAX_BARTER_REQUIREMENTS );
 						return 0;
 					}
 
@@ -4578,7 +4578,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 		}
 		case NPCTYPE_POINTSHOP: {
 #ifndef Pandas_Support_Pointshop_Variable_DisplayName
-			if (sscanf(p, ",%32[^,:]:%11d,",point_str,&is_discount) < 1) {
+			if (sscanf(p, ",%31[^,:]:%11d,",point_str,&is_discount) < 1) {
 				ShowError("npc_parse_shop: Invalid item cost definition in file '%s', line '%d'. Ignoring the rest of the line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer,start-buffer), w1, w2, w3, w4);
 				return strchr(start,'\n'); // skip and continue
 			}
@@ -4616,7 +4616,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 			break;
 #endif
 		default:
-			if( sscanf( p, ",%32[^,:]:%11d,", point_str, &is_discount ) == 2 ){
+			if( sscanf( p, ",%31[^,:]:%11d,", point_str, &is_discount ) == 2 ){
 				is_discount = 1;
 			}else{
 				if( !strcasecmp( point_str, "yes" ) ){
@@ -6096,6 +6096,16 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 
 		case MF_JEXP:
 		case MF_BEXP: {
+				pds_mapflag_args args = {};
+
+				if (sscanf(w4, "%11d", &args.flag_val) < 1)
+					args.flag_val = 0;
+
+				map_setmapflag_sub(m, mapflag, state, &args);
+			}
+			break;
+			
+		case MF_SPECIALPOPUP: {
 				pds_mapflag_args args = {};
 
 				if (sscanf(w4, "%11d", &args.flag_val) < 1)

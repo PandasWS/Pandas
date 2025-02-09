@@ -311,7 +311,7 @@ void buyingstore_open(map_session_data* sd, uint32 account_id)
 		return;
 	}
 
-	if( !searchstore_queryremote(sd, account_id) && ( sd->bl.m != pl_sd->bl.m || !check_distance_bl(&sd->bl, &pl_sd->bl, AREA_SIZE) ) )
+	if( !searchstore_queryremote(*sd, account_id) && ( sd->bl.m != pl_sd->bl.m || !check_distance_bl(&sd->bl, &pl_sd->bl, AREA_SIZE) ) )
 	{// out of view range
 		return;
 	}
@@ -358,13 +358,13 @@ void buyingstore_trade( map_session_data* sd, uint32 account_id, unsigned int bu
 		return;
 	}
 
-	if( !searchstore_queryremote(sd, account_id) && ( sd->bl.m != pl_sd->bl.m || !check_distance_bl(&sd->bl, &pl_sd->bl, AREA_SIZE) ) )
+	if( !searchstore_queryremote(*sd, account_id) && ( sd->bl.m != pl_sd->bl.m || !check_distance_bl(&sd->bl, &pl_sd->bl, AREA_SIZE) ) )
 	{// out of view range
 		clif_buyingstore_trade_failed_seller(sd, BUYINGSTORE_TRADE_SELLER_FAILED, 0);
 		return;
 	}
 
-	searchstore_clearremote(sd);
+	searchstore_clearremote(*sd);
 
 	// buyer lost zeny in the mean time? fix the limit
 	if( pl_sd->status.zeny < pl_sd->buyingstore.zenylimit ){
@@ -634,11 +634,11 @@ void buyingstore_reopen( map_session_data* sd ){
 		{
 			// Make buyer look perfect
 			pc_setdir(sd, at->dir, at->head_dir);
-			clif_changed_dir(&sd->bl, AREA_WOS);
+			clif_changed_dir(sd->bl, AREA_WOS);
 			if( at->sit ) {
 				pc_setsit(sd);
 				skill_sit(sd, 1);
-				clif_sitting(&sd->bl);
+				clif_sitting(sd->bl);
 			}
 
 			// Immediate save

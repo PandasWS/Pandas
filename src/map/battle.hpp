@@ -762,6 +762,8 @@ struct Battle_Config
 	int instance_allow_reconnect;
 	int synchronize_damage;
 	int item_stacking;
+	int hom_delay_reset_vaporize;
+	int hom_delay_reset_warp;
 
 	// Pandas Configure
 #ifdef Pandas_BattleConfig_Force_LoadEvent
