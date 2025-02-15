@@ -12,4 +12,14 @@ UPDATE `char_reg_num` SET `key` = 'ep18_main' WHERE `key` = 'ep18_1_main';
 -- -----------------------------------------------
 -- upgrade_20240914.sql
 -- -----------------------------------------------
+
 ALTER TABLE `guild_expulsion` ADD COLUMN `char_id` int(11) unsigned NOT NULL default '0';
+
+-- -----------------------------------------------
+-- upgrade_20241005.sql
+-- -----------------------------------------------
+
+ALTER TABLE `homunculus`
+	CHANGE COLUMN `sp` `sp` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	CHANGE COLUMN `max_sp` `max_sp` INT(11) UNSIGNED NOT NULL DEFAULT '0';
+
