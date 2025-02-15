@@ -4322,7 +4322,7 @@ Body:
   Translation: ""
 - Original: "clif_disp_overhead: Message too long (length %d)\n"
   Translation: ""
-- Original: "clif_guild_message: Truncated message '%s' (len=%d, max=%[{PRIuPTR}], guild_id=%d).\n"
+- Original: "clif_guild_message: Truncated message '%s' (len=%[{PRIuPTR}], max=%[{PRIuPTR}], guild_id=%u).\n"
   Translation: ""
 - Original: "clif_hate_info: Received invalid class %d for this packet (char_id=%d, hate_level=%u, type=%u).\n"
   Translation: ""
