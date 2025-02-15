@@ -2314,6 +2314,9 @@
 	export_constant(SC_POWERUP);
 	export_constant(SC_AGIUP);
 	export_constant(SC_PROTECTION);
+	export_constant(SC_BATH_FOAM_A);
+	export_constant(SC_BATH_FOAM_B);
+	export_constant(SC_BATH_FOAM_C);
 
 	/* status icons */
 	export_deprecated_constant2("SI_BLANK",-1);
@@ -8327,6 +8330,35 @@
 	export_constant(IG_COSTUMEMILEPACK_35_1);
 	export_constant(IG_COSTUMEMILEPACK_35_2);
 	export_constant(IG_COSTUMEMILEPACK_35_3);
+	export_constant(IG_2024ROS_BOX_1ST);
+	export_constant(IG_2024ROS_BOX_2ND);
+	export_constant(IG_2024ROS_BOX_3RD);
+	export_constant(IG_2024ROS_BOX_4TH);
+	export_constant(IG_2024ROS_BOX_5TH);
+	export_constant(IG_AEGIS_103234);
+	export_constant(IG_2024SPORTS_BOX);
+	export_constant(IG_22TH_PRESENT_BOX);
+	export_constant(IG_AEGIS_103316);
+	export_constant(IG_SVIP_GIFT_22THANIV);
+	export_constant(IG_VVIP_GIFT_22THANIV);
+	export_constant(IG_VIP_GIFT_22THANIV);
+	export_constant(IG_LI_NYANGVINE_BOX1_36);
+	export_constant(IG_LI_NYANGVINE_BOX2_36);
+	export_constant(IG_LI_NYANGVINE_BOX3_36);
+	export_constant(IG_2024_SUMMER_PACK_1);
+	export_constant(IG_2024_SUMMER_PACK_2);
+	export_constant(IG_2024_SUMMER_PACK_3);
+	export_constant(IG_2024_SUMMER_PACK_4);
+	export_constant(IG_LI_A_HD_CARNIUMBOX);
+	export_constant(IG_LI_A_HD_BRADIUMBOX);
+	export_constant(IG_22TH_PACKAGE_1);
+	export_constant(IG_22TH_PACKAGE_2);
+	export_constant(IG_22TH_PACKAGE_3);
+	export_constant(IG_22TH_PACKAGE_4);
+	export_constant(IG_CLB_SS_NYANG_PACK);
+	export_constant(IG_CLB_SS_REFINE1_PACK);
+	export_constant(IG_CLB_SS_REFINE2_PACK);
+	export_constant(IG_CLB_SS_EXP_PACK);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -9666,6 +9698,11 @@
 	export_constant_npc(JT_4_EP21_HOWELL_S);
 	export_constant_npc(JT_4_EP21_TAN_S);
 	export_constant_npc(JT_4_M_VACATION_MARAM);
+	export_constant_npc(JT_4_CLB_SS_FC);
+	export_constant_npc(JT_4_CLB_SS_TZ);
+	export_constant_npc(JT_4_CLB_SS_AJ);
+	export_constant_npc(JT_4_CLB_SS_LK);
+	export_constant_npc(JT_4_SMART_ANDRE);
 	export_constant_npc(JT_ROZ_MQ_XAVIER);
 	export_constant_npc(JT_ROZ_MQ_MOCLORD);
 	export_constant_npc(JT_ROZ_MQ_SKULD);
@@ -11819,7 +11856,21 @@
 	export_constant(HAT_EF_C_BABY_GLOOM);
 	export_constant(HAT_EF_WINTERNIGHTBELLS);
 	export_constant(HAT_EF_NIGHTSKYOFRUTIE);
+	export_constant(FOOTPRINT_EF_BASE);
+	export_constant(FOOTPRINT_EF_STR_BASE);
+	export_constant(FOOTPRINT_EF_PURPLESTAR);
+	export_constant(FOOTPRINT_EF_YELLOWSTAR);
+	export_constant(FOOTPRINT_EF_REDSTAR);
 	export_constant(HAT_EF_RAINBOW_POISON_MASTER);
+	export_constant(HAT_EF_C_ANCIENT_RUNE);
+	export_constant(HAT_EF_C_DRAGON_GREEN_AURA);
+	export_constant(HAT_EF_C_DRAGON_RED_AURA);
+	export_constant(HAT_EF_C_DRAGON_YELLOW_AURA);
+	export_constant(HAT_EF_INTERDIMENSIONAL_RIFT);
+	export_constant(HAT_EF_C_CLB_SS_LL);
+	export_constant(HAT_EF_VACATION);
+	export_constant(HAT_EF_C_FH_LOSTWING);
+	export_constant(FOOTPRINT_EF_DOGFOOT);
 
 	/* pet catch */
 	export_constant(PET_CATCH_UNIVERSAL);

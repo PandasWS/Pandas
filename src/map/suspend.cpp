@@ -471,7 +471,7 @@ void suspend_active(map_session_data* sd, enum e_suspend_mode smode) {
 		chat_leavechat(sd, 0);
 
 	// 若正在进行交易, 则立刻取消交易
-	if (sd->trade_partner)
+	if (sd->state.trading)
 		trade_tradecancel(sd);
 
 	// 关闭正在访问的仓库, 防止卡住公会仓库 (感谢"喵了个咪"反馈)

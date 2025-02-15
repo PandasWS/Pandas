@@ -57983,6 +57983,10 @@ Body:
     AegisName: Dark_Lord_Egg
     Name: Dark Lord Egg
     Type: PetEgg
+  - Id: 9155
+    AegisName: aegis_9155
+    Name: Hornet's Egg    # !todo check english name
+    Type: PetEgg
   - Id: 9156
     AegisName: Sonic_Chao_Egg
     Name: Chao Egg
@@ -57997,6 +58001,22 @@ Body:
   - Id: 9157
     AegisName: aegis_9157
     Name: Ice Seahorse Egg
+    Type: PetEgg
+  - Id: 9183
+    AegisName: CLB_SS_Egg01
+    Name: Pei Chai's Egg    # !todo check english name
+    Type: PetEgg
+  - Id: 9184
+    AegisName: CLB_SS_Egg02
+    Name: Tides' Egg    # !todo check english name
+    Type: PetEgg
+  - Id: 9192
+    AegisName: aegis_9192
+    Name: Giant Hornet's Egg    # !todo check english name
+    Type: PetEgg
+  - Id: 9193
+    AegisName: aegis_9193
+    Name: Mistress's Egg    # !todo check english name
     Type: PetEgg
   - Id: 10001
     AegisName: Skull_Helm
@@ -83053,7 +83073,7 @@ Body:
       Hunter: true
       Rogue: true
     Locations:
-      Right_Hand: true
+      Both_Hand: true
     WeaponLevel: 4
     EquipLevelMin: 70
     Refineable: true
@@ -135123,6 +135143,428 @@ Body:
       if (.@r>=10) {
          bonus bMRes,15;
       }
+  - Id: 24906
+    AegisName: S_SHC_EC_Earring
+    Name: Eternal Cross Earring Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Assassin: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Right_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SHC_ETERNAL_SLASH",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24907
+    AegisName: S_SHC_EC_Pendant
+    Name: Eternal Cross Pendant Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Assassin: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Left_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SHC_CROSS_SLASH",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24908
+    AegisName: S_SHC_SI_Armor
+    Name: Savage Armor Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Assassin: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Armor: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SHC_SAVAGE_IMPACT",5+(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24909
+    AegisName: S_SHC_SI_Shoes
+    Name: Savage Shoes Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Assassin: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Shoes: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SHC_SAVAGE_IMPACT",5+(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24910
+    AegisName: S_WH_GS_Earring
+    Name: Gale Earring Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Hunter: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Right_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"WH_GALESTORM",5+(.@r/3);
+      bonus bBaseAtk,10*(.@r/2);
+  - Id: 24911
+    AegisName: S_WH_GS_Pendant
+    Name: Gale Pendant Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Hunter: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Left_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"WH_GALESTORM",5+(.@r/3);
+      bonus bBaseAtk,10*(.@r/2);
+  - Id: 24912
+    AegisName: S_WH_CB_Armor
+    Name: Crescent Armor Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Hunter: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Armor: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"WH_CRESCIVE_BOLT",5+(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24913
+    AegisName: S_WH_CB_Shoes
+    Name: Crescent Shoes Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Hunter: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Shoes: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"WH_CRESCIVE_BOLT",5+(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24914
+    AegisName: S_SS_SR_Earring
+    Name: Lightning Cannon Earring Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      KagerouOboro: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Right_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SS_SEKIENHOU",8+2*(.@r/3);
+      bonus bMatk,7*(.@r/2);
+  - Id: 24915
+    AegisName: S_SS_SR_Pendant
+    Name: Lightning Cannon Pendant Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      KagerouOboro: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Left_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SS_RAIDENPOU",8+2*(.@r/3);
+      bonus bMatk,7*(.@r/2);
+  - Id: 24916
+    AegisName: S_SS_KR_Armor
+    Name: Gold Blood Cannon Armor Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      KagerouOboro: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Armor: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SS_KINRYUUHOU",8+2*(.@r/3);
+      bonus bMatk,7*(.@r/2);
+  - Id: 24917
+    AegisName: S_SS_KR_Shoes
+    Name: Gold Blood Cannon Shoes Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      KagerouOboro: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Shoes: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"SS_REIKETSUHOU",8+2*(.@r/3);
+      bonus bMatk,7*(.@r/2);
+  - Id: 24918
+    AegisName: S_DK_SS_Earring
+    Name: Storm Servant Earring Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Knight: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Right_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"DK_STORMSLASH",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24919
+    AegisName: S_DK_SS_Pendant
+    Name: Storm Servant Pendant Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Knight: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Left_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"DK_SERVANTWEAPON_ATK",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24920
+    AegisName: S_DK_HS_Armor
+    Name: Hack Slasher Armor Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Knight: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Armor: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"DK_HACKANDSLASHER",5+(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24921
+    AegisName: S_DK_HS_Shoes
+    Name: Hack Slasher Shoes Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Knight: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Shoes: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"DK_HACKANDSLASHER",5+(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24922
+    AegisName: S_TR_RW_Earring
+    Name: Rhythmic Earring Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Right_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",5+(.@r/3);
+      bonus bMatk,10*(.@r/2);
+  - Id: 24923
+    AegisName: S_TR_RW_Pendant
+    Name: Rhythmic Pendant Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Left_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",5+(.@r/3);
+      bonus bMatk,10*(.@r/2);
+  - Id: 24924
+    AegisName: S_TR_MF_Armor
+    Name: Metallic Fury Armor Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Armor: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"TR_METALIC_FURY",5+(.@r/3);
+      bonus bMatk,10*(.@r/2);
+  - Id: 24925
+    AegisName: S_TR_MF_Shoes
+    Name: Metallic Fury Shoes Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Shoes: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"TR_METALIC_FURY",5+(.@r/3);
+      bonus bMatk,10*(.@r/2);
+  - Id: 24926
+    AegisName: S_NW_SO_Earring
+    Name: Spiral One Earring Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Right_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"NW_SPIRAL_SHOOTING",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24927
+    AegisName: S_NW_SO_Pendant
+    Name: Spiral One Pendant Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Left_Accessory: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"NW_MAGAZINE_FOR_ONE",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24928
+    AegisName: S_NW_WB_Armor
+    Name: Wild Bullet Armor Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Armor: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"NW_ONLY_ONE_BULLET",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
+  - Id: 24929
+    AegisName: S_NW_WB_Shoes
+    Name: Wild Bullet Shoes Shadow    # !todo check english name
+    Type: ShadowGear
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Shadow_Shoes: true
+    EquipLevelMin: 200
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMaxHP,.@r*10;
+      bonus2 bSkillAtk,"NW_WILD_SHOT",8+2*(.@r/3);
+      bonus bCritical,(.@r/2);
+      bonus bBaseAtk,4*(.@r/2);
   - Id: 26001
     AegisName: Toughen_Metal_Lance
     Name: Enhanced Metal Lance
@@ -158151,7 +158593,7 @@ Body:
     AegisName: Evt_Undine_Spear_K
     Name: Sealed Aquatic Spear
     Type: Weapon
-    SubType: Staff
+    SubType: 1hSpear
     Attack: 180
     Range: 3
     Slots: 2
@@ -172419,6 +172861,21 @@ Body:
             }
          }
       }
+  - Id: 400664
+    AegisName: C_CLB_SS_DF
+    Name: Costume Stretched Feichai    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+    ArmorLevel: 1
+    View: 2531
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
   - Id: 400673
     AegisName: FuriousCirclet_TR
     Name: Furious Crown (Troubadour & Trouvere)
@@ -172762,6 +173219,22 @@ Body:
              }
          }
       }
+  - Id: 400692
+    AegisName: C_Gold_Paeonia
+    Name: Costume Gold Peonia    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+    ArmorLevel: 1
+    View: 2558
+  - Id: 400693
+    AegisName: C_Red_Paeonia
+    Name: Costume Red Peonia    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+    ArmorLevel: 1
+    View: 2559
   - Id: 400694
     AegisName: FuriousCirclet_AG
     Name: Furious Crown (Arch Mage)    # !todo check english name
@@ -172920,6 +173393,43 @@ Body:
             }
          }
       }
+  - Id: 400715
+    AegisName: Rising_Circlet
+    Name: Rising Circlet    # !todo check english name
+    Type: Armor
+    Defense: 10
+    Slots: 1
+    Locations:
+      Head_Top: true
+    ArmorLevel: 1
+    EquipLevelMin: 100
+    Refineable: true
+    View: 2249
+    Script: |
+      .@max_lvl = min(250,BaseLevel);
+      bonus bMaxHP,500;
+      bonus bMaxSP,200;
+      bonus bMatk,5*(.@max_lvl/15);
+      bonus bBaseAtk,5*(.@max_lvl/15);
+      if (BaseLevel>=100) {
+         bonus bMatkRate,5;
+         bonus bAtkRate,5;
+      }
+      if (BaseLevel>=110) {
+         bonus bFixedCast,-500;
+      }
+      if (BaseLevel>=120) {
+         bonus bAspdRate,10;
+         bonus bVariableCastrate,-10;
+      }
+  - Id: 400717
+    AegisName: aegis_400717
+    Name: Costume Medicine Headband    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+    ArmorLevel: 1
+    View: 2581
   - Id: 410000
     AegisName: Resonate_Taego_J
     Name: Ancient Resonance
@@ -176097,6 +176607,10 @@ Body:
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
+    Script: |
+      hateffect HAT_EF_WINTERNIGHTBELLS,true;
+    UnEquipScript: |
+      hateffect HAT_EF_WINTERNIGHTBELLS,false;
   - Id: 410296
     AegisName: C_One_Sho_Bottle
     Name: Costume One Liter Bottle
@@ -176432,6 +176946,21 @@ Body:
       Costume_Head_Low: true
     ArmorLevel: 1
     View: 2528
+  - Id: 410326
+    AegisName: C_CLB_SS_EA
+    Name: Costume Enjoyable Walk Aji    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Mid: true
+    ArmorLevel: 1
+    View: 2532
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
   - Id: 410332
     AegisName: aegis_410332
     Name: Karasu Tengu Mask
@@ -176571,6 +177100,22 @@ Body:
       Costume_Head_Mid: true
     ArmorLevel: 1
     View: 2555
+  - Id: 410351
+    AegisName: C_Buoyant_Parasol_B
+    Name: Costume Dungsildungsil Parasol    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Mid: true
+    ArmorLevel: 1
+    View: 2560
+  - Id: 410352
+    AegisName: C_Buoyant_Parasol_R
+    Name: Costume Dungsildungsil Red Parasol    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Mid: true
+    ArmorLevel: 1
+    View: 2561
   - Id: 420000
     AegisName: Isabella_Carrot
     Name: Isabella Carrot
@@ -179442,6 +179987,24 @@ Body:
       Costume_Head_Low: true
     ArmorLevel: 1
     View: 2527
+  - Id: 420338
+    AegisName: C_CLB_SS_LL
+    Name: Costume Lazy Cat Looker    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      hateffect HAT_EF_C_CLB_SS_LL,true;
+    UnEquipScript: |
+      hateffect HAT_EF_C_CLB_SS_LL,false;
   - Id: 420342
     AegisName: aegis_420342
     Name: Wireless Security Drone
@@ -179459,6 +180022,30 @@ Body:
       bonus bMagicSPGainValue,5;
       bonus bDelayrate,-3;
       bonus2 bExpAddRace,RC_All,8;
+  - Id: 420349
+    AegisName: C_Blue_Sunbed
+    Name: Costume Blue Sunbed    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2562
+  - Id: 420350
+    AegisName: C_Green_Sunbed
+    Name: Costume Green Sunbed    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2563
+  - Id: 420354
+    AegisName: aegis_420354
+    Name: Costume Candle Set    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2569
   - Id: 430001
     AegisName: C_Helm_Of_Ra
     Name: Costume Hat of the Sun God
@@ -179942,6 +180529,78 @@ Body:
     Trade:
       NoDrop: true
       NoTrade: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+  - Id: 440013
+    AegisName: C_2024ROS_Hat_1st
+    Name: Costume ROS Korea 1st Hat    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+      Costume_Head_Mid: true
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2551
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+  - Id: 440014
+    AegisName: C_2024ROS_Hat_2nd
+    Name: Costume ROS Korea 2nd Hat    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+      Costume_Head_Mid: true
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2552
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+  - Id: 440015
+    AegisName: C_2024ROS_Hat_3rd
+    Name: Costume ROS Korea 3rd Hat    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+      Costume_Head_Mid: true
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2553
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+  - Id: 440016
+    AegisName: C_2024ROS_Hat_4th
+    Name: Costume ROS Korea Participant Hat    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Head_Top: true
+      Costume_Head_Mid: true
+      Costume_Head_Low: true
+    ArmorLevel: 1
+    View: 2554
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
       NoCart: true
       NoGuildStorage: true
       NoMail: true
@@ -188405,6 +189064,80 @@ Body:
       bonus2 bSubRace,RC_Player_Doram,3;
       bonus2 bSubRace,RC_Player_Human,3;
       bonus bPerfectHitAddRate,getrefine();
+  - Id: 450405
+    AegisName: aegis_450405
+    Name: Convertible Physical Armor    # !todo check english name
+    Type: Armor
+    Weight: 1000
+    Defense: 130
+    Slots: 1
+    Locations:
+      Armor: true
+    ArmorLevel: 1
+    EquipLevelMin: 150
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bBaseAtk,100+10*(.@r/2);
+      if (.@r>=7) {
+         bonus bAspdRate,15;
+         if (.@r>=9) {
+            bonus bLongAtkRate,10;
+            bonus bShortAtkRate,10;
+            if (.@r>=11) {
+               bonus bDelayrate,-10;
+            }
+         }
+      }
+  - Id: 450406
+    AegisName: aegis_450406
+    Name: Convertible Magical Armor    # !todo check english name
+    Type: Armor
+    Weight: 1000
+    Defense: 130
+    Slots: 1
+    Locations:
+      Armor: true
+    ArmorLevel: 1
+    EquipLevelMin: 150
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bMatk,100+10*(.@r/2);
+      if (.@r>=7) {
+         bonus bVariableCastrate,-15;
+         if (.@r>=9) {
+            bonus2 bMagicAtkEle,Ele_All,10;
+            if (.@r>=11) {
+               bonus bDelayrate,-10;
+            }
+         }
+      }
+  - Id: 450407
+    AegisName: aegis_450407
+    Name: Convertible Critical Armor    # !todo check english name
+    Type: Armor
+    Weight: 1000
+    Defense: 130
+    Slots: 1
+    Locations:
+      Armor: true
+    ArmorLevel: 1
+    EquipLevelMin: 150
+    Refineable: true
+    Script: |
+      .@r = getrefine();
+      bonus bBaseAtk,100+7*(.@r/2);
+      bonus bCritical,2*(.@r/2);
+      if (.@r>=7) {
+         bonus bAspdRate,15;
+         if (.@r>=9) {
+            bonus bCritAtkRate,10;
+            if (.@r>=11) {
+               bonus bDelayrate,-10;
+            }
+         }
+      }
   - Id: 460002
     AegisName: Aries_Shield_J
     Name: Aries Shield
@@ -202038,6 +202771,14 @@ Body:
              bonus bAspdRate,15;
          }
       }
+  - Id: 480393
+    AegisName: aegis_480393
+    Name: Costume Blue Moon Rori Ruri's Crescent Moon    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    View: 199
   - Id: 480401
     AegisName: Z_Boost_Set1_Hood_01
     Name: Boosting Cloak Type A
@@ -202600,6 +203341,29 @@ Body:
              skill "AC_CONCENTRATION",5;
          }
       }
+  - Id: 480445
+    AegisName: C_CLB_SS_LT
+    Name: Costume Lucky Tights    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    View: 221
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+  - Id: 480450
+    AegisName: aegis_480450
+    Name: Costume Honey Dipper    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    View: 222
   - Id: 480451
     AegisName: aegis_480451
     Name: Automatic Engine Wing C-Type
@@ -202634,6 +203398,33 @@ Body:
              }
          }
       }
+  - Id: 480462
+    AegisName: aegis_480462
+    Name: Costume Hanwha XRO Poring Tube    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    View: 229
+  - Id: 480470
+    AegisName: C_Summer_Beach
+    Name: Costume Summer Beach    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    Script: |
+      hateffect HAT_EF_VACATION,true;
+    UnEquipScript: |
+      hateffect HAT_EF_VACATION,false;
+  - Id: 480478
+    AegisName: aegis_480478
+    Name: Costume Hanwha XRO Poring Tube    # !todo check english name
+    Type: Armor
+    Locations:
+      Costume_Garment: true
+    ArmorLevel: 1
+    View: 236
   - Id: 490004
     AegisName: Atker_Ring
     Name: Attacker Booster Ring
@@ -218264,6 +219055,54 @@ Body:
             }
          }
       }
+  - Id: 530060
+    AegisName: Time_Gap_Spear_IG
+    Name: Time Gap Guardian Spear    # !todo check english name
+    Type: Weapon
+    SubType: 1hSpear
+    Weight: 2700
+    Attack: 240
+    Range: 3
+    Slots: 2
+    Jobs:
+      Crusader: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bCritical,5;
+      bonus2 bSkillAtk,"IG_RADIANT_SPEAR",15+5*(.@r/3);
+      bonus bAtkRate,(.@r/2);
+      bonus bBaseAtk,25*(.@r/2);
+      if (.@r>=7) {
+         bonus bCritAtkRate,20;
+         if (.@r>=9) {
+            bonus bCRate,5;
+            bonus bCritical,15;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"IG_RADIANT_SPEAR",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"IG_RADIANT_SPEAR",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bLongAtkRate,10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 540000
     AegisName: Boost_Spl_Book
     Name: Booster Spellbook
@@ -226132,6 +226971,59 @@ Body:
             }
          }
       }
+  - Id: 550152
+    AegisName: Time_Gap_HN_Staff
+    Name: Time Gap Hyper Staff    # !todo check english name
+    Type: Weapon
+    SubType: Staff
+    Weight: 1800
+    Attack: 100
+    Range: 1
+    Slots: 2
+    Jobs:
+      SuperNovice: true
+    Classes:
+      Fourth: true
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatk,230+25*(.@r/2);
+      bonus bUnbreakableWeapon;
+      bonus bMatkRate,3+(.@r/2);
+      bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",15+5*(.@r/3);
+      bonus2 bSkillAtk,"HN_JACK_FROST_NOVA",15+5*(.@r/3);
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_Wind,25;
+         bonus2 bMagicAtkEle,Ele_Water,25;
+         if (.@r>=9) {
+            bonus bVariableCastrate,-10;
+            bonus bSMatk,7;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",15;
+               bonus2 bSkillAtk,"HN_JACK_FROST_NOVA",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bSMatk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"HN_JUPITEL_THUNDER_STORM",15;
+            bonus2 bSkillAtk,"HN_JACK_FROST_NOVA",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bMagicAtkEle,Ele_Wind,20;
+               bonus2 bMagicAtkEle,Ele_Water,20;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 560000
     AegisName: Boost_Knuckle
     Name: Booster Knuckles
@@ -229321,6 +230213,55 @@ Body:
             }
          }
       }
+  - Id: 570075
+    AegisName: Time_Gap_TR_Vilolin
+    Name: Time Gap Musical Violin    # !todo check english name
+    Type: Weapon
+    SubType: Musical
+    Weight: 1800
+    Attack: 100
+    MagicAttack: 240
+    Range: 1
+    Slots: 2
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Gender: Male
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatkRate,3+(.@r/2);
+      bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",15+5*(.@r/3);
+      bonus bMatk,25*(.@r/2);
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_All,25;
+         if (.@r>=9) {
+            bonus bVariableCastrate,-10;
+            bonus bSMatk,7;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bSMatk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bMagicAtkEle,Ele_All,10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 580000
     AegisName: Boost_Whip
     Name: Booster Whip
@@ -230919,6 +231860,55 @@ Body:
                if (.@g>=ENCHANTGRADE_A) {
                   bonus bPAtk,3*(.@r/2);
                   bonus bAtkRate,3*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 580075
+    AegisName: Time_Gap_TR_Ribbon
+    Name: Time Gap Musical Ribbon    # !todo check english name
+    Type: Weapon
+    SubType: Whip
+    Weight: 1800
+    Attack: 100
+    MagicAttack: 240
+    Range: 2
+    Slots: 2
+    Jobs:
+      BardDancer: true
+    Classes:
+      Fourth: true
+    Gender: Female
+    Locations:
+      Right_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatkRate,3+(.@r/2);
+      bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",15+5*(.@r/3);
+      bonus bMatk,25*(.@r/2);
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_All,25;
+         if (.@r>=9) {
+            bonus bVariableCastrate,-10;
+            bonus bSMatk,7;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bSMatk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"TR_RHYTHMICAL_WAVE",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bMagicAtkEle,Ele_All,10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
                }
             }
          }
@@ -236726,6 +237716,54 @@ Body:
             }
          }
       }
+  - Id: 620043
+    AegisName: Time_Gap_MT_Axe
+    Name: Time Gap Mechanical Axe    # !todo check english name
+    Type: Weapon
+    SubType: 2hAxe
+    Weight: 4500
+    Attack: 380
+    Range: 1
+    Slots: 2
+    Jobs:
+      Blacksmith: true
+    Classes:
+      Fourth: true
+    Locations:
+      Both_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bUnbreakableWeapon;
+      bonus bAtkRate,3+(.@r/2);
+      bonus2 bSkillAtk,"MT_POWERFUL_SWING",15+5*(.@r/3);
+      bonus bBaseAtk,25*(.@r/2);
+      if (.@r>=7) {
+         bonus bShortAtkRate,25;
+         if (.@r>=9) {
+            bonus bDelayrate,-10;
+            bonus bPAtk,7;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"MT_POWERFUL_SWING",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"MT_POWERFUL_SWING",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bShortAtkRate,10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+               }
+            }
+         }
+      }
   - Id: 630001
     AegisName: Woe_T_Lance2_Z
     Name: Intermediate Guild Member's Lance
@@ -239384,6 +240422,54 @@ Body:
                if (.@g>=ENCHANTGRADE_A) {
                   bonus bSMatk,4*(.@r/2);
                   bonus bMatkRate,4*(.@r/2);
+               }
+            }
+         }
+      }
+  - Id: 640054
+    AegisName: Time_Gap_Staff_AG
+    Name: Time Gap Arc Staff    # !todo check english name
+    Type: Weapon
+    SubType: 2hStaff
+    Weight: 2000
+    Attack: 120
+    Range: 1
+    Slots: 2
+    Jobs:
+      Wizard: true
+    Classes:
+      Fourth: true
+    Locations:
+      Both_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bMatk,330+25*(.@r/2);
+      bonus bUnbreakableWeapon;
+      bonus bMatkRate,3+(.@r/2);
+      bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",15+5*(.@r/3);
+      if (.@r>=7) {
+         bonus2 bMagicAtkEle,Ele_Ghost,25;
+         if (.@r>=9) {
+            bonus bVariableCastrate,-10;
+            bonus bSMatk,7;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bSMatk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"AG_SOUL_VC_STRIKE",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus2 bMagicAtkEle,Ele_Ghost,10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bSMatk,3*(.@r/2);
                }
             }
          }
@@ -244017,6 +245103,54 @@ Body:
          bonus2 bIgnoreDefRaceRate,RC_Player_Human,-25;
          if (.@r>=9) {
              bonus2 bSubSize,Size_All,7;
+         }
+      }
+  - Id: 800042
+    AegisName: Time_Gap_Revolver_NW
+    Name: Time Gap Knight Revolver    # !todo check english name
+    Type: Weapon
+    SubType: Revolver
+    Weight: 2300
+    Attack: 260
+    Range: 7
+    Slots: 2
+    Jobs:
+      Rebellion: true
+    Classes:
+      Fourth: true
+    Locations:
+      Both_Hand: true
+    WeaponLevel: 5
+    EquipLevelMin: 250
+    Refineable: true
+    Gradable: true
+    Script: |
+      .@g = getenchantgrade();
+      .@r = getrefine();
+      bonus bCritical,5;
+      bonus2 bSkillAtk,"NW_WILD_SHOT",15+5*(.@r/3);
+      bonus bAtkRate,(.@r/2);
+      bonus bBaseAtk,25*(.@r/2);
+      if (.@r>=7) {
+         bonus bCritAtkRate,20;
+         if (.@r>=9) {
+            bonus bCRate,5;
+            bonus bCritical,15;
+            if (.@r>=11) {
+               bonus2 bSkillAtk,"NW_WILD_SHOT",15;
+            }
+         }
+      }
+      if (.@g>=ENCHANTGRADE_D) {
+         bonus bPAtk,5;
+         if (.@g>=ENCHANTGRADE_C) {
+            bonus2 bSkillAtk,"NW_WILD_SHOT",15;
+            if (.@g>=ENCHANTGRADE_B) {
+               bonus bLongAtkRate,10;
+               if (.@g>=ENCHANTGRADE_A) {
+                  bonus bPAtk,3*(.@r/2);
+               }
+            }
          }
       }
   - Id: 810000
