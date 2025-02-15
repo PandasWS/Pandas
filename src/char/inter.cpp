@@ -55,7 +55,7 @@ std::string default_codepage = ""; //Feature by irmin.
 #ifdef Pandas_SQL_Configure_Optimization
 char char_codepage[32] = "";
 #endif // Pandas_SQL_Configure_Optimization
-unsigned int party_share_level = 10;
+uint32 party_share_level = 10;
 
 #ifdef Pandas_InterConfig_HideServerIpAddress
 	// 是否不主动返回服务器的 IP 地址给到客户端
@@ -424,8 +424,8 @@ void geoip_readdb(void){
 /* There are millions of entries in GeoIP and it has its own algorithm to go quickly through them */
 const char* geoip_getcountry(uint32 ipnum){
 	int depth;
-	unsigned int x;
-	unsigned int offset = 0;
+	uint32 x;
+	uint32 offset = 0;
 
 	for (depth = 31; depth >= 0; depth--) {
 		const unsigned char *buf;
@@ -674,7 +674,7 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 {
 	char* data;
 	size_t len;
-	unsigned int plen = 0;
+	uint32 plen = 0;
 
 	switch( type ) {
 		case 3: //char reg
@@ -880,7 +880,7 @@ int inter_config_read(const char* cfgName)
 			safestrncpy(char_codepage, w2, sizeof(char_codepage));
 #endif // Pandas_SQL_Configure_Optimization
 		else if(!strcmpi(w1,"party_share_level"))
-			party_share_level = (unsigned int)atof(w2);
+			party_share_level = (uint32)atof(w2);
 		else if(!strcmpi(w1,"log_inter"))
 			charserv_config.log_inter = atoi(w2);
 		else if(!strcmpi(w1,"inter_server_conf"))

@@ -187,9 +187,9 @@ typedef struct DBMap_impl {
 	int alloc_line;
 	// Lock system
 	struct db_free *free_list;
-	unsigned int free_count;
-	unsigned int free_max;
-	unsigned int free_lock;
+	uint32 free_count;
+	uint32 free_max;
+	uint32 free_lock;
 	// Other
 	ERS *nodes;
 	DBComparator cmp;
@@ -716,7 +716,7 @@ static void db_free_add(DBMap_impl* db, DBNode *node, DBNode **root)
 	DBKey old_key;
 
 	DB_COUNTSTAT(db_free_add);
-	if (db->free_lock == (unsigned int)~0) {
+	if (db->free_lock == (uint32)~0) {
 		ShowFatalError("db_free_add: free_lock overflow\n"
 				"Database allocated at %s:%d\n",
 				db->alloc_file, db->alloc_line);
@@ -730,13 +730,13 @@ static void db_free_add(DBMap_impl* db, DBNode *node, DBNode **root)
 	if (db->free_count == db->free_max) { // No more space, expand free_list
 		db->free_max = (db->free_max<<2) +3; // = db->free_max*4 +3
 		if (db->free_max <= db->free_count) {
-			if (db->free_count == (unsigned int)~0) {
+			if (db->free_count == (uint32)~0) {
 				ShowFatalError("db_free_add: free_count overflow\n"
 						"Database allocated at %s:%d\n",
 						db->alloc_file, db->alloc_line);
 				exit(EXIT_FAILURE);
 			}
-			db->free_max = (unsigned int)~0;
+			db->free_max = (uint32)~0;
 		}
 		RECREATE(db->free_list, struct db_free, db->free_max);
 	}
@@ -762,7 +762,7 @@ static void db_free_add(DBMap_impl* db, DBNode *node, DBNode **root)
  */
 static void db_free_remove(DBMap_impl* db, DBNode *node)
 {
-	unsigned int i;
+	uint32 i;
 
 	DB_COUNTSTAT(db_free_remove);
 	for (i = 0; i < db->free_count; i++) {
@@ -792,7 +792,7 @@ static void db_free_remove(DBMap_impl* db, DBNode *node)
 static void db_free_lock(DBMap_impl* db)
 {
 	DB_COUNTSTAT(db_free_lock);
-	if (db->free_lock == (unsigned int)~0) {
+	if (db->free_lock == (uint32)~0) {
 		ShowFatalError("db_free_lock: free_lock overflow\n"
 				"Database allocated at %s:%d\n",
 				db->alloc_file, db->alloc_line);
@@ -814,7 +814,7 @@ static void db_free_lock(DBMap_impl* db)
  */
 static void db_free_unlock(DBMap_impl* db)
 {
-	unsigned int i;
+	uint32 i;
 
 	DB_COUNTSTAT(db_free_unlock);
 	if (db->free_lock == 0) {
@@ -985,7 +985,7 @@ static int db_uint64_cmp(DBKey key1, DBKey key2, unsigned short maxlen)
 
 /**
  * Default hasher for DB_INT databases.
- * Returns the value of the key as an unsigned int.
+ * Returns the value of the key as an uint64.
  * <code>maxlen</code> is ignored.
  * @param key Key to be hashed
  * @param maxlen Maximum length of the key to hash
@@ -1031,7 +1031,7 @@ static uint64 db_uint_hash(DBKey key, unsigned short maxlen)
 static uint64 db_string_hash(DBKey key, unsigned short maxlen)
 {
 	const char *k = key.str;
-	unsigned int hash = 0;
+	uint32 hash = 0;
 	unsigned short i;
 
 	DB_COUNTSTAT(db_string_hash);
@@ -1057,7 +1057,7 @@ static uint64 db_string_hash(DBKey key, unsigned short maxlen)
 static uint64 db_istring_hash(DBKey key, unsigned short maxlen)
 {
 	const char *k = key.str;
-	unsigned int hash = 0;
+	uint32 hash = 0;
 	unsigned short i;
 
 	DB_COUNTSTAT(db_istring_hash);
@@ -1074,7 +1074,7 @@ static uint64 db_istring_hash(DBKey key, unsigned short maxlen)
 
 /**
  * Default hasher for DB_INT64 databases.
- * Returns the value of the key as an unsigned int.
+ * Returns the value of the key as an uint64.
  * <code>maxlen</code> is ignored.
  * @param key Key to be hashed
  * @param maxlen Maximum length of the key to hash
@@ -1628,13 +1628,13 @@ static DBData* db_obj_get(DBMap* self, DBKey key)
  * @protected
  * @see DBMap#vgetall
  */
-static unsigned int db_obj_vgetall(DBMap* self, DBData **buf, unsigned int max, DBMatcher match, va_list args)
+static uint32 db_obj_vgetall(DBMap* self, DBData **buf, uint32 max, DBMatcher match, va_list args)
 {
 	DBMap_impl* db = (DBMap_impl*)self;
-	unsigned int i;
+	uint32 i;
 	DBNode *node;
 	DBNode *parent;
-	unsigned int ret = 0;
+	uint32 ret = 0;
 
 	DB_COUNTSTAT(db_vgetall);
 	if (db == nullptr) return 0; // nullpo candidate
@@ -1700,10 +1700,10 @@ static unsigned int db_obj_vgetall(DBMap* self, DBData **buf, unsigned int max, 
  * @see DBMap#vgetall
  * @see DBMap#getall
  */
-static unsigned int db_obj_getall(DBMap* self, DBData **buf, unsigned int max, DBMatcher match, ...)
+static uint32 db_obj_getall(DBMap* self, DBData **buf, uint32 max, DBMatcher match, ...)
 {
 	va_list args;
-	unsigned int ret;
+	uint32 ret;
 
 	DB_COUNTSTAT(db_getall);
 	if (self == nullptr) return 0; // nullpo candidate
@@ -1731,7 +1731,7 @@ static DBData* db_obj_vensure(DBMap* self, DBKey key, DBCreateData create, va_li
 	DBMap_impl* db = (DBMap_impl*)self;
 	DBNode *node;
 	DBNode *parent = nullptr;
-	unsigned int hash;
+	uint32 hash;
 	int c = 0;
 	DBData *data = nullptr;
 
@@ -1861,7 +1861,7 @@ static int db_obj_put(DBMap* self, DBKey key, DBData data, DBData *out_data)
 	DBNode *node;
 	DBNode *parent = nullptr;
 	int c = 0, retval = 0;
-	unsigned int hash;
+	uint32 hash;
 
 	DB_COUNTSTAT(db_put);
 	if (db == nullptr) return 0; // nullpo candidate
@@ -1964,7 +1964,7 @@ static int db_obj_remove(DBMap* self, DBKey key, DBData *out_data)
 {
 	DBMap_impl* db = (DBMap_impl*)self;
 	DBNode *node;
-	unsigned int hash;
+	uint32 hash;
 	int retval = 0;
 
 	DB_COUNTSTAT(db_remove);
@@ -2018,7 +2018,7 @@ static int db_obj_remove(DBMap* self, DBKey key, DBData *out_data)
 static int db_obj_vforeach(DBMap* self, DBApply func, va_list args)
 {
 	DBMap_impl* db = (DBMap_impl*)self;
-	unsigned int i;
+	uint32 i;
 	int sum = 0;
 	DBNode *node;
 	DBNode *parent;
@@ -2105,7 +2105,7 @@ static int db_obj_vclear(DBMap* self, DBApply func, va_list args)
 {
 	DBMap_impl* db = (DBMap_impl*)self;
 	int sum = 0;
-	unsigned int i;
+	uint32 i;
 	DBNode *node;
 	DBNode *parent;
 
@@ -2280,10 +2280,10 @@ static int db_obj_destroy(DBMap* self, DBApply func, ...)
  * @see DBMap_impl#item_count
  * @see DBMap#size
  */
-static unsigned int db_obj_size(DBMap* self)
+static uint32 db_obj_size(DBMap* self)
 {
 	DBMap_impl* db = (DBMap_impl*)self;
-	unsigned int item_count;
+	uint32 item_count;
 
 	DB_COUNTSTAT(db_size);
 	if (db == nullptr) return 0; // nullpo candidate
@@ -2350,15 +2350,15 @@ static DBOptions db_obj_options(DBMap* self)
  *  db_custom_release  - Get a releaser that behaves a certain way.
  *  db_alloc           - Allocate a new database.
  *  db_i2key           - Manual cast from 'int' to 'DBKey'.
- *  db_ui2key          - Manual cast from 'unsigned int' to 'DBKey'.
+ *  db_ui2key          - Manual cast from 'uint32' to 'DBKey'.
  *  db_str2key         - Manual cast from 'unsigned char *' to 'DBKey'.
  *  db_i642key         - Manual cast from 'int64' to 'DBKey'.
  *  db_ui642key        - Manual cast from 'uin64' to 'DBKey'.
  *  db_i2data          - Manual cast from 'int' to 'DBData'.
- *  db_ui2data         - Manual cast from 'unsigned int' to 'DBData'.
+ *  db_ui2data         - Manual cast from 'uint32' to 'DBData'.
  *  db_ptr2data        - Manual cast from 'void*' to 'DBData'.
  *  db_data2i          - Gets 'int' value from 'DBData'.
- *  db_data2ui         - Gets 'unsigned int' value from 'DBData'.
+ *  db_data2ui         - Gets 'uint32' value from 'DBData'.
  *  db_data2ptr        - Gets 'void*' value from 'DBData'.
  *  db_init            - Initializes the database system.
  *  db_final           - Finalizes the database system.
@@ -2521,7 +2521,7 @@ DBReleaser db_custom_release(DBRelease which)
  */
 DBMap* db_alloc(const char *file, const char *func, int line, DBType type, DBOptions options, unsigned short maxlen) {
 	DBMap_impl* db;
-	unsigned int i;
+	uint32 i;
 	char ers_name[50];
 
 #ifdef DB_ENABLE_STATS
@@ -2602,12 +2602,12 @@ DBKey db_i2key(int key)
 }
 
 /**
- * Manual cast from 'unsigned int' to the union DBKey.
+ * Manual cast from 'uint32' to the union DBKey.
  * @param key Key to be casted
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_ui2key(unsigned int key)
+DBKey db_ui2key(uint32 key)
 {
 	DBKey ret;
 
@@ -2678,12 +2678,12 @@ DBData db_i2data(int data)
 }
 
 /**
- * Manual cast from 'unsigned int' to the struct DBData.
+ * Manual cast from 'uint32' to the struct DBData.
  * @param data Data to be casted
  * @return The data as a DBData struct
  * @public
  */
-DBData db_ui2data(unsigned int data)
+DBData db_ui2data(uint32 data)
 {
 	DBData ret;
 
@@ -2741,13 +2741,13 @@ int db_data2i(DBData *data)
 }
 
 /**
- * Gets unsigned int type data from struct DBData.
- * If data is not unsigned int type, returns 0.
+ * Gets uint32 type data from struct DBData.
+ * If data is not uint32 type, returns 0.
  * @param data Data
- * @return Unsigned int value of the data.
+ * @return uint32 value of the data.
  * @public
  */
-unsigned int db_data2ui(DBData *data)
+uint32 db_data2ui(DBData *data)
 {
 	DB_COUNTSTAT(db_data2ui);
 	if (data && DB_DATA_UINT == data->type)
