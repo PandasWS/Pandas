@@ -141952,14 +141952,7 @@ Body:
     Script: |
       bonus2 bHPRegenRate,100,10000;
       bonus2 bSPRegenRate,5,10000;
-      bonus2 bAddDefMonster,3445,20;
-      bonus2 bAddDefMonster,3446,20;
-      bonus2 bAddDefMonster,3447,20;
-      bonus2 bAddDefMonster,3448,20;
-      bonus2 bAddDefMonster,3449,20;
-      bonus2 bAddDefMonster,3450,20;
-      bonus2 bAddDefMonster,3451,20;
-      bonus2 bAddDefMonster,3452,20;
+      bonus2 bSubRace2,RC2_Ep16_def,20;
   - Id: 28356
     AegisName: BadgeOfProntera_
     Name: Prontera Badge
