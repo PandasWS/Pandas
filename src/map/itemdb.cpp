@@ -3105,7 +3105,7 @@ void ItemGroupDatabase::pc_get_itemgroup_sub( map_session_data& sd, bool identif
 #ifdef Pandas_BattleConfig_Force_Identified
 	tmp.identify = (battle_config.force_identified & 1 ? 1 : tmp.identify);
 #endif // Pandas_BattleConfig_Force_Identified
-	tmp.expire_time = (data->duration) ? (unsigned int)(time(nullptr) + data->duration*60) : 0;
+	tmp.expire_time = (data->duration) ? (uint32)(time(nullptr) + data->duration*60) : 0;
 	if (data->isNamed) {
 		tmp.card[0] = itemdb_isequip(data->nameid) ? CARD0_FORGE : CARD0_CREATE;
 		tmp.card[1] = 0;

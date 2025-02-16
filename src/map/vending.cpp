@@ -341,7 +341,7 @@ int8 vending_openvending( map_session_data& sd, const char* message, const uint8
 	for( j = 0; j < count; j++ ) {
 		short index        = *(uint16*)(data + 8*j + 0);
 		short amount       = *(uint16*)(data + 8*j + 2);
-		unsigned int value = *(uint32*)(data + 8*j + 4);
+		uint32 value       = *(uint32*)(data + 8*j + 4);
 
 		index -= 2; // offset adjustment (client says that the first cart position is 2)
 
@@ -357,7 +357,7 @@ int8 vending_openvending( map_session_data& sd, const char* message, const uint8
 
 		sd.vending[i].index = index;
 		sd.vending[i].amount = amount;
-		sd.vending[i].value = min(value, (unsigned int)battle_config.vending_max_value);
+		sd.vending[i].value = min(value, (uint32)battle_config.vending_max_value);
 		total += static_cast<int64>(sd.vending[i].value) * amount;
 		i++; // item successfully added
 	}
@@ -460,7 +460,7 @@ bool vending_search(map_session_data* sd, t_itemid nameid)
 bool vending_searchall(map_session_data* sd, const struct s_search_store_search* s)
 {
 	int i, c, slot;
-	unsigned int idx, cidx;
+	uint32 idx, cidx;
 	struct item* it;
 
 	if( !sd->state.vending ) // not vending
@@ -500,7 +500,7 @@ bool vending_searchall(map_session_data* sd, const struct s_search_store_search*
 		}
 
 		// Check if the result set is full
-		if( s->search_sd->searchstore.items.size() >= (unsigned int)battle_config.searchstore_maxresults ){
+		if( s->search_sd->searchstore.items.size() >= (uint32)battle_config.searchstore_maxresults ){
 			return false;
 		}
 
