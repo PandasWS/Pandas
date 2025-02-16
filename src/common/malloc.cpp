@@ -76,7 +76,7 @@
 
 #endif
 
-void* aMalloc_(size_t size, const char *file, int line, const char *func)
+void* aMalloc_(size_t size, const char *file, int32 line, const char *func)
 {
 	void *ret = MALLOC(size, file, line, func);
 	// ShowMessage("%s:%d: in func %s: aMalloc %d\n",file,line,func,size);
@@ -87,7 +87,7 @@ void* aMalloc_(size_t size, const char *file, int line, const char *func)
 
 	return ret;
 }
-void* aCalloc_(size_t num, size_t size, const char *file, int line, const char *func)
+void* aCalloc_(size_t num, size_t size, const char *file, int32 line, const char *func)
 {
 	void *ret = CALLOC(num, size, file, line, func);
 	// ShowMessage("%s:%d: in func %s: aCalloc %d %d\n",file,line,func,num,size);
@@ -97,7 +97,7 @@ void* aCalloc_(size_t num, size_t size, const char *file, int line, const char *
 	}
 	return ret;
 }
-void* aRealloc_(void *p, size_t size, const char *file, int line, const char *func)
+void* aRealloc_(void *p, size_t size, const char *file, int32 line, const char *func)
 {
 	void *ret = REALLOC(p, size, file, line, func);
 	// ShowMessage("%s:%d: in func %s: aRealloc %p %d\n",file,line,func,p,size);
@@ -107,7 +107,7 @@ void* aRealloc_(void *p, size_t size, const char *file, int line, const char *fu
 	}
 	return ret;
 }
-char* aStrdup_(const char *p, const char *file, int line, const char *func)
+char* aStrdup_(const char *p, const char *file, int32 line, const char *func)
 {
 	char *ret = STRDUP(p, file, line, func);
 	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
@@ -117,7 +117,7 @@ char* aStrdup_(const char *p, const char *file, int line, const char *func)
 	}
 	return ret;
 }
-void aFree_(void *p, const char *file, int line, const char *func)
+void aFree_(void *p, const char *file, int32 line, const char *func)
 {
 	// ShowMessage("%s:%d: in func %s: aFree %p\n",file,line,func,p);
 	if (p)
@@ -229,7 +229,7 @@ static size_t hash2size( unsigned short hash )
 	}
 }
 
-void* _mmalloc(size_t size, const char *file, int line, const char *func )
+void* _mmalloc(size_t size, const char *file, int32 line, const char *func )
 {
 	struct block *block;
 	short size_hash = size2hash( size );
@@ -331,14 +331,14 @@ void* _mmalloc(size_t size, const char *file, int line, const char *func )
 	return (char *)head + sizeof(struct unit_head) - sizeof(long);
 }
 
-void* _mcalloc(size_t num, size_t size, const char *file, int line, const char *func )
+void* _mcalloc(size_t num, size_t size, const char *file, int32 line, const char *func )
 {
 	void *p = _mmalloc(num * size,file,line,func);
 	memset(p,0,num * size);
 	return p;
 }
 
-void* _mrealloc(void *memblock, size_t size, const char *file, int line, const char *func )
+void* _mrealloc(void *memblock, size_t size, const char *file, int32 line, const char *func )
 {
 	size_t old_size;
 	if(memblock == nullptr) {
@@ -363,7 +363,7 @@ void* _mrealloc(void *memblock, size_t size, const char *file, int line, const c
 	}
 }
 
-char* _mstrdup(const char *p, const char *file, int line, const char *func )
+char* _mstrdup(const char *p, const char *file, int32 line, const char *func )
 {
 	if(p == nullptr) {
 		return nullptr;
@@ -375,7 +375,7 @@ char* _mstrdup(const char *p, const char *file, int line, const char *func )
 	}
 }
 
-void _mfree(void *ptr, const char *file, int line, const char *func )
+void _mfree(void *ptr, const char *file, int32 line, const char *func )
 {
 	struct unit_head *head;
 
@@ -455,7 +455,7 @@ static struct block* block_malloc(unsigned short hash)
 		p = hash_unfill[0];
 		hash_unfill[0] = hash_unfill[0]->unfill_next;
 	} else {
-		int i;
+		int32 i;
 		/* Newly allocated space for the block */
 		p = (struct block*)MALLOC(sizeof(struct block) * (BLOCK_ALLOC), __FILE__, __LINE__, __func__ );
 		if(p == nullptr) {
@@ -609,12 +609,12 @@ static void memmgr_final (void)
 	struct unit_head_large *large = unit_head_large_first;
 
 #ifdef LOG_MEMMGR
-	int count = 0;
+	int32 count = 0;
 #endif /* LOG_MEMMGR */
 
 	while (block) {
 		if (block->unit_used) {
-			int i;
+			int32 i;
 			for (i = 0; i < block->unit_maxused; i++) {
 				struct unit_head *head = block2unit(block, i);
 				if(head->block != nullptr) {

@@ -54,21 +54,15 @@ typedef HANDLER_FUNC((*handler_func));
 
 // 打印 stmt 查询失败的提示信息, 释放资源并结束函数
 #define RETURN_STMT_FAILURE(stmt, locker) { \
-	if (stmt) { \
-		SqlStmt_ShowDebug(stmt); \
-		SqlStmt_Free(stmt); \
-		locker.unlock(); \
-		return; \
-	} \
+	SqlStmt_ShowDebug(stmt); \
+	locker.unlock(); \
+	return; \
 }
 
 // 释放资源并结束函数
 #define RETURN_STMT_SUCCESS(stmt, locker) { \
-	if (stmt) { \
-		SqlStmt_Free(stmt); \
-		locker.unlock(); \
-		return; \
-	} \
+	locker.unlock(); \
+	return; \
 }
 
 #endif

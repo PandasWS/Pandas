@@ -56,7 +56,7 @@ TIMER_FUNC(cnslif_console_timer){
 }
 
 // Console Command Parser [Wizputer]
-int cnslif_parse(const char* buf)
+int32 cnslif_parse(const char* buf)
 {
 #ifndef Pandas_Crashfix_Variable_Init
 	char type[64];
@@ -65,7 +65,7 @@ int cnslif_parse(const char* buf)
 	char type[64] = { 0 };
 	char command[64] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
-	int n=0;
+	int32 n=0;
 
 	if( ( n = sscanf(buf, "%63[^:]:%63[^\n]", type, command) ) < 2 ){
 		if((n = sscanf(buf, "%63[^\n]", type))<1) return -1; //nothing to do no arg

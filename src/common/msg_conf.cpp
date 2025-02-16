@@ -24,7 +24,7 @@ const char* disabled_msg_txt(int msg_number) {
  * Return the message string of the specified number by [Yor]
  * (read in table msg_table, with specified lenght table in size)
  */
-const char* _msg_txt(int msg_number,int size, char ** msg_table)
+const char* _msg_txt(int32 msg_number,int32 size, char ** msg_table)
 {
 	if (msg_number >= 0 && msg_number < size &&
 		msg_table[msg_number] != nullptr && msg_table[msg_number][0] != '\0')
@@ -37,7 +37,7 @@ const char* _msg_txt(int msg_number,int size, char ** msg_table)
 /*
  * Read txt file and store them into msg_table
  */
-int _msg_config_read(const char* cfgName,int size, char ** msg_table)
+int32 _msg_config_read(const char* cfgName,int32 size, char ** msg_table)
 {
 	uint16 msg_number, msg_count = 0, line_num = 0;
 #ifndef Pandas_Adaptive_Importing_Message_Database
@@ -46,7 +46,7 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 	char line[1024] = { 0 }, w1[11] = { 0 }, w2[512] = { 0 };
 #endif // Pandas_Adaptive_Importing_Message_Database
 	FILE *fp;
-	static int called = 1;
+	static int32 called = 1;
 
 	if ((fp = fopen(cfgName, "r")) == nullptr) {
 		ShowError("Messages file not found: %s\n", cfgName);
@@ -121,8 +121,8 @@ int _msg_config_read(const char* cfgName,int size, char ** msg_table)
 /*
  * Destroy msg_table (freeup mem)
  */
-void _do_final_msg(int size, char ** msg_table){
-	int i;
+void _do_final_msg(int32 size, char ** msg_table){
+	int32 i;
 	for (i = 0; i < size; i++)
 		aFree(msg_table[i]);
 }
@@ -132,8 +132,8 @@ void _do_final_msg(int size, char ** msg_table){
  * lookup a langtype string into his associate langtype number
  * return -1 if not found
  */
-int msg_langstr2langtype(char * langtype){
-	int lang=-1;
+int32 msg_langstr2langtype(char * langtype){
+	int32 lang=-1;
 	if (!strncmpi(langtype, "eng",2)) lang = 0;
 	else if (!strncmpi(langtype, "rus",2)) lang = 1;
 	else if (!strncmpi(langtype, "spn",2)) lang = 2;
@@ -152,7 +152,7 @@ int msg_langstr2langtype(char * langtype){
  * lookup a langtype into his associate lang string
  * return ?? if not found
  */
-const char* msg_langtype2langstr(int langtype){
+const char* msg_langtype2langstr(int32 langtype){
 	switch(langtype){
 		case 0: return "English (ENG)";
 		case 1: return "Russkiy (RUS)"; //transliteration
@@ -203,7 +203,7 @@ const char* msg_langtype2langstr(int langtype) {
  * -1 : false range
  * -2 : disable
  */
-int msg_checklangtype(int lang, bool display){
+int32 msg_checklangtype(int32 lang, bool display){
 	uint16 test= (1<<(lang-1));
 	if(!lang) return 1; //default english
 	else if(lang < 0 || test > LANG_MAX) return -1; //false range

@@ -26,13 +26,13 @@ const t_tick TIMER_MAX_INTERVAL = 1000;
 
 // timers (array)
 static struct TimerData* timer_data = nullptr;
-static int timer_data_max = 0;
-static int timer_data_num = 0;
+static int32 timer_data_max = 0;
+static int32 timer_data_num = 0;
 
 // free timers (array)
 static int* free_timer_list = nullptr;
-static int free_timer_list_max = 0;
-static int free_timer_list_pos = 0;
+static int32 free_timer_list_max = 0;
+static int32 free_timer_list_pos = 0;
 
 
 /// Comparator for the timer heap. (minimum tick at top)
@@ -61,7 +61,7 @@ struct timer_func_list {
 } *tfl_root = nullptr;
 
 /// Sets the name of a timer function.
-int add_timer_func_list(TimerFunc func, const char* name)
+int32 add_timer_func_list(TimerFunc func, const char* name)
 {
 	struct timer_func_list* tfl;
 
@@ -171,7 +171,7 @@ static t_tick tick(void)
 //////////////////////////////////////////////////////////////////////////
 // tick is cached for TICK_CACHE calls
 static t_tick gettick_cache;
-static int gettick_count = 1;
+static int32 gettick_count = 1;
 
 t_tick gettick_nocache(void)
 {
@@ -206,7 +206,7 @@ t_tick gettick(void)
  *--------------------------------------*/
 
 /// Adds a timer to the timer_heap
-static void push_timer_heap(int tid)
+static void push_timer_heap(int32 tid)
 {
 	BHEAP_ENSURE(timer_heap, 1, 256);
 	BHEAP_PUSH(timer_heap, tid, DIFFTICK_MINTOPCMP);
@@ -217,9 +217,9 @@ static void push_timer_heap(int tid)
  *--------------------------*/
 
 /// Returns a free timer id.
-static int acquire_timer(void)
+static int32 acquire_timer(void)
 {
-	int tid;
+	int32 tid;
 
 	// select a free timer
 	if (free_timer_list_pos) {
@@ -250,9 +250,9 @@ static int acquire_timer(void)
 
 /// Starts a new timer that is deleted once it expires (single-use).
 /// Returns the timer's id.
-int add_timer(t_tick tick, TimerFunc func, int id, intptr_t data)
+int32 add_timer(t_tick tick, TimerFunc func, int32 id, intptr_t data)
 {
-	int tid;
+	int32 tid;
 
 	tid = acquire_timer();
 	timer_data[tid].tick     = tick;
@@ -268,9 +268,9 @@ int add_timer(t_tick tick, TimerFunc func, int id, intptr_t data)
 
 /// Starts a new timer that automatically restarts itself (infinite loop until manually removed).
 /// Returns the timer's id, or INVALID_TIMER if it fails.
-int add_timer_interval(t_tick tick, TimerFunc func, int id, intptr_t data, int interval)
+int32 add_timer_interval(t_tick tick, TimerFunc func, int32 id, intptr_t data, int32 interval)
 {
-	int tid;
+	int32 tid;
 
 	if( interval < 1 )
 	{
@@ -291,7 +291,7 @@ int add_timer_interval(t_tick tick, TimerFunc func, int id, intptr_t data, int i
 }
 
 /// Retrieves internal timer data
-const struct TimerData* get_timer(int tid)
+const struct TimerData* get_timer(int32 tid)
 {
 	return ( tid >= 0 && tid < timer_data_num ) ? &timer_data[tid] : nullptr;
 }
@@ -299,7 +299,7 @@ const struct TimerData* get_timer(int tid)
 /// Marks a timer specified by 'id' for immediate deletion once it expires.
 /// Param 'func' is used for debug/verification purposes.
 /// Returns 0 on success, < 0 on failure.
-int delete_timer(int tid, TimerFunc func)
+int32 delete_timer(int32 tid, TimerFunc func)
 {
 	if( tid < 0 || tid >= timer_data_num )
 	{
@@ -320,14 +320,14 @@ int delete_timer(int tid, TimerFunc func)
 
 /// Adjusts a timer's expiration time.
 /// Returns the new tick value, or -1 if it fails.
-t_tick addtick_timer(int tid, t_tick tick)
+t_tick addtick_timer(int32 tid, t_tick tick)
 {
 	return settick_timer(tid, timer_data[tid].tick+tick);
 }
 
 /// Modifies a timer's expiration time (an alternative to deleting a timer and starting a new one).
 /// Returns the new tick value, or -1 if it fails.
-t_tick settick_timer(int tid, t_tick tick)
+t_tick settick_timer(int32 tid, t_tick tick)
 {
 	size_t i;
 
@@ -356,11 +356,11 @@ t_tick settick_timer(int tid, t_tick tick)
 //************************************
 // Method:      gettick_timer
 // Description: 获取计时器的触发时间戳
-// Parameter:   int tid
+// Parameter:   int32 tid
 // Returns:     t_tick
 // Author:      Sola丶小克(CairoLee)  2022/04/28 21:50
 //************************************ 
-t_tick gettick_timer(int tid)
+t_tick gettick_timer(int32 tid)
 {
 	if (tid == INVALID_TIMER) {
 		return -1;
@@ -385,13 +385,13 @@ t_tick gettick_timer(int tid)
 // Method:      exchange_timer_id
 // Description: 将全部存活定时器的 id 从 origin_id 改成 new_id
 // Access:      public 
-// Parameter:   int origin_id
-// Parameter:   int new_id
+// Parameter:   int32 origin_id
+// Parameter:   int32 new_id
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/07/10 17:48
 //************************************ 
-void exchange_timer_id(int origin_id, int new_id) {
-	for (int tid = 0; tid < timer_data_num; tid++) {
+void exchange_timer_id(int32 origin_id, int32 new_id) {
+	for (int32 tid = 0; tid < timer_data_num; tid++) {
 		if (tid == INVALID_TIMER) continue;
 		if (timer_data[tid].id > 0 && timer_data[tid].id == origin_id) {
 			timer_data[tid].id = new_id;
@@ -403,12 +403,12 @@ void exchange_timer_id(int origin_id, int new_id) {
 // Method:      detect_invalid_timer
 // Description: 寻找未被销毁的触发时携带的 id 等于指定值的定时器
 // Access:      public 
-// Parameter:   int id
+// Parameter:   int32 id
 // Returns:     void
 // Author:      Sola丶小克(CairoLee)  2021/03/13 19:02
 //************************************ 
-void detect_invalid_timer(int id) {
-	int tid = -1;
+void detect_invalid_timer(int32 id) {
+	int32 tid = -1;
 	for (tid = 0; tid < timer_data_max; tid++) {
 		if (timer_data[tid].type && timer_data[tid].id == id && timer_data[tid].func) {
 			// 若真的找到则报告出来, 这意味着 map_mobiddb 没处理干净
@@ -427,7 +427,7 @@ t_tick do_timer(t_tick tick)
 	// process all timers one by one
 	while( BHEAP_LENGTH(timer_heap) )
 	{
-		int tid = BHEAP_PEEK(timer_heap);// top element in heap (smallest tick)
+		int32 tid = BHEAP_PEEK(timer_heap);// top element in heap (smallest tick)
 
 		diff = DIFF_TICK(timer_data[tid].tick, tick);
 		if( diff > 0 )
@@ -500,12 +500,12 @@ const char* timestamp2string(char* str, size_t size, time_t timestamp, const cha
 /*
  * Split given timein into year, month, day, hour, minute, second
  */
-void split_time(int timein, int* year, int* month, int* day, int* hour, int* minute, int *second) {
-	const int factor_min = 60;
-	const int factor_hour = factor_min*60;
-	const int factor_day = factor_hour*24;
-	const int factor_month = 2629743; // Approx  (30.44 days) 
-	const int factor_year = 31556926; // Approx (365.24 days)
+void split_time(int32 timein, int* year, int* month, int* day, int* hour, int* minute, int32 *second) {
+	const int32 factor_min = 60;
+	const int32 factor_hour = factor_min*60;
+	const int32 factor_day = factor_hour*24;
+	const int32 factor_month = 2629743; // Approx  (30.44 days) 
+	const int32 factor_year = 31556926; // Approx (365.24 days)
 
 	*year = timein/factor_year;
 	timein -= *year*factor_year;
@@ -540,7 +540,7 @@ double solve_time(char* modif_p) {
 	nullpo_retr(0,modif_p);
 
 	while (modif_p[0] != '\0') {
-		int value = atoi(modif_p);
+		int32 value = atoi(modif_p);
 		if (value == 0)
 			modif_p++;
 		else {

@@ -1228,7 +1228,7 @@ Body:
     EquipLevelMin: 68
     Refineable: true
     Script: |
-      bonus2 bAddMonsterDropItemGroup,IG_Jewel,100;
+      bonus2 bAddMonsterDropItemGroup,IG_Jewel,10000;
   - Id: 1143
     AegisName: Gaia_Sword
     Name: Gaia Sword
@@ -1254,7 +1254,7 @@ Body:
     EquipLevelMin: 74
     Refineable: true
     Script: |
-      bonus2 bAddMonsterDropItemGroup,IG_Ore,30;
+      bonus2 bAddMonsterDropItemGroup,IG_Ore,10000;
   - Id: 1144
     AegisName: Sasimi
     Name: Sashimi
@@ -50312,7 +50312,7 @@ Body:
     Trade:
       NoDrop: true
     Script: |
-      bonus2 bAddMonsterDropItemGroup,IG_Jewel,100;
+      bonus2 bAddMonsterDropItemGroup,IG_Jewel,10000;
       bonus3 bAutoSpell,"MC_MAMMONITE",5,70;
   - Id: 5574
     AegisName: Pencil_In_Mouth

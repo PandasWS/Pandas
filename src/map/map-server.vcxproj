@@ -127,7 +127,7 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\mysql\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -150,7 +150,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\mysql\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -173,7 +173,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\mysql\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -199,7 +199,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)\3rdparty\rapidyaml\src;$(SolutionDir)\3rdparty\rapidyaml\ext\c4core\src;$(SolutionDir)\3rdparty\pcre\include;$(SolutionDir)3rdparty\libconfig\;$(SolutionDir)3rdparty\mysql\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
