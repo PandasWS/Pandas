@@ -30,29 +30,26 @@ bool isAuthorized(const Request &request, bool checkGuildLeader) {
 
 	auto handle = loginlock.getHandle();
 
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `web_auth_token` = ? AND `web_auth_token_enabled` = '1')",
 			login_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)token, strlen(token))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_STRING, (void *)token, strlen(token))
+		|| SQL_SUCCESS != stmt.Execute()
 	) {
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		loginlock.unlock();
 		return false;
 	}
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
+	if (stmt.NumRows() <= 0) {
 		ShowWarning("Request with AID %d and token %s unverified\n", account_id, token);
-		SqlStmt_Free(stmt);
 		loginlock.unlock();
 		return false;
 	}
 
-	SqlStmt_Free(stmt);
 	loginlock.unlock();
 	if (!checkGuildLeader) {
 		// we're done, auth ok
@@ -64,28 +61,25 @@ bool isAuthorized(const Request &request, bool checkGuildLeader) {
 	SQLLock charlock(CHAR_SQL_LOCK);
 	charlock.lock();
 	handle = charlock.getHandle();
-	stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt2{ *handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt2.Prepare(
 		"SELECT `account_id` FROM `%s` LEFT JOIN `%s` using (`char_id`) WHERE (`%s`.`account_id` = ? AND `%s`.`guild_id` = ?) LIMIT 1",
 		guild_db_table, char_db_table, char_db_table, guild_db_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &guild_id, sizeof(guild_id))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt2.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt2.BindParam(1, SQLDT_INT, &guild_id, sizeof(guild_id))
+		|| SQL_SUCCESS != stmt2.Execute()
 	) {
-		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
+		SqlStmt_ShowDebug(stmt2);
 		charlock.unlock();
 		return false;
 	}
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
+	if (stmt2.NumRows() <= 0) {
 		ShowDebug("Request with AID %d GDID %d and token %s unverified\n", account_id, guild_id, token);
-		SqlStmt_Free(stmt);
 		charlock.unlock();
 		return false;
 	}
-	SqlStmt_Free(stmt);
 	charlock.unlock();
 	return true;
 }
@@ -104,21 +98,19 @@ bool isVaildCharacter(uint32 account_id, uint32 char_id) {
 	SQLLock charlock(CHAR_SQL_LOCK);
 	charlock.lock();
 	auto char_handle = charlock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(char_handle);
+	SqlStmt stmt{ *char_handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `char_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ?) LIMIT 1",
 		char_db_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt) || SqlStmt_NumRows(stmt) <= 0
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.Execute() || stmt.NumRows() <= 0
 		) {
-		SqlStmt_Free(stmt);
 		charlock.unlock();
 		return false;
 	}
 
-	SqlStmt_Free(stmt);
 	charlock.unlock();
 	return true;
 }
@@ -135,20 +127,18 @@ bool isVaildAccount(uint32 account_id) {
 	SQLLock loginlock(LOGIN_SQL_LOCK);
 	loginlock.lock();
 	auto char_handle = loginlock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(char_handle);
+	SqlStmt stmt{ *char_handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `account_id` FROM `%s` WHERE `account_id` = ? LIMIT 1",
 		login_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt) || SqlStmt_NumRows(stmt) <= 0
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.Execute() || stmt.NumRows() <= 0
 		) {
-		SqlStmt_Free(stmt);
 		loginlock.unlock();
 		return false;
 	}
 
-	SqlStmt_Free(stmt);
 	loginlock.unlock();
 	return true;
 }
@@ -166,21 +156,19 @@ bool isPartyLeader(uint32 account_id, uint32 char_id) {
 	SQLLock charlock(CHAR_SQL_LOCK);
 	charlock.lock();
 	auto char_handle = charlock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(char_handle);
+	SqlStmt stmt{ *char_handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `party_id` FROM `%s` WHERE (`leader_id` = ? AND `leader_char` = ?) LIMIT 1",
 		party_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt) || SqlStmt_NumRows(stmt) <= 0
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.Execute() || stmt.NumRows() <= 0
 		) {
-		SqlStmt_Free(stmt);
 		charlock.unlock();
 		return false;
 	}
 
-	SqlStmt_Free(stmt);
 	charlock.unlock();
 	return true;
 }

@@ -42,7 +42,7 @@ void display_helpscreen(bool do_exit) {
  * @param buf: buffer to parse, (from console)
  * @return 1=success
  */
-int cnslif_parse(const char* buf){
+int32 cnslif_parse(const char* buf){
 #ifndef Pandas_Crashfix_Variable_Init
 	char type[64];
 	char command[64];
@@ -50,7 +50,7 @@ int cnslif_parse(const char* buf){
 	char type[64] = { 0 };
 	char command[64] = { 0 };
 #endif // Pandas_Crashfix_Variable_Init
-	int n=0;
+	int32 n=0;
 
 	if( ( n = sscanf(buf, "%127[^:]:%255[^\n\r]", type, command) ) < 2 ){
 		if((n = sscanf(buf, "%63[^\n]", type))<1) return -1; //nothing to do no arg

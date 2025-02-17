@@ -36,30 +36,28 @@ HANDLER_FUNC(charconfig_save) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	SqlStmt stmt{ *handle };
+	if (SQL_SUCCESS != stmt.Prepare(
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), world_name.length())
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam( 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam( 1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam( 2, SQLDT_STRING, (void *)world_name.c_str(), world_name.length())
+		|| SQL_SUCCESS != stmt.Execute()
 	) {
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		sl.unlock();
 		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
 
-	if (SqlStmt_NumRows(stmt) > 0) {
+	if (stmt.NumRows() > 0) {
 		char databuf[SQL_BUFFER_SIZE];
-		if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), nullptr, nullptr)
-			|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
+		if (SQL_SUCCESS != stmt.BindColumn( 0, SQLDT_STRING, &databuf, sizeof(databuf), nullptr, nullptr)
+			|| SQL_SUCCESS != stmt.NextRow()
 		) {
 			SqlStmt_ShowDebug(stmt);
-			SqlStmt_Free(stmt);
 			sl.unlock();
 			res.status = HTTP_BAD_REQUEST;
 			res.set_content("Error", "text/plain");
@@ -73,24 +71,22 @@ HANDLER_FUNC(charconfig_save) {
 
 	auto data_str = data.dump();
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 			"REPLACE INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)",
 			char_configs_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), world_name.length())
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)data_str.c_str(), data_str.length())
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam( 0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam( 1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam( 2, SQLDT_STRING, (void *)world_name.c_str(), world_name.length())
+		|| SQL_SUCCESS != stmt.BindParam( 3, SQLDT_STRING, (void *)data_str.c_str(), data_str.length())
+		|| SQL_SUCCESS != stmt.Execute()
 	) {
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		sl.unlock();
 		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
 
-	SqlStmt_Free(stmt);
 	sl.unlock();
 	res.set_content(data_str, "application/json");
 }
@@ -117,41 +113,38 @@ HANDLER_FUNC(charconfig_load) {
 	SQLLock sl(WEB_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt * stmt = SqlStmt_Malloc(handle);
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	SqlStmt stmt{ *handle };
+	if (SQL_SUCCESS != stmt.Prepare(
 			"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 			char_configs_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name, strlen(world_name))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam(2, SQLDT_STRING, (void *)world_name, strlen(world_name))
+		|| SQL_SUCCESS != stmt.Execute()
 	) {
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		sl.unlock();
 		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
+	if (stmt.NumRows() <= 0) {
 		std::string data = "{\"Type\": 1}";
 
-		if( SQL_SUCCESS != SqlStmt_Prepare( stmt, "INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)", char_configs_table ) ||
-			SQL_SUCCESS != SqlStmt_BindParam( stmt, 0, SQLDT_INT, &account_id, sizeof( account_id ) ) ||
-			SQL_SUCCESS != SqlStmt_BindParam( stmt, 1, SQLDT_INT, &char_id, sizeof( char_id ) ) ||
-			SQL_SUCCESS != SqlStmt_BindParam( stmt, 2, SQLDT_STRING, (void*)world_name, strlen( world_name ) ) ||
-			SQL_SUCCESS != SqlStmt_BindParam( stmt, 3, SQLDT_STRING, (void*)data.c_str(), strlen( data.c_str() ) ) ||
-			SQL_SUCCESS != SqlStmt_Execute( stmt ) ){
+		if( SQL_SUCCESS != stmt.Prepare( "INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)", char_configs_table ) ||
+			SQL_SUCCESS != stmt.BindParam( 0, SQLDT_INT, &account_id, sizeof( account_id ) ) ||
+			SQL_SUCCESS != stmt.BindParam( 1, SQLDT_INT, &char_id, sizeof( char_id ) ) ||
+			SQL_SUCCESS != stmt.BindParam( 2, SQLDT_STRING, (void*)world_name, strlen( world_name ) ) ||
+			SQL_SUCCESS != stmt.BindParam( 3, SQLDT_STRING, (void*)data.c_str(), strlen( data.c_str() ) ) ||
+			SQL_SUCCESS != stmt.Execute() ){
 			SqlStmt_ShowDebug( stmt );
-			SqlStmt_Free( stmt );
 			sl.unlock();
 			res.status = HTTP_BAD_REQUEST;
 			res.set_content( "Error", "text/plain" );
 			return;
 		}
 
-		SqlStmt_Free( stmt );
 		sl.unlock();
 		res.set_content( data, "application/json" );
 		return;
@@ -159,18 +152,16 @@ HANDLER_FUNC(charconfig_load) {
 
 	char databuf[SQL_BUFFER_SIZE];
 
-	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), nullptr, nullptr)
-		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
+	if (SQL_SUCCESS != stmt.BindColumn(0, SQLDT_STRING, &databuf, sizeof(databuf), nullptr, nullptr)
+		|| SQL_SUCCESS != stmt.NextRow()
 	) {
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		sl.unlock();
 		res.status = HTTP_BAD_REQUEST;
 		res.set_content("Error", "text/plain");
 		return;
 	}
 
-	SqlStmt_Free(stmt);
 	sl.unlock();
 
 	databuf[sizeof(databuf) - 1] = 0;
@@ -217,15 +208,15 @@ HANDLER_FUNC(charconfig_save) {
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 		char_configs_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam(2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != stmt.Execute()
 	) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
@@ -236,8 +227,8 @@ HANDLER_FUNC(charconfig_save) {
 
 	char databuf[SQL_BUFFER_SIZE] = { 0 };
 
-	if (SQL_SUCCESS == SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
-		&& SQL_SUCCESS == SqlStmt_NextRow(stmt)
+	if (SQL_SUCCESS == stmt.BindColumn(0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
+		&& SQL_SUCCESS == stmt.NextRow()
 		) {
 		databuf[sizeof(databuf) - 1] = 0;
 
@@ -253,28 +244,28 @@ HANDLER_FUNC(charconfig_save) {
 		}
 	}
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
-		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (stmt.NumRows() <= 0) {
+		if (SQL_SUCCESS != stmt.Prepare(
 			"INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)",
 			char_configs_table)
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
-			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+			|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+			|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+			|| SQL_SUCCESS != stmt.BindParam(2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+			|| SQL_SUCCESS != stmt.BindParam(3, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
+			|| SQL_SUCCESS != stmt.Execute()
 		) {
 			make_response(res, FAILURE_RET, "An error occurred while inserting data.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
 	} else {
-		if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+		if (SQL_SUCCESS != stmt.Prepare(
 			"UPDATE `%s` SET `data` = ? WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?)",
 			char_configs_table)
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &account_id, sizeof(account_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_INT, &char_id, sizeof(char_id))
-			|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
-			|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+			|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_STRING, (void *)data.c_str(), strlen(data.c_str()))
+			|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &account_id, sizeof(account_id))
+			|| SQL_SUCCESS != stmt.BindParam(2, SQLDT_INT, &char_id, sizeof(char_id))
+			|| SQL_SUCCESS != stmt.BindParam(3, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+			|| SQL_SUCCESS != stmt.Execute()
 		) {
 			make_response(res, FAILURE_RET, "An error occurred while updating data.");
 			RETURN_STMT_FAILURE(stmt, weblock);
@@ -312,29 +303,29 @@ HANDLER_FUNC(charconfig_load) {
 	SQLLock weblock(WEB_SQL_LOCK);
 	weblock.lock();
 	auto handle = weblock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `data` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ? AND `world_name` = ?) LIMIT 1",
 		char_configs_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam(2, SQLDT_STRING, (void *)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != stmt.Execute()
 	) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, weblock);
 	}
 
-	if (SqlStmt_NumRows(stmt) <= 0) {
+	if (stmt.NumRows() <= 0) {
 		std::string data = "{\"Type\": 1}";
 		
-		if (SQL_SUCCESS != SqlStmt_Prepare(stmt, "INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)", char_configs_table) ||
-			SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id)) ||
-			SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_INT, &char_id, sizeof(char_id)) ||
-			SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str())) ||
-			SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void*)data.c_str(), strlen(data.c_str())) ||
-			SQL_SUCCESS != SqlStmt_Execute(stmt)) {
+		if (SQL_SUCCESS != stmt.Prepare("INSERT INTO `%s` (`account_id`, `char_id`, `world_name`, `data`) VALUES (?, ?, ?, ?)", char_configs_table) ||
+			SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id)) ||
+			SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id)) ||
+			SQL_SUCCESS != stmt.BindParam(2, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str())) ||
+			SQL_SUCCESS != stmt.BindParam(3, SQLDT_STRING, (void*)data.c_str(), strlen(data.c_str())) ||
+			SQL_SUCCESS != stmt.Execute()) {
 			make_response(res, FAILURE_RET, "An error occurred while insert data.");
 			RETURN_STMT_FAILURE(stmt, weblock);
 		}
@@ -345,8 +336,8 @@ HANDLER_FUNC(charconfig_load) {
 
 	char databuf[SQL_BUFFER_SIZE] = { 0 };
 
-	if (SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)
+	if (SQL_SUCCESS != stmt.BindColumn(0, SQLDT_STRING, &databuf, sizeof(databuf), NULL, NULL)
+		|| SQL_SUCCESS != stmt.NextRow()
 	) {
 		make_response(res, FAILURE_RET, "An error occurred while binding column.");
 		RETURN_STMT_FAILURE(stmt, weblock);

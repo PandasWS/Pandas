@@ -28,7 +28,7 @@ using namespace rathena;
 
 std::unordered_map<uint16, std::shared_ptr<struct s_storage_table>> storage_db;
 
-///Databases of guild_storage : int guild_id -> struct guild_storage
+///Databases of guild_storage : int32 guild_id -> struct guild_storage
 std::map<int, struct s_storage> guild_storage_db;
 
 /**
@@ -62,7 +62,7 @@ bool storage_exists(uint8 id) {
  * @param _i2 : item b
  * @return i1<=>i2
  */
-static int storage_comp_item(const void *_i1, const void *_i2)
+static int32 storage_comp_item(const void *_i1, const void *_i2)
 {
 	struct item *i1 = (struct item *)_i1;
 	struct item *i2 = (struct item *)_i2;
@@ -130,7 +130,7 @@ void do_reconnect_storage(void){
  * @param sd : player
  * @return  0:success, 1:fail
  */
-int storage_storageopen(map_session_data *sd)
+int32 storage_storageopen(map_session_data *sd)
 {
 	nullpo_ret(sd);
 
@@ -138,7 +138,7 @@ int storage_storageopen(map_session_data *sd)
 		return 1; //Already open?
 
 	if( !pc_can_give_items(sd) ) { // check is this GM level is allowed to put items to storage
-		clif_displaymessage(sd->fd, msg_txt(sd,246));
+		clif_displaymessage( sd->fd, msg_txt( sd, 246 ) ); // Your GM level doesn't authorize you to perform this action.
 		return 1;
 	}
 
@@ -156,7 +156,7 @@ int storage_storageopen(map_session_data *sd)
  * @param b : item 2
  * @return 1:same, 0:are different
  */
-int compare_item(struct item *a, struct item *b)
+int32 compare_item(struct item *a, struct item *b)
 {
 	if( a->nameid == b->nameid &&
 		a->identify == b->identify &&
@@ -167,7 +167,7 @@ int compare_item(struct item *a, struct item *b)
 		a->unique_id == b->unique_id
 		)
 	{
-		int i;
+		int32 i;
 
 		for (i = 0; i < MAX_SLOTS && (a->card[i] == b->card[i]); i++);
 
@@ -186,7 +186,7 @@ int compare_item(struct item *a, struct item *b)
  * @param max_num Max inventory/cart
  * @return @see enum e_storage_add
  **/
-static enum e_storage_add storage_canAddItem(struct s_storage *stor, int idx, struct item items[], int amount, int max_num) {
+static enum e_storage_add storage_canAddItem(struct s_storage *stor, int32 idx, struct item items[], int32 amount, int32 max_num) {
 	if (idx < 0 || idx >= max_num)
 		return STORAGE_ADD_INVALID;
 
@@ -212,7 +212,7 @@ static enum e_storage_add storage_canAddItem(struct s_storage *stor, int idx, st
  * @param amount Number of item
  * @return @see enum e_storage_add
  **/
-static enum e_storage_add storage_canGetItem(struct s_storage *stor, int idx, int amount) {
+static enum e_storage_add storage_canGetItem(struct s_storage *stor, int32 idx, int32 amount) {
 	// If last index check is sd->storage_size, if player isn't VIP anymore but there's item, player can't take it
 	// Example the storage size when not VIP anymore is 350/300, player still can take the 301st~349th item.
 	if( idx < 0 || idx >= ARRAYLENGTH(stor->u.items_storage) )
@@ -239,13 +239,13 @@ static enum e_storage_add storage_canGetItem(struct s_storage *stor, int idx, in
  * @return 0:success, 1:failed, 2:failed because of room or stack checks
  */
 #ifndef Pandas_FuncDefine_STORAGE_ADDITEM
-static int storage_additem(map_session_data* sd, struct s_storage *stor, struct item *it, int amount)
+static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struct item *it, int32 amount)
 #else
-int storage_additem(map_session_data* sd, struct s_storage* stor, struct item* it, int amount, bool direct_creater)
+int32 storage_additem(map_session_data* sd, struct s_storage* stor, struct item* it, int32 amount, bool direct_creater)
 #endif // Pandas_FuncDefine_STORAGE_ADDITEM
 {
 	struct item_data *data;
-	int i;
+	int32 i;
 
 	if( it->nameid == 0 || amount <= 0 )
 		return 1;
@@ -328,7 +328,7 @@ int storage_additem(map_session_data* sd, struct s_storage* stor, struct item* i
  * @param amount :number of item to remove
  * @return 0:sucess, 1:fail
  */
-int storage_delitem(map_session_data* sd, struct s_storage *stor, int index, int amount)
+int32 storage_delitem(map_session_data* sd, struct s_storage *stor, int32 index, int32 amount)
 {
 	if( stor->u.items_storage[index].nameid == 0 || stor->u.items_storage[index].amount < amount )
 		return 1;
@@ -360,7 +360,7 @@ int storage_delitem(map_session_data* sd, struct s_storage *stor, int index, int
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storageadd(map_session_data* sd, struct s_storage *stor, int index, int amount)
+void storage_storageadd(map_session_data* sd, struct s_storage *stor, int32 index, int32 amount)
 {
 	enum e_storage_add result;
 
@@ -401,7 +401,7 @@ void storage_storageadd(map_session_data* sd, struct s_storage *stor, int index,
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storageget(map_session_data *sd, struct s_storage *stor, int index, int amount)
+void storage_storageget(map_session_data *sd, struct s_storage *stor, int32 index, int32 amount)
 {
 	unsigned char flag = 0;
 	enum e_storage_add result;
@@ -435,7 +435,7 @@ void storage_storageget(map_session_data *sd, struct s_storage *stor, int index,
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storageaddfromcart(map_session_data *sd, struct s_storage *stor, int index, int amount)
+void storage_storageaddfromcart(map_session_data *sd, struct s_storage *stor, int32 index, int32 amount)
 {
 	enum e_storage_add result;
 	nullpo_retv(sd);
@@ -480,7 +480,7 @@ void storage_storageaddfromcart(map_session_data *sd, struct s_storage *stor, in
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storagegettocart(map_session_data* sd, struct s_storage *stor, int index, int amount)
+void storage_storagegettocart(map_session_data* sd, struct s_storage *stor, int32 index, int32 amount)
 {
 	unsigned char flag = 0;
 	enum e_storage_add result;
@@ -554,7 +554,7 @@ void storage_storageclose(map_session_data *sd)
  *  1: Character is quitting
  *	2(x): Character is changing map-servers 
  */
-void storage_storage_quit(map_session_data* sd, int flag)
+void storage_storage_quit(map_session_data* sd, int32 flag)
 {
 	nullpo_retv(sd);
 
@@ -570,7 +570,7 @@ void storage_storage_quit(map_session_data* sd, int flag)
  * @param guild_id : id of the guild
  * @return s_storage
  */
-struct s_storage *guild2storage(int guild_id)
+struct s_storage *guild2storage(int32 guild_id)
 {
 	struct s_storage *gs;
 
@@ -594,7 +594,7 @@ struct s_storage *guild2storage(int guild_id)
  * @param guild_id : guild_id to search the storage
  * @return s_storage or nullptr
  */
-struct s_storage *guild2storage2(int guild_id){
+struct s_storage *guild2storage2(int32 guild_id){
 	return util::map_find( guild_storage_db, guild_id );
 }
 
@@ -602,7 +602,7 @@ struct s_storage *guild2storage2(int guild_id){
  * Delete a guild_storage and remove it from db
  * @param guild_id : guild to remove the storage from
  */
-void storage_guild_delete(int guild_id)
+void storage_guild_delete(int32 guild_id)
 {
 	guild_storage_db.erase(guild_id);
 }
@@ -632,14 +632,14 @@ char storage_guild_storageopen(map_session_data* sd)
 		return GSTORAGE_STORAGE_ALREADY_OPEN; // Can't open both storages at a time.
 
 #if PACKETVER >= 20140205
-	int pos;
+	int32 pos;
 
 	if ((pos = guild_getposition(*sd)) < 0 || !(sd->guild->guild.position[pos].mode&GUILD_PERM_STORAGE))
 		return GSTORAGE_NO_PERMISSION; // Guild member doesn't have permission
 #endif
 
 	if( !pc_can_give_items(sd) ) { //check is this GM level can open guild storage and store items [Lupus]
-		clif_displaymessage(sd->fd, msg_txt(sd,246));
+		clif_displaymessage( sd->fd, msg_txt( sd, 246 ) ); // Your GM level doesn't authorize you to perform this action.
 		return GSTORAGE_ALREADY_OPEN;
 	}
 
@@ -668,8 +668,8 @@ char storage_guild_storageopen(map_session_data* sd)
 }
 
 void storage_guild_log( map_session_data* sd, struct item* item, int16 amount ){
-	int i;
-	SqlStmt* stmt = SqlStmt_Malloc(mmysql_handle);
+	int32 i;
+	SqlStmt stmt{ *mmysql_handle };
 	StringBuf buf;
 	StringBuf_Init(&buf);
 
@@ -700,16 +700,15 @@ void storage_guild_log( map_session_data* sd, struct item* item, int16 amount ){
 		StringBuf_Printf(&buf, ",'%d','%d','%d'", item->option[i].id, item->option[i].value, item->option[i].param);
 	StringBuf_Printf(&buf, ")");
 
-	if (SQL_SUCCESS != SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf)) || SQL_SUCCESS != SqlStmt_Execute(stmt))
+	if (SQL_SUCCESS != stmt.PrepareStr(StringBuf_Value(&buf)) || SQL_SUCCESS != stmt.Execute())
 		SqlStmt_ShowDebug(stmt);
 
-	SqlStmt_Free(stmt);
 	StringBuf_Destroy(&buf);
 }
 
 enum e_guild_storage_log storage_guild_log_read_sub( map_session_data* sd, std::vector<struct guild_log_entry>& log, uint32 max ){
 	StringBuf buf;
-	int j;
+	int32 j;
 
 	StringBuf_Init(&buf);
 
@@ -725,12 +724,11 @@ enum e_guild_storage_log storage_guild_log_read_sub( map_session_data* sd, std::
 	StringBuf_Printf(&buf, " FROM `%s` WHERE `guild_id`='%u'", guild_storage_log_table, sd->status.guild_id );
 	StringBuf_Printf(&buf, " ORDER BY `time` DESC LIMIT %u", max);
 
-	SqlStmt* stmt = SqlStmt_Malloc(mmysql_handle);
-	if( SQL_ERROR == SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf)) ||
-		SQL_ERROR == SqlStmt_Execute(stmt) )
+	SqlStmt stmt{ *mmysql_handle };
+	if( SQL_ERROR == stmt.PrepareStr(StringBuf_Value(&buf)) ||
+		SQL_ERROR == stmt.Execute() )
 	{
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		StringBuf_Destroy(&buf);
 
 		return GUILDSTORAGE_LOG_FAILED;
@@ -739,37 +737,36 @@ enum e_guild_storage_log storage_guild_log_read_sub( map_session_data* sd, std::
 	struct guild_log_entry entry;
 
 	// General data
-	SqlStmt_BindColumn(stmt, 0, SQLDT_UINT,      &entry.id,               0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 1, SQLDT_STRING,    &entry.time, sizeof(entry.time), nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 2, SQLDT_STRING,    &entry.name, sizeof(entry.name), nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 3, SQLDT_SHORT,     &entry.amount,           0, nullptr, nullptr);
+	stmt.BindColumn(0, SQLDT_UINT,      &entry.id,               0, nullptr, nullptr);
+	stmt.BindColumn(1, SQLDT_STRING,    &entry.time, sizeof(entry.time), nullptr, nullptr);
+	stmt.BindColumn(2, SQLDT_STRING,    &entry.name, sizeof(entry.name), nullptr, nullptr);
+	stmt.BindColumn(3, SQLDT_SHORT,     &entry.amount,           0, nullptr, nullptr);
 
 	// Item data
-	SqlStmt_BindColumn(stmt, 4, SQLDT_UINT,      &entry.item.nameid,      0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 5, SQLDT_CHAR,      &entry.item.identify,    0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 6, SQLDT_CHAR,      &entry.item.refine,      0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 7, SQLDT_CHAR,      &entry.item.attribute,   0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 8, SQLDT_UINT,      &entry.item.expire_time, 0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 9, SQLDT_UINT,      &entry.item.bound,       0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 10, SQLDT_UINT64,   &entry.item.unique_id,   0, nullptr, nullptr);
-	SqlStmt_BindColumn(stmt, 11, SQLDT_INT8,     &entry.item.enchantgrade,0, nullptr, nullptr);
+	stmt.BindColumn(4, SQLDT_UINT,      &entry.item.nameid,      0, nullptr, nullptr);
+	stmt.BindColumn(5, SQLDT_CHAR,      &entry.item.identify,    0, nullptr, nullptr);
+	stmt.BindColumn(6, SQLDT_CHAR,      &entry.item.refine,      0, nullptr, nullptr);
+	stmt.BindColumn(7, SQLDT_CHAR,      &entry.item.attribute,   0, nullptr, nullptr);
+	stmt.BindColumn(8, SQLDT_UINT,      &entry.item.expire_time, 0, nullptr, nullptr);
+	stmt.BindColumn(9, SQLDT_UINT,      &entry.item.bound,       0, nullptr, nullptr);
+	stmt.BindColumn(10, SQLDT_UINT64,   &entry.item.unique_id,   0, nullptr, nullptr);
+	stmt.BindColumn(11, SQLDT_INT8,     &entry.item.enchantgrade,0, nullptr, nullptr);
 	for( j = 0; j < MAX_SLOTS; ++j )
-		SqlStmt_BindColumn(stmt, 12+j, SQLDT_UINT, &entry.item.card[j], 0, nullptr, nullptr);
+		stmt.BindColumn(12+j, SQLDT_UINT, &entry.item.card[j], 0, nullptr, nullptr);
 	for( j = 0; j < MAX_ITEM_RDM_OPT; ++j ) {
-		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+j*3, SQLDT_SHORT, &entry.item.option[j].id, 0, nullptr, nullptr);
-		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+j*3+1, SQLDT_SHORT, &entry.item.option[j].value, 0, nullptr, nullptr);
-		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+j*3+2, SQLDT_CHAR, &entry.item.option[j].param, 0, nullptr, nullptr);
+		stmt.BindColumn(12+MAX_SLOTS+j*3, SQLDT_SHORT, &entry.item.option[j].id, 0, nullptr, nullptr);
+		stmt.BindColumn(12+MAX_SLOTS+j*3+1, SQLDT_SHORT, &entry.item.option[j].value, 0, nullptr, nullptr);
+		stmt.BindColumn(12+MAX_SLOTS+j*3+2, SQLDT_CHAR, &entry.item.option[j].param, 0, nullptr, nullptr);
 	}
 
 	log.reserve(max);
 
-	while( SQL_SUCCESS == SqlStmt_NextRow(stmt) ){
+	while( SQL_SUCCESS == stmt.NextRow() ){
 		log.push_back( entry );
 	}
 
 	Sql_FreeResult(mmysql_handle);
 	StringBuf_Destroy(&buf);
-	SqlStmt_Free(stmt);
 
 	if( log.empty() ){
 		return GUILDSTORAGE_LOG_EMPTY;
@@ -796,10 +793,10 @@ enum e_guild_storage_log storage_guild_log_read( map_session_data* sd ){
  * @param amount : number of item to add
  * @return True : success, False : fail
  */
-bool storage_guild_additem(map_session_data* sd, struct s_storage* stor, struct item* item_data, int amount)
+bool storage_guild_additem(map_session_data* sd, struct s_storage* stor, struct item* item_data, int32 amount)
 {
 	struct item_data *id;
-	int i;
+	int32 i;
 
 	nullpo_ret(sd);
 	nullpo_ret(stor);
@@ -870,8 +867,8 @@ bool storage_guild_additem(map_session_data* sd, struct s_storage* stor, struct 
  * @param amount : number of item to add
  * @return True : success, False : fail
  */
-bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amount) {
-	int i;
+bool storage_guild_additem2(struct s_storage* stor, struct item* item, int32 amount) {
+	int32 i;
 
 	nullpo_ret(stor);
 	nullpo_ret(item);
@@ -924,7 +921,7 @@ bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amoun
  * @param amount : number of item to delete
  * @return True : success, False : fail
  */
-bool storage_guild_delitem(map_session_data* sd, struct s_storage* stor, int n, int amount)
+bool storage_guild_delitem(map_session_data* sd, struct s_storage* stor, int32 n, int32 amount)
 {
 	nullpo_retr(1, sd);
 	nullpo_retr(1, stor);
@@ -956,7 +953,7 @@ bool storage_guild_delitem(map_session_data* sd, struct s_storage* stor, int n, 
  * @param sd : player
  * @param amount : number of item to delete
  */
-void storage_guild_storageadd(map_session_data* sd, int index, int amount)
+void storage_guild_storageadd(map_session_data* sd, int32 index, int32 amount)
 {
 	struct s_storage *stor;
 
@@ -1006,7 +1003,7 @@ void storage_guild_storageadd(map_session_data* sd, int index, int amount)
  * @param amount : number of item to get
  * @return 1:success, 0:fail
  */
-void storage_guild_storageget(map_session_data* sd, int index, int amount)
+void storage_guild_storageget(map_session_data* sd, int32 index, int32 amount)
 {
 	struct s_storage *stor;
 	unsigned char flag = 0;
@@ -1052,7 +1049,7 @@ void storage_guild_storageget(map_session_data* sd, int index, int amount)
  * @param index : index of item in cart
  * @param amount : number of item to transfer
  */
-void storage_guild_storageaddfromcart(map_session_data* sd, int index, int amount)
+void storage_guild_storageaddfromcart(map_session_data* sd, int32 index, int32 amount)
 {
 	struct s_storage *stor;
 
@@ -1094,7 +1091,7 @@ void storage_guild_storageaddfromcart(map_session_data* sd, int index, int amoun
  * @param amount : number of item to transfer
  * @return 1:fail, 0:success
  */
-void storage_guild_storagegettocart(map_session_data* sd, int index, int amount)
+void storage_guild_storagegettocart(map_session_data* sd, int32 index, int32 amount)
 {
 	short flag;
 	struct s_storage *stor;
@@ -1139,7 +1136,7 @@ void storage_guild_storagegettocart(map_session_data* sd, int index, int amount)
  * @param flag : 1=char quitting, close the storage
  * @return False : fail (no storage), True : success (requested)
  */
-bool storage_guild_storagesave(uint32 account_id, int guild_id, int flag)
+bool storage_guild_storagesave(uint32 account_id, int32 guild_id, int32 flag)
 {
 	struct s_storage *stor = guild2storage2(guild_id);
 
@@ -1160,7 +1157,7 @@ bool storage_guild_storagesave(uint32 account_id, int guild_id, int flag)
  * ACK save of guild storage
  * @param guild_id : guild to use the storage
  */
-void storage_guild_storagesaved(int guild_id)
+void storage_guild_storagesaved(int32 guild_id)
 {
 	struct s_storage *stor;
 
@@ -1199,7 +1196,7 @@ void storage_guild_storageclose(map_session_data* sd)
  * @param sd
  * @param flag
  */
-void storage_guild_storage_quit(map_session_data* sd, int flag)
+void storage_guild_storage_quit(map_session_data* sd, int32 flag)
 {
 	struct s_storage *stor;
 
@@ -1280,7 +1277,7 @@ bool storage_premiumStorage_load(map_session_data *sd, uint8 num, uint8 mode) {
 		return 0;
 
 	if (!pc_can_give_items(sd)) { // check is this GM level is allowed to put items to storage
-		clif_displaymessage(sd->fd, msg_txt(sd,246));
+		clif_displaymessage( sd->fd, msg_txt( sd, 246 ) ); // Your GM level doesn't authorize you to perform this action.
 		return 0;
 	}
 
