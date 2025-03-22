@@ -49,7 +49,6 @@ class MapGuild;
 
 #define MAX_PC_BONUS 50 /// Max bonus, usually used by item bonus
 #define MAX_PC_FEELHATE 3 /// Max feel hate info
-#define DAMAGELOG_SIZE_PC 100	/// Damage log
 #define MAX_SPIRITBALL 15 /// Max spirit balls
 #define MAX_DEVOTION 5 /// Max Devotion slots
 #define MAX_SPIRITCHARM 10 /// Max spirit charms
@@ -142,6 +141,13 @@ enum e_additem_result : uint8 {
 	ADDITEM_STACKLIMIT
 };
 
+enum e_lr_flag : uint8 {
+	LR_FLAG_NONE = 0,
+	LR_FLAG_WEAPON,
+	LR_FLAG_ARROW,
+	LR_FLAG_SHIELD
+};
+
 #ifndef CAPTCHA_ANSWER_SIZE
 	#define CAPTCHA_ANSWER_SIZE 16
 #endif
@@ -195,11 +201,6 @@ public:
 };
 
 extern CaptchaDatabase captcha_db;
-
-struct skill_cooldown_entry {
-	unsigned short skill_id;
-	int32 timer;
-};
 
 #ifdef VIP_ENABLE
 struct vip_info {
@@ -442,7 +443,7 @@ public:
 		uint32 active : 1; //Marks active player (not active is logging in/out, or changing map servers)
 		uint32 menu_or_input : 1;// if a script is waiting for feedback from the player
 		uint32 dead_sit : 2;
-		uint32 lr_flag : 3;//1: left h. weapon; 2: arrow; 3: shield
+		e_lr_flag lr_flag;
 		uint32 connect_new : 1;
 		uint32 arrow_atk : 1;
 		uint32 gangsterparadise : 1;
@@ -602,7 +603,7 @@ public:
 	uint16 skill_id_dance,skill_lv_dance;
 	uint16 skill_id_song, skill_lv_song;
 	short cook_mastery; // range: [0,1999] [Inkfish]
-	struct skill_cooldown_entry * scd[MAX_SKILLCOOLDOWN]; // Skill Cooldown
+	std::unordered_map<uint16, int32> scd; // Skill Cooldown
 	uint16 cloneskill_idx, ///Stores index of copied skill by Intimidate/Plagiarism
 		reproduceskill_idx; ///Stores index of copied skill by Reproduce
 	int32 menuskill_id, menuskill_val, menuskill_val2;
@@ -784,8 +785,6 @@ public:
 
 	t_itemid itemid;
 	short itemindex;	//Used item's index in sd->inventory [Skotlex]
-
-	uint16 catch_target_class; // pet catching, stores a pet class to catch [zzo]
 
 	int8 spiritball, spiritball_old;
 	int32 spirit_timer[MAX_SPIRITBALL];
@@ -983,8 +982,6 @@ public:
 	unsigned char vars_received; // char loading is only complete when you get it all.
 	bool vars_ok;
 	bool vars_dirty;
-
-	uint16 dmglog[DAMAGELOG_SIZE_PC]; ///target ids
 
 	int32 c_marker[MAX_SKILL_CRIMSON_MARKER]; /// Store target that marked by Crimson Marker [Cydh]
 	bool flicker; /// Check RL_FLICKER usage status [Cydh]
@@ -1645,10 +1642,10 @@ int32 pc_identifyall(map_session_data *sd, bool identify_item);
 bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv);
 int32 pc_steal_coin(map_session_data *sd,struct block_list *bl);
 
-int32 pc_modifybuyvalue(map_session_data*,int);
-int32 pc_modifysellvalue(map_session_data*,int);
+int32 pc_modifybuyvalue(map_session_data*,int32);
+int32 pc_modifysellvalue(map_session_data*,int32);
 
-int32 pc_follow(map_session_data*, int); // [MouseJstr]
+int32 pc_follow(map_session_data*, int32); // [MouseJstr]
 int32 pc_stop_following(map_session_data*);
 
 uint32 pc_maxbaselv(map_session_data *sd);
@@ -1662,21 +1659,21 @@ void pc_gainexp_disp(map_session_data *sd, t_exp base_exp, t_exp next_base_exp, 
 void pc_lostexp(map_session_data *sd, t_exp base_exp, t_exp job_exp);
 t_exp pc_nextbaseexp(map_session_data *sd);
 t_exp pc_nextjobexp(map_session_data *sd);
-int32 pc_need_status_point(map_session_data *,int,int);
-int32 pc_maxparameterincrease(map_session_data*,int);
-bool pc_statusup(map_session_data*,int,int);
-int32 pc_statusup2(map_session_data*,int,int);
+int32 pc_need_status_point(map_session_data *,int32,int32);
+int32 pc_maxparameterincrease(map_session_data*,int32);
+bool pc_statusup(map_session_data*,int32,int32);
+int32 pc_statusup2(map_session_data*,int32,int32);
 int32 pc_getstat(map_session_data *sd, int32 type);
 int32 pc_setstat(map_session_data* sd, int32 type, int32 val);
-int32 pc_need_trait_point(map_session_data *, int, int);
-int32 pc_maxtraitparameterincrease(map_session_data*, int);
-bool pc_traitstatusup(map_session_data*, int, int);
-int32 pc_traitstatusup2(map_session_data*, int, int);
+int32 pc_need_trait_point(map_session_data *, int32, int32);
+int32 pc_maxtraitparameterincrease(map_session_data*, int32);
+bool pc_traitstatusup(map_session_data*, int32, int32);
+int32 pc_traitstatusup2(map_session_data*, int32, int32);
 void pc_skillup(map_session_data*,uint16 skill_id);
 int32 pc_allskillup(map_session_data*);
 int32 pc_resetlvl(map_session_data*,int32 type);
 int32 pc_resetstate(map_session_data*);
-int32 pc_resetskill(map_session_data*, int);
+int32 pc_resetskill(map_session_data*, int32);
 int32 pc_resetfeel(map_session_data*);
 int32 pc_resethate(map_session_data*);
 #ifndef Pandas_FuncParams_PC_EQUIPITEM
@@ -1684,12 +1681,12 @@ bool pc_equipitem(map_session_data *sd, short n, int32 req_pos, bool equipswitch
 #else
 bool pc_equipitem(map_session_data *sd, short n, int32 req_pos, bool equipswitch = false, bool swapping = false);
 #endif // Pandas_FuncParams_PC_EQUIPITEM
-bool pc_unequipitem(map_session_data*,int,int);
+bool pc_unequipitem(map_session_data*,int32,int32);
 int32 pc_equipswitch( map_session_data* sd, int32 index );
 void pc_equipswitch_remove( map_session_data* sd, int32 index );
 void pc_checkitem(map_session_data*);
 void pc_check_available_item(map_session_data *sd, uint8 type);
-int32 pc_useitem(map_session_data*,int);
+int32 pc_useitem(map_session_data*,int32);
 
 #ifdef Pandas_Bonus2_bAddSkillRange
 int pc_addskillrange_bonus(map_session_data* sd, uint16 skill_id);
@@ -1709,14 +1706,14 @@ void pc_revive(map_session_data *sd,uint32 hp, uint32 sp, uint32 ap = 0);
 bool pc_revive_item(map_session_data *sd);
 void pc_heal(map_session_data *sd,uint32 hp,uint32 sp, uint32 ap, int32 type);
 int32 pc_itemheal(map_session_data *sd, t_itemid itemid, int32 hp,int32 sp);
-int32 pc_percentheal(map_session_data *sd,int,int);
+int32 pc_percentheal(map_session_data *sd,int32,int32);
 bool pc_jobchange(map_session_data *sd, int32 job, char upper);
 void pc_setoption(map_session_data *,int32 type, int32 subtype = 0);
 bool pc_setcart(map_session_data* sd, int32 type);
 void pc_setfalcon(map_session_data* sd, int32 flag);
 void pc_setriding(map_session_data* sd, int32 flag);
 void pc_setmadogear(map_session_data* sd, bool flag, e_mado_type type = MADO_ROBOT);
-void pc_changelook(map_session_data *,int,int);
+void pc_changelook(map_session_data *,int32,int32);
 void pc_equiplookall(map_session_data *sd);
 void pc_set_costume_view(map_session_data *sd);
 
@@ -1866,9 +1863,6 @@ void pc_addspiritcharm(map_session_data *sd, int32 interval, int32 max, int32 ty
 void pc_delspiritcharm(map_session_data *sd, int32 count, int32 type);
 
 void pc_baselevelchanged(map_session_data *sd);
-
-void pc_damage_log_add(map_session_data *sd, int32 id);
-void pc_damage_log_clear(map_session_data *sd, int32 id);
 
 enum e_BANKING_DEPOSIT_ACK : uint8;
 enum e_BANKING_WITHDRAW_ACK : uint8;

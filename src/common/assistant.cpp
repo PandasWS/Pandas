@@ -565,8 +565,8 @@ void strReplace(std::wstring& str, const std::wstring& from, const std::wstring&
 // Author:      Sola丶小克(CairoLee)  2021/08/07 16:10
 //************************************ 
 void strReplace(char* str, const char* from, const char* to) {
-	int len = strlen(str);
-	int from_len = strlen(from), to_len = strlen(to);
+	size_t len = strlen(str);
+	size_t from_len = strlen(from), to_len = strlen(to);
 	for (char* p = str; p = strstr(p, from); ++p) {
 		if (from_len != to_len) // shift end as needed 
 			memmove(p + to_len, p + from_len,

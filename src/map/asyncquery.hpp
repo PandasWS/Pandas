@@ -10,7 +10,7 @@
 // structure that contains data from Sql_Query()
 struct DBResultData {
 private:
-	size_t Index(int Row, int Column);
+	size_t Index(size_t Row, size_t Column);
 
 public:
 	std::vector<std::string> data;
@@ -30,16 +30,16 @@ public:
 		data.assign(src->data.begin(), src->data.end());
 	};
 
-	const char* GetData(int Row, int Column);
-	void SetData(int Row, int Column, Sql* handle);
-	int8 GetInt8(int Row, int Column);
-	uint8 GetUInt8(int Row, int Column);
-	int16 GetInt16(int Row, int Column);
-	uint16 GetUInt16(int Row, int Column);
-	int32 GetInt32(int Row, int Column);
-	uint32 GetUInt32(int Row, int Column);
-	int64 GetInt64(int Row, int Column);
-	uint64 GetUInt64(int Row, int Column);
+	const char* GetData(size_t Row, size_t Column);
+	void SetData(size_t Row, size_t Column, Sql* handle);
+	int8 GetInt8(size_t Row, size_t Column);
+	uint8 GetUInt8(size_t Row, size_t Column);
+	int16 GetInt16(size_t Row, size_t Column);
+	uint16 GetUInt16(size_t Row, size_t Column);
+	int32 GetInt32(size_t Row, size_t Column);
+	uint32 GetUInt32(size_t Row, size_t Column);
+	int64 GetInt64(size_t Row, size_t Column);
+	uint64 GetUInt64(size_t Row, size_t Column);
 };
 
 enum class dbType {

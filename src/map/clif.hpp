@@ -68,7 +68,7 @@ enum e_PacketDBVersion { // packet DB
 
 struct s_packet_db {
 	short len;
-	void (*func)(int, map_session_data *);
+	void (*func)(int32, map_session_data *);
 	short pos[MAX_PACKET_POS];
 };
 
@@ -495,8 +495,32 @@ enum useskill_fail_cause : uint8_t
 	USESKILL_FAIL_THERE_ARE_NPC_AROUND = 83,
 	USESKILL_FAIL_NEED_MORE_BULLET = 84,
 	USESKILL_FAIL_COINS = 85,
-	// 86-99 unknown
-	USESKILL_FAIL_AP_INSUFFICIENT = 100,
+	// 86 unknown
+	USESKILL_FAIL_MAP = 87,
+	USESKILL_FAIL_NEED_SUMMON_SP,
+	USESKILL_FAIL_SAME_VEND,
+	USESKILL_FAIL_NEED_BULLETS,
+	USESKILL_FAIL_NEED_ARROWS,
+	USESKILL_FAIL_NEED_PARTY,
+	USESKILL_FAIL_NEED_PARTY_LEADER,
+	USESKILL_FAIL_NEED_PARTNER_SP,
+	USESKILL_FAIL_NEED_WEAPON,
+	USESKILL_FAIL_NEED_ENERGY_SPHERE,
+	USESKILL_FAIL_NEED_WEAPON_BLOCKING,
+	USESKILL_FAIL_MAX_TRAPS,
+	USESKILL_FAIL_NEED_MAGIC_SPELLBOOK,
+	USESKILL_FAIL_AP_INSUFFICIENT,
+	USESKILL_FAIL_NEED_SERVANT_WEAPON,
+	USESKILL_FAIL_NEED_TWINKLING_GALAXY,
+	USESKILL_FAIL_NEED_SOUL_ENGERY,
+	USESKILL_FAIL_NEED_AMULET,
+	USESKILL_FAIL_NEED_GATLING_SHOTGUT,
+	USESKILL_FAIL_NEED_RIFLE_REVOLVER,
+	USESKILL_FAIL_NEED_GLAUNCHER_RIFLE,
+	USESKILL_FAIL_NEED_GATLING_REVOLVER,
+	USESKILL_FAIL_NEED_SHOTGUN_GLAUNCHER,
+	USESKILL_FAIL_NEED_SHIELD,
+	USESKILL_FAIL_TARGET_SHADOW_SPACE,
 	USESKILL_FAIL_MAX
 };
 
@@ -765,6 +789,13 @@ enum e_create_chatroom : uint8 {
 	CREATEROOM_ALREADY_EXISTS = 2
 };
 
+enum e_status_chatroom : uint8 {
+	STATUSROOM_PRIVATE = 0,
+	STATUSROOM_PUBLIC,
+	STATUSROOM_ARENA,
+	STATUSROOM_PK_ZONE
+};
+
 enum e_action_failure : uint8 {
 	ARROWFAIL_NO_AMMO = 0,
 	ARROWFAIL_WEIGHT_LIMIT = 1,
@@ -899,7 +930,7 @@ void clif_changeoption2( block_list& bl );
 void clif_useitemack(map_session_data *sd,int32 index,int32 amount,bool ok);	// self
 void clif_GlobalMessage( block_list& bl, const char* message, enum send_target target );
 void clif_createchat( map_session_data& sd, e_create_chatroom flag );
-void clif_dispchat(struct chat_data* cd, int32 fd);	// area or fd
+void clif_dispchat( const chat_data& cd );
 void clif_joinchatfail( map_session_data& sd, e_refuse_enter_room result );
 void clif_joinchatok(map_session_data& sd,chat_data& cd);
 void clif_addchat( chat_data& cd, map_session_data& sd );
@@ -1377,7 +1408,7 @@ void clif_merge_item_open( map_session_data& sd );
 
 void clif_broadcast_obtain_special_item(const char *char_name, t_itemid nameid, t_itemid container, enum BROADCASTING_SPECIAL_ITEM_OBTAIN type);
 
-void clif_dressing_room(map_session_data *sd, int32 flag);
+void clif_dressing_room( map_session_data& sd );
 void clif_navigateTo(map_session_data *sd, const char* mapname, uint16 x, uint16 y, uint8 flag, bool hideWindow, uint16 mob_id );
 void clif_SelectCart(map_session_data *sd);
 

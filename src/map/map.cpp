@@ -867,7 +867,7 @@ int32 map_foreachinshootrange(int32 (*func)(struct block_list*,va_list),struct b
  * @param y1: North end of area
  * @param type: Type of bl to search for
 *------------------------------------------*/
-int32 map_foreachinareaV(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int32 type, va_list ap, bool wall_check)
+int32 map_foreachinareaV(int32 (*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int32 type, va_list ap, bool wall_check)
 {
 	int32 bx, by, cx, cy;
 	int32 returnCount = 0;	//total sum of returned values of func()
@@ -955,7 +955,7 @@ int32 map_foreachinallarea(int32 (*func)(struct block_list*,va_list), int16 m, i
 	return returnCount;
 }
 
-int32 map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int32 type, ...)
+int32 map_foreachinshootarea(int32 (*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int32 type, ...)
 {
 	int32 returnCount = 0;
 	va_list ap;
@@ -964,7 +964,7 @@ int32 map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, i
  	va_end(ap);
 	return returnCount;
 }
-int32 map_foreachinarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int32 type, ...)
+int32 map_foreachinarea(int32 (*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int32 type, ...)
 {
 	int32 returnCount = 0;
 	va_list ap;
@@ -1347,7 +1347,7 @@ int32 map_foreachinpath(int32 (*func)(struct block_list*,va_list),int16 m,int16 
 
 	if ( length ) { //Adjust final position to fit in the given area.
 		//TODO: Find an alternate method which does not requires a square root calculation.
-		k = (int)sqrt((float)magnitude2);
+		k = (int32)sqrt((float)magnitude2);
 		mx1 = x0 + (x1 - x0) * length / k;
 		my1 = y0 + (y1 - y0) * length / k;
 		len_limit = MAGNITUDE2(x0, y0, mx1, my1);
@@ -1487,7 +1487,7 @@ int32 map_foreachinpath(int32 (*func)(struct block_list*,va_list),int16 m,int16 
 * @param offset: Moves the whole path, half-length for diagonal paths
 * @param type: Type of bl to search for
 *------------------------------------------*/
-int32 map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int16 range, int32 length, int32 offset, int32 type, ...)
+int32 map_foreachindir(int32 (*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int16 range, int32 length, int32 offset, int32 type, ...)
 {
 	int32 returnCount = 0;  //Total sum of returned values of func()
 
@@ -2383,7 +2383,6 @@ int32 map_quit(map_session_data *sd) {
 	if (sd->state.buyingstore)
 		idb_remove(buyingstore_getdb(), sd->status.char_id);
 
-	pc_damage_log_clear(sd,0);
 	party_booking_delete(sd); // Party Booking [Spiria]
 	pc_makesavestatus(sd);
 	pc_clean_skilltree(sd);
@@ -3530,7 +3529,7 @@ void map_setcell(int16 m, int16 x, int16 y, cell_t cell, bool flag)
 		case CELL_ICEWALL:		 mapdata->cell[j].icewall = flag;		  break;
 		case CELL_NOBUYINGSTORE: mapdata->cell[j].nobuyingstore = flag; break;
 		default:
-			ShowWarning("map_setcell: invalid cell type '%d'\n", (int)cell);
+			ShowWarning("map_setcell: invalid cell type '%d'\n", (int32)cell);
 			break;
 	}
 }
@@ -5160,11 +5159,11 @@ bool map_getmapflag_name( enum e_mapflag mapflag, char* output ){
 // Method:      map_mapflag_valid_index
 // Description: 检查指定地图标记的附加参数索引是否有效
 // Parameter:   e_mapflag mapflag
-// Parameter:   int index
+// Parameter:   size_t index
 // Returns:     bool
 // Author:      Sola丶小克(CairoLee)  2023/04/29 11:56
 //************************************
-bool map_mapflag_valid_index(e_mapflag mapflag, int index) {
+bool map_mapflag_valid_index(e_mapflag mapflag, size_t index) {
 	#define MAX_ARGS_COUNT 4
 	auto conf = util::umap_find(mapflag_config, mapflag);
 	if (conf == nullptr) {
@@ -5178,11 +5177,11 @@ bool map_mapflag_valid_index(e_mapflag mapflag, int index) {
 // Description:	获取指定地图标记的附加参数 (指定默认值)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	int index
+// Parameter:	size_t index
 // Parameter:	int default_val
 // Returns:		int
 //************************************
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index, int default_val) {
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, size_t index, int default_val) {
 	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
 		ShowWarning("map_getmapflag_param: Invalid map ID %d.\n", m);
 		return default_val;
@@ -5231,10 +5230,10 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index, int default
 // Description:	获取指定地图标记的附加参数 (自动使用默认值)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	int index
+// Parameter:	size_t index
 // Returns:		int
 //************************************
-int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index) {
+int map_getmapflag_param(int16 m, enum e_mapflag mapflag, size_t index) {
 	int default_val = 0;
 	auto conf = util::umap_find(mapflag_config, mapflag);
 	if (conf && map_mapflag_valid_index(mapflag, index - 1)) {
@@ -5248,11 +5247,11 @@ int map_getmapflag_param(int16 m, enum e_mapflag mapflag, int index) {
 // Description:	设置指定地图标记的附加参数 (直接指定要设置的参数是哪个)
 // Parameter:	int16 m
 // Parameter:	enum e_mapflag mapflag
-// Parameter:	int index
+// Parameter:	size_t index
 // Parameter:	int value
 // Returns:		void
 //************************************
-void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int index, int value) {
+void map_setmapflag_param(int16 m, enum e_mapflag mapflag, size_t index, int value) {
 	if (m < 0 || m >= MAX_MAP_PER_SERVER) {
 		ShowWarning("map_setmapflag_param: Invalid map ID %d.\n", m);
 		return;
@@ -5291,7 +5290,7 @@ void map_setmapflag_param(int16 m, enum e_mapflag mapflag, int index, int value)
 		current_values = &new_values;
 	}
 
-	int args_count = conf->args.size();
+	size_t args_count = conf->args.size();
 	if (current_values->size() != args_count) {
 		current_values->resize(args_count);
 	}
@@ -5359,12 +5358,12 @@ void map_setmapflag_param_reset(int16 m, enum e_mapflag mapflag) {
 		current_values = &new_values;
 	}
 
-	int args_count = conf->args.size();
+	size_t args_count = conf->args.size();
 	if (current_values->size() != args_count) {
 		current_values->resize(args_count);
 	}
 
-	for (int i = 0; i < args_count; ++i) {
+	for (size_t i = 0; i < args_count; ++i) {
 		(*current_values)[i] = conf->args[i].def_val;
 	}
 

@@ -949,15 +949,6 @@
 		#define Pandas_Fix_Cloak_Status_Baffling
 	#endif // Pandas_Struct_Status_Change_Cloak_Reverting
 
-	// 修正获取道具分组的随机算法权重不符合预期的问题 [Sola丶小克]
-	// 所有最终使用 item_group_db.yml 数据的指令函数 (比如 getrandgroupitem 等)
-	// 最后都会经过 itemdb.cpp 中的 get_random_itemsubgroup 来获取随机物品
-	// 该函数的实现并不严谨, 随机出来的物品概率与 doc/item_group.txt 的描述不符合
-	// 这可能导致很多卡片或者道具过多流入到市场, 打破游戏平衡
-	//
-	// 感谢 "红狐狸" 提醒此问题
-	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
-
 	// 修正在保存 s_storage 数据期间如果发生了存储内容的增删改时,
 	// 特定操作流程下可能诱发数据丢失的问题 [Sola丶小克]
 	//
@@ -1069,9 +1060,6 @@
 
 	// 对除数可能为零的情况进行一些规避处理 [Sola丶小克]
 	#define Pandas_Crashfix_Divide_by_Zero
-
-	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
-	#define Pandas_Crashfix_ScriptCommand_Summon
 
 	// 修复使用 getd 操作的变量名存在空格开头时,
 	// 若 getd 的结果直接作为参数传入其他脚本指令, 会导致地图服务器崩溃的问题 [Sola丶小克]
