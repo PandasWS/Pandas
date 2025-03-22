@@ -40,3 +40,24 @@ CREATE TABLE IF NOT EXISTS `skillcooldown_mercenary` (
   `tick` bigint(20) NOT NULL,
   PRIMARY KEY (`mer_id`)
 ) ENGINE=MyISAM;
+
+-- -----------------------------------------------
+-- upgrade_20250126.sql
+-- -----------------------------------------------
+
+ALTER TABLE `char`
+	ADD COLUMN `disable_partyinvite` tinyint(1) unsigned NOT NULL default '0' AFTER `disable_call`;
+
+-- -----------------------------------------------
+-- upgrade_20250201.sql
+-- -----------------------------------------------
+
+ALTER TABLE `skillcooldown_homunculus`
+	DROP PRIMARY KEY,
+	ADD PRIMARY KEY(`homun_id`, `skill`)
+;
+
+ALTER TABLE `skillcooldown_mercenary`
+	DROP PRIMARY KEY,
+	ADD PRIMARY KEY(`mer_id`, `skill`)
+;

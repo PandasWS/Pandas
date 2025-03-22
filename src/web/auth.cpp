@@ -35,7 +35,7 @@ bool isAuthorized(const Request &request, bool checkGuildLeader) {
 	if (SQL_SUCCESS != stmt.Prepare(
 			"SELECT `account_id` FROM `%s` WHERE (`account_id` = ? AND `web_auth_token` = ? AND `web_auth_token_enabled` = '1')",
 			login_table)
-		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_STRING, (void *)token, strlen(token))
 		|| SQL_SUCCESS != stmt.Execute()
 	) {
@@ -66,8 +66,8 @@ bool isAuthorized(const Request &request, bool checkGuildLeader) {
 	if (SQL_SUCCESS != stmt2.Prepare(
 		"SELECT `account_id` FROM `%s` LEFT JOIN `%s` using (`char_id`) WHERE (`%s`.`account_id` = ? AND `%s`.`guild_id` = ?) LIMIT 1",
 		guild_db_table, char_db_table, char_db_table, guild_db_table)
-		|| SQL_SUCCESS != stmt2.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != stmt2.BindParam(1, SQLDT_INT, &guild_id, sizeof(guild_id))
+		|| SQL_SUCCESS != stmt2.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt2.BindParam(1, SQLDT_INT32, &guild_id, sizeof(guild_id))
 		|| SQL_SUCCESS != stmt2.Execute()
 	) {
 		SqlStmt_ShowDebug(stmt2);
@@ -103,8 +103,8 @@ bool isVaildCharacter(uint32 account_id, uint32 char_id) {
 	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `char_id` FROM `%s` WHERE (`account_id` = ? AND `char_id` = ?) LIMIT 1",
 		char_db_table)
-		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT32, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != stmt.Execute() || stmt.NumRows() <= 0
 		) {
 		charlock.unlock();
@@ -132,7 +132,7 @@ bool isVaildAccount(uint32 account_id) {
 	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `account_id` FROM `%s` WHERE `account_id` = ? LIMIT 1",
 		login_table)
-		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != stmt.Execute() || stmt.NumRows() <= 0
 		) {
 		loginlock.unlock();
@@ -161,8 +161,8 @@ bool isPartyLeader(uint32 account_id, uint32 char_id) {
 	if (SQL_SUCCESS != stmt.Prepare(
 		"SELECT `party_id` FROM `%s` WHERE (`leader_id` = ? AND `leader_char` = ?) LIMIT 1",
 		party_table)
-		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_INT32, &char_id, sizeof(char_id))
 		|| SQL_SUCCESS != stmt.Execute() || stmt.NumRows() <= 0
 		) {
 		charlock.unlock();

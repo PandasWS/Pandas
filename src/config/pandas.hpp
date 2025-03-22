@@ -844,6 +844,9 @@
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
+	// 修正当 PACKETVER 小于 20131223 出现的 clif_mvp_exp 类型转换错误 [Sola丶小克]
+	#define Pandas_Fix_Clif_MVP_Exp_Type_Conversion
+
 	// 修正部分简体、繁体中文字符作为角色名时, 会被变成问号的问题 [Sola丶小克]
 	// 例如: "凯撒"中的"凯"字, "聽風"中的"聽"字等
 	#define Pandas_Fix_Chinese_Character_Trimmed
@@ -1739,6 +1742,13 @@
 	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
+	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadauradb 管理员指令 [Sola丶小克]
+	// 重新加载光环数据库 (aura_db.yml)
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_AtCommand_ReloadAuraDB
 	#endif // Pandas_Aura_Mechanism
 
 	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]

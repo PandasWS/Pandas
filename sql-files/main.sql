@@ -287,6 +287,7 @@ CREATE TABLE IF NOT EXISTS `char` (
   `inventory_slots` smallint(6) NOT NULL default '100',
   `body_direction` tinyint(1) unsigned NOT NULL default '0',
   `disable_call` tinyint(3) unsigned NOT NULL default '0',
+  `disable_partyinvite` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`char_id`),
   UNIQUE KEY `name_key` (`name`),
   KEY `account_id` (`account_id`),
@@ -1065,7 +1066,7 @@ CREATE TABLE IF NOT EXISTS `skillcooldown_homunculus` (
   `homun_id` int(11) NOT NULL,
   `skill` smallint(11) unsigned NOT NULL DEFAULT '0',
   `tick` bigint(20) NOT NULL,
-  PRIMARY KEY (`homun_id`)
+  PRIMARY KEY (`homun_id`,`skill`)
 ) ENGINE=MyISAM;
 
 --
@@ -1076,7 +1077,7 @@ CREATE TABLE IF NOT EXISTS `skillcooldown_mercenary` (
   `mer_id` int(11) NOT NULL,
   `skill` smallint(11) unsigned NOT NULL DEFAULT '0',
   `tick` bigint(20) NOT NULL,
-  PRIMARY KEY (`mer_id`)
+  PRIMARY KEY (`mer_id`,`skill`)
 ) ENGINE=MyISAM;
 
 --

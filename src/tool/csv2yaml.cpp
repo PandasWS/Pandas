@@ -318,14 +318,14 @@ bool Csv2YamlTool::initialize( int32 argc, char* argv[] ){
 	}
 
 	skill_txt_data( path_db_mode, path_db );
-	if (!process("SKILL_DB", 3, { path_db_mode }, "skill_db", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("SKILL_DB", 4, { path_db_mode }, "skill_db", [](const std::string& path, const std::string& name_ext) -> bool {
 		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 18, 18, -1, &skill_parse_row_skilldb, false);
 	})){
 		return false;
 	}
 
 	skill_txt_data( path_db_import, path_db_import );
-	if (!process("SKILL_DB", 3, { path_db_import }, "skill_db", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("SKILL_DB", 4, { path_db_import }, "skill_db", [](const std::string& path, const std::string& name_ext) -> bool {
 		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 18, 18, -1, &skill_parse_row_skilldb, false);
 	})){
 		return false;
@@ -507,20 +507,20 @@ bool Csv2YamlTool::initialize( int32 argc, char* argv[] ){
 		return false;
 	}
 
-	if (!process("JOB_STATS", 2, root_paths, "job_exp", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("JOB_STATS", 3, root_paths, "job_exp", [](const std::string& path, const std::string& name_ext) -> bool {
 		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 4, 1000 + 3, CLASS_COUNT * 2, &pc_readdb_job_exp, false);
 	}, "job_exp")) {
 		return false;
 	}
 
-	if (!process("JOB_STATS", 2, root_paths, "job_basehpsp_db", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("JOB_STATS", 3, root_paths, "job_basehpsp_db", [](const std::string& path, const std::string& name_ext) -> bool {
 		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 4, 4 + 500, CLASS_COUNT * 2, &pc_readdb_job_basehpsp, false);
 	}, "job_basepoints")) {
 		return false;
 	}
 
 	job_txt_data(path_db_mode, path_db);
-	if (!process("JOB_STATS", 2, { path_db_mode }, "job_db1", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("JOB_STATS", 3, { path_db_mode }, "job_db1", [](const std::string& path, const std::string& name_ext) -> bool {
 #ifdef RENEWAL_ASPD
 		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 6 + MAX_WEAPON_TYPE, 6 + MAX_WEAPON_TYPE, CLASS_COUNT, &pc_readdb_job1, false);
 #else
@@ -531,7 +531,7 @@ bool Csv2YamlTool::initialize( int32 argc, char* argv[] ){
 	}
 
 	job_txt_data(path_db_import, path_db_import);
-	if (!process("JOB_STATS", 2, { path_db_import }, "job_db1", [](const std::string& path, const std::string& name_ext) -> bool {
+	if (!process("JOB_STATS", 3, { path_db_import }, "job_db1", [](const std::string& path, const std::string& name_ext) -> bool {
 #ifdef RENEWAL_ASPD
 		return sv_readdb(path.c_str(), name_ext.c_str(), ',', 6 + MAX_WEAPON_TYPE, 6 + MAX_WEAPON_TYPE, CLASS_COUNT, &pc_readdb_job1, false);
 #else
@@ -1757,8 +1757,8 @@ static bool skill_parse_row_skilldb( char* split[], size_t columns, size_t curre
 		body << YAML::EndMap;
 	}
 
-	if (strcmpi(split[9], "yes") == 0)
-		body << YAML::Key << "CastCancel" << YAML::Value << "true";
+	if (strcmpi(split[9], "yes") != 0)
+		body << YAML::Key << "CastCancel" << YAML::Value << "false";
 	if (atoi(split[10]) != 0)
 		body << YAML::Key << "CastDefenseReduction" << YAML::Value << atoi(split[10]);
 
@@ -4281,7 +4281,7 @@ static bool read_constdb( char* fields[], size_t columns, size_t current ){
 // job_db.yml function
 //----------------------
 static bool pc_readdb_job2( char* fields[], size_t columns, size_t current ){
-	std::vector<int> stats;
+	std::vector<int32> stats;
 
 	stats.resize(MAX_LEVEL);
 	std::fill(stats.begin(), stats.end(), 0); // Fill with 0 so we don't produce arbitrary stats
