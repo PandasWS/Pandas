@@ -267,7 +267,7 @@ bool npc_express_aide_mobdropitem(struct mob_data* md,
 //				该值代表掉落的类型, 用来区分掉落物品具体来源
 //				0 - 未知的掉落来源
 //				1 - 配置在 mob_db 中会掉落的普通道具
-//				2 - 魔物死亡掉落的矿石, 矿石掉率在 finding_ore_rate 战斗配置选项中指定
+//				2 - 魔物死亡掉落的矿石, 矿石掉率在 item_group_db 中的 ORE 分组中指定
 //				3 - 使用 bonus 指定玩家击败魔物会掉落的道具 (如: bAddMonsterDropItem)
 //				4 - 之前魔物拾取的道具, 这类道具 100% 掉落 (比如波利吃掉的道具)
 //				5 - 配置在 mob_db 中会掉落的 MVP 奖励道具 (直接掉落到玩家背包)
@@ -1203,7 +1203,7 @@ int32 npc_isnear_sub(struct block_list* bl, va_list args) {
 		return 0;
 	}
 
-	int32 skill_id = va_arg(args, int);
+	int32 skill_id = va_arg(args, int32);
 
 	if (skill_id > 0) { //If skill_id > 0 that means is used for INF2_DISABLENEARNPC [Cydh]
 		std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);
@@ -1304,7 +1304,7 @@ static int32 npc_cloaked_sub(struct block_list *bl, va_list ap)
 
 	nullpo_ret(bl);
 	nullpo_ret(sd = (map_session_data *)bl);
-	int32 id = va_arg(ap, int);
+	int32 id = va_arg(ap, int32);
 
 	auto it = std::find(sd->cloaked_npc.begin(), sd->cloaked_npc.end(), id);
 
@@ -1565,7 +1565,7 @@ int32 npc_event_doall_sub(DBKey key, DBData *data, va_list ap)
 	nullpo_ret(ev = (struct event_data*)db_data2ptr(data));
 	nullpo_ret(c = va_arg(ap, int32 *));
 	nullpo_ret(name = va_arg(ap, const char *));
-	rid = va_arg(ap, int);
+	rid = va_arg(ap, int32);
 
 	p = strchr(p, ':'); // match only the event name
 	if( p && strcmpi(name, p) == 0 /* && !ev->nd->src_id */ ) // Do not run on duplicates. [Paradox924X]
@@ -1593,7 +1593,7 @@ static int32 npc_event_do_sub(DBKey key, DBData *data, va_list ap)
 	nullpo_ret(ev = (struct event_data*)db_data2ptr(data));
 	nullpo_ret(c = va_arg(ap, int32 *));
 	nullpo_ret(name = va_arg(ap, const char *));
-	rid = va_arg(ap, int);
+	rid = va_arg(ap, int32);
 
 	if( p && strcmpi(name, p) == 0 )
 	{
@@ -2158,7 +2158,7 @@ int32 npc_touch_areanpc_sub(struct block_list *bl, va_list ap)
 	nullpo_ret(bl);
 	nullpo_ret((sd = map_id2sd(bl->id)));
 
-	pc_id = va_arg(ap,int);
+	pc_id = va_arg(ap,int32);
 	name = va_arg(ap,char*);
 
 	if( sd->state.warping )
@@ -2690,8 +2690,8 @@ bool npc_scriptcont(map_session_data* sd, int32 id, bool closing){
 #endif // Pandas_Fix_ScriptControl_Shop_Missing_NpcID_Error
 
 		ShowDebug("npc_scriptcont: %s (sd->npc_id=%d) is not %s (id=%d).\n",
-			nd_sd?(char*)nd_sd->name:"'Unknown NPC'", (int)sd->npc_id,
-			nd?(char*)nd->name:"'Unknown NPC'", (int)id);
+			nd_sd?(char*)nd_sd->name:"'Unknown NPC'", (int32)sd->npc_id,
+			nd?(char*)nd->name:"'Unknown NPC'", (int32)id);
 		return true;
 	}
 
@@ -3320,7 +3320,7 @@ e_purchase_result npc_buylist( map_session_data* sd, std::vector<s_npc_buy_list>
 	if( pc_inventoryblank(sd) < new_ )
 		return e_purchase_result::PURCHASE_FAIL_COUNT;	// Not enough space to store items
 
-	pc_payzeny(sd, (int)z, LOG_TYPE_NPC);
+	pc_payzeny(sd, (int32)z, LOG_TYPE_NPC);
 
 	for( int32 i = 0; i < item_list.size(); ++i ) {
 		t_itemid nameid = item_list[i].nameid;
@@ -3368,7 +3368,7 @@ e_purchase_result npc_buylist( map_session_data* sd, std::vector<s_npc_buy_list>
 			z = z * (double)skill * (double)battle_config.shop_exp/10000.;
 			if( z < 1 )
 				z = 1;
-			pc_gainexp(sd,nullptr,0,(int)z, 0);
+			pc_gainexp(sd,nullptr,0,(int32)z, 0);
 		}
 	}
 
@@ -3559,7 +3559,7 @@ uint8 npc_selllist(map_session_data* sd, int32 list_length, const PACKET_CZ_PC_S
 	if( z > MAX_ZENY )
 		z = MAX_ZENY;
 
-	pc_getzeny(sd, (int)z, LOG_TYPE_NPC);
+	pc_getzeny(sd, (int32)z, LOG_TYPE_NPC);
 
 	// custom merchant shop exp bonus
 	if( battle_config.shop_exp > 0 && z > 0 && ( skill = pc_checkskill(sd,MC_OVERCHARGE) ) > 0)
@@ -3573,7 +3573,7 @@ uint8 npc_selllist(map_session_data* sd, int32 list_length, const PACKET_CZ_PC_S
 			z = z * (double)skill * (double)battle_config.shop_exp/10000.;
 			if( z < 1 )
 				z = 1;
-			pc_gainexp(sd, nullptr, 0, (int)z, 0);
+			pc_gainexp(sd, nullptr, 0, (int32)z, 0);
 		}
 	}
 
@@ -3792,7 +3792,7 @@ e_purchase_result npc_barter_purchase( map_session_data& sd, std::shared_ptr<s_n
 		}
 	}
 
-	if( pc_payzeny( &sd, (int)requiredZeny, LOG_TYPE_BARTER ) != 0 ){
+	if( pc_payzeny( &sd, (int32)requiredZeny, LOG_TYPE_BARTER ) != 0 ){
 		return e_purchase_result::PURCHASE_FAIL_MONEY;
 	}
 
@@ -3917,7 +3917,7 @@ static int32 npc_unload_dup_sub(struct npc_data* nd, va_list args)
 {
 	int32 src_id;
 
-	src_id = va_arg(args, int);
+	src_id = va_arg(args, int32);
 	if (nd->src_id == src_id)
 		npc_unload(nd, true);
 	return 0;
@@ -4680,7 +4680,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 		}
 		if( ( type == NPCTYPE_SHOP || type == NPCTYPE_MARKETSHOP ) && value*0.75 < id->value_sell*1.24 ) { // Exploit possible: you can buy and sell back with profit
 			ShowWarning("npc_parse_shop: Item %s [%u] discounted buying price (%d->%d) is less than overcharged selling price (%d->%d) at file '%s', line '%d'.\n",
-				id->name.c_str(), nameid2, value, (int)(value*0.75), id->value_sell, (int)(id->value_sell*1.24), filepath, strline(buffer,start-buffer));
+				id->name.c_str(), nameid2, value, (int32)(value*0.75), id->value_sell, (int32)(id->value_sell*1.24), filepath, strline(buffer,start-buffer));
 		}
 		if (type == NPCTYPE_MARKETSHOP && qty < -1) {
 			ShowWarning("npc_parse_shop: Item %s [%u] is stocked with invalid value %hd, changed to unlimited (-1). File '%s', line '%d'.\n",
@@ -5508,7 +5508,7 @@ static void npc_market_fromsql(void) {
 
 		if (list.value * 0.75 < id->value_sell * 1.24) { // Exploit possible: you can buy and sell back with profit
 			ShowWarning("npc_market_fromsql: Item %s [%u] discounted buying price (%d->%d) is less than overcharged selling price (%d->%d) in table '%s'. Assigning to current sell value.\n",
-						id->name.c_str(), list.nameid, list.value, (int)(list.value * 0.75), id->value_sell, (int)(id->value_sell * 1.24), market_table);
+						id->name.c_str(), list.nameid, list.value, (int32)(list.value * 0.75), id->value_sell, (int32)(id->value_sell * 1.24), market_table);
 			list.value = id->value_sell;
 		}
 
@@ -5557,7 +5557,7 @@ void npc_setcells(struct npc_data* nd)
 int32 npc_unsetcells_sub(struct block_list* bl, va_list ap)
 {
 	struct npc_data *nd = (struct npc_data*)bl;
-	int32 id =  va_arg(ap,int);
+	int32 id =  va_arg(ap,int32);
 	if (nd->bl.id == id) return 0;
 	npc_setcells(nd);
 	return 1;
@@ -6190,7 +6190,7 @@ static const char* npc_parse_mapflag(char* w1, char* w2, char* w3, char* w4, con
 			auto conf = util::umap_find(mapflag_config, mapflag);
 			if (w4 && w4[0] != '\0' && conf != nullptr) {
 				pds_mapflag_args args = {};
-				int args_count = conf->args.size();
+				size_t args_count = conf->args.size();
 				args.input.resize(args_count);
 
 				switch (args_count) {
@@ -7143,7 +7143,7 @@ void npc_read_event_script(void)
 	}
 
 	if (battle_config.etc_log) {
-		//Print32 summary.
+		//Print summary.
 		for (i = 0; i < NPCE_MAX; i++)
 			ShowInfo("%" PRIuPTR " '%s' events.\n", script_event[static_cast<enum npce_event>(i)].size(), npc_get_script_event_name(i));
 	}

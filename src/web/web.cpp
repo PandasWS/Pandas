@@ -476,7 +476,7 @@ void logger(const Request & req, const Response & res) {
 			ShowDebug("\t%s: %s\n", U2ACE(header.first).c_str(), U2ACE(header.second).c_str());
 		}
 		ShowDebug("Response status is: %d\n", res.status);
-		// since the body may be binary, might not print32 entire body (has null character).
+		// since the body may be binary, might not print entire body (has null character).
 		ShowDebug("Body is:\n%s\n", U2ACE(res.body).c_str());
 #ifdef Pandas_WebServer_Logger_Improved_Presentation
 		ShowDebug("--- Request Information End -----------------------------------------\n");

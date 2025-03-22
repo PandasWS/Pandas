@@ -523,7 +523,7 @@ void mapif_parse_accinfo(int32 fd) {
 				Sql_GetData(sql_handle, 0, &data, nullptr); account_id = atoi(data);
 				Sql_FreeResult(sql_handle);
 			} else {// more than one, listing... [Dekamaster/Nightroad]
-				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(214),(int)Sql_NumRows(sql_handle));
+				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(214),(int32)Sql_NumRows(sql_handle));
 				while ( SQL_SUCCESS == Sql_NextRow(sql_handle) ) {
 					int32 class_;
 					short base_level, job_level, online;
@@ -1478,7 +1478,7 @@ int32 inter_check_length(int32 fd, int32 length)
 #endif // Pandas_Unlock_Storage_Capacity_Limit
 	}
 
-	if( (int)RFIFOREST(fd) < length )
+	if( (int32)RFIFOREST(fd) < length )
 		return 0;
 
 	return length;

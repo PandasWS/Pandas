@@ -2316,6 +2316,28 @@
 	export_constant(SC_CONTENTS_27);
 	export_constant(SC_CONTENTS_28);
 	export_constant(SC_CONTENTS_29);
+	export_constant(SC_CONTENTS_31);
+	export_constant(SC_CONTENTS_32);
+	export_constant(SC_CONTENTS_33);
+	export_constant(SC_TALISMAN_OF_PROTECTION);
+	export_constant(SC_TALISMAN_OF_WARRIOR);
+	export_constant(SC_TALISMAN_OF_MAGICIAN);
+	export_constant(SC_TALISMAN_OF_FIVE_ELEMENTS);
+	export_constant(SC_TOTEM_OF_TUTELARY);
+	export_constant(SC_T_FIRST_GOD);
+	export_constant(SC_T_SECOND_GOD);
+	export_constant(SC_T_THIRD_GOD);
+	export_constant(SC_T_FOURTH_GOD);
+	export_constant(SC_T_FIFTH_GOD);
+	export_constant(SC_HEAVEN_AND_EARTH);
+	export_constant(SC_RETURN_TO_ELDICASTES);
+	export_constant(SC_GUARDIAN_RECALL);
+	export_constant(SC_ECLAGE_RECALL);
+	export_constant(SC_ALL_NIFLHEIM_RECALL);
+	export_constant(SC_ALL_PRONTERA_RECALL);
+	export_constant(SC_ALL_GLASTHEIM_RECALL);
+	export_constant(SC_ALL_THANATOS_RECALL);
+	export_constant(SC_ALL_LIGHTHALZEN_RECALL);
 
 /// Do not modify code below this, until the end of the API hook, since it will be automatically generated again
 /// @APIHOOK_START(EFST_CONST)
@@ -3759,6 +3781,9 @@
 	export_constant(EFST_CONTENTS_28);
 	export_constant(EFST_CONTENTS_29);
 	export_constant(EFST_CONTENTS_30);
+	export_constant(EFST_CONTENTS_31);
+	export_constant(EFST_CONTENTS_32);
+	export_constant(EFST_CONTENTS_33);
 	export_constant(EFST_C_BUFF_1);
 	export_constant(EFST_C_BUFF_2);
 	export_constant(EFST_CHASING);
@@ -5229,7 +5254,7 @@
 	export_constant(IG_LASTANGEL_LUCKYSCROLL);
 	export_constant(IG_VALKYRIE_LUCKY_SCROLL);
 	export_constant(IG_SPLASH_RAINBOW_LUCKY_SCROLL);
-	export_constant(IG_SHAPESHIFTER_COSTUME);
+	export_constant(IG_COSTAMA_EGG22);
 	export_constant(IG_JULY_LUCKY_SCROLL);
 	export_constant(IG_COSTAMA_EGG23);
 	export_constant(IG_COSTAMA_EGG28);
@@ -7490,6 +7515,21 @@
 	export_constant(IG_LI_NYANGVINE_BOX1_37);
 	export_constant(IG_LI_NYANGVINE_BOX2_37);
 	export_constant(IG_LI_NYANGVINE_BOX3_37);
+	export_constant(IG_JANUARYGIFTBOX);
+	export_constant(IG_FEBRUARYGIFTBOX);
+	export_constant(IG_MARCHGIFTBOX);
+	export_constant(IG_MAYGIFTBOX);
+	export_constant(IG_JUNEGIFTBOX);
+	export_constant(IG_JULYGIFTBOX);
+	export_constant(IG_AUGUSTGIFTBOX);
+	export_constant(IG_OCTOBERGIFTBOX);
+	export_constant(IG_DECEMBERGIFTBOX);
+	export_constant(IG_2024GOLDPCBOX);
+	export_constant(IG_E_CARD_PACK);
+	export_constant(IG_TRUE_HUNTING_SET);
+	export_constant(IG_REGIA_HUNTING_SET);
+	export_constant(IG_MYSTERIOUS_FRUIT_BOX);
+	export_constant(IG_ZONDA_SUPPORT_PACKAGE);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);
@@ -11001,8 +11041,11 @@
 	export_constant(HAT_EF_AURA_OF_GHOST_S);
 
 	/* pet catch */
-	export_constant(PET_CATCH_UNIVERSAL);
-	export_constant(PET_CATCH_UNIVERSAL_ITEM);
+	export_constant(PET_CATCH_UNIVERSAL_NO_BOSS);
+	export_constant(PET_CATCH_UNIVERSAL_ALL);
+
+	export_deprecated_constant3("PET_CATCH_UNIVERSAL", PET_CATCH_UNIVERSAL_NO_BOSS, "PET_CATCH_UNIVERSAL_NO_BOSS");
+	export_deprecated_constant3("PET_CATCH_UNIVERSAL_ITEM", PET_CATCH_UNIVERSAL_ALL, "PET_CATCH_UNIVERSAL_ALL");
 
 	/* pet intimacy levels */
 	export_constant(PET_INTIMATE_NONE);
@@ -11854,6 +11897,10 @@
 	export_constant(SUSPEND_MODE_AFK);
 	export_constant(SUSPEND_MODE_NORMAL);
 #endif // Pandas_Player_Suspend_System
+
+	export_constant(GROUP_ALGORITHM_RANDOM);
+	export_constant(GROUP_ALGORITHM_SHAREDPOOL);
+	export_constant(GROUP_ALGORITHM_ALL);
 
 	#undef export_constant
 	#undef export_constant2

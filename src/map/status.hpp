@@ -1333,6 +1333,31 @@ enum sc_type : int16 {
 	SC_CONTENTS_27,
 	SC_CONTENTS_28,
 	SC_CONTENTS_29,
+	SC_CONTENTS_31,
+	SC_CONTENTS_32,
+	SC_CONTENTS_33,
+
+	// Soul Ascetic
+	SC_TALISMAN_OF_PROTECTION,
+	SC_TALISMAN_OF_WARRIOR,
+	SC_TALISMAN_OF_MAGICIAN,
+	SC_TALISMAN_OF_FIVE_ELEMENTS,
+	SC_T_FIRST_GOD,
+	SC_T_SECOND_GOD,
+	SC_T_THIRD_GOD,
+	SC_T_FOURTH_GOD,
+	SC_T_FIFTH_GOD,
+	SC_HEAVEN_AND_EARTH,
+	SC_TOTEM_OF_TUTELARY,
+
+	SC_RETURN_TO_ELDICASTES,
+	SC_GUARDIAN_RECALL,
+	SC_ECLAGE_RECALL,
+	SC_ALL_NIFLHEIM_RECALL,
+	SC_ALL_PRONTERA_RECALL,
+	SC_ALL_GLASTHEIM_RECALL,
+	SC_ALL_THANATOS_RECALL,
+	SC_ALL_LIGHTHALZEN_RECALL,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 };
@@ -2794,7 +2819,10 @@ enum efst_type : short{
 	EFST_CONTENTS_27,
 	EFST_CONTENTS_28,
 	EFST_CONTENTS_29,
-	EFST_CONTENTS_30,	//1488
+	EFST_CONTENTS_30,
+	EFST_CONTENTS_31,
+	EFST_CONTENTS_32,
+	EFST_CONTENTS_33,	//1491
 
 	EFST_C_BUFF_1 = 1509,
 	EFST_C_BUFF_2,
@@ -3446,7 +3474,7 @@ int32 status_revive(struct block_list *bl, unsigned char per_hp, unsigned char p
 struct regen_data *status_get_regen_data(struct block_list *bl);
 status_data* status_get_status_data(block_list& bl);
 struct status_data *status_get_base_status(struct block_list *bl);
-const char * status_get_name(struct block_list *bl);
+const char* status_get_name( block_list& bl );
 int32 status_get_class(struct block_list *bl);
 int32 status_get_lv(struct block_list *bl);
 #define status_get_range(bl) status_get_status_data(*bl)->rhw.range
@@ -3608,8 +3636,8 @@ pec_ushort status_base_atk_max(struct block_list *bl, const struct status_data* 
 pec_ushort status_base_matk_min(struct block_list *bl, const struct status_data* status, int32 level);
 pec_ushort status_base_matk_max(struct block_list *bl, const struct status_data* status, int32 level);
 #endif
-uint16 status_calc_consumablematk( status_change *sc, int32 matk );
-uint16 status_calc_pseudobuff_matk( map_session_data *sd, status_change *sc, int32 matk );
+pec_uint16 status_calc_consumablematk( status_change *sc, int32 matk );
+pec_uint16 status_calc_pseudobuff_matk( map_session_data *sd, status_change *sc, int32 matk );
 
 pec_ushort status_base_atk(const struct block_list *bl, const struct status_data *status, int32 level);
 

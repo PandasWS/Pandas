@@ -833,7 +833,7 @@ static TIMER_FUNC(pc_spiritball_timer){
 
 	sd->spiritball--;
 	if( i != sd->spiritball )
-		memmove(sd->spirit_timer+i, sd->spirit_timer+i+1, (sd->spiritball-i)*sizeof(int));
+		memmove(sd->spirit_timer+i, sd->spirit_timer+i+1, (sd->spiritball-i)*sizeof(int32));
 	sd->spirit_timer[sd->spiritball] = INVALID_TIMER;
 
 	clif_spiritball(&sd->bl);
@@ -865,14 +865,14 @@ void pc_addspiritball(map_session_data *sd,int32 interval,int32 max)
 			delete_timer(sd->spirit_timer[0],pc_spiritball_timer);
 		sd->spiritball--;
 		if( sd->spiritball != 0 )
-			memmove(sd->spirit_timer+0, sd->spirit_timer+1, (sd->spiritball)*sizeof(int));
+			memmove(sd->spirit_timer+0, sd->spirit_timer+1, (sd->spiritball)*sizeof(int32));
 		sd->spirit_timer[sd->spiritball] = INVALID_TIMER;
 	}
 
 	tid = add_timer(gettick()+interval, pc_spiritball_timer, sd->bl.id, 0);
 	ARR_FIND(0, sd->spiritball, i, sd->spirit_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->spirit_timer[i])->tick) < 0);
 	if( i != sd->spiritball )
-		memmove(sd->spirit_timer+i+1, sd->spirit_timer+i, (sd->spiritball-i)*sizeof(int));
+		memmove(sd->spirit_timer+i+1, sd->spirit_timer+i, (sd->spiritball-i)*sizeof(int32));
 	sd->spirit_timer[i] = tid;
 	sd->spiritball++;
 	if( (sd->class_&MAPID_THIRDMASK) == MAPID_ROYAL_GUARD )
@@ -1167,7 +1167,7 @@ void pc_inventory_rentals(map_session_data *sd)
 		} else {
 			uint32 expire_tick = (uint32)(sd->inventory.u.items_inventory[i].expire_time - time(nullptr));
 
-			clif_rental_time(sd, sd->inventory.u.items_inventory[i].nameid, (int)expire_tick);
+			clif_rental_time(sd, sd->inventory.u.items_inventory[i].nameid, (int32)expire_tick);
 			next_tick = umin(expire_tick * 1000U, next_tick);
 			c++;
 		}
@@ -2272,8 +2272,6 @@ bool pc_authok(map_session_data *sd, uint32 login_id2, time_t expiration_time, i
 	sd->hatEffects = {};
 #endif
 
-	sd->catch_target_class = PET_CATCH_FAIL;
-
 	// Check EXP overflow, since in previous revision EXP on Max Level can be more than 'official' Max EXP
 	if (pc_is_maxbaselv(sd) && sd->status.base_exp > MAX_LEVEL_BASE_EXP) {
 		sd->status.base_exp = MAX_LEVEL_BASE_EXP;
@@ -3096,9 +3094,11 @@ int32 pc_disguise(map_session_data *sd, int32 class_)
 			clif_updatestatus(*sd,SP_CARTINFO);
 		}
 		if (sd->chatID) {
-			struct chat_data* cd;
-			if ((cd = (struct chat_data*)map_id2bl(sd->chatID)) != nullptr)
-				clif_dispchat(cd,0);
+			chat_data* cd = map_id2cd( sd->chatID );
+
+			if( cd != nullptr ){
+				clif_dispchat( *cd );
+			}
 		}
 	}
 	return 1;
@@ -3609,7 +3609,7 @@ static void pc_bonus_addele(map_session_data* sd, unsigned char ele, short rate,
 {
 	nullpo_retv(sd);
 
-	struct weapon_data *wd = (sd->state.lr_flag ? &sd->left_weapon : &sd->right_weapon);
+	struct weapon_data *wd = (sd->state.lr_flag != LR_FLAG_NONE ? &sd->left_weapon : &sd->right_weapon);
 
 	if (wd->addele2.size() == MAX_PC_BONUS) {
 		ShowWarning("pc_bonus_addele: Reached max (%d) number of add element damage bonuses per character!\n", MAX_PC_BONUS);
@@ -3849,7 +3849,7 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 		case SP_INT:
 		case SP_DEX:
 		case SP_LUK:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->indexed_bonus.param_bonus[type-SP_STR]+=val;
 			break;
 		case SP_POW:
@@ -3858,31 +3858,31 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 		case SP_SPL:
 		case SP_CON:
 		case SP_CRT:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->indexed_bonus.param_bonus[type - SP_POW + PARAM_POW] += val;
 			break;
 		case SP_ATK1:
-			if(!sd->state.lr_flag) {
+			if (sd->state.lr_flag == LR_FLAG_NONE) {
 				bonus = status->rhw.atk + val;
 				status->rhw.atk = cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
-			else if(sd->state.lr_flag == 1) {
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 				bonus = status->lhw.atk + val;
 				status->lhw.atk =  cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
 			break;
 		case SP_ATK2:
-			if(!sd->state.lr_flag) {
+			if (sd->state.lr_flag == LR_FLAG_NONE) {
 				bonus = status->rhw.atk2 + val;
 				status->rhw.atk2 = cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
-			else if(sd->state.lr_flag == 1) {
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 				bonus = status->lhw.atk2 + val;
 				status->lhw.atk2 =  cap_value(bonus, 0, PEC_USHRT_MAX);
 			}
 			break;
 		case SP_BASE_ATK:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 #ifdef RENEWAL
 				bonus = sd->bonus.eatk + val;
 				sd->bonus.eatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
@@ -3893,7 +3893,7 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			}
 			break;
 		case SP_DEF1:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->def + val;
 #ifdef RENEWAL
 				status->def = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
@@ -3903,88 +3903,88 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			}
 			break;
 		case SP_DEF2:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->def2 + val;
 				status->def2 = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_MDEF1:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->mdef + val;
 #ifdef RENEWAL
 				status->mdef = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
 #else
 				status->mdef = cap_value(bonus, PEC_DEFTYPE_MIN, PEC_DEFTYPE_MAX);
 #endif
-				if( sd->state.lr_flag == 3 ) {//Shield, used for royal guard
+				if( sd->state.lr_flag == LR_FLAG_SHIELD ) {//Shield, used for royal guard
 					sd->bonus.shieldmdef += bonus;
 				}
 			}
 			break;
 		case SP_MDEF2:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->mdef2 + val;
 				status->mdef2 = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_HIT:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->hit + val;
 				status->hit = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			} else
 				sd->bonus.arrow_hit+=val;
 			break;
 		case SP_FLEE1:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->flee + val;
 				status->flee = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_FLEE2:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->flee2 + val*10;
 				status->flee2 = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_CRITICAL:
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->cri + val*10;
 				status->cri = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			} else
 				sd->bonus.arrow_cri += val*10;
 			break;
 		case SP_PATK:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->patk + val;
 				status->patk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_SMATK:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->smatk + val;
 				status->smatk = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_RES:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->res + val;
 				status->res = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_MRES:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->mres + val;
 				status->mres = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_HPLUS:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->hplus + val;
 				status->hplus = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
 			break;
 		case SP_CRATE:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				bonus = status->crate + val;
 				status->crate = cap_value(bonus, PEC_SHRT_MIN, PEC_SHRT_MAX);
 			}
@@ -3993,7 +3993,7 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			PC_BONUS_CHK_ELEMENT(val,SP_ATKELE);
 			switch (sd->state.lr_flag)
 			{
-			case 2:
+			case LR_FLAG_ARROW:
 				switch (sd->status.weapon) {
 					case W_BOW:
 					case W_REVOLVER:
@@ -4009,7 +4009,7 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 						break;
 				}
 				break;
-			case 1:
+			case LR_FLAG_WEAPON:
 				status->lhw.ele=val;
 				break;
 			default:
@@ -4019,43 +4019,43 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			break;
 		case SP_DEFELE:
 			PC_BONUS_CHK_ELEMENT(val,SP_DEFELE);
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				status->def_ele=val;
 			break;
 		case SP_MAXHP:
-			if(sd->state.lr_flag == 2)
+			if (sd->state.lr_flag == LR_FLAG_ARROW)
 				break;
 			sd->bonus.hp += val;
 			break;
 		case SP_MAXSP:
-			if(sd->state.lr_flag == 2)
+			if (sd->state.lr_flag == LR_FLAG_ARROW)
 				break;
 			sd->bonus.sp += val;
 			break;
 		case SP_MAXAP:
-			if (sd->state.lr_flag == 2)
+			if (sd->state.lr_flag == LR_FLAG_ARROW)
 				break;
 			sd->bonus.ap += val;
 			break;
 		case SP_MAXHPRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->hprate+=val;
 			break;
 		case SP_MAXSPRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->sprate+=val;
 			break;
 		case SP_MAXAPRATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->aprate += val;
 			break;
 		case SP_SPRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->dsprate+=val;
 			break;
 		case SP_ATTACKRANGE:
 			switch (sd->state.lr_flag) {
-			case 2:
+			case LR_FLAG_ARROW:
 				switch (sd->status.weapon) {
 					case W_BOW:
 					case W_REVOLVER:
@@ -4066,7 +4066,7 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 						status->rhw.range += val;
 				}
 				break;
-			case 1:
+			case LR_FLAG_WEAPON:
 				status->lhw.range += val;
 				break;
 			default:
@@ -4075,19 +4075,19 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			}
 			break;
 		case SP_SPEED_RATE:	//Non stackable increase
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.speed_rate = min(sd->bonus.speed_rate, -val);
 			break;
 		case SP_SPEED_ADDRATE:	//Stackable increase
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.speed_add_rate -= val;
 			break;
 		case SP_ASPD:	//Raw increase
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.aspd_add -= 10*val;
 			break;
 		case SP_ASPD_RATE:	//Stackable increase - Made it linear as per rodatazone
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 #ifndef RENEWAL_ASPD
 				status->aspd_rate -= 10*val;
 #else
@@ -4095,211 +4095,215 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 #endif
 			break;
 		case SP_HP_RECOV_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->hprecov_rate += val;
 			break;
 		case SP_SP_RECOV_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->sprecov_rate += val;
 			break;
 		case SP_CRITICAL_DEF:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.critical_def += val;
 			break;
 		case SP_NEAR_ATK_DEF:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.near_attack_def_rate += val;
 			break;
 		case SP_LONG_ATK_DEF:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.long_attack_def_rate += val;
 			break;
 		case SP_DOUBLE_RATE:
-			if(sd->state.lr_flag == 0 && sd->bonus.double_rate < val)
+			if (sd->state.lr_flag == LR_FLAG_NONE && sd->bonus.double_rate < val)
 				sd->bonus.double_rate = val;
 			break;
 		case SP_DOUBLE_ADD_RATE:
-			if(sd->state.lr_flag == 0)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.double_add_rate += val;
 			break;
 		case SP_MATK_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->matk_rate += val;
 			break;
 		case SP_IGNORE_DEF_ELE:
 			PC_BONUS_CHK_ELEMENT(val,SP_IGNORE_DEF_ELE);
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->right_weapon.ignore_def_ele |= 1<<val;
-			else if(sd->state.lr_flag == 1)
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 				sd->left_weapon.ignore_def_ele |= 1<<val;
 			break;
 		case SP_IGNORE_DEF_RACE:
 			PC_BONUS_CHK_RACE(val,SP_IGNORE_DEF_RACE);
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->right_weapon.ignore_def_race |= 1<<val;
-			else if(sd->state.lr_flag == 1)
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 				sd->left_weapon.ignore_def_race |= 1<<val;
 			break;
 		case SP_IGNORE_DEF_CLASS:
 			PC_BONUS_CHK_CLASS(val,SP_IGNORE_DEF_CLASS);
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->right_weapon.ignore_def_class |= 1<<val;
-			else if(sd->state.lr_flag == 1)
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 				sd->left_weapon.ignore_def_class |= 1<<val;
 			break;
 		case SP_ATK_RATE:
-			if(sd->state.lr_flag != 2)
+#ifdef RENEWAL
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.atk_rate += val;
+#else
+			ShowError( "pc_bonus: %s is not supported in Pre-Renewal mode.\n", QUOTE( SP_ATK_RATE ) );
+#endif
 			break;
 		case SP_MAGIC_ATK_DEF:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.magic_def_rate += val;
 			break;
 		case SP_MISC_ATK_DEF:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.misc_def_rate += val;
 			break;
 		case SP_IGNORE_MDEF_ELE:
 			PC_BONUS_CHK_ELEMENT(val,SP_IGNORE_MDEF_ELE);
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.ignore_mdef_ele |= 1<<val;
 			break;
 		case SP_IGNORE_MDEF_RACE:
 			PC_BONUS_CHK_RACE(val,SP_IGNORE_MDEF_RACE);
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.ignore_mdef_race |= 1<<val;
 			break;
 		case SP_PERFECT_HIT_RATE:
-			if(sd->state.lr_flag != 2 && sd->bonus.perfect_hit < val)
+			if (sd->state.lr_flag != LR_FLAG_ARROW && sd->bonus.perfect_hit < val)
 				sd->bonus.perfect_hit = val;
 			break;
 		case SP_PERFECT_HIT_ADD_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.perfect_hit_add += val;
 			break;
 		case SP_CRITICAL_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->critical_rate+=val;
 			break;
 		case SP_DEF_RATIO_ATK_ELE:
 			PC_BONUS_CHK_ELEMENT(val,SP_DEF_RATIO_ATK_ELE);
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->right_weapon.def_ratio_atk_ele |= 1<<val;
-			else if(sd->state.lr_flag == 1)
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 				sd->left_weapon.def_ratio_atk_ele |= 1<<val;
 			break;
 		case SP_DEF_RATIO_ATK_RACE:
 			PC_BONUS_CHK_RACE(val,SP_DEF_RATIO_ATK_RACE);
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->right_weapon.def_ratio_atk_race |= 1<<val;
-			else if(sd->state.lr_flag == 1)
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 				sd->left_weapon.def_ratio_atk_race |= 1<<val;
 			break;
 		case SP_DEF_RATIO_ATK_CLASS:
 			PC_BONUS_CHK_CLASS(val,SP_DEF_RATIO_ATK_CLASS);
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->right_weapon.def_ratio_atk_class |= 1<<val;
-			else if(sd->state.lr_flag == 1)
+			else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 				sd->left_weapon.def_ratio_atk_class |= 1<<val;
 			break;
 		case SP_HIT_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->hit_rate += val;
 			break;
 		case SP_FLEE_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->flee_rate += val;
 			break;
 		case SP_FLEE2_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->flee2_rate += val;
 			break;
 		case SP_DEF_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->def_rate += val;
 			break;
 		case SP_DEF2_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->def2_rate += val;
 			break;
 		case SP_MDEF_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->mdef_rate += val;
 			break;
 		case SP_MDEF2_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->mdef2_rate += val;
 			break;
 		case SP_PATK_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->patk_rate += val;
 			break;
 		case SP_SMATK_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->smatk_rate += val;
 			break;
 		case SP_RES_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->res_rate += val;
 			break;
 		case SP_MRES_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->mres_rate += val;
 			break;
 		case SP_HPLUS_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->hplus_rate += val;
 			break;
 		case SP_CRATE_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->crate_rate += val;
 			break;
 		case SP_RESTART_FULL_RECOVER:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.restart_full_recover = 1;
 			break;
 		case SP_NO_CASTCANCEL:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.no_castcancel = 1;
 			break;
 		case SP_NO_CASTCANCEL2:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.no_castcancel2 = 1;
 			break;
 		case SP_NO_SIZEFIX:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.no_sizefix = 1;
 			break;
 		case SP_NO_MAGIC_DAMAGE:
-			if(sd->state.lr_flag == 2)
+			if (sd->state.lr_flag == LR_FLAG_ARROW)
 				break;
 			val+= sd->special_state.no_magic_damage;
 			sd->special_state.no_magic_damage = cap_value(val,0,100);
 			break;
 		case SP_NO_WEAPON_DAMAGE:
-			if(sd->state.lr_flag == 2)
+			if (sd->state.lr_flag == LR_FLAG_ARROW)
 				break;
 			val+= sd->special_state.no_weapon_damage;
 			sd->special_state.no_weapon_damage = cap_value(val,0,100);
 			break;
 		case SP_NO_MISC_DAMAGE:
-			if(sd->state.lr_flag == 2)
+			if (sd->state.lr_flag == LR_FLAG_ARROW)
 				break;
 			val+= sd->special_state.no_misc_damage;
 			sd->special_state.no_misc_damage = cap_value(val,0,100);
 			break;
 		case SP_NO_GEMSTONE:
-			if(sd->state.lr_flag != 2 && sd->special_state.no_gemstone != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW && sd->special_state.no_gemstone != 2)
 				sd->special_state.no_gemstone = 1;
 			break;
 		case SP_INTRAVISION: // Maya Purple Card effect allowing to see Hiding/Cloaking people [DracoRPG]
-			if(sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				sd->special_state.intravision = 1;
 				clif_status_load(&sd->bl, EFST_CLAIRVOYANCE, 1);
 			}
 			break;
 		case SP_NO_KNOCKBACK:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.no_knockback = 1;
 			break;
 		case SP_SPLASH_RANGE:
@@ -4310,23 +4314,23 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			sd->bonus.splash_add_range += val;
 			break;
 		case SP_SHORT_WEAPON_DAMAGE_RETURN:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.short_weapon_damage_return += val;
 			break;
 		case SP_LONG_WEAPON_DAMAGE_RETURN:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.long_weapon_damage_return += val;
 			break;
 		case SP_MAGIC_DAMAGE_RETURN: //AppleGirl Was Here
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.magic_damage_return += val;
 			break;
 		case SP_REDUCE_DAMAGE_RETURN:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.reduce_damage_return += val;
 			break;
 		case SP_ALL_STATS:	// [Valaris]
-			if(sd->state.lr_flag!=2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				sd->indexed_bonus.param_bonus[SP_STR-SP_STR]+=val;
 				sd->indexed_bonus.param_bonus[SP_AGI-SP_STR]+=val;
 				sd->indexed_bonus.param_bonus[SP_VIT-SP_STR]+=val;
@@ -4336,7 +4340,7 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			}
 			break;
 		case SP_ALL_TRAIT_STATS:
-			if (sd->state.lr_flag != 2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				sd->indexed_bonus.param_bonus[PARAM_POW] += val;
 				sd->indexed_bonus.param_bonus[PARAM_STA] += val;
 				sd->indexed_bonus.param_bonus[PARAM_WIS] += val;
@@ -4346,181 +4350,181 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			}
 			break;
 		case SP_AGI_VIT:	// [Valaris]
-			if(sd->state.lr_flag!=2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				sd->indexed_bonus.param_bonus[SP_AGI-SP_STR]+=val;
 				sd->indexed_bonus.param_bonus[SP_VIT-SP_STR]+=val;
 			}
 			break;
 		case SP_AGI_DEX_STR:	// [Valaris]
-			if(sd->state.lr_flag!=2) {
+			if (sd->state.lr_flag != LR_FLAG_ARROW) {
 				sd->indexed_bonus.param_bonus[SP_AGI-SP_STR]+=val;
 				sd->indexed_bonus.param_bonus[SP_DEX-SP_STR]+=val;
 				sd->indexed_bonus.param_bonus[SP_STR-SP_STR]+=val;
 			}
 			break;
 		case SP_PERFECT_HIDE: // [Valaris]
-			if(sd->state.lr_flag!=2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.perfect_hiding=1;
 			break;
 		case SP_UNBREAKABLE:
-			if(sd->state.lr_flag!=2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable += val;
 			break;
 		case SP_UNBREAKABLE_WEAPON:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable_equip |= EQP_WEAPON;
 			break;
 		case SP_UNBREAKABLE_ARMOR:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable_equip |= EQP_ARMOR;
 			break;
 		case SP_UNBREAKABLE_HELM:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable_equip |= EQP_HELM;
 			break;
 		case SP_UNBREAKABLE_SHIELD:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable_equip |= EQP_SHIELD;
 			break;
 		case SP_UNBREAKABLE_GARMENT:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable_equip |= EQP_GARMENT;
 			break;
 		case SP_UNBREAKABLE_SHOES:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unbreakable_equip |= EQP_SHOES;
 			break;
 		case SP_CLASSCHANGE: // [Valaris]
-			if(sd->state.lr_flag !=2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.classchange=val;
 			break;
 		case SP_SHORT_ATK_RATE:
-			if(sd->state.lr_flag != 2)	//[Lupus] it should stack, too. As any other cards rate bonuses
+			if (sd->state.lr_flag != LR_FLAG_ARROW)	//[Lupus] it should stack, too. As any other cards rate bonuses
 				sd->bonus.short_attack_atk_rate+=val;
 			break;
 		case SP_LONG_ATK_RATE:
-			if(sd->state.lr_flag != 2)	//[Lupus] it should stack, too. As any other cards rate bonuses
+			if (sd->state.lr_flag != LR_FLAG_ARROW)	//[Lupus] it should stack, too. As any other cards rate bonuses
 				sd->bonus.long_attack_atk_rate+=val;
 			break;
 		case SP_BREAK_WEAPON_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.break_weapon_rate+=val;
 			break;
 		case SP_BREAK_ARMOR_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.break_armor_rate+=val;
 			break;
 		case SP_ADD_STEAL_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.add_steal_rate+=val;
 			break;
 		case SP_DELAYRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.delayrate -= val;
 			break;
 		case SP_CRIT_ATK_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.crit_atk_rate += val;
 			break;
 		case SP_CRIT_DEF_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.crit_def_rate += val;
 			break;
 		case SP_NO_REGEN:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->regen.state.block|=val;
 			break;
 		case SP_UNSTRIPABLE_WEAPON:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unstripable_equip |= EQP_WEAPON;
 			break;
 		case SP_UNSTRIPABLE:
 		case SP_UNSTRIPABLE_ARMOR:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unstripable_equip |= EQP_ARMOR;
 			break;
 		case SP_UNSTRIPABLE_HELM:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unstripable_equip |= EQP_HELM;
 			break;
 		case SP_UNSTRIPABLE_SHIELD:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.unstripable_equip |= EQP_SHIELD;
 			break;
 		case SP_HP_DRAIN_VALUE: // bonus bHPDrainValue,n;
-			if(!sd->state.lr_flag) {
+			if (sd->state.lr_flag == LR_FLAG_NONE) {
 				sd->right_weapon.hp_drain_class[CLASS_NORMAL] += val;
 				sd->right_weapon.hp_drain_class[CLASS_BOSS] += val;
-			} else if(sd->state.lr_flag == 1) {
+			} else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 				sd->left_weapon.hp_drain_class[CLASS_NORMAL] += val;
 				sd->left_weapon.hp_drain_class[CLASS_BOSS] += val;
 			}
 			break;
 		case SP_SP_DRAIN_VALUE: // bonus bSPDrainValue,n;
-			if(!sd->state.lr_flag) {
+			if (sd->state.lr_flag == LR_FLAG_NONE) {
 				sd->right_weapon.sp_drain_class[CLASS_NORMAL] += val;
 				sd->right_weapon.sp_drain_class[CLASS_BOSS] += val;
-			} else if(sd->state.lr_flag == 1) {
+			} else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 				sd->left_weapon.sp_drain_class[CLASS_NORMAL] += val;
 				sd->left_weapon.sp_drain_class[CLASS_BOSS] += val;
 			}
 			break;
 		case SP_SP_GAIN_VALUE:
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.sp_gain_value += val;
 			break;
 		case SP_HP_GAIN_VALUE:
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.hp_gain_value += val;
 			break;
 		case SP_LONG_SP_GAIN_VALUE:
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.long_sp_gain_value += val;
 			break;
 		case SP_LONG_HP_GAIN_VALUE:
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.long_hp_gain_value += val;
 			break;		
 		case SP_MAGIC_SP_GAIN_VALUE:
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.magic_sp_gain_value += val;
 			break;
 		case SP_MAGIC_HP_GAIN_VALUE:
-			if(!sd->state.lr_flag)
+			if (sd->state.lr_flag == LR_FLAG_NONE)
 				sd->bonus.magic_hp_gain_value += val;
 			break;
 		case SP_ADD_HEAL_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.add_heal_rate += val;
 			break;
 		case SP_ADD_HEAL2_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.add_heal2_rate += val;
 			break;
 		case SP_ADD_ITEM_HEAL_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.itemhealrate2 += val;
 			break;
 		case SP_EMATK:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.ematk += val;
 			break;
 		case SP_ADD_VARIABLECAST:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.add_varcast += val;
 			break;
 #ifdef RENEWAL_CAST
 		case SP_FIXCASTRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.fixcastrate = min(sd->bonus.fixcastrate,val);
 			break;
 		case SP_ADD_FIXEDCAST:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.add_fixcast += val;
 			break;
 		case SP_CASTRATE:
 		case SP_VARCASTRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.varcastrate -= val;
 			break;
 #else
@@ -4530,12 +4534,12 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			break;
 		case SP_VARCASTRATE:
 		case SP_CASTRATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->castrate += val;
 			break;
 #endif
 		case SP_ADDMAXWEIGHT:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->add_max_weight += val;
 			break;
 		case SP_ABSORB_DMG_MAXHP: // bonus bAbsorbDmgMaxHP,n;
@@ -4545,29 +4549,29 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			sd->bonus.absorb_dmg_maxhp2 = max(sd->bonus.absorb_dmg_maxhp2, val);
 			break;
 		case SP_CRITICAL_RANGEATK: // bonus bCriticalLong,n;
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.critical_rangeatk += val*10;
 			else
 				sd->bonus.arrow_cri += val*10;
 			break;
 		case SP_WEAPON_ATK_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.weapon_atk_rate += val;
 			break;
 		case SP_WEAPON_MATK_RATE:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.weapon_matk_rate += val;
 			break;
 		case SP_NO_MADO_FUEL:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.no_mado_fuel = 1;
 			break;
 		case SP_NO_WALK_DELAY:
-			if (sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->special_state.no_walk_delay = 1;
 			break;
 		case SP_ADD_ITEM_SPHEAL_RATE:
-			if(sd->state.lr_flag != 2)
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.itemsphealrate2 += val;
 			break;
 #ifdef Pandas_Bonus_bNoFieldGemStone
@@ -4616,65 +4620,65 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 	switch(type){
 	case SP_ADDELE: // bonus2 bAddEle,e,x;
 		PC_BONUS_CHK_ELEMENT(type2,SP_ADDELE);
-		if(!sd->state.lr_flag || sd->state.lr_flag == 3)
+		if (sd->state.lr_flag == LR_FLAG_NONE || sd->state.lr_flag == LR_FLAG_SHIELD)
 			sd->right_weapon.addele[type2]+=val;
-		else if(sd->state.lr_flag == 1)
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 			sd->left_weapon.addele[type2]+=val;
-		else if(sd->state.lr_flag == 2)
+		else if (sd->state.lr_flag == LR_FLAG_ARROW)
 			sd->indexed_bonus.arrow_addele[type2]+=val;
 		break;
 	case SP_ADDRACE: // bonus2 bAddRace,r,x;
 		PC_BONUS_CHK_RACE(type2,SP_ADDRACE);
-		if(!sd->state.lr_flag || sd->state.lr_flag == 3)
+		if (sd->state.lr_flag == LR_FLAG_NONE || sd->state.lr_flag == LR_FLAG_SHIELD)
 			sd->right_weapon.addrace[type2]+=val;
-		else if(sd->state.lr_flag == 1)
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 			sd->left_weapon.addrace[type2]+=val;
-		else if(sd->state.lr_flag == 2)
+		else if (sd->state.lr_flag == LR_FLAG_ARROW)
 			sd->indexed_bonus.arrow_addrace[type2]+=val;
 		break;
 	case SP_ADDCLASS: // bonus2 bAddClass,c,x;
 		PC_BONUS_CHK_CLASS(type2,SP_ADDCLASS);
-		if(!sd->state.lr_flag || sd->state.lr_flag == 3)
+		if (sd->state.lr_flag == LR_FLAG_NONE || sd->state.lr_flag == LR_FLAG_SHIELD)
 			sd->right_weapon.addclass[type2]+=val;
-		else if(sd->state.lr_flag == 1)
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 			sd->left_weapon.addclass[type2]+=val;
-		else if(sd->state.lr_flag == 2)
+		else if (sd->state.lr_flag == LR_FLAG_ARROW)
 			sd->indexed_bonus.arrow_addclass[type2]+=val;
 		break;
 	case SP_ADDSIZE: // bonus2 bAddSize,s,x;
 		PC_BONUS_CHK_SIZE(type2,SP_ADDSIZE);
-		if(!sd->state.lr_flag || sd->state.lr_flag == 3)
+		if (sd->state.lr_flag == LR_FLAG_NONE || sd->state.lr_flag == LR_FLAG_SHIELD)
 			sd->right_weapon.addsize[type2]+=val;
-		else if(sd->state.lr_flag == 1)
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON)
 			sd->left_weapon.addsize[type2]+=val;
-		else if(sd->state.lr_flag == 2)
+		else if (sd->state.lr_flag == LR_FLAG_ARROW)
 			sd->indexed_bonus.arrow_addsize[type2]+=val;
 		break;
 	case SP_SUBELE: // bonus2 bSubEle,e,x;
 		PC_BONUS_CHK_ELEMENT(type2,SP_SUBELE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.subele_script[type2] += val;
 		break;
 	case SP_SUBRACE: // bonus2 bSubRace,r,x;
 		PC_BONUS_CHK_RACE(type2,SP_SUBRACE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.subrace[type2]+=val;
 		break;
 	case SP_SUBCLASS: // bonus2 bSubClass,c,x;
 		PC_BONUS_CHK_CLASS(type2,SP_SUBCLASS);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.subclass[type2]+=val;
 		break;
 	case SP_ADDEFF: // bonus2 bAddEff,eff,n;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF);
-		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != 2 ? val : 0, sd->state.lr_flag == 2 ? val : 0, 0, 0);
+		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != LR_FLAG_ARROW ? val : 0, sd->state.lr_flag == LR_FLAG_ARROW ? val : 0, 0, 0);
 		break;
 	case SP_ADDEFF2: // bonus2 bAddEff2,eff,n;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF2);
-		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != 2 ? val : 0, sd->state.lr_flag == 2 ? val : 0, ATF_SELF, 0);
+		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != LR_FLAG_ARROW ? val : 0, sd->state.lr_flag == LR_FLAG_ARROW ? val : 0, ATF_SELF, 0);
 		break;
 	case SP_RESEFF: // bonus2 bResEff,eff,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->reseff.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_RESEFF: Reached max (%d) number of resistance bonuses per character!\n", MAX_PC_BONUS);
@@ -4685,31 +4689,31 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 	case SP_MAGIC_ADDELE: // bonus2 bMagicAddEle,e,x;
 		PC_BONUS_CHK_ELEMENT(type2,SP_MAGIC_ADDELE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_addele_script[type2] += val;
 		break;
 	case SP_MAGIC_ADDRACE: // bonus2 bMagicAddRace,r,x;
 		PC_BONUS_CHK_RACE(type2,SP_MAGIC_ADDRACE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_addrace[type2]+=val;
 		break;
 	case SP_MAGIC_ADDCLASS: // bonus2 bMagicAddClass,c,x;
 		PC_BONUS_CHK_CLASS(type2,SP_MAGIC_ADDCLASS);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_addclass[type2]+=val;
 		break;
 	case SP_MAGIC_ADDSIZE: // bonus2 bMagicAddSize,s,x;
 		PC_BONUS_CHK_SIZE(type2,SP_MAGIC_ADDSIZE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_addsize[type2]+=val;
 		break;
 	case SP_MAGIC_ATK_ELE: // bonus2 bMagicAtkEle,e,x;
 		PC_BONUS_CHK_ELEMENT(type2,SP_MAGIC_ATK_ELE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_atk_ele[type2]+=val;
 		break;
 	case SP_ADD_DAMAGE_CLASS: { // bonus2 bAddDamageClass,mid,x;
-			struct weapon_data *wd = (sd->state.lr_flag ? &sd->left_weapon : &sd->right_weapon);
+			struct weapon_data *wd = (sd->state.lr_flag != LR_FLAG_NONE ? &sd->left_weapon : &sd->right_weapon);
 
 			if (wd->add_dmg.size() == MAX_PC_BONUS) {
 				ShowWarning("pc_bonus2: SP_ADD_DAMAGE_CLASS: Reached max (%d) number of add class damage bonuses per character!\n", MAX_PC_BONUS);
@@ -4720,7 +4724,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		}
 		break;
 	case SP_ADD_MAGIC_DAMAGE_CLASS: // bonus2 bAddMagicDamageClass,mid,x;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->add_mdmg.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_ADD_MAGIC_DAMAGE_CLASS: Reached max (%d) number of add class magic dmg bonuses per character!\n", MAX_PC_BONUS);
@@ -4730,7 +4734,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->add_mdmg, type2, val, false);
 		break;
 	case SP_ADD_DEF_MONSTER: // bonus2 bAddDefMonster,mid,x;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->add_def.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_ADD_DEF_MONSTER: Reached max (%d) number of add class def bonuses per character!\n", MAX_PC_BONUS);
@@ -4740,7 +4744,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->add_def, type2, val, false);
 		break;
 	case SP_ADD_MDEF_MONSTER: // bonus2 bAddMDefMonster,mid,x;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->add_mdef.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_ADD_MDEF_MONSTER: Reached max (%d) number of add class mdef bonuses per character!\n", MAX_PC_BONUS);
@@ -4750,88 +4754,88 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->add_mdef, type2, val, false);
 		break;
 	case SP_HP_DRAIN_RATE: // bonus2 bHPDrainRate,x,n;
-		if(!sd->state.lr_flag) {
+		if (sd->state.lr_flag == LR_FLAG_NONE) {
 			sd->right_weapon.hp_drain_rate.rate += type2;
 			sd->right_weapon.hp_drain_rate.per += val;
 		}
-		else if(sd->state.lr_flag == 1) {
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 			sd->left_weapon.hp_drain_rate.rate += type2;
 			sd->left_weapon.hp_drain_rate.per += val;
 		}
 		break;
 	case SP_SP_DRAIN_RATE: // bonus2 bSPDrainRate,x,n;
-		if(!sd->state.lr_flag) {
+		if (sd->state.lr_flag == LR_FLAG_NONE) {
 			sd->right_weapon.sp_drain_rate.rate += type2;
 			sd->right_weapon.sp_drain_rate.per += val;
 		}
-		else if(sd->state.lr_flag == 1) {
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 			sd->left_weapon.sp_drain_rate.rate += type2;
 			sd->left_weapon.sp_drain_rate.per += val;
 		}
 		break;
 	case SP_SP_VANISH_RATE: // bonus2 bSPVanishRate,x,n;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			pc_bonus_addvanish(sd->sp_vanish, type2, val, BF_NORMAL);
 		}
 		break;
 	case SP_HP_VANISH_RATE: // bonus2 bHPVanishRate,x,n;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			pc_bonus_addvanish(sd->hp_vanish, type2, val, BF_NORMAL);
 		}
 		break;
 	case SP_GET_ZENY_NUM: // bonus2 bGetZenyNum,x,n;
-		if(sd->state.lr_flag != 2 && sd->bonus.get_zeny_rate < val) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW && sd->bonus.get_zeny_rate < val) {
 			sd->bonus.get_zeny_rate = val;
 			sd->bonus.get_zeny_num = type2;
 		}
 		break;
 	case SP_ADD_GET_ZENY_NUM: // bonus2 bAddGetZenyNum,x,n;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->bonus.get_zeny_rate += val;
 			sd->bonus.get_zeny_num += type2;
 		}
 		break;
 	case SP_WEAPON_COMA_ELE: // bonus2 bWeaponComaEle,e,n;
 		PC_BONUS_CHK_ELEMENT(type2,SP_WEAPON_COMA_ELE);
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		sd->indexed_bonus.weapon_coma_ele[type2] += val;
 		sd->special_state.bonus_coma = 1;
 		break;
 	case SP_WEAPON_COMA_RACE: // bonus2 bWeaponComaRace,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_WEAPON_COMA_RACE);
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		sd->indexed_bonus.weapon_coma_race[type2] += val;
 		sd->special_state.bonus_coma = 1;
 		break;
 	case SP_WEAPON_COMA_CLASS: // bonus2 bWeaponComaClass,c,n;
 		PC_BONUS_CHK_CLASS(type2,SP_WEAPON_COMA_CLASS);
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		sd->indexed_bonus.weapon_coma_class[type2] += val;
 		sd->special_state.bonus_coma = 1;
 		break;
 	case SP_WEAPON_ATK: // bonus2 bWeaponAtk,w,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.weapon_atk[type2]+=val;
 		break;
 	case SP_WEAPON_DAMAGE_RATE: // bonus2 bWeaponDamageRate,w,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.weapon_damage_rate[type2]+=val;
 		break;
 	case SP_CRITICAL_ADDRACE: // bonus2 bCriticalAddRace,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_CRITICAL_ADDRACE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.critaddrace[type2] += val*10;
 		break;
 	case SP_ADDEFF_WHENHIT: // bonus2 bAddEffWhenHit,eff,n;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF_WHENHIT);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_addeff(sd->addeff_atked, (sc_type)type2, val, 0, 0, 0);
 		break;
 	case SP_SKILL_ATK: // bonus2 bSkillAtk,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillatk.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_ATK: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
@@ -4841,7 +4845,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillatk, type2, val, false);
 		break;
 	case SP_SKILL_HEAL: // bonus2 bSkillHeal,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillheal.size() == MAX_PC_BONUS) { // Better mention this so the array length can be updated. [Skotlex]
 			ShowWarning("pc_bonus2: SP_SKILL_HEAL: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
@@ -4851,7 +4855,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillheal, type2, val, false);
 		break;
 	case SP_SKILL_HEAL2: // bonus2 bSkillHeal2,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillheal2.size() == MAX_PC_BONUS) { // Better mention this so the array length can be updated. [Skotlex]
 			ShowWarning("pc_bonus2: SP_SKILL_HEAL2: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
@@ -4861,7 +4865,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillheal2, type2, val, false);
 		break;
 	case SP_ADD_SKILL_BLOW: // bonus2 bAddSkillBlow,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillblown.size() == MAX_PC_BONUS) { //Better mention this so the array length can be updated. [Skotlex]
 			ShowWarning("pc_bonus2: SP_ADD_SKILL_BLOW: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
@@ -4871,58 +4875,58 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillblown, type2, val, false);
 		break;
 	case SP_HP_LOSS_RATE: // bonus2 bHPLossRate,n,t;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->hp_loss.value = type2;
 			sd->hp_loss.rate = val;
 		}
 		break;
 	case SP_HP_REGEN_RATE: // bonus2 bHPRegenRate,n,t;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->hp_regen.value = type2;
 			sd->hp_regen.rate = val;
 		}
 		break;
 	case SP_REGEN_PERCENT_HP: // bonus2 bRegenPercentHP,n,t;
-		if (sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->percent_hp_regen.value = type2;
 			sd->percent_hp_regen.rate = val;
 		}
 		break;
 	case SP_REGEN_PERCENT_SP: // bonus2 bRegenPercentSP,n,t;
-		if (sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->percent_sp_regen.value = type2;
 			sd->percent_sp_regen.rate = val;
 		}
 		break;
 	case SP_ADDRACE2: // bonus2 bAddRace2,mr,x;
 		PC_BONUS_CHK_RACE2(type2,SP_ADDRACE2);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->right_weapon.addrace2[type2] += val;
 		else
 			sd->left_weapon.addrace2[type2] += val;
 		break;
 	case SP_SUBSIZE: // bonus2 bSubSize,s,x;
 		PC_BONUS_CHK_SIZE(type2,SP_SUBSIZE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.subsize[type2]+=val;
 		break;
 	case SP_WEAPON_SUBSIZE: // bonus2 bWeaponSubSize,s,x;
 		PC_BONUS_CHK_SIZE(type2, SP_WEAPON_SUBSIZE);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.weapon_subsize[type2] += val;
 		break;
 	case SP_MAGIC_SUBSIZE: // bonus2 bMagicSubSize,s,x;
 		PC_BONUS_CHK_SIZE(type2,SP_MAGIC_SUBSIZE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_subsize[type2]+=val;
 		break;
 	case SP_SUBRACE2: // bonus2 bSubRace2,mr,x;
 		PC_BONUS_CHK_RACE2(type2,SP_SUBRACE2);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.subrace2[type2]+=val;
 		break;
 	case SP_ADD_ITEM_HEAL_RATE: // bonus2 bAddItemHealRate,iid,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if( !item_db.exists( type2 ) ){
 			ShowWarning("pc_bonus2: SP_ADD_ITEM_HEAL_RATE Invalid item with id %d\n", type2);
@@ -4936,7 +4940,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->itemhealrate, type2, val, false);
 		break;
 	case SP_ADD_ITEMGROUP_HEAL_RATE: // bonus2 bAddItemGroupHealRate,ig,n;
-		if (sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (!type2 || !itemdb_group.exists(type2)) {
 			ShowWarning("pc_bonus2: SP_ADD_ITEMGROUP_HEAL_RATE: Invalid item group with id %d\n", type2);
@@ -4951,107 +4955,107 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 	case SP_EXP_ADDRACE: // bonus2 bExpAddRace,r,x;
 		PC_BONUS_CHK_RACE(type2,SP_EXP_ADDRACE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.expaddrace[type2]+=val;
 		break;
 	case SP_EXP_ADDCLASS: // bonus2 bExpAddClass,c,x;
 		PC_BONUS_CHK_CLASS(type2,SP_EXP_ADDCLASS);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.expaddclass[type2]+=val;
 		break;
 	case SP_SP_GAIN_RACE: // bonus2 bSPGainRace,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_SP_GAIN_RACE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.sp_gain_race[type2]+=val;
 		break;
 	case SP_ADD_MONSTER_DROP_ITEM: // bonus2 bAddMonsterDropItem,iid,n;
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, type2, 0, CLASS_ALL, RC_NONE_, val);
 		break;
 	case SP_ADD_MONSTER_DROP_ITEMGROUP: // bonus2 bAddMonsterDropItemGroup,ig,n;
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, 0, type2, CLASS_ALL, RC_NONE_, val);
 		break;
 	case SP_SP_LOSS_RATE: // bonus2 bSPLossRate,n,t;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->sp_loss.value = type2;
 			sd->sp_loss.rate = val;
 		}
 		break;
 	case SP_SP_REGEN_RATE: // bonus2 bSPRegenRate,n,t;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->sp_regen.value = type2;
 			sd->sp_regen.rate = val;
 		}
 		break;
 	case SP_HP_DRAIN_VALUE_RACE: // bonus2 bHPDrainValueRace,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_HP_DRAIN_VALUE_RACE);
-		if(!sd->state.lr_flag) {
+		if (sd->state.lr_flag == LR_FLAG_NONE) {
 			sd->right_weapon.hp_drain_race[type2] += val;
 		}
-		else if(sd->state.lr_flag == 1) {
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 			sd->left_weapon.hp_drain_race[type2] += val;
 		}
 		break;
 	case SP_SP_DRAIN_VALUE_RACE: // bonus2 bSPDrainValueRace,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_SP_DRAIN_VALUE_RACE);
-		if(!sd->state.lr_flag) {
+		if (sd->state.lr_flag == LR_FLAG_NONE) {
 			sd->right_weapon.sp_drain_race[type2] += val;
 		}
-		else if(sd->state.lr_flag == 1) {
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 			sd->left_weapon.sp_drain_race[type2] += val;
 		}
 		break;
 	case SP_HP_DRAIN_VALUE_CLASS: // bonus2 bHPDrainValueClass,c,n;
 		PC_BONUS_CHK_CLASS(type2,SP_HP_DRAIN_VALUE_CLASS);
-		if(!sd->state.lr_flag) {
+		if (sd->state.lr_flag == LR_FLAG_NONE) {
 			sd->right_weapon.hp_drain_class[type2] += val;
 		}
-		else if(sd->state.lr_flag == 1) {
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 			sd->left_weapon.hp_drain_class[type2] += val;
 		}
 		break;
 	case SP_SP_DRAIN_VALUE_CLASS: // bonus2 bSPDrainValueClass,c,n;
 		PC_BONUS_CHK_CLASS(type2,SP_SP_DRAIN_VALUE_CLASS);
-		if(!sd->state.lr_flag) {
+		if (sd->state.lr_flag == LR_FLAG_NONE) {
 			sd->right_weapon.sp_drain_class[type2] += val;
 		}
-		else if(sd->state.lr_flag == 1) {
+		else if (sd->state.lr_flag == LR_FLAG_WEAPON) {
 			sd->left_weapon.sp_drain_class[type2] += val;
 		}
 		break;
 	case SP_IGNORE_MDEF_RACE_RATE: // bonus2 bIgnoreMdefRaceRate,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_IGNORE_MDEF_RACE_RATE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_mdef_by_race[type2] += val;
 		break;
 	case SP_IGNORE_MDEF_CLASS_RATE: // bonus2 bIgnoreMdefClassRate,c,n;
 		PC_BONUS_CHK_CLASS(type2,SP_IGNORE_MDEF_CLASS_RATE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_mdef_by_class[type2] += val;
 		break;
 	case SP_IGNORE_DEF_RACE_RATE: // bonus2 bIgnoreDefRaceRate,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_IGNORE_DEF_RACE_RATE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_def_by_race[type2] += val;
 		break;
 	case SP_SP_IGNORE_RES_RACE_RATE: // bonus2 bIgnoreResRaceRate,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_SP_IGNORE_RES_RACE_RATE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_res_by_race[type2] += val;
 		break;
 	case SP_SP_IGNORE_MRES_RACE_RATE: // bonus2 bIgnoreMResRaceRate,r,n;
 		PC_BONUS_CHK_RACE(type2,SP_SP_IGNORE_MRES_RACE_RATE);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_mres_by_race[type2] += val;
 		break;
 	case SP_IGNORE_DEF_CLASS_RATE: // bonus2 bIgnoreDefClassRate,r,n;
 		PC_BONUS_CHK_CLASS(type2, SP_IGNORE_DEF_CLASS_RATE);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_def_by_class[type2] += val;
 		break;
 	case SP_SKILL_USE_SP_RATE: // bonus2 bSkillUseSPrate,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillusesprate.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_USE_SP_RATE: Reached max (%d) number of skills per character, bonus skill %d (+%d%%) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5061,7 +5065,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillusesprate, type2, val, true);
 		break;
 	case SP_SKILL_DELAY:
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skilldelay.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_DELAY: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5071,7 +5075,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skilldelay, type2, val, false);
 		break;
 	case SP_SKILL_COOLDOWN: // bonus2 bSkillCooldown,sk,t;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillcooldown.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_COOLDOWN: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5081,7 +5085,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillcooldown, type2, val, false);
 		break;
 	case SP_SKILL_VARIABLECAST: // bonus2 bSkillVariableCast,sk,t;
-		if (sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillvarcast.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_VARIABLECAST: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5092,7 +5096,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 #ifdef RENEWAL_CAST
 	case SP_SKILL_FIXEDCAST: // bonus2 bSkillFixedCast,sk,t;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillfixcast.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_FIXEDCAST: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5103,7 +5107,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 	case SP_CASTRATE: // bonus2 bCastrate,sk,n;
 	case SP_VARCASTRATE: // bonus2 bVariableCastrate,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillcastrate.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_VARCASTRATE: Reached max (%d) number of skills per character, bonus skill %d (%d%%) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5113,7 +5117,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus(sd->skillcastrate, type2, -val, true); // Send inversed value here
 		break;
 	case SP_FIXCASTRATE: // bonus2 bFixedCastrate,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillfixcastrate.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_FIXCASTRATE: Reached max (%d) number of skills per character, bonus skill %d (%d%%) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5129,7 +5133,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 	case SP_VARCASTRATE: // bonus2 bVariableCastrate,sk,n;
 	case SP_CASTRATE: // bonus2 bCastrate,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillcastrate.size() == MAX_PC_BONUS) { //Better mention this so the array length can be updated. [Skotlex]
 			ShowWarning("pc_bonus2: %s: Reached max (%d) number of skills per character, bonus skill %d (%d%%) lost.\n", (type == SP_CASTRATE) ? "SP_CASTRATE" : "SP_VARCASTRATE", MAX_PC_BONUS, type2, val);
@@ -5140,7 +5144,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 #endif
 	case SP_SKILL_USE_SP: // bonus2 bSkillUseSP,sk,n;
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		if (sd->skillusesp.size() == MAX_PC_BONUS) {
 			ShowWarning("pc_bonus2: SP_SKILL_USE_SP: Reached max (%d) number of skills per character, bonus skill %d (%d) lost.\n", MAX_PC_BONUS, type2, val);
@@ -5173,22 +5177,22 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		break;
 	case SP_MAGIC_ADDRACE2: // bonus2 bMagicAddRace2,mr,n;
 		PC_BONUS_CHK_RACE2(type2, SP_MAGIC_ADDRACE2);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.magic_addrace2[type2] += val;
 		break;
 	case SP_IGNORE_MDEF_RACE2_RATE: //bonus2 bIgnoreMdefRace2Rate,mr,n;
 		PC_BONUS_CHK_RACE2(type2, SP_IGNORE_MDEF_RACE2);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.ignore_mdef_by_race2[type2] += val;
 		break;
 	case SP_DROP_ADDRACE: // bonus2 bDropAddRace,r,x;
 		PC_BONUS_CHK_RACE(type2, SP_DROP_ADDRACE);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.dropaddrace[type2] += val;
 		break;
 	case SP_DROP_ADDCLASS: // bonus2 bDropAddClass,c,x;
 		PC_BONUS_CHK_CLASS(type2, SP_DROP_ADDCLASS);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			sd->indexed_bonus.dropaddclass[type2] += val;
 		break;
 	case SP_MAGIC_SUBDEF_ELE: // bonus2 bMagicSubDefEle,e,x;
@@ -5196,7 +5200,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		sd->indexed_bonus.magic_subdefele[type2] += val;
 		break;
 	case SP_ADD_ITEM_SPHEAL_RATE: // bonus2 bAddItemSPHealRate,iid,n;
-		if( sd->state.lr_flag == 2 ){
+		if( sd->state.lr_flag == LR_FLAG_ARROW ){
 			break;
 		}
 
@@ -5213,7 +5217,7 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		pc_bonus_itembonus( sd->itemsphealrate, type2, val, false );
 		break;
 	case SP_ADD_ITEMGROUP_SPHEAL_RATE: // bonus2 bAddItemGroupSPHealRate,ig,n;
-		if( sd->state.lr_flag == 2 ){
+		if( sd->state.lr_flag == LR_FLAG_ARROW ){
 			break;
 		}
 
@@ -5304,19 +5308,19 @@ void pc_bonus3(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 val
 
 	switch(type){
 	case SP_ADD_MONSTER_DROP_ITEM: // bonus3 bAddMonsterDropItem,iid,r,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, type2, 0, CLASS_NONE, type3, val);
 		break;
 	case SP_ADD_MONSTER_ID_DROP_ITEM: // bonus3 bAddMonsterIdDropItem,iid,mid,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, type2, 0, CLASS_NONE, -type3, val);
 		break;
 	case SP_ADD_CLASS_DROP_ITEM: // bonus3 bAddClassDropItem,iid,c,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, type2, 0, type3, RC_NONE_, val);
 		break;
 	case SP_AUTOSPELL: // bonus3 bAutoSpell,sk,y,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 		{
 			int32 target = skill_get_inf(type2); //Support or Self (non-auto-target) skills should pick self.
 			target = target&INF_SUPPORT_SKILL || (target&INF_SELF_SKILL && !skill_get_inf2(type2, INF2_NOTARGETSELF));
@@ -5324,7 +5328,7 @@ void pc_bonus3(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 val
 		}
 		break;
 	case SP_AUTOSPELL_WHENHIT: // bonus3 bAutoSpellWhenHit,sk,y,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 		{
 			int32 target = skill_get_inf(type2); //Support or Self (non-auto-target) skills should pick self.
 			target = target&INF_SUPPORT_SKILL || (target&INF_SELF_SKILL && !skill_get_inf2(type2, INF2_NOTARGETSELF));
@@ -5332,52 +5336,52 @@ void pc_bonus3(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 val
 		}
 		break;
 	case SP_ADD_MONSTER_DROP_ITEMGROUP: // bonus3 bAddMonsterDropItemGroup,ig,r,n;
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, 0, type2, CLASS_NONE, type3, val);
 		break;
 	case SP_ADD_CLASS_DROP_ITEMGROUP: // bonus3 bAddClassDropItemGroup,ig,c,n;
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_item_drop(sd->add_drop, 0, type2, type3, RC_NONE_, val);
 		break;
 
 	case SP_ADDEFF: // bonus3 bAddEff,eff,n,y;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF);
-		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != 2 ? type3 : 0, sd->state.lr_flag == 2 ? type3 : 0, val, 0);
+		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != LR_FLAG_ARROW ? type3 : 0, sd->state.lr_flag == LR_FLAG_ARROW ? type3 : 0, val, 0);
 		break;
 
 	case SP_ADDEFF_WHENHIT: // bonus3 bAddEffWhenHit,eff,n,y;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF_WHENHIT);
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_addeff(sd->addeff_atked, (sc_type)type2, type3, 0, val, 0);
 		break;
 
 	case SP_ADDEFF_ONSKILL: // bonus3 bAddEffOnSkill,sk,eff,n;
 		PC_BONUS_CHK_SC(type3,SP_ADDEFF_ONSKILL);
-		if( sd->state.lr_flag != 2 )
+		if( sd->state.lr_flag != LR_FLAG_ARROW )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, val, type2, ATF_TARGET, 0);
 		break;
 
 	case SP_ADDELE: // bonus3 bAddEle,e,x,bf;
 		PC_BONUS_CHK_ELEMENT(type2,SP_ADDELE);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_addele(sd, (unsigned char)type2, type3, val);
 		break;
 
 	case SP_SUBELE: // bonus3 bSubEle,e,x,bf;
 		PC_BONUS_CHK_ELEMENT(type2,SP_SUBELE);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_subele(sd, (unsigned char)type2, type3, val);
 		break;
 
 	case SP_SUBRACE: // bonus3 bSubRace,r,x,bf;
 		PC_BONUS_CHK_RACE(type2, SP_SUBRACE);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_subrace(sd, (unsigned char)type2, type3, val);
 		break;
 
 	case SP_SP_VANISH_RACE_RATE: // bonus3 bSPVanishRaceRate,r,x,n;
 		PC_BONUS_CHK_RACE(type2,SP_SP_VANISH_RACE_RATE);
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->sp_vanish_race[type2].rate += type3;
 			sd->sp_vanish_race[type2].per += val;
 		}
@@ -5385,27 +5389,27 @@ void pc_bonus3(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 val
 
 	case SP_HP_VANISH_RACE_RATE: // bonus3 bHPVanishRaceRate,r,x,n;
 		PC_BONUS_CHK_RACE(type2,SP_HP_VANISH_RACE_RATE);
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			sd->hp_vanish_race[type2].rate += type3;
 			sd->hp_vanish_race[type2].per += val;
 		}
 		break;
 
 	case SP_SP_VANISH_RATE: // bonus3 bSPVanishRate,x,n,bf;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			pc_bonus_addvanish(sd->sp_vanish, type2, type3, val);
 		}
 		break;
 
 	case SP_HP_VANISH_RATE: // bonus3 bHPVanishRate,x,n,bf;
-		if(sd->state.lr_flag != 2) {
+		if (sd->state.lr_flag != LR_FLAG_ARROW) {
 			pc_bonus_addvanish(sd->hp_vanish, type2, type3, val);
 		}
 		break;
 
 	case SP_STATE_NORECOVER_RACE: // bonus3 bStateNoRecoverRace,r,x,t;
 		PC_BONUS_CHK_RACE(type2, SP_STATE_NORECOVER_RACE);
-		if (sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		//! CONFIRM: Is it not stackable? Does not check max or min value?
 		//if (type3 > sd->norecover_state_race[type2].rate) {
@@ -5488,17 +5492,17 @@ void pc_bonus4(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 typ
 
 	switch(type){
 	case SP_AUTOSPELL: // bonus4 bAutoSpell,sk,y,n,i;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_autospell(sd->autospell, type2, type3, type4, 0, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_WHENHIT: // bonus4 bAutoSpellWhenHit,sk,y,n,i;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_autospell(sd->autospell2, type2, type3, type4, BF_NORMAL|BF_SKILL, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_ONSKILL: // bonus4 bAutoSpellOnSkill,sk,x,y,n;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 		{
 			int32 target = skill_get_inf(type3); //Support or Self (non-auto-target) skills should pick self.
 			target = target&INF_SUPPORT_SKILL || (target&INF_SELF_SKILL && !skill_get_inf2(type3, INF2_NOTARGETSELF));
@@ -5509,24 +5513,24 @@ void pc_bonus4(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 typ
 
 	case SP_ADDEFF: // bonus4 bAddEff,eff,n,y,t;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF);
-		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != 2 ? type3 : 0, sd->state.lr_flag == 2 ? type3 : 0, type4, val);
+		pc_bonus_addeff(sd->addeff, (sc_type)type2, sd->state.lr_flag != LR_FLAG_ARROW ? type3 : 0, sd->state.lr_flag == LR_FLAG_ARROW ? type3 : 0, type4, val);
 		break;
 
 	case SP_ADDEFF_WHENHIT: // bonus4 bAddEffWhenHit,eff,n,y,t;
 		PC_BONUS_CHK_SC(type2,SP_ADDEFF_WHENHIT);
-		if (sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_addeff(sd->addeff_atked, (sc_type)type2, type3, 0, type4, val);
 		break;
 
 	case SP_ADDEFF_ONSKILL: // bonus4 bAddEffOnSkill,sk,eff,n,y;
 		PC_BONUS_CHK_SC(type3,SP_ADDEFF_ONSKILL);
-		if( sd->state.lr_flag != 2 )
+		if( sd->state.lr_flag != LR_FLAG_ARROW )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, type4, type2, val, 0);
 		break;
 
 	case SP_SET_DEF_RACE: // bonus4 bSetDefRace,r,n,t,y;
 		PC_BONUS_CHK_RACE(type2,SP_SET_DEF_RACE);
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		sd->def_set_race[type2].rate = type3;
 		sd->def_set_race[type2].tick = type4;
@@ -5535,7 +5539,7 @@ void pc_bonus4(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 typ
 
 	case SP_SET_MDEF_RACE: // bonus4 bSetMDefRace,r,n,t,y;
 		PC_BONUS_CHK_RACE(type2,SP_SET_MDEF_RACE);
-		if(sd->state.lr_flag == 2)
+		if (sd->state.lr_flag == LR_FLAG_ARROW)
 			break;
 		sd->mdef_set_race[type2].rate = type3;
 		sd->mdef_set_race[type2].tick = type4;
@@ -5595,23 +5599,23 @@ void pc_bonus5(map_session_data *sd,int32 type,int32 type2,int32 type3,int32 typ
 
 	switch(type){
 	case SP_AUTOSPELL: // bonus5 bAutoSpell,sk,y,n,bf,i;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_autospell(sd->autospell, type2, type3, type4, type5, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_WHENHIT: // bonus5 bAutoSpellWhenHit,sk,y,n,bf,i;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_autospell(sd->autospell2, type2, type3, type4, type5, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
 
 	case SP_AUTOSPELL_ONSKILL: // bonus5 bAutoSpellOnSkill,sk,x,y,n,i;
-		if(sd->state.lr_flag != 2)
+		if (sd->state.lr_flag != LR_FLAG_ARROW)
 			pc_bonus_autospell_onskill(sd->autospell3, type2, type3, type4, type5, current_equip_card_id, val & AUTOSPELL_FORCE_ALL);
 		break;
  
 	case SP_ADDEFF_ONSKILL: // bonus5 bAddEffOnSkill,sk,eff,n,y,t;
 		PC_BONUS_CHK_SC(type3,SP_ADDEFF_ONSKILL);
-		if( sd->state.lr_flag != 2 )
+		if( sd->state.lr_flag != LR_FLAG_ARROW )
 			pc_bonus_addeff_onskill(sd->addeff_onskill, (sc_type)type3, type4, type2, type5, val);
 		break;
 		// PYHELP - BONUS - INSERT POINT - <Section 10>
@@ -5933,7 +5937,7 @@ int32 pc_modifybuyvalue(map_session_data *sd,int32 orig_value)
 		rate2 = 5+skill*4;
 	if(rate1 < rate2) rate1 = rate2;
 	if(rate1)
-		val = (int)((double)orig_value*(double)(100-rate1)/100.);
+		val = (int32)((double)orig_value*(double)(100-rate1)/100.);
 	if(val < battle_config.min_shop_buy)
 		val = battle_config.min_shop_buy;
 
@@ -5949,7 +5953,7 @@ int32 pc_modifysellvalue(map_session_data *sd,int32 orig_value)
 	if((skill=pc_checkskill(sd,MC_OVERCHARGE))>0)	//OverCharge
 		rate = 5+skill*2-((skill==10)? 1:0);
 	if(rate)
-		val = (int)((double)orig_value*(double)(100+rate)/100.);
+		val = (int32)((double)orig_value*(double)(100+rate)/100.);
 	if (val < battle_config.min_shop_sell)
 		val = battle_config.min_shop_sell;
 
@@ -6887,9 +6891,6 @@ int32 pc_useitem(map_session_data *sd,int32 n)
 
 	sd->itemid = item.nameid;
 	sd->itemindex = n;
-	if(sd->catch_target_class != PET_CATCH_FAIL) //Abort pet catching.
-		sd->catch_target_class = PET_CATCH_FAIL;
-
 	amount = item.amount;
 	script = id->script;
 
@@ -7176,7 +7177,7 @@ int32 pc_show_steal(struct block_list *bl,va_list ap)
 	char output[100];
 
 	sd=va_arg(ap,map_session_data *);
-	itemid=va_arg(ap,int);
+	itemid=va_arg(ap,int32);
 
 	std::shared_ptr<item_data> id = item_db.find(itemid);
 
@@ -7646,8 +7647,7 @@ enum e_setpos pc_setpos(map_session_data* sd, unsigned short mapindex, int32 x, 
 			status_db.removeByStatusFlag(&sd->hd->bl, { SCF_REMOVEFROMHOMONWARP });
 
 		if (battle_config.hom_delay_reset_warp) {
-			sd->hd->blockskill.clear();
-			sd->hd->blockskill.shrink_to_fit();
+			skill_blockhomun_clear(*sd->hd);
 		}
 
 		sd->hd->bl.m = m;
@@ -8903,7 +8903,7 @@ static void pc_calcexp(map_session_data *sd, t_exp *base_exp, t_exp *job_exp, st
 			bonus += sd->indexed_bonus.expaddclass[CLASS_ALL];
 
 		if (battle_config.pk_mode &&
-			(int)(status_get_lv(src) - sd->status.base_level) >= 20)
+			(int32)(status_get_lv(src) - sd->status.base_level) >= 20)
 			bonus += 15; // pk_mode additional exp if monster >20 levels [Valaris]
 
 		if (src && src->type == BL_MOB && pc_isvip(sd)) { // EXP bonus for VIP player
@@ -10887,7 +10887,13 @@ int64 pc_readparam(map_session_data* sd,int64 type)
 		case SP_DOUBLE_RATE:     val = sd->bonus.double_rate; break;
 		case SP_DOUBLE_ADD_RATE: val = sd->bonus.double_add_rate; break;
 		case SP_MATK_RATE:       val = sd->matk_rate; break;
-		case SP_ATK_RATE:        val = sd->bonus.atk_rate; break;
+		case SP_ATK_RATE:
+#ifdef RENEWAL
+			val = sd->bonus.atk_rate;
+#else
+			ShowError( "pc_readparam: %s is not supported in Pre-Renewal mode.\n", QUOTE( SP_ATK_RATE ) );
+#endif
+			break;
 		case SP_MAGIC_ATK_DEF:   val = sd->bonus.magic_def_rate; break;
 		case SP_MISC_ATK_DEF:    val = sd->bonus.misc_def_rate; break;
 		case SP_PERFECT_HIT_RATE:val = sd->bonus.perfect_hit; break;
@@ -11011,7 +11017,7 @@ bool pc_setparam(map_session_data *sd,int64 type,int64 val_tmp)
 		if (val > pc_maxbaselv(sd)) //Capping to max
 			val = pc_maxbaselv(sd);
 		if (val > sd->status.base_level) {
-			for( int32 i = 0; i < (int)( val - sd->status.base_level ); i++ ){
+			for( int32 i = 0; i < (int32)( val - sd->status.base_level ); i++ ){
 				sd->status.status_point += statpoint_db.pc_gets_status_point( sd->status.base_level + i );
 				sd->status.trait_point += statpoint_db.pc_gets_trait_point( sd->status.base_level + i );
 			}
@@ -11079,7 +11085,7 @@ bool pc_setparam(map_session_data *sd,int64 type,int64 val_tmp)
 		sd->max_weight = val;
 		break;
 	case SP_HP:
-		sd->battle_status.hp = cap_value(val, 1, (int)sd->battle_status.max_hp);
+		sd->battle_status.hp = cap_value(val, 1, (int32)sd->battle_status.max_hp);
 		break;
 	case SP_MAXHP:
 #ifndef Pandas_Extreme_Computing
@@ -11099,7 +11105,7 @@ bool pc_setparam(map_session_data *sd,int64 type,int64 val_tmp)
 		}
 		break;
 	case SP_SP:
-		sd->battle_status.sp = cap_value(val, 0, (int)sd->battle_status.max_sp);
+		sd->battle_status.sp = cap_value(val, 0, (int32)sd->battle_status.max_sp);
 		break;
 	case SP_MAXSP:
 #ifndef Pandas_Extreme_Computing
@@ -11114,7 +11120,7 @@ bool pc_setparam(map_session_data *sd,int64 type,int64 val_tmp)
 		}
 		break;
 	case SP_AP:
-		sd->battle_status.ap = cap_value(val, 0, (int)sd->battle_status.max_ap);
+		sd->battle_status.ap = cap_value(val, 0, (int32)sd->battle_status.max_ap);
 		break;
 	case SP_MAXAP:
 		sd->battle_status.max_ap = cap_value(val, 1, battle_config.max_ap);
@@ -11426,7 +11432,7 @@ static int32 jobchange_killclone(struct block_list *bl, va_list ap)
 		int32 flag;
 	md = (struct mob_data *)bl;
 	nullpo_ret(md);
-	flag = va_arg(ap, int);
+	flag = va_arg(ap, int32);
 
 	if (md->master_id && md->special_state.clone && md->master_id == flag)
 		status_kill(&md->bl);
@@ -13225,7 +13231,7 @@ int32 pc_equipswitch( map_session_data* sd, int32 index ){
 
 		return position;
 	}else{
-		std::map<int, int> unequipped;
+		std::map<int32, int32> unequipped;
 		int32 unequipped_position = 0;
 
 		// Unequip all items that interfere
@@ -13276,7 +13282,7 @@ int32 pc_equipswitch( map_session_data* sd, int32 index ){
 		}
 
 		// Place all unequipped items into the equip switch window
-		for( std::pair<int, int> pair : unequipped ){
+		for( std::pair<int32, int32> pair : unequipped ){
 			int32 unequipped_index = pair.first;
 			int32 unequipped_position = pair.second;
 
@@ -13930,7 +13936,7 @@ static TIMER_FUNC(pc_spiritcharm_timer){
 	sd->spiritcharm--;
 
 	if (i != sd->spiritcharm)
-		memmove(sd->spiritcharm_timer + i, sd->spiritcharm_timer + i + 1, (sd->spiritcharm - i) * sizeof(int));
+		memmove(sd->spiritcharm_timer + i, sd->spiritcharm_timer + i + 1, (sd->spiritcharm - i) * sizeof(int32));
 
 	sd->spiritcharm_timer[sd->spiritcharm] = INVALID_TIMER;
 
@@ -13969,7 +13975,7 @@ void pc_addspiritcharm(map_session_data *sd, int32 interval, int32 max, int32 ty
 			delete_timer(sd->spiritcharm_timer[0], pc_spiritcharm_timer);
 		sd->spiritcharm--;
 		if (sd->spiritcharm != 0)
-			memmove(sd->spiritcharm_timer + 0, sd->spiritcharm_timer + 1, (sd->spiritcharm) * sizeof(int));
+			memmove(sd->spiritcharm_timer + 0, sd->spiritcharm_timer + 1, (sd->spiritcharm) * sizeof(int32));
 		sd->spiritcharm_timer[sd->spiritcharm] = INVALID_TIMER;
 	}
 
@@ -13977,7 +13983,7 @@ void pc_addspiritcharm(map_session_data *sd, int32 interval, int32 max, int32 ty
 	ARR_FIND(0, sd->spiritcharm, i, sd->spiritcharm_timer[i] == INVALID_TIMER || DIFF_TICK(get_timer(tid)->tick, get_timer(sd->spiritcharm_timer[i])->tick) < 0);
 
 	if (i != sd->spiritcharm)
-		memmove(sd->spiritcharm_timer + i + 1, sd->spiritcharm_timer + i, (sd->spiritcharm - i) * sizeof(int));
+		memmove(sd->spiritcharm_timer + i + 1, sd->spiritcharm_timer + i, (sd->spiritcharm - i) * sizeof(int32));
 
 	sd->spiritcharm_timer[i] = tid;
 	sd->spiritcharm++;
@@ -15354,86 +15360,12 @@ uint8 pc_itemcd_check(map_session_data *sd, struct item_data *id, t_tick tick, u
 	// Send reply of delay remains
 	if (sc->getSCE(id->delay.sc)) {
 		const struct TimerData *timer = get_timer(sc->getSCE(id->delay.sc)->timer);
-		clif_msg_value(sd, MSI_ITEM_REUSE_LIMIT_SECOND, (int)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99));
+		clif_msg_value(sd, MSI_ITEM_REUSE_LIMIT_SECOND, (int32)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99));
 		return 1;
 	}
 
 	sc_start(&sd->bl, &sd->bl, id->delay.sc, 100, id->nameid, id->delay.duration);
 	return 0;
-}
-
-/**
-* Clear the dmglog data from player
-* @param sd
-* @param md
-**/
-static void pc_clear_log_damage_sub(uint32 char_id, struct mob_data *md)
-{
-	uint8 i;
-	ARR_FIND(0,DAMAGELOG_SIZE,i,md->dmglog[i].id == char_id);
-	if (i < DAMAGELOG_SIZE) {
-		md->dmglog[i].id = 0;
-		md->dmglog[i].dmg = 0;
-		md->dmglog[i].flag = 0;
-	}
-}
-
-/**
-* Add log to player's dmglog
-* @param sd
-* @param id Monster's GID
-**/
-void pc_damage_log_add(map_session_data *sd, int32 id)
-{
-	uint8 i = 0;
-
-	if (!sd || !id)
-		return;
-
-	//Only store new data, don't need to renew the old one with same id
-	ARR_FIND(0, DAMAGELOG_SIZE_PC, i, sd->dmglog[i] == id);
-	if (i < DAMAGELOG_SIZE_PC)
-		return;
-
-	for (i = 0; i < DAMAGELOG_SIZE_PC; i++) {
-		if (sd->dmglog[i] == 0) {
-			sd->dmglog[i] = id;
-			return;
-		}
-	}
-}
-
-/**
-* Clear dmglog data from player
-* @param sd
-* @param id Monster's id
-**/
-void pc_damage_log_clear(map_session_data *sd, int32 id)
-{
-	uint8 i;
-	struct mob_data *md = nullptr;
-
-	if (!sd)
-		return;
-
-	if (!id) {
-		for (i = 0; i < DAMAGELOG_SIZE_PC; i++) {
-			if( !sd->dmglog[i] )	//skip the empty value
-				continue;
-
-			if ((md = map_id2md(sd->dmglog[i])))
-				pc_clear_log_damage_sub(sd->status.char_id,md);
-			sd->dmglog[i] = 0;
-		}
-	}
-	else {
-		if ((md = map_id2md(id)))
-			pc_clear_log_damage_sub(sd->status.char_id,md);
-
-		ARR_FIND(0,DAMAGELOG_SIZE_PC,i,sd->dmglog[i] == id);	// find the id position
-		if (i < DAMAGELOG_SIZE_PC)
-			sd->dmglog[i] = 0;
-	}
 }
 
 /**

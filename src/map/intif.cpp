@@ -1364,7 +1364,7 @@ static int32 mapif_parse_WisToGM_sub(map_session_data* sd,va_list va)
 		return 0;
 	wisp_name = va_arg(va, char*);
 	message = va_arg(va, char*);
-	len = va_arg(va, int);
+	len = va_arg(va, int32);
 	clif_wis_message(sd, wisp_name, message, len,0);
 	return 1;
 }
@@ -3949,7 +3949,7 @@ int32 intif_parse(int32 fd)
 			packet_len = RFIFOW(fd,2);
 #endif // Pandas_Unlock_Storage_Capacity_Limit
 	}
-	if((int)RFIFOREST(fd)<packet_len){
+	if((int32)RFIFOREST(fd)<packet_len){
 		return 2;
 	}
 	// Processing branch
