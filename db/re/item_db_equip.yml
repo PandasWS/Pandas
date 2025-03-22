@@ -1932,7 +1932,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -1957,7 +1959,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -2078,7 +2082,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -2107,7 +2113,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -2195,7 +2203,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -2220,7 +2230,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -2318,7 +2330,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -2479,7 +2493,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -2554,9 +2570,10 @@ Body:
     MagicAttack: 150
     Range: 1
     Jobs:
-      Crusader: true
       Knight: true
-      Swordman: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -4564,7 +4581,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -4584,7 +4603,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -4606,7 +4627,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -4628,7 +4651,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -4968,7 +4993,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -4990,7 +5017,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -5229,7 +5258,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -5281,7 +5312,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -5302,6 +5335,9 @@ Body:
     Slots: 2
     Jobs:
       Assassin: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -5515,15 +5551,15 @@ Body:
     Attack: 115
     Range: 1
     Jobs:
+      Novice: true
       Alchemist: true
       Assassin: true
       Blacksmith: true
       Crusader: true
       Knight: true
       Merchant: true
-      Rogue: true
+      SuperNovice: true
       Swordman: true
-      Thief: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -5639,7 +5675,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -5823,9 +5861,9 @@ Body:
       Crusader: true
       Knight: true
       Merchant: true
+      Rogue: true
       Swordman: true
       Thief: true
-      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -5848,10 +5886,8 @@ Body:
       Knight: true
       Merchant: true
       Novice: true
-      Rogue: true
       SuperNovice: true
       Swordman: true
-      Thief: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -6045,7 +6081,6 @@ Body:
     Jobs:
       Alchemist: true
       Blacksmith: true
-      Merchant: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -7207,7 +7242,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -7234,7 +7271,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -7263,7 +7302,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -7517,7 +7558,9 @@ Body:
     Jobs:
       Blacksmith: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -7577,7 +7620,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -7708,7 +7753,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -7737,7 +7784,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -7851,7 +7900,9 @@ Body:
     Jobs:
       Blacksmith: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -8346,7 +8397,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -8372,7 +8425,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -8398,7 +8453,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -8589,7 +8646,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -8623,7 +8682,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -8909,7 +8970,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -9088,7 +9151,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -9868,7 +9933,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -9893,7 +9960,9 @@ Body:
     Jobs:
       Knight: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -9917,7 +9986,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -11449,7 +11520,9 @@ Body:
       Monk: true
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -11552,7 +11625,9 @@ Body:
       Crusader: true
       Knight: true
       Merchant: true
+      StarGladiator: true
       Swordman: true
+      Taekwon: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -12649,9 +12724,7 @@ Body:
     Jobs:
       Priest: true
       Sage: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      StarGladiator: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -13556,7 +13629,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -13612,7 +13687,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -13921,7 +13998,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -13953,7 +14032,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -14186,7 +14267,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -14225,7 +14308,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -14266,7 +14351,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -14295,7 +14382,9 @@ Body:
       Monk: true
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -14320,7 +14409,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -14681,7 +14772,9 @@ Body:
     Jobs:
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -14733,10 +14826,13 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
+      Mage: true
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -14767,7 +14863,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -14800,7 +14898,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -16220,7 +16320,10 @@ Body:
     Range: 5
     Slots: 2
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
+      Rogue: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -16522,8 +16625,6 @@ Body:
       BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Upper: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -16544,7 +16645,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -16632,7 +16735,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -16655,7 +16760,9 @@ Body:
       BardDancer: true
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -16768,7 +16875,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -17414,7 +17523,9 @@ Body:
     Jobs:
       Monk: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -18911,7 +19022,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -18934,7 +19047,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -19065,7 +19180,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -19090,7 +19207,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -19149,7 +19268,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -20132,7 +20253,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -20160,7 +20283,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -20183,7 +20308,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -20313,7 +20440,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -20336,7 +20465,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -20842,7 +20973,9 @@ Body:
     Jobs:
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -20940,7 +21073,9 @@ Body:
     Jobs:
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -20977,7 +21112,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -21004,7 +21141,9 @@ Body:
       Monk: true
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -21027,6 +21166,8 @@ Body:
     MagicAttack: 150
     Range: 1
     Jobs:
+      Mage: true
+      Sage: true
       SoulLinker: true
       Wizard: true
     Locations:
@@ -21481,7 +21622,8 @@ Body:
     Jobs:
       Wizard: true
     Classes:
-      All_Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -21615,9 +21757,6 @@ Body:
     Slots: 2
     Range: 1
     Jobs:
-      Monk: true
-      Priest: true
-      Sage: true
       Wizard: true
     Classes:
       All_Third: true
@@ -21814,8 +21953,10 @@ Body:
     Slots: 1
     Jobs:
       Acolyte: true
+      Mage: true
       Monk: true
       Priest: true
+      Sage: true
       SoulLinker: true
       Wizard: true
     Locations:
@@ -22020,7 +22161,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -22383,7 +22526,10 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
+      Acolyte: true
       Mage: true
+      Monk: true
+      Priest: true
       Sage: true
       SoulLinker: true
       Wizard: true
@@ -23237,11 +23383,28 @@ Body:
     Weight: 1200
     Defense: 95
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23263,11 +23426,28 @@ Body:
     Defense: 75
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23286,11 +23466,28 @@ Body:
     Defense: 85
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23318,7 +23515,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23492,7 +23691,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23523,7 +23724,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23550,7 +23753,9 @@ Body:
     Jobs:
       Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23586,11 +23791,28 @@ Body:
     Type: Armor
     Defense: 110
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23632,7 +23854,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -23785,11 +24009,28 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Left_Hand: true
     ArmorLevel: 1
@@ -26802,6 +27043,7 @@ Body:
       Priest: true
       Sage: true
       SoulLinker: true
+      Swordman: true
       Wizard: true
     Locations:
       Armor: true
@@ -26829,6 +27071,7 @@ Body:
       Priest: true
       Sage: true
       SoulLinker: true
+      Swordman: true
       Wizard: true
     Locations:
       Armor: true
@@ -27469,11 +27712,28 @@ Body:
     Defense: 55
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -27617,7 +27877,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -27635,11 +27897,28 @@ Body:
     Defense: 15
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -27657,11 +27936,28 @@ Body:
     Defense: 50
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -27684,7 +27980,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -27833,7 +28131,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -27863,7 +28163,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28189,7 +28491,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28225,7 +28529,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28247,7 +28553,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28279,7 +28587,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28301,7 +28611,9 @@ Body:
       BardDancer: true
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28323,7 +28635,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28476,7 +28790,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28503,11 +28819,28 @@ Body:
     Defense: 20
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -28908,11 +29241,28 @@ Body:
     Defense: 13
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -28955,11 +29305,28 @@ Body:
     Weight: 500
     Defense: 13
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -28979,11 +29346,28 @@ Body:
     Defense: 13
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -28999,11 +29383,28 @@ Body:
     Weight: 500
     Defense: 16
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -29018,11 +29419,28 @@ Body:
     Buy: 20
     Weight: 2000
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -29184,7 +29602,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -29200,11 +29620,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -29386,7 +29823,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -29560,11 +29999,28 @@ Body:
     Weight: 500
     Defense: 3
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -29591,11 +30047,28 @@ Body:
     Weight: 500
     Defense: 16
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -30331,11 +30804,28 @@ Body:
     Weight: 2000
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -30353,9 +30843,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
+    Classes:
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -31059,11 +31568,28 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31117,11 +31643,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31138,11 +31681,28 @@ Body:
     Defense: 11
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31158,11 +31718,28 @@ Body:
     Weight: 500
     Defense: 13
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31179,11 +31756,28 @@ Body:
     Defense: 13
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31210,7 +31804,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31237,7 +31833,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31360,7 +31958,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31503,11 +32103,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31565,7 +32182,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31587,7 +32206,9 @@ Body:
     Jobs:
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31640,11 +32261,28 @@ Body:
     Type: Armor
     Defense: 22
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31712,11 +32350,28 @@ Body:
     Defense: 4
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31751,7 +32406,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31777,11 +32434,28 @@ Body:
     Defense: 14
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -31798,11 +32472,28 @@ Body:
     Defense: 25
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -32035,10 +32726,8 @@ Body:
     Defense: 3
     Slots: 1
     Jobs:
-      Archer: true
-      Novice: true
-      SuperNovice: true
-      Thief: true
+      Gunslinger: true
+      Rebellion: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -33570,7 +34259,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -33600,7 +34291,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -33630,7 +34323,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -33660,7 +34355,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -33941,7 +34638,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -33976,7 +34675,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -34128,9 +34829,9 @@ Body:
     Type: Armor
     Buy: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Taekwon: true
+      StarGladiator: true
+      SoulLinker: true
     Locations:
       Head_Low: true
     ArmorLevel: 1
@@ -34471,7 +35172,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -34484,11 +35187,28 @@ Body:
     Weight: 100
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -34504,11 +35224,28 @@ Body:
     Weight: 100
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -34523,11 +35260,28 @@ Body:
     Weight: 150
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -34997,7 +35751,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35014,7 +35770,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35062,7 +35820,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35368,7 +36128,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35400,7 +36162,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35429,7 +36193,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35447,7 +36213,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35464,7 +36232,9 @@ Body:
     Jobs:
       Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35482,7 +36252,9 @@ Body:
       BardDancer: true
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35517,7 +36289,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -35769,11 +36543,28 @@ Body:
     Name: Neo Skull Ring
     Type: Armor
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36159,11 +36950,28 @@ Body:
     Weight: 100
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36201,11 +37009,28 @@ Body:
     Weight: 200
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36222,11 +37047,28 @@ Body:
     Weight: 200
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36242,11 +37084,28 @@ Body:
     Weight: 200
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36262,11 +37121,28 @@ Body:
     Weight: 200
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36306,7 +37182,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -36348,7 +37226,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -37255,11 +38135,9 @@ Body:
     Type: Armor
     Defense: 2
     Jobs:
-      Alchemist: true
-      Sage: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Taekwon: true
+      StarGladiator: true
+      SoulLinker: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -38921,7 +39799,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -42872,11 +43752,28 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -47038,7 +47935,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -47072,7 +47971,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -49251,7 +50152,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Mid: true
     ArmorLevel: 1
@@ -54696,7 +55599,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Low: true
       Head_Mid: true
@@ -59064,7 +59969,9 @@ Body:
       Thief: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -59099,7 +60006,9 @@ Body:
       Thief: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -59296,7 +60205,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -59315,7 +60226,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -59437,7 +60350,9 @@ Body:
     Jobs:
       Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -59476,7 +60391,9 @@ Body:
       Thief: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -59735,7 +60652,9 @@ Body:
       Rogue: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -59759,7 +60678,9 @@ Body:
       Rogue: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -60252,7 +61173,9 @@ Body:
       Thief: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -60471,7 +61394,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -60501,7 +61426,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -60873,6 +61800,10 @@ Body:
       Mage: true
       Wizard: true
       Sage: true
+    Classes:
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -61249,6 +62180,7 @@ Body:
       Assassin: true
       Rogue: true
       SoulLinker: true
+      SuperNovice: true
       Ninja: true
       KagerouOboro: true
     Locations:
@@ -62020,6 +62952,7 @@ Body:
     Attack: 200
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -62041,6 +62974,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -62427,6 +63361,7 @@ Body:
     Range: 7
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -62553,6 +63488,7 @@ Body:
     Range: 7
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -62606,6 +63542,7 @@ Body:
     Range: 7
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63564,6 +64501,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63584,6 +64522,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63605,6 +64544,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63627,6 +64567,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63648,6 +64589,7 @@ Body:
     Attack: 250
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63668,6 +64610,7 @@ Body:
     Attack: 260
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63689,6 +64632,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63710,6 +64654,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63729,6 +64674,7 @@ Body:
     Attack: 250
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -63750,6 +64696,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -64630,6 +65577,7 @@ Body:
     Range: 1
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -64935,7 +65883,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -64964,7 +65914,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -65217,7 +66169,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -65248,7 +66202,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -65280,7 +66236,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -65536,7 +66494,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -65806,7 +66766,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -66048,24 +67010,17 @@ Body:
     Attack: 60
     Range: 1
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      KagerouOboro: true
-      Knight: true
-      Mage: true
-      Merchant: true
-      Ninja: true
-      Rogue: true
-      Sage: true
-      SoulLinker: true
+      Novice: true
       Swordman: true
+      Merchant: true
       Thief: true
-      Wizard: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 1
@@ -66549,7 +67504,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -66590,7 +67547,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -66633,7 +67592,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -67610,7 +68571,9 @@ Body:
       Swordman: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -67844,11 +68807,28 @@ Body:
     Defense: 58
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -68808,11 +69788,28 @@ Body:
     Defense: 40
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -68998,6 +69995,7 @@ Body:
     Jobs:
       Crusader: true
       Knight: true
+      StarGladiator: true
       Swordman: true
     Locations:
       Armor: true
@@ -69087,18 +70085,24 @@ Body:
     Defense: 55
     Slots: 1
     Jobs:
-      Alchemist: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
       Crusader: true
-      Hunter: true
       Knight: true
-      Monk: true
-      Priest: true
-      Rogue: true
-      Sage: true
       Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
       Upper: true
       All_Third: true
@@ -69366,6 +70370,7 @@ Body:
     Defense: 55
     Slots: 1
     Jobs:
+      Sage: true
       Wizard: true
     Classes:
       All_Third: true
@@ -69570,9 +70575,11 @@ Body:
     Defense: 120
     Slots: 1
     Jobs:
+      Swordman: true
       Crusader: true
       Knight: true
     Classes:
+      Upper: true
       All_Third: true
       Fourth: true
     Locations:
@@ -69606,7 +70613,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -69638,7 +70647,9 @@ Body:
       Monk: true
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -69672,7 +70683,9 @@ Body:
       Blacksmith: true
       Merchant: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -69714,7 +70727,9 @@ Body:
       Rogue: true
       Thief: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -69737,9 +70752,11 @@ Body:
     Defense: 60
     Slots: 1
     Jobs:
+      Archer: true
       BardDancer: true
       Hunter: true
     Classes:
+      Upper: true
       All_Third: true
       Fourth: true
     Locations:
@@ -75662,7 +76679,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     Trade:
@@ -78587,7 +79606,9 @@ Body:
       Priest: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -78619,7 +79640,9 @@ Body:
       Priest: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -79044,7 +80067,9 @@ Body:
       Monk: true
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -79431,7 +80456,9 @@ Body:
       Monk: true
       Priest: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -80413,6 +81440,7 @@ Body:
     Range: 1
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Right_Hand: true
@@ -80950,7 +81978,6 @@ Body:
       BardDancer: true
       Hunter: true
       Rogue: true
-      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -81088,8 +82115,10 @@ Body:
     Attack: 180
     Range: 5
     Jobs:
+      Archer: true
       BardDancer: true
       Hunter: true
+      Rogue: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -81197,6 +82226,7 @@ Body:
       Archer: true
       BardDancer: true
       Hunter: true
+      Rogue: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -81276,7 +82306,6 @@ Body:
       BardDancer: true
       Hunter: true
       Rogue: true
-      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -81380,11 +82409,10 @@ Body:
     Range: 5
     Slots: 1
     Jobs:
+      Archer: true
       BardDancer: true
       Hunter: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Rogue: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -81630,7 +82658,7 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
       All_Third: true
       Fourth: true
     Locations:
@@ -81681,6 +82709,7 @@ Body:
       BardDancer: true
       Hunter: true
       Rogue: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -82093,7 +83122,9 @@ Body:
       BardDancer: true
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -82286,9 +83317,7 @@ Body:
     Jobs:
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -82374,12 +83403,10 @@ Body:
     Range: 5
     Slots: 2
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-      BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -82698,9 +83725,7 @@ Body:
     Jobs:
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -82733,12 +83758,10 @@ Body:
     Range: 5
     Slots: 2
     Jobs:
+      Archer: true
       BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -87609,11 +88632,28 @@ Body:
     Defense: 3
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -87916,6 +88956,23 @@ Body:
     Weight: 2400
     Defense: 4
     Slots: 1
+    Jobs:
+      Knight: true
+      Priest: true
+      Wizard: true
+      Blacksmith: true
+      Hunter: true
+      Assassin: true
+      Crusader: true
+      Monk: true
+      Sage: true
+      Rogue: true
+      Alchemist: true
+      BardDancer: true
+      StarGladiator: true
+      SoulLinker: true
+      KagerouOboro: true
+      Rebellion: true
     Locations:
       Head_Mid: true
       Head_Top: true
@@ -88387,6 +89444,11 @@ Body:
     Weight: 200
     Defense: 30
     Slots: 1
+    Jobs:
+      Priest: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -92300,7 +93362,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -98472,6 +99536,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Head_Top: true
@@ -98503,6 +99568,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Head_Top: true
@@ -98535,6 +99601,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Head_Top: true
@@ -100161,6 +101228,10 @@ Body:
     AegisName: C_Round_Eyes
     Name: Costume Blank Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -106095,6 +107166,10 @@ Body:
     AegisName: C_Eyes_Of_Ifrit
     Name: Costume Eyes Of Ifrit
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -107151,6 +108226,10 @@ Body:
     AegisName: C_Teardrop
     Name: Costume Teardrops
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -110194,25 +111273,24 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
-      Acolyte: true
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      KagerouOboro: true
-      Knight: true
-      Mage: true
-      Merchant: true
-      Monk: true
-      Priest: true
-      Rebellion: true
-      Rogue: true
-      Sage: true
       Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
       Thief: true
+      Crusader: true
+      Knight: true
       Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
       Upper: true
       All_Third: true
@@ -110237,11 +111315,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -110279,11 +111374,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -110344,6 +111456,19 @@ Body:
     Name: Battle Cape
     Type: Armor
     Defense: 25
+    Jobs:
+      Knight: true
+      Wizard: true
+      Hunter: true
+      Priest: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Sage: true
+      BardDancer: true
+      Monk: true
+      Rogue: true
     Classes:
       All_Third: true
       Fourth: true
@@ -110367,11 +111492,28 @@ Body:
     Defense: 16
     Slots: 1
     Jobs:
-      All: true
-      Novice: false
-      SuperNovice: false
+      Swordman: true
+      Mage: true
+      Archer: true
+      Acolyte: true
+      Merchant: true
+      Thief: true
+      Crusader: true
+      Knight: true
+      Wizard: true
+      Sage: true
+      Hunter: true
+      BardDancer: true
+      Priest: true
+      Monk: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Rogue: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -110991,7 +112133,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -111040,7 +112184,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -111082,7 +112228,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -111105,7 +112253,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -111142,7 +112292,9 @@ Body:
       All: true
       Novice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Garment: true
     ArmorLevel: 1
@@ -117193,6 +118345,7 @@ Body:
     Defense: 20
     Slots: 1
     Jobs:
+      Sage: true
       Wizard: true
     Classes:
       All_Third: true
@@ -118543,6 +119696,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118565,6 +119720,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118588,6 +119745,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118610,6 +119769,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118631,6 +119792,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118655,6 +119818,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118679,6 +119844,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118702,6 +119869,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118726,6 +119895,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118749,6 +119920,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118771,6 +119944,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -118796,6 +119971,8 @@ Body:
     Jobs:
       KagerouOboro: true
       Rebellion: true
+      # Star_Emperor: true
+      # Soul_Reaper: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -120021,6 +121198,23 @@ Body:
     Weight: 600
     Defense: 16
     Slots: 1
+    Jobs:
+      Alchemist: true
+      Archer: true
+      Assassin: true
+      BardDancer: true
+      Blacksmith: true
+      Crusader: true
+      Gunslinger: true
+      Hunter: true
+      Knight: true
+      Merchant: true
+      Rebellion: true
+      Rogue: true
+      Swordman: true
+      StarGladiator: true
+      Taekwon: true
+      Thief: true
     Locations:
       Shoes: true
     ArmorLevel: 1
@@ -133083,6 +134277,7 @@ Body:
     Name: Kagerou & Oboro Advanced Paradise Shadow Weapon
     Type: Shadowgear
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Shadow_Weapon: true
@@ -133104,6 +134299,7 @@ Body:
     Name: Rebellion Advanced Paradise Shadow Weapon
     Type: Shadowgear
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Shadow_Weapon: true
@@ -133195,6 +134391,7 @@ Body:
     Name: Super Novice Advanced Paradise Shadow Weapon
     Type: Shadowgear
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Shadow_Weapon: true
@@ -133567,6 +134764,7 @@ Body:
     Name: Rebellion Booster Shadow Weapon
     Type: ShadowGear
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Shadow_Weapon: true
@@ -134132,6 +135330,27 @@ Body:
     AegisName: S_Master_Weapon
     Name: Master Shadow Weapon
     Type: ShadowGear
+    Jobs:
+      Alchemist: true
+      Assassin: true
+      BardDancer: true
+      Blacksmith: true
+      Crusader: true
+      Hunter: true
+      KagerouOboro: true
+      Knight: true
+      Monk: true
+      Priest: true
+      Rebellion: true
+      Rogue: true
+      Sage: true
+      SoulLinker: true
+      StarGladiator: true
+      SuperNovice: true
+      Spirit_Handler: true
+      Wizard: true
+    Classes:
+      Fourth: true
     Locations:
       Shadow_Weapon: true
     EquipLevelMin: 200
@@ -134157,6 +135376,27 @@ Body:
     AegisName: S_Master_Shield
     Name: Master Shadow Shield
     Type: ShadowGear
+    Jobs:
+      Alchemist: true
+      Assassin: true
+      BardDancer: true
+      Blacksmith: true
+      Crusader: true
+      Hunter: true
+      KagerouOboro: true
+      Knight: true
+      Monk: true
+      Priest: true
+      Rebellion: true
+      Rogue: true
+      Sage: true
+      SoulLinker: true
+      StarGladiator: true
+      SuperNovice: true
+      Spirit_Handler: true
+      Wizard: true
+    Classes:
+      Fourth: true
     Locations:
       Shadow_Shield: true
     EquipLevelMin: 200
@@ -134910,9 +136150,7 @@ Body:
     Name: M. Spirit Handler Shadow Armor
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Armor: true
     EquipLevelMin: 200
@@ -134924,9 +136162,7 @@ Body:
     Name: M. Spirit Handler Shadow Shoes
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Shoes: true
     EquipLevelMin: 200
@@ -134938,9 +136174,7 @@ Body:
     Name: M. Spirit Handler Shadow Earring
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Right_Accessory: true
     EquipLevelMin: 200
@@ -134952,9 +136186,7 @@ Body:
     Name: M. Spirit Handler Shadow Pendant
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Left_Accessory: true
     EquipLevelMin: 200
@@ -136174,9 +137406,7 @@ Body:
     Name: Chulho Claw Shadow Earring
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Right_Accessory: true
     EquipLevelMin: 200
@@ -136192,9 +137422,7 @@ Body:
     Name: Chulho Claw Shadow Pendant
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Left_Accessory: true
     EquipLevelMin: 200
@@ -136210,9 +137438,7 @@ Body:
     Name: Hogogong Battering Shadow Armor
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Armor: true
     EquipLevelMin: 200
@@ -136228,9 +137454,7 @@ Body:
     Name: Hogogong Battering Shadow Shoes
     Type: ShadowGear
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shadow_Shoes: true
     EquipLevelMin: 200
@@ -137153,7 +138377,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -137801,13 +139027,15 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      SuperNovice: true
-      Wizard: true
+      Novice: true
+      Mage: true
+      Acolyte: true
       Priest: true
+      Wizard: true
+      Monk: true
+      Sage: true
+      SuperNovice: true
       SoulLinker: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -139445,7 +140673,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -139476,7 +140706,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -140092,7 +141324,9 @@ Body:
       Merchant: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -140981,6 +142215,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141000,6 +142235,7 @@ Body:
     Attack: 480
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141020,6 +142256,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141220,6 +142457,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141247,6 +142485,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141274,6 +142513,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141300,6 +142540,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141697,6 +142938,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141720,6 +142962,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141748,6 +142991,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141776,6 +143020,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141803,6 +143048,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -141964,6 +143210,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -142025,6 +143272,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -142059,6 +143307,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -142091,6 +143340,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -142122,6 +143372,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -142239,7 +143490,9 @@ Body:
       StarGladiator: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -142272,7 +143525,9 @@ Body:
       StarGladiator: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -142305,7 +143560,9 @@ Body:
       StarGladiator: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -142338,7 +143595,9 @@ Body:
       StarGladiator: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -142700,7 +143959,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -142717,7 +143978,9 @@ Body:
     Jobs:
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -142736,7 +143999,9 @@ Body:
       BardDancer: true
       Hunter: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -143652,7 +144917,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -146169,7 +147436,7 @@ Body:
     Jobs:
       Priest: true
       Sage: true
-      Taekwon: true
+      StarGladiator: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -147406,24 +148673,26 @@ Body:
     Range: 1
     Slots: 1
     Jobs:
-      Alchemist: true
-      Archer: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      KagerouOboro: true
-      Knight: true
-      Mage: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Sage: true
-      SoulLinker: true
       Swordman: true
-      Thief: true
+      Knight: true
+      Crusader: true
+      Mage: true
       Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
+      Rogue: true
+      SoulLinker: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -147584,24 +148853,26 @@ Body:
     Range: 1
     Slots: 1
     Jobs:
-      Alchemist: true
-      Archer: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      KagerouOboro: true
-      Knight: true
-      Mage: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Sage: true
-      SoulLinker: true
       Swordman: true
-      Thief: true
+      Knight: true
+      Crusader: true
+      Mage: true
       Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
+      Rogue: true
+      SoulLinker: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -151344,6 +152615,10 @@ Body:
     AegisName: C_Bloody_Stop_Bandage
     Name: Costume Bloody Stop Bandage
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -152531,6 +153806,10 @@ Body:
     AegisName: C_Cat_Mouth
     Name: Costume Cat's Mouth
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Low: true
     ArmorLevel: 1
@@ -153922,6 +155201,10 @@ Body:
     AegisName: C_Blinking_Thin_Eyes
     Name: Costume Blinking Small Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -155917,6 +157200,10 @@ Body:
     AegisName: C_Geisha_Make
     Name: Costume Geisha Make Up
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -156690,6 +157977,7 @@ Body:
     Jobs:
       All: true
       Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -156843,6 +158131,10 @@ Body:
     AegisName: C_Blinking_Eyes_RD
     Name: Costume Twinkling Red Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -158033,6 +159325,10 @@ Body:
     AegisName: C_Blink_Eyes_Cocktai_BU
     Name: Costume Blinking Blue Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -158650,6 +159946,10 @@ Body:
     AegisName: C_Blinking_Eyes_BU
     Name: Costume Twinkling Blue Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -158731,6 +160031,10 @@ Body:
     Name: Costume Blinking Purple Eyes
     Type: Armor
     View: 2004
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -161303,6 +162607,7 @@ Body:
     Range: 7
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -161851,8 +163156,21 @@ Body:
     View: 1478
     Weight: 100
     Jobs:
-      All: true
-      Novice: false
+      Knight: true
+      Wizard: true
+      Hunter: true
+      Priest: true
+      Alchemist: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Sage: true
+      BardDancer: true
+      Monk: true
+      Rogue: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Low: true
     ArmorLevel: 1
@@ -166250,6 +167568,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Head_Top: true
@@ -166288,6 +167607,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Head_Top: true
@@ -166326,6 +167646,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Head_Top: true
@@ -166366,6 +167687,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Head_Top: true
@@ -166406,6 +167728,9 @@ Body:
     Slots: 1
     Jobs:
       SoulLinker: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -166445,6 +167770,9 @@ Body:
     Slots: 1
     Jobs:
       SoulLinker: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -166483,6 +167811,9 @@ Body:
     Slots: 1
     Jobs:
       StarGladiator: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -166522,6 +167853,9 @@ Body:
     Slots: 1
     Jobs:
       StarGladiator: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -168574,9 +169908,7 @@ Body:
     Defense: 10
     Slots: 1
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -169294,7 +170626,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -169317,7 +170651,9 @@ Body:
       Sage: true
       Wizard: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -170143,7 +171479,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -170236,7 +171574,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -170270,7 +171610,9 @@ Body:
       Novice: false
       SuperNovice: false
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -170613,7 +171955,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -170635,7 +171979,9 @@ Body:
       Knight: true
       Swordman: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -170727,7 +172073,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -170754,7 +172102,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -170791,7 +172141,9 @@ Body:
       Blacksmith: true
       Merchant: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -170820,7 +172172,9 @@ Body:
       Blacksmith: true
       Merchant: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -172206,9 +173560,7 @@ Body:
     Defense: 50
     Slots: 1
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -173123,9 +174475,7 @@ Body:
     Defense: 30
     Slots: 1
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Head_Top: true
     ArmorLevel: 2
@@ -173184,7 +174534,9 @@ Body:
     Jobs:
       Crusader: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     ArmorLevel: 1
@@ -173209,7 +174561,9 @@ Body:
     Jobs:
       Crusader: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Head_Top: true
     Trade:
@@ -175510,6 +176864,10 @@ Body:
     AegisName: C_Blink_Eyes_Golden
     Name: Costume Blinking Golden Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -175645,6 +177003,10 @@ Body:
     AegisName: C_Carefree_Face
     Name: Costume Carefree Face
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -176139,6 +177501,7 @@ Body:
     Jobs:
       All: true
       Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -176458,6 +177821,10 @@ Body:
     AegisName: C_Professor_MiniGlass
     Name: Costume Professor's Mini Glass
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -177289,6 +178656,10 @@ Body:
     AegisName: C_Blink_Eyes_Frozen
     Name: Costume Twinkling Frozen Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -177478,6 +178849,10 @@ Body:
     AegisName: C_Brother_Keen_Eye
     Name: Costume Brother Keen Eye
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -178356,6 +179731,10 @@ Body:
     AegisName: aegis_410320
     Name: Costume Demi-Freya's Twinkling Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Low: true
     ArmorLevel: 1
@@ -178642,6 +180021,10 @@ Body:
     AegisName: aegis_410353
     Name: Costume Phen's Eyes
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Mid: true
     ArmorLevel: 1
@@ -180650,6 +182033,10 @@ Body:
     AegisName: C_Skia_Two_Side_Up
     Name: Costume Skia Two Side Up
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Low: true
     ArmorLevel: 1
@@ -181585,6 +182972,10 @@ Body:
     AegisName: aegis_420335
     Name: Costume Guardian of Abyss (Lower)
     Type: Armor
+    Jobs:
+      All: true
+      Summoner: false
+      Spirit_Handler: false
     Locations:
       Costume_Head_Low: true
     ArmorLevel: 1
@@ -183424,6 +184815,7 @@ Body:
     Defense: 70
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Armor: true
@@ -183453,6 +184845,7 @@ Body:
     Defense: 70
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Armor: true
@@ -183674,6 +185067,7 @@ Body:
     Defense: 70
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Armor: true
@@ -183703,6 +185097,7 @@ Body:
     Defense: 70
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Armor: true
@@ -184560,6 +185955,7 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Armor: true
@@ -184589,6 +185985,7 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Armor: true
@@ -184810,6 +186207,7 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Armor: true
@@ -184839,6 +186237,7 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Armor: true
@@ -185632,6 +187031,7 @@ Body:
     Defense: 100
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Armor: true
@@ -185661,6 +187061,7 @@ Body:
     Defense: 100
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Armor: true
@@ -185882,6 +187283,7 @@ Body:
     Defense: 100
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Armor: true
@@ -185911,6 +187313,7 @@ Body:
     Defense: 100
     Slots: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Armor: true
@@ -186004,6 +187407,7 @@ Body:
     Defense: 70
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Armor: true
@@ -186033,6 +187437,7 @@ Body:
     Defense: 70
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Armor: true
@@ -186062,6 +187467,7 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Armor: true
@@ -186091,6 +187497,7 @@ Body:
     Defense: 90
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Armor: true
@@ -186120,6 +187527,7 @@ Body:
     Defense: 100
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Armor: true
@@ -186149,6 +187557,7 @@ Body:
     Defense: 100
     Slots: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Armor: true
@@ -186542,6 +187951,16 @@ Body:
     Weight: 3300
     Defense: 70
     Slots: 1
+    Jobs:
+      Alchemist: true
+      Assassin: true
+      Blacksmith: true
+      Crusader: true
+      Knight: true
+      Merchant: true
+      Rogue: true
+      Swordman: true
+      Thief: true
     Locations:
       Armor: true
     ArmorLevel: 1
@@ -196975,9 +198394,7 @@ Body:
     Defense: 20
     Slots: 1
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Shoes: true
     ArmorLevel: 2
@@ -211191,7 +212608,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -211219,7 +212638,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     Trade:
@@ -213265,7 +214686,9 @@ Body:
     Jobs:
       Alchemist: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -213293,7 +214716,9 @@ Body:
     Jobs:
       Alchemist: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Accessory: true
     Trade:
@@ -216469,6 +217894,7 @@ Body:
     Range: 1
     Jobs:
       Novice: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -216485,20 +217911,17 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -216528,20 +217951,17 @@ Body:
     MagicAttack: 50
     Range: 1
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 1
@@ -216998,20 +218418,17 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 1
@@ -217026,20 +218443,17 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -217054,20 +218468,17 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -217082,20 +218493,17 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -217110,20 +218518,17 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Assassin: true
-      Blacksmith: true
-      Crusader: true
-      Knight: true
-      Merchant: true
       Novice: true
-      SuperNovice: true
-      Rogue: true
       Swordman: true
+      Merchant: true
       Thief: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Knight: true
+      Blacksmith: true
+      Assassin: true
+      Crusader: true
+      Rogue: true
+      Alchemist: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -217811,6 +219216,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Right_Hand: true
@@ -218175,9 +219581,11 @@ Body:
       Mage: true
       Merchant: true
       Ninja: true
+      Novice: true
       Rogue: true
       Sage: true
       SoulLinker: true
+      SuperNovice: true
       Swordman: true
       Thief: true
       Wizard: true
@@ -218538,28 +219946,26 @@ Body:
     MagicAttack: 100
     Range: 1
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      KagerouOboro: true
-      Knight: true
-      Mage: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      Rogue: true
-      Sage: true
-      SoulLinker: true
-      StarGladiator: true
-      SuperNovice: true
       Swordman: true
-      Taekwon: true
-      Thief: true
+      Knight: true
+      Crusader: true
+      Mage: true
       Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
+      Rogue: true
+      SoulLinker: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -218696,6 +220102,7 @@ Body:
     Attack: 180
     Range: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Right_Hand: true
@@ -219381,6 +220788,7 @@ Body:
     Range: 1
     Jobs:
       Novice: true
+      SuperNovice: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -220066,24 +221474,26 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      Knight: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Rebellion: true
+      Swordman: true
+      Knight: true
+      Crusader: true
+      Mage: true
+      Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
       Rogue: true
       SoulLinker: true
-      Swordman: true
-      Thief: true
-      Wizard: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 1
@@ -220098,24 +221508,26 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      Knight: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Rebellion: true
+      Swordman: true
+      Knight: true
+      Crusader: true
+      Mage: true
+      Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
       Rogue: true
       SoulLinker: true
-      Swordman: true
-      Thief: true
-      Wizard: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -220130,24 +221542,26 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      Knight: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Rebellion: true
+      Swordman: true
+      Knight: true
+      Crusader: true
+      Mage: true
+      Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
       Rogue: true
       SoulLinker: true
-      Swordman: true
-      Thief: true
-      Wizard: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -220162,24 +221576,26 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      Knight: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Rebellion: true
+      Swordman: true
+      Knight: true
+      Crusader: true
+      Mage: true
+      Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
       Rogue: true
       SoulLinker: true
-      Swordman: true
-      Thief: true
-      Wizard: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -220194,24 +221610,26 @@ Body:
     Range: 1
     Slots: 4
     Jobs:
-      Alchemist: true
-      Archer: true
-      Assassin: true
-      BardDancer: true
-      Blacksmith: true
-      Crusader: true
-      Hunter: true
-      Knight: true
-      Merchant: true
-      Ninja: true
       Novice: true
-      SuperNovice: true
-      Rebellion: true
+      Swordman: true
+      Knight: true
+      Crusader: true
+      Mage: true
+      Wizard: true
+      Sage: true
+      Archer: true
+      Hunter: true
+      BardDancer: true
+      Merchant: true
+      Blacksmith: true
+      Alchemist: true
+      Thief: true
+      Assassin: true
       Rogue: true
       SoulLinker: true
-      Swordman: true
-      Thief: true
-      Wizard: true
+      SuperNovice: true
+      Ninja: true
+      KagerouOboro: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -221665,7 +223083,6 @@ Body:
     Slots: 2
     Jobs:
       Crusader: true
-      Knight: true
     Classes:
       All_Third: true
       Fourth: true
@@ -222382,9 +223799,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -222483,9 +223897,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 1
@@ -222503,9 +223914,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 2
@@ -222523,9 +223931,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -222543,9 +223948,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -222563,9 +223965,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -223493,6 +224892,9 @@ Body:
     Slots: 2
     Jobs:
       StarGladiator: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -223525,6 +224927,9 @@ Body:
     Slots: 2
     Jobs:
       StarGladiator: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -224491,6 +225896,9 @@ Body:
     Slots: 2
     Jobs:
       StarGladiator: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -225287,7 +226695,9 @@ Body:
     Jobs:
       Sage: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -225316,7 +226726,9 @@ Body:
     Jobs:
       Sage: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 3
@@ -226842,6 +228254,9 @@ Body:
     Slots: 2
     Jobs:
       SoulLinker: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -226882,6 +228297,9 @@ Body:
     Slots: 2
     Jobs:
       SoulLinker: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Right_Hand: true
     WeaponLevel: 4
@@ -227543,6 +228961,7 @@ Body:
     MagicAttack: 180
     Range: 1
     Jobs:
+      Novice: true
       SuperNovice: true
     Locations:
       Right_Hand: true
@@ -228662,14 +230081,15 @@ Body:
     MagicAttack: 230
     Range: 1
     Jobs:
-      Acolyte: true
-      Mage: true
-      Monk: true
       Novice: true
+      Mage: true
+      Acolyte: true
       Priest: true
-      Sage: true
-      SoulLinker: true
       Wizard: true
+      Monk: true
+      Sage: true
+      SuperNovice: true
+      SoulLinker: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -228748,6 +230168,7 @@ Body:
     Slots: 2
     Jobs:
       Summoner: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229078,6 +230499,7 @@ Body:
     Slots: 1
     Jobs:
       Summoner: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229099,9 +230521,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229537,6 +230957,7 @@ Body:
     Range: 1
     Jobs:
       Summoner: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229560,6 +230981,7 @@ Body:
     Range: 1
     Jobs:
       Summoner: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229581,6 +231003,7 @@ Body:
     Range: 1
     Jobs:
       Summoner: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229768,9 +231191,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229822,9 +231243,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -229924,9 +231343,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -230323,9 +231740,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -230375,9 +231790,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -230485,9 +231898,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -230545,9 +231956,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -231021,9 +232430,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
-      Summoner: true
-    Classes:
-      Fourth: true
+      Spirit_Handler: true
     Locations:
       Right_Hand: true
     WeaponLevel: 5
@@ -234045,7 +235452,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -234075,7 +235484,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Male
     Locations:
       Right_Hand: true
@@ -235431,9 +236842,6 @@ Body:
     Range: 2
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235458,9 +236866,6 @@ Body:
     Range: 2
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235594,9 +236999,6 @@ Body:
     Slots: 4
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235613,9 +237015,6 @@ Body:
     Slots: 4
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235632,9 +237031,6 @@ Body:
     Slots: 4
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235651,9 +237047,6 @@ Body:
     Slots: 4
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235670,9 +237063,6 @@ Body:
     Slots: 4
     Jobs:
       BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235735,7 +237125,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -235765,7 +237157,9 @@ Body:
     Jobs:
       BardDancer: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Gender: Female
     Locations:
       Right_Hand: true
@@ -238170,9 +239564,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -238910,9 +240301,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -239041,9 +240429,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -239061,9 +240446,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -239081,9 +240463,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -239101,9 +240480,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -239121,9 +240497,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -240732,7 +242105,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -240761,7 +242136,9 @@ Body:
     Jobs:
       Assassin: true
     Classes:
-      All_Upper: true
+      Upper: true
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -241244,9 +242621,7 @@ Body:
     Jobs:
       Alchemist: true
       Blacksmith: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Merchant: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -242001,9 +243376,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -242037,9 +243409,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -242416,9 +243785,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -242436,9 +243802,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -242456,9 +243819,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -242476,9 +243836,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -242496,9 +243853,6 @@ Body:
       Crusader: true
       Knight: true
       Swordman: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -244829,6 +246183,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -244862,6 +246217,7 @@ Body:
     Range: 1
     Slots: 2
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -244895,6 +246251,7 @@ Body:
     Range: 1
     Jobs:
       Ninja: true
+      KagerouOboro: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -244930,6 +246287,7 @@ Body:
     Range: 1
     Jobs:
       Ninja: true
+      KagerouOboro: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -244959,6 +246317,7 @@ Body:
     MagicAttack: 200
     Range: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -245002,6 +246361,7 @@ Body:
     Attack: 200
     Range: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -245076,6 +246436,7 @@ Body:
     MagicAttack: 220
     Range: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -245123,6 +246484,7 @@ Body:
     Attack: 250
     Range: 1
     Jobs:
+      Ninja: true
       KagerouOboro: true
     Locations:
       Both_Hand: true
@@ -245963,12 +247325,10 @@ Body:
     Range: 5
     Slots: 1
     Jobs:
+      Archer: true
       BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -246261,12 +247621,10 @@ Body:
     Range: 5
     Slots: 2
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-      BardDancer: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -246474,9 +247832,7 @@ Body:
     Jobs:
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -247052,6 +248408,8 @@ Body:
     Range: 5
     Jobs:
       Archer: true
+      BardDancer: true
+      Hunter: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -247170,7 +248528,9 @@ Body:
     Attack: 180
     Range: 5
     Jobs:
+      Archer: true
       BardDancer: true
+      Hunter: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -247466,12 +248826,10 @@ Body:
     Range: 5
     Slots: 2
     Jobs:
-      Hunter: true
+      Archer: true
       BardDancer: true
+      Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -247707,10 +249065,10 @@ Body:
     Range: 5
     Slots: 1
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Rogue: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -247849,6 +249207,9 @@ Body:
     Range: 5
     Jobs:
       BardDancer: true
+    Classes:
+      All_Third: true
+      Fourth: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -248001,11 +249362,11 @@ Body:
     Range: 5
     Slots: 4
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 1
@@ -248021,11 +249382,11 @@ Body:
     Range: 5
     Slots: 4
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -248041,11 +249402,11 @@ Body:
     Range: 5
     Slots: 4
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -248061,11 +249422,11 @@ Body:
     Range: 5
     Slots: 4
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 4
@@ -248081,11 +249442,11 @@ Body:
     Range: 5
     Slots: 4
     Jobs:
+      Archer: true
+      BardDancer: true
       Hunter: true
       Rogue: true
-    Classes:
-      All_Third: true
-      Fourth: true
+      Thief: true
     Locations:
       Both_Hand: true
     WeaponLevel: 5
@@ -248493,6 +249854,7 @@ Body:
     Range: 7
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -248524,6 +249886,7 @@ Body:
     Range: 7
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -248558,6 +249921,7 @@ Body:
     Range: 7
     Jobs:
       Gunslinger: true
+      Rebellion: true
     Locations:
       Both_Hand: true
     WeaponLevel: 2
@@ -248586,6 +249950,7 @@ Body:
     Range: 7
     Jobs:
       Gunslinger: true
+      Rebellion: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -248614,6 +249979,7 @@ Body:
     Attack: 200
     Range: 7
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -248887,6 +250253,7 @@ Body:
     Range: 7
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -248935,6 +250302,7 @@ Body:
     Attack: 230
     Range: 7
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -248953,6 +250321,7 @@ Body:
     Range: 7
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -249417,6 +250786,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -249449,6 +250819,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -249481,6 +250852,7 @@ Body:
     Range: 9
     Jobs:
       Gunslinger: true
+      Rebellion: true
     Locations:
       Both_Hand: true
     WeaponLevel: 3
@@ -249703,6 +251075,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -249754,6 +251127,7 @@ Body:
     Attack: 280
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -249802,6 +251176,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250281,6 +251656,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250314,6 +251690,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250490,6 +251867,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250544,6 +251922,7 @@ Body:
     Attack: 300
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250563,6 +251942,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250908,6 +252288,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -250976,6 +252357,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251007,6 +252389,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251037,6 +252420,7 @@ Body:
     Attack: 200
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251336,6 +252720,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251384,6 +252769,7 @@ Body:
     Attack: 350
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251440,6 +252826,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251867,6 +253254,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -251897,6 +253285,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -252120,6 +253509,7 @@ Body:
     Range: 9
     Slots: 2
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -252169,6 +253559,7 @@ Body:
     Attack: 300
     Range: 9
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true
@@ -252187,6 +253578,7 @@ Body:
     Range: 9
     Slots: 1
     Jobs:
+      Gunslinger: true
       Rebellion: true
     Locations:
       Both_Hand: true

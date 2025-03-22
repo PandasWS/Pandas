@@ -132,7 +132,7 @@ void instance_refresh_status(int32 instance_id);
 #endif // Pandas_Fix_Dungeon_Command_Status_Refresh
 
 void instance_destroy_command(map_session_data *sd);
-e_instance_enter instance_enter(map_session_data *sd, int32 instance_id, const char *name, short x, short y);
+e_instance_enter instance_enter(map_session_data *sd, int32 instance_id, const char *name, int16 x, int16 y);
 bool instance_reqinfo(map_session_data *sd, int32 instance_id);
 bool instance_addusers(int32 instance_id);
 bool instance_delusers(int32 instance_id);

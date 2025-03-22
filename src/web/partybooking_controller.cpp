@@ -851,7 +851,7 @@ HANDLER_FUNC(partybooking_delete) {
 	if (SQL_SUCCESS != stmt.Prepare(
 		"DELETE FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?)",
 		partybookings_table)
-		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
 		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
 		|| SQL_SUCCESS != stmt.Execute()
 		) {

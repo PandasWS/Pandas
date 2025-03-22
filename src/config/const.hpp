@@ -46,7 +46,7 @@
  * DefType
  **/
 #ifdef RENEWAL
-	typedef short defType;
+	typedef int16 defType;
 	#define DEFTYPE_MIN SHRT_MIN
 	#define DEFTYPE_MAX SHRT_MAX
 #else
@@ -58,6 +58,7 @@
 #ifdef Pandas_Extreme_Computing
 	typedef int32 pec_short;
 	typedef uint32 pec_ushort;
+	typedef int32 pec_int16;
 	typedef uint32 pec_uint16;
 	typedef double pec_float;
 
@@ -79,6 +80,7 @@
 #else
 	typedef short pec_short;
 	typedef unsigned short pec_ushort;
+	typedef int16 pec_int16;
 	typedef uint16 pec_uint16;
 	typedef float pec_float;
 
