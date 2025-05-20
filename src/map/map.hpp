@@ -389,6 +389,8 @@ enum e_race2 : uint8{
 	RC2_ILLUSION_MOONLIGHT,
 	RC2_EP16_DEF,
 	RC2_EDDA_ARUNAFELTZ,
+	RC2_LASAGNA,
+	RC2_GLAST_HEIM_ABYSS,
 	RC2_MAX
 };
 
@@ -595,7 +597,7 @@ enum _sp {
 	SP_LONG_SP_GAIN_VALUE, SP_LONG_HP_GAIN_VALUE, SP_SHORT_ATK_RATE, SP_MAGIC_SUBSIZE, SP_CRIT_DEF_RATE, // 2093-2097
 	SP_MAGIC_SUBDEF_ELE, SP_REDUCE_DAMAGE_RETURN, SP_ADD_ITEM_SPHEAL_RATE, SP_ADD_ITEMGROUP_SPHEAL_RATE, // 2098-2101
 	SP_WEAPON_SUBSIZE, SP_ABSORB_DMG_MAXHP2, // 2102-2103
-	SP_SP_IGNORE_RES_RACE_RATE, SP_SP_IGNORE_MRES_RACE_RATE, // 2104-2105
+	SP_SP_IGNORE_RES_RACE_RATE, SP_SP_IGNORE_MRES_RACE_RATE, SP_EMATK_HIDDEN, // 2104-2106
 
 #ifdef Pandas_ScriptParams_ReadParam
 	SP_EXTEND_UNUSED = 3100,
@@ -744,6 +746,7 @@ enum e_mapflag : int16 {
 	MF_NODYNAMICNPC,
 	MF_NOBANK,
 	MF_SPECIALPOPUP,
+	MF_NOMACROCHECKER,
 #ifdef Pandas_MapFlag_MobInfo
 	MF_MOBINFO,
 #endif // Pandas_MapFlag_MobInfo
@@ -1008,6 +1011,7 @@ struct map_data {
 	std::vector<struct spawn_data *> mobspawns;
 #endif // Pandas_Struct_Map_Data_Mob_Spawns
 	int32 mob_delete_timer;	// Timer ID for map_removemobs_timer [Skotlex]
+	t_tick last_macrocheck;
 
 	// Instance Variables
 	int32 instance_id;
@@ -1317,6 +1321,7 @@ struct skill_unit *map_find_skill_unit_oncell(struct block_list *,int16 x,int16 
 int32 map_get_new_object_id(void);
 int32 map_search_freecell(struct block_list *src, int16 m, int16 *x, int16 *y, int16 rx, int16 ry, int32 flag, int32 tries = 50);
 bool map_closest_freecell(int16 m, int16 *x, int16 *y, int32 type, int32 flag);
+bool map_nearby_freecell(int16 m, int16 &x, int16 &y, int32 type, int32 flag);
 //
 int32 map_quit(map_session_data *);
 // npc
@@ -1441,7 +1446,6 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, pds_mapfla
 #define CHK_ELEMENT(ele) ((ele) > ELE_NONE && (ele) < ELE_MAX) /// Check valid Element
 #define CHK_ELEMENT_LEVEL(lv) ((lv) >= 1 && (lv) <= MAX_ELE_LEVEL) /// Check valid element level
 #define CHK_RACE(race) ((race) > RC_NONE_ && (race) < RC_MAX) /// Check valid Race
-#define CHK_RACE2(race2) ((race2) >= RC2_NONE && (race2) < RC2_MAX) /// Check valid Race2
 #define CHK_CLASS(class_) ((class_) > CLASS_NONE && (class_) < CLASS_MAX) /// Check valid Class
 
 #ifndef Pandas_Message_Reorganize

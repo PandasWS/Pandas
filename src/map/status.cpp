@@ -2119,7 +2119,7 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 				unit_data *wink_ud = unit_bl2ud(src);
 				if (wink_ud != nullptr && wink_ud->walktimer == INVALID_TIMER)
 					unit_walktobl(src, map_id2bl(sc->getSCE(SC_WINKCHARM)->val2), 3, 1);
-				clif_emotion(src, ET_THROB);
+				clif_emotion( *src, ET_THROB );
 				return false;
 			} else
 				status_change_end(src, SC_WINKCHARM);
@@ -2207,8 +2207,9 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 		}
 
 		if (sc->option) {
+			// We do not check it for non-players here as hide will not stop monsters from scanning for new targets and use skills
+			// The logic that normal attacks will not actually be executed when hidden needs to be put in the AI code instead
 			if ((sc->option&OPTION_HIDE) && src->type == BL_PC && (skill_id == 0 || !skill_get_inf2(skill_id, INF2_ALLOWWHENHIDDEN))) {
-				// Non players can use all skills while hidden.
 				return false;
 			}
 			if (sc->option&OPTION_CHASEWALK && skill_id != ST_CHASEWALK)
@@ -2353,31 +2354,25 @@ bool status_check_visibility(block_list* src, block_list* target, bool checkblin
  * Base ASPD value taken from the job tables
  * @param sd: Player object
  * @param status: Player status
- * @return base amotion after single/dual weapon and shield adjustments [RENEWAL]
+ * @return base aspd after single/dual weapon and shield adjustments, passive bonuses and status changes [RENEWAL]
  *	  base amotion after single/dual weapon and stats adjustments [PRE-RENEWAL]
  */
 int32 status_base_amotion_pc(map_session_data* sd, struct status_data* status)
 {
 	std::shared_ptr<s_job_info> job = job_db.find(sd->status.class_);
 
-	if (job == nullptr)
-		return 2000;
-
-#ifdef Pandas_Crashfix_ASPD_Base_Empty
-	if (job->aspd_base.empty())
-		return 2000;
-#endif // Pandas_Crashfix_ASPD_Base_Empty
-
-	int32 amotion;
 #ifdef RENEWAL_ASPD
+	if (job == nullptr)
+		return 0;
+
 	int16 skill_lv, val = 0;
 	float temp_aspd = 0;
 
-	amotion = job->aspd_base[sd->weapontype1]; // Single weapon
+	int32 aspd = job->aspd_base[sd->weapontype1]; // Single weapon
 	if (sd->status.shield)
-		amotion += job->aspd_base[MAX_WEAPON_TYPE];
+		aspd += job->aspd_base[MAX_WEAPON_TYPE];
 	else if (sd->weapontype2 != W_FIST && sd->equip_index[EQI_HAND_R] != sd->equip_index[EQI_HAND_L])
-		amotion += job->aspd_base[sd->weapontype2] / 4; // Dual-wield
+		aspd += job->aspd_base[sd->weapontype2] / 4; // Dual-wield
 
 	switch(sd->status.weapon) {
 		case W_BOW:
@@ -2394,7 +2389,7 @@ int32 status_base_amotion_pc(map_session_data* sd, struct status_data* status)
 			temp_aspd = status->dex * status->dex / 5.0f + status->agi * status->agi * 0.5f;
 			break;
 	}
-	temp_aspd = (float)(sqrt(temp_aspd) * 0.25f) + 0xc4;
+	temp_aspd = (float)(sqrt(temp_aspd) * 0.25f) + 196;
 	if ((skill_lv = pc_checkskill(sd,SA_ADVANCEDBOOK)) > 0 && sd->status.weapon == W_BOOK)
 		val += (skill_lv - 1) / 2 + 1;
 	if ((skill_lv = pc_checkskill(sd, SG_DEVIL)) > 0 && ((sd->class_&MAPID_THIRDMASK) == MAPID_STAR_EMPEROR || pc_is_maxjoblv(sd)))
@@ -2405,14 +2400,14 @@ int32 status_base_amotion_pc(map_session_data* sd, struct status_data* status)
 		val -= 50 - 10 * pc_checkskill(sd, KN_CAVALIERMASTERY);
 	else if (pc_isridingdragon(sd))
 		val -= 25 - 5 * pc_checkskill(sd, RK_DRAGONTRAINING);
-	amotion = ((int32)(temp_aspd + ((float)(status_calc_aspd(&sd->bl, &sd->sc, true) + val) * status->agi / 200)) - min(amotion, 200));
+	aspd = ((int32)(temp_aspd + ((float)(status_calc_aspd(&sd->bl, &sd->sc, true) + val) * status->agi / 200)) - min(aspd, 200));
+	return aspd;
 #else
-	// Angra Manyu disregards aspd_base and similar
-	if (pc_checkequip2(sd, ITEMID_ANGRA_MANYU, EQI_ACC_L, EQI_MAX))
-		return 0;
+	if (job == nullptr)
+		return AMOTION_ZERO_ASPD;
 
 	// Base weapon delay
-	amotion = (sd->status.weapon < MAX_WEAPON_TYPE)
+	int32 amotion = (sd->status.weapon < MAX_WEAPON_TYPE)
 	 ? (job->aspd_base[sd->status.weapon]) // Single weapon
 	 : (job->aspd_base[sd->weapontype1] + job->aspd_base[sd->weapontype2]) * 7 / 10; // Dual-wield
 
@@ -2421,9 +2416,8 @@ int32 status_base_amotion_pc(map_session_data* sd, struct status_data* status)
 
 	// Raw delay adjustment from bAspd bonus
 	amotion += sd->bonus.aspd_add;
+	return amotion;
 #endif
-
- 	return amotion;
 }
 
 /**
@@ -2776,6 +2770,87 @@ void status_calc_misc(struct block_list *bl, struct status_data *status, int32 l
 		status_calc_regen(bl, status, status_get_regen_data(bl));
 }
 
+#ifdef Pandas_MapFlag_MaxASPD
+//************************************
+// Method:      nopc_maxaspd
+// Description: 获得非玩家单位的攻击动画播放时长
+// Parameter:   struct block_list& bl
+// Returns:     int16
+// Author:      Sola丶小克(CairoLee)  2025/05/11 15:05
+//************************************
+int16 nopc_maxaspd(struct block_list& bl) {
+	// 最终计算得到的是一个攻击动画的播放时长(单位为毫秒)
+	// 返回的数值越大, 表示动画播放的时间越长, 也就是攻击速度越慢.
+	//
+	// 动画时长的概念跟我们认知的 ASPD 是相反的, 在游戏概念中 ASPD 越大攻击速度越快,
+	// 这个函数返回的值越大, 代表动画播放的时间越长, 也就是攻击速度越慢.
+	// 
+	// 我们需要尽量计算拿到一个最大的动画播放时长,
+	// 因为时长越大实际上 ASPD 就越小, 也就是攻击速度越慢.
+
+	if (bl.m < 0) {
+		return MAX_ASPD_NOPC;
+	}
+
+	if (map_getmapflag(bl.m, MF_MAXASPD)) {
+		int val = map_getmapflag_param(bl.m, MF_MAXASPD, 1);
+		if (val) {
+			// 获得 rAthena 默认的攻击动画时长
+			int aspd = MAX_ASPD_NOPC;
+
+			// 根据地图标记限制的攻速上限, 计算得到一个新的动画时长
+			val = (AMOTION_ZERO_ASPD - val * AMOTION_INTERVAL) * AMOTION_DIVIDER_NOPC;
+
+			// 返回最大的攻击动画时长
+			return std::max(aspd, val);
+		}
+	}
+
+	return MAX_ASPD_NOPC;
+}
+
+//************************************
+// Method:      mob_recalc_maxaspd
+// Description: 重新计算魔物的 amotion 和 adelay 值
+// Parameter:   struct block_list & bl
+// Parameter:   struct status_data * b_status
+// Returns:     void
+// Author:      Sola丶小克(CairoLee)  2025/05/11 18:23
+//************************************
+void mob_recalc_maxaspd(struct block_list& bl, struct status_data* b_status) {
+	if (bl.type != BL_MOB)
+		return;
+
+	int32 amotion = 0, temp = 0;
+	struct mob_data* md = (struct mob_data*)&bl;
+	struct status_data* status = &md->status;
+	status_change* sc = status_get_sc(&bl);
+
+	if (sc == nullptr || b_status == nullptr)
+		return;
+
+	// ---------------------------------------------------------------
+	// 以下部分取自 status_calc_bl_main 中 flag 包含 SCB_ASPD 标记位时
+	// 魔物和其他单位 (Mercenary and mobs) 的计算代码
+	// ---------------------------------------------------------------
+
+	amotion = b_status->amotion;
+	status->aspd_rate = status_calc_aspd_rate(&bl, sc, b_status->aspd_rate);
+	amotion = amotion * status->aspd_rate / 1000;
+
+	amotion = status_calc_fix_aspd(&bl, sc, amotion);
+	//status->amotion = cap_value(amotion, MAX_ASPD_NOPC / AMOTION_DIVIDER_NOPC, MIN_ASPD / AMOTION_DIVIDER_NOPC);
+
+	status->amotion = cap_value(amotion, nopc_maxaspd(bl) / AMOTION_DIVIDER_NOPC, MIN_ASPD / AMOTION_DIVIDER_NOPC);
+
+	// FIXME: Officially, adelay only considers a few buffs and is not affected by ASPD debuffs at all
+	// The only way to make monsters slower is to increase their amotion above their adelay
+	// For now we solve it by making sure we never increase adelay through aspd_rate and then cap it to amotion
+	temp = b_status->adelay * min(status->aspd_rate, 1000) / 1000;
+	status->adelay = cap_value(temp, AMOTION_DIVIDER_NOPC * status->amotion, MIN_ASPD);
+}
+#endif // Pandas_MapFlag_MaxASPD
+
 /**
  * Calculates the initial status for the given mob
  * @param md: Mob object
@@ -2828,20 +2903,8 @@ int32 status_calc_mob_(struct mob_data* md, uint8 opt)
 			memcpy(&md->status, &md->db->status, sizeof(struct status_data));
 
 #ifdef Pandas_MapFlag_MaxASPD
-		if (opt&SCO_FIRST) {
-			float adelay_bonus = 1.0f;
-			pec_ushort amotion_origin = md->db->status.amotion;
-
-			if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
-				int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
-				if (val) {
-					val = 2000 - val * 10;
-					val = max(val, md->status.amotion);
-					md->status.amotion = min(val, 2000);
-					adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
-					md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
-				}
-			}
+		if ((opt & SCO_FIRST) && md->db) {
+			mob_recalc_maxaspd(md->bl, &md->db->status);
 		}
 #endif // Pandas_MapFlag_MaxASPD
 
@@ -2859,11 +2922,11 @@ int32 status_calc_mob_(struct mob_data* md, uint8 opt)
 	if (flag&8 && mbl) {
 		struct status_data *mstatus = status_get_base_status(mbl);
 
-		if (mstatus &&
+		if (mstatus != nullptr && md->special_state.ai != AI_SPHERE &&
 			battle_config.slaves_inherit_speed&(status_has_mode(mstatus,MD_CANMOVE)?1:2))
 			status->speed = mstatus->speed;
-		if( status->speed < 2 ) // Minimum for the unit to function properly
-			status->speed = 2;
+		if (status->speed < MIN_WALK_SPEED)
+			status->speed = MIN_WALK_SPEED;
 	}
 
 	if (flag&32)
@@ -3085,19 +3148,7 @@ int32 status_calc_mob_(struct mob_data* md, uint8 opt)
 
 #ifdef Pandas_MapFlag_MaxASPD
 	if (md && md->db) {
-		float adelay_bonus = 1.0f;
-		pec_ushort amotion_origin = md->db->status.amotion;
-
-		if (map_getmapflag(md->bl.m, MF_MAXASPD) && amotion_origin) {
-			int val = map_getmapflag_param(md->bl.m, MF_MAXASPD, 1);
-			if (val) {
-				val = 2000 - val * 10;
-				val = max(val, md->status.amotion);
-				md->status.amotion = min(val, 2000);
-				adelay_bonus = (float)md->status.amotion / (float)amotion_origin;
-				md->status.adelay = (pec_ushort)(md->status.adelay * adelay_bonus);
-			}
-		}
+		mob_recalc_maxaspd(md->bl, &md->db->status);
 	}
 #endif // Pandas_MapFlag_MaxASPD
 
@@ -4769,7 +4820,11 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 
 	// Basic ASPD value
 	i = status_base_amotion_pc(sd,base_status);
-	base_status->amotion = cap_value(i,pc_maxaspd(sd),2000);
+#ifdef RENEWAL_ASPD
+	// Renewal base value is actually ASPD and not amotion, so we need to convert it
+	i = AMOTION_ZERO_ASPD - i * AMOTION_INTERVAL;
+#endif
+	base_status->amotion = cap_value(i, pc_maxaspd(sd)/AMOTION_DIVIDER_PC, MIN_ASPD/AMOTION_DIVIDER_PC);
 
 	// Relative modifiers from passive skills
 	// Renewal modifiers are handled in status_base_amotion_pc
@@ -4786,7 +4841,7 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 	else if(pc_isridingdragon(sd))
 		base_status->aspd_rate += 250-50*pc_checkskill(sd,RK_DRAGONTRAINING);
 #endif
-	base_status->adelay = 2*base_status->amotion;
+	base_status->adelay = AMOTION_DIVIDER_PC * base_status->amotion;
 
 
 // ----- DMOTION -----
@@ -5254,8 +5309,13 @@ int32 status_calc_homunculus_(struct homun_data *hd, uint8 opt)
 	amotion = (1000 - 4 * status->agi - status->dex) * hd->homunculusDB->baseASPD / 1000;
 #endif
 
-	status->amotion = cap_value(amotion, battle_config.max_aspd, 2000);
-	status->adelay = status->amotion; //It seems adelay = amotion for Homunculus.
+	status->amotion = cap_value(amotion, MAX_ASPD_NOPC/AMOTION_DIVIDER_NOPC, MIN_ASPD/AMOTION_DIVIDER_NOPC);
+
+#ifdef Pandas_MapFlag_MaxASPD
+	status->amotion = cap_value(amotion, nopc_maxaspd(hd->bl)/AMOTION_DIVIDER_NOPC, MIN_ASPD/AMOTION_DIVIDER_NOPC);
+#endif // Pandas_MapFlag_MaxASPD
+
+	status->adelay = AMOTION_DIVIDER_NOPC * status->amotion; //It seems adelay = amotion for Homunculus.
 
 	status->max_hp = hom.max_hp;
 	status->max_sp = hom.max_sp;
@@ -6244,12 +6304,17 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 		int32 matk_min = status_base_matk_min(status);
 		int32 matk_max = status_base_matk_max(status);
 	
-		matk_min += (sd != nullptr ? sd->bonus.ematk : 0);
-		matk_max += (sd != nullptr ? sd->bonus.ematk : 0);
+		if (sd != nullptr) {
+			matk_min += sd->bonus.ematk;
+			matk_max += sd->bonus.ematk;
 
-		if (sd != nullptr && sd->matk_rate != 100) {
-			matk_min = matk_min * sd->matk_rate / 100;
-			matk_max = matk_max * sd->matk_rate / 100;
+			matk_min += sd->bonus.ematk_hidden;
+			matk_max += sd->bonus.ematk_hidden;
+
+			if (sd->matk_rate != 100) {
+				matk_min = matk_min * sd->matk_rate / 100;
+				matk_max = matk_max * sd->matk_rate / 100;
+			}
 		}
 
 		// Apply Recognized Spell buff - custom support (renewal status change)
@@ -6335,9 +6400,15 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 		// Bonuses from ExtraMATK are separated in order to order them (order has no impact)
 
 		// EquipMATK (flat MATK from equipments)
-		if (sd != nullptr && sd->bonus.ematk > 0) {
+		if (sd != nullptr && sd->bonus.ematk != 0) {
 			matk_min += sd->bonus.ematk;
 			matk_max += sd->bonus.ematk;
+		}
+
+		// Flat MATK not visible in status window
+		if (sd != nullptr && sd->bonus.ematk_hidden != 0) {
+			matk_min += sd->bonus.ematk_hidden;
+			matk_max += sd->bonus.ematk_hidden;
 		}
 
 		// PseudoBuffMATK (flat MATK from skills)
@@ -6375,25 +6446,13 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 #endif
 
 			amotion = status_calc_fix_aspd(&bl, sc, amotion);
-			status->amotion = cap_value(amotion, battle_config.max_aspd, 2000);
+			status->amotion = cap_value(amotion, MAX_ASPD_NOPC/AMOTION_DIVIDER_NOPC, MIN_ASPD/AMOTION_DIVIDER_NOPC);
 
 #ifdef Pandas_MapFlag_MaxASPD
-			// 根据地图标记重新计算人工生命体的 amotion 动画延迟时间
-			if (map_getmapflag(bl.m, MF_MAXASPD)) {
-				int val = map_getmapflag_param(bl.m, MF_MAXASPD, 1);
-				if (val) {
-					// 地图标记预期的延迟时间
-					// 延迟时间 = 2000 - 193(假设) * 10 = 2000 - 1930 = 70, 也就是延迟为 70 毫秒
-					val = 2000 - val * 10;
-					// 原先人工生命体有一个自己的动画延迟时间, 与地图标记预期的延迟时间中取最大的那个 (延迟越大表示攻击速度越慢)
-					val = max(val, status->amotion);
-					// 随后再与最大延迟值 2000 毫秒进行比较, 取比较小的哪个作为实际生效值
-					status->amotion = min(val, 2000);
-				}
-			}
+			status->amotion = cap_value(amotion, nopc_maxaspd(bl)/AMOTION_DIVIDER_NOPC, MIN_ASPD/AMOTION_DIVIDER_NOPC);
 #endif // Pandas_MapFlag_MaxASPD
 
-			status->adelay = status->amotion;
+			status->adelay = AMOTION_DIVIDER_NOPC * status->amotion;
 		} else if ( bl.type == BL_PC ) {
 			uint16 skill_lv;
 
@@ -6412,68 +6471,34 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 
 #ifdef RENEWAL_ASPD
 			// RE ASPD % modifier
-			amotion += (max(0xc3 - amotion, 2) * (status->aspd_rate2 + status_calc_aspd(&bl, sc, false))) / 100;
-			amotion = 10 * (200 - amotion);
+			amotion += (max(195 - amotion, 2) * (status->aspd_rate2 + status_calc_aspd(&bl, sc, false))) / 100;
+
+			// Renewal base value is actually ASPD and not amotion, so we need to convert it
+			amotion = AMOTION_ZERO_ASPD - amotion * AMOTION_INTERVAL;
 
 			amotion += sd->bonus.aspd_add;
 #endif
 			amotion = status_calc_fix_aspd(&bl, sc, amotion);
-			status->amotion = cap_value(amotion,pc_maxaspd(sd),2000);
+			status->amotion = cap_value(amotion, pc_maxaspd(sd)/AMOTION_DIVIDER_PC, MIN_ASPD/AMOTION_DIVIDER_PC);
 
-			status->adelay = 2 * status->amotion;
+			status->adelay = AMOTION_DIVIDER_PC * status->amotion;
 		} else { // Mercenary and mobs
 			amotion = b_status->amotion;
 			status->aspd_rate = status_calc_aspd_rate(&bl, sc, b_status->aspd_rate);
 			amotion = amotion*status->aspd_rate/1000;
 
 			amotion = status_calc_fix_aspd(&bl, sc, amotion);
-			status->amotion = cap_value(amotion, battle_config.monster_max_aspd, 2000);
+			status->amotion = cap_value(amotion, MAX_ASPD_NOPC/AMOTION_DIVIDER_NOPC, MIN_ASPD/AMOTION_DIVIDER_NOPC);
 
-#ifndef Pandas_MapFlag_MaxASPD
-			// 这部分处理人工生命体和玩家单位以外的其他单位 (佣兵、魔物等),
-			// 若没有启用 maxaspd 地图标记则走原来的流程.
-			
-			// 其中 temp 在这里是指将 b_status->adelay 攻击延迟值按照 status->aspd_rate 进行缩放后的新的延迟值
-			// 然后确保 temp 不低于 battle_config.monster_max_aspd*2 且不高于 4000, 然后将它应用到 status->adelay
-			temp = b_status->adelay*status->aspd_rate/1000;
-			status->adelay = cap_value(temp, battle_config.monster_max_aspd*2, 4000);
-#else
-			// 这部分处理人工生命体和玩家单位以外的其他单位 (佣兵、魔物等),
-			// 已经启用了 maxaspd 地图标记时, 则需要将其影响考虑在内使之生效.
-			
-			// 此处的 adelay_bonus 是需要将 adelay 拓展的倍率系数
-			float adelay_bonus = 1.0f;
-
-			// 此处的 amotion_origin 用于保存原始的攻击动作延迟(amotion), 注意该值并不是 b_status->amotion
-			// 而是基于 b_status->amotion 已经被 status_calc_aspd_rate 和 status_calc_fix_aspd 修正过的值
-			pec_ushort amotion_origin = status->amotion;
-
-			if (bl.m != -1 && map_getmapflag(bl.m, MF_MAXASPD) && amotion_origin) {
-				int val = map_getmapflag_param(bl.m, MF_MAXASPD, 1);
-				if (val) {
-					// 地图标记预期的延迟时间
-					// 延迟时间 = 2000 - 193(假设) * 10 = 2000 - 1930 = 70, 也就是延迟为 70 毫秒
-					val = 2000 - val * 10;
-
-					// 在经过了 status_calc_aspd_rate 和 status_calc_fix_aspd 修正过的攻击动作延迟
-					// 与地图标记预期的延迟时间中取最大的那个 (延迟越大表示攻击速度越慢)
-					val = max(val, status->amotion);
-
-					// 随后再与最大延迟值 2000 毫秒进行比较, 取比较小的哪个作为实际生效值
-					status->amotion = min(val, 2000);
-
-					// 计算出一个最新的动作延迟值与原始的攻击动作延迟值之间的倍率系数
-					adelay_bonus = (float)status->amotion / (float)amotion_origin;
-				}
-			}
-
-			// 其中 temp 在这里是指将 b_status->adelay 攻击延迟值按照 status->aspd_rate 进行缩放后的新的延迟值
-			// 这里与人工生命体算法差异的地方是: 还会额外乘以 adelay_bonus 系数
-			temp = int((b_status->adelay * status->aspd_rate / 1000) * adelay_bonus);
-
-			// 然后确保 temp 不低于 battle_config.monster_max_aspd*2 且不高于 4000, 然后将它应用到 status->adelay
-			status->adelay = cap_value(temp, battle_config.monster_max_aspd*2, 4000);
+#ifdef Pandas_MapFlag_MaxASPD
+			status->amotion = cap_value(amotion, nopc_maxaspd(bl)/AMOTION_DIVIDER_NOPC, MIN_ASPD/AMOTION_DIVIDER_NOPC);
 #endif // Pandas_MapFlag_MaxASPD
+
+			// FIXME: Officially, adelay only considers a few buffs and is not affected by ASPD debuffs at all
+			// The only way to make monsters slower is to increase their amotion above their adelay
+			// For now we solve it by making sure we never increase adelay through aspd_rate and then cap it to amotion
+			temp = b_status->adelay * min(status->aspd_rate, 1000) / 1000;
+			status->adelay = cap_value(temp, AMOTION_DIVIDER_NOPC * status->amotion, MIN_ASPD);
 		}
 	}
 
@@ -7944,8 +7969,6 @@ static pec_defType status_calc_def(struct block_list *bl, status_change *sc, int
 	if(sc->getSCE(SC_ETERNALCHAOS))
 		return 0;
 #endif
-	if(sc->getSCE(SC_BARRIER))
-		return 100;
 	if(sc->getSCE(SC_KEEPING))
 		return 90;
 #ifndef RENEWAL /// Steel Body does not provide 90 DEF in [RENEWAL]
@@ -8117,8 +8140,6 @@ static pec_defType status_calc_mdef(struct block_list *bl, status_change *sc, in
 
 	if(sc->getSCE(SC_BERSERK))
 		return 0;
-	if(sc->getSCE(SC_BARRIER))
-		return 100;
 
 #ifndef RENEWAL /// Steel Body does not provide 90 MDEF in [RENEWAL]
 	if(sc->getSCE(SC_STEELBODY))
@@ -8295,8 +8316,6 @@ static pec_uint16 status_calc_speed(struct block_list *bl, status_change *sc, in
 				val = max( val, sc->getSCE(SC_SUITON)->val3 );
 			if( sc->getSCE(SC_SWOO) )
 				val = max( val, 300 );
-			if( sc->getSCE(SC_SKA) )
-				val = max( val, 25 );
 			if( sc->getSCE(SC_FREEZING) )
 				val = max( val, 30 );
 			if( sc->getSCE(SC_MARSHOFABYSS) )
@@ -8327,6 +8346,9 @@ static pec_uint16 status_calc_speed(struct block_list *bl, status_change *sc, in
 				val = max(val, 20);
 			if (sc->getSCE(SC_GROUNDGRAVITY))
 				val = max(val, 20);
+			if( sc->getSCE( SC_SHADOW_CLOCK ) != nullptr ){
+				val = max( val, 30 );
+			}
 
 			if( sd && sd->bonus.speed_rate + sd->bonus.speed_add_rate > 0 ) // Permanent item-based speedup
 				val = max( val, sd->bonus.speed_rate + sd->bonus.speed_add_rate );
@@ -8476,7 +8498,7 @@ static int16 status_calc_aspd(struct block_list *bl, status_change *sc, bool fix
 		if (sc->getSCE(sc_val = SC_ASPDPOTION3) || sc->getSCE(sc_val = SC_ASPDPOTION2) || sc->getSCE(sc_val = SC_ASPDPOTION1) || sc->getSCE(sc_val = SC_ASPDPOTION0))
 			bonus += sc->getSCE(sc_val)->val1;
 	} else {
-		if (sc->getSCE(SC_DONTFORGETME))
+		if (bl->type == BL_PC && sc->getSCE(SC_DONTFORGETME))
 			bonus -= sc->getSCE(SC_DONTFORGETME)->val2 / 10;
 #ifdef RENEWAL
 		if (sc->getSCE(SC_ENSEMBLEFATIGUE))
@@ -8486,8 +8508,6 @@ static int16 status_calc_aspd(struct block_list *bl, status_change *sc, bool fix
 			bonus -= sc->getSCE(SC_LONGING)->val2 / 10;
 #endif
 		if (sc->getSCE(SC_STEELBODY))
-			bonus -= 25;
-		if (sc->getSCE(SC_SKA))
 			bonus -= 25;
 		if (sc->getSCE(SC_DEFENDER))
 			bonus -= sc->getSCE(SC_DEFENDER)->val4 / 10;
@@ -8569,9 +8589,9 @@ static int16 status_calc_aspd(struct block_list *bl, status_change *sc, bool fix
 static int16 status_calc_fix_aspd(struct block_list *bl, status_change *sc, int32 aspd)
 {
 	if (sc == nullptr || sc->empty())
-		return cap_value(aspd, 0, 2000);
+		return cap_value(aspd, 1, MIN_ASPD);
 	if (sc->getSCE(SC_OVERED_BOOST))
-		return cap_value(2000 - sc->getSCE(SC_OVERED_BOOST)->val3 * 10, 0, 2000);
+		return cap_value(AMOTION_ZERO_ASPD - sc->getSCE(SC_OVERED_BOOST)->val3 * AMOTION_INTERVAL, 1, MIN_ASPD);
 
 	if ((sc->getSCE(SC_GUST_OPTION) || sc->getSCE(SC_BLAST_OPTION) || sc->getSCE(SC_WILD_STORM_OPTION)))
 		aspd -= 50; // +5 ASPD
@@ -8584,7 +8604,7 @@ static int16 status_calc_fix_aspd(struct block_list *bl, status_change *sc, int3
 	if (sc->getSCE(SC_SINCERE_FAITH))
 		aspd -= 10 * sc->getSCE(SC_SINCERE_FAITH)->val2;
 
-	return cap_value(aspd, 0, 2000); // Will be recap for proper bl anyway
+	return cap_value(aspd, 1, MIN_ASPD); // Will be recap for proper bl anyway
 }
 
 /**
@@ -8672,7 +8692,7 @@ static int16 status_calc_aspd_rate(struct block_list *bl, status_change *sc, int
 		sc->getSCE(i=SC_ASPDPOTION0) )
 		aspd_rate -= sc->getSCE(i)->val2;
 
-	if(sc->getSCE(SC_DONTFORGETME))
+	if(bl->type == BL_PC && sc->getSCE(SC_DONTFORGETME))
 		aspd_rate += sc->getSCE(SC_DONTFORGETME)->val2;
 #ifdef RENEWAL
 	if (sc->getSCE(SC_ENSEMBLEFATIGUE))
@@ -8682,8 +8702,6 @@ static int16 status_calc_aspd_rate(struct block_list *bl, status_change *sc, int
 		aspd_rate += sc->getSCE(SC_LONGING)->val2;
 #endif
 	if(sc->getSCE(SC_STEELBODY))
-		aspd_rate += 250;
-	if(sc->getSCE(SC_SKA))
 		aspd_rate += 250;
 	if(sc->getSCE(SC_DEFENDER))
 		aspd_rate += sc->getSCE(SC_DEFENDER)->val4;
@@ -11043,7 +11061,7 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 		case SC_SIGNUMCRUCIS:
 			val2 = 10 + 4*val1; // Def reduction
 			tick = INFINITE_TICK;
-			clif_emotion(bl, ET_SWEAT);
+			clif_emotion( *bl, ET_SWEAT );
 			break;
 		case SC_MAXIMIZEPOWER:
 			tick_time = val2 = tick>0?tick:60000;
@@ -11377,7 +11395,7 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 
 		case SC_CONFUSION:
 			if (!val4)
-				clif_emotion(bl,ET_QUESTION);
+				clif_emotion( *bl, ET_QUESTION );
 			break;
 		case SC_GRADUAL_GRAVITY:
 			val2 = 10 * val1;
@@ -12631,7 +12649,7 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 		case SC_REBOUND:
 			tick_time = 2000;
 			val4 = tick / tick_time;
-			clif_emotion(bl, ET_SWEAT);
+			clif_emotion( *bl, ET_SWEAT );
 			break;
 		case SC_KINGS_GRACE:
 			val2 = 3 + val1; //HP Recover rate
@@ -13346,16 +13364,6 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 		calc_flag.reset(SCB_DYE);
 	}
 
-	/*if (calc_flag[SCB_BODY])// Might be needed in the future. [Rytech]
-	{	//Reset body style
-		if (vd && vd->body_style)
-		{
-			val4 = vd->body_style;
-			clif_changelook(bl,LOOK_BODY2,0);
-		}
-		calc_flag.reset(SCB_BODY);
-	}*/
-
 	if (!(flag&SCSTART_NOICON) && !(flag&SCSTART_LOADED && scdb->flag[SCF_DISPLAYPC] || scdb->flag[SCF_DISPLAYNPC])) {
 		int32 status_icon = scdb->icon;
 
@@ -13475,19 +13483,19 @@ int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_
 		case SC_COMBO:
 			switch(sce->val1) {
 			case TK_STORMKICK:
-				skill_combo_toggle_inf(bl, TK_JUMPKICK, 0);
+				skill_combo_toggle_inf( bl, TK_JUMPKICK, INF_PASSIVE_SKILL );
 				clif_skill_nodamage(bl,*bl,TK_READYSTORM,1);
 				break;
 			case TK_DOWNKICK:
-				skill_combo_toggle_inf(bl, TK_JUMPKICK, 0);
+				skill_combo_toggle_inf( bl, TK_JUMPKICK, INF_PASSIVE_SKILL );
 				clif_skill_nodamage(bl,*bl,TK_READYDOWN,1);
 				break;
 			case TK_TURNKICK:
-				skill_combo_toggle_inf(bl, TK_JUMPKICK, 0);
+				skill_combo_toggle_inf( bl, TK_JUMPKICK, INF_PASSIVE_SKILL );
 				clif_skill_nodamage(bl,*bl,TK_READYTURN,1);
 				break;
 			case TK_COUNTER:
-				skill_combo_toggle_inf(bl, TK_JUMPKICK, 0);
+				skill_combo_toggle_inf( bl, TK_JUMPKICK, INF_PASSIVE_SKILL );
 				clif_skill_nodamage(bl,*bl,TK_READYCOUNTER,1);
 				break;
 			default: // Rest just toggle inf to enable autotarget
@@ -13871,7 +13879,7 @@ int32 status_change_end(struct block_list* bl, enum sc_type type, int32 tid)
 			}
 			break;
 		case SC_COMBO:
-			skill_combo_toggle_inf(bl,sce->val1,0);
+			skill_combo_toggle_inf( bl, sce->val1, INF_PASSIVE_SKILL );
 			break;
 		case SC_MARIONETTE:
 		case SC_MARIONETTE2: // Marionette target
@@ -14238,13 +14246,6 @@ int32 status_change_end(struct block_list* bl, enum sc_type type, int32 tid)
 		calc_flag.reset(SCB_DYE);
 	}
 
-	/*if (calc_flag[SCB_BODY])// Might be needed in the future. [Rytech]
-	{	//Restore body style
-		if (vd && !vd->body_style && sce->val4)
-			clif_changelook(bl,LOOK_BODY2,sce->val4);
-		calc_flag.reset(SCB_BODY);
-	}*/
-
 	// On Aegis, when turning off a status change, first goes the sc packet, then the option packet.
 	int32 status_icon = scdb->icon;
 
@@ -14508,7 +14509,7 @@ TIMER_FUNC(status_change_timer){
 						break;
 					}
 				}
-				clif_emotion(bl, ET_SMILE);
+				clif_emotion( *bl, ET_SMILE );
 			}
 		}
 		break;
@@ -14768,7 +14769,7 @@ TIMER_FUNC(status_change_timer){
 		
 	case SC_OBLIVIONCURSE:
 		if( --(sce->val4) >= 0 ) {
-			clif_emotion(bl,ET_QUESTION);
+			clif_emotion( *bl, ET_QUESTION );
 			sc_timer_next(3000 + tick);
 			return 0;
 		}
@@ -14893,7 +14894,7 @@ TIMER_FUNC(status_change_timer){
 
 	case SC_VOICEOFSIREN:
 		if( --(sce->val4) >= 0 ) {
-			clif_emotion(bl,ET_THROB);
+			clif_emotion( *bl, ET_THROB );
 			sc_timer_next(2000 + tick);
 			return 0;
 		}
@@ -15082,7 +15083,7 @@ TIMER_FUNC(status_change_timer){
 		break;
 	case SC_TEARGAS_SOB:
 		if( --(sce->val4) >= 0 ) {
-			clif_emotion(bl, ET_CRY);
+			clif_emotion( *bl, ET_CRY );
 			sc_timer_next(3000 + tick);
 			return 0;
 		}
@@ -15146,7 +15147,7 @@ TIMER_FUNC(status_change_timer){
 		break;
 	case SC_REBOUND:
 		if( --(sce->val4) >= 0 ) {
-			clif_emotion(bl, ET_SWEAT);
+			clif_emotion( *bl, ET_SWEAT );
 			sc_timer_next(2000 + tick);
 			return 0;
 		}

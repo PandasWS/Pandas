@@ -1463,20 +1463,16 @@ int32 pc_equippoint(map_session_data *sd,int32 n){
 /**
  * Fill inventory_data with struct *item_data through inventory (fill with struct *item)
  * @param sd : player session
- * @return 0 sucess, 1:invalid sd
  */
-void pc_setinventorydata(map_session_data *sd)
-{
-#ifndef Pandas_FuncExtend_Increase_Inventory
-	uint8 i;
-#else
-	uint16 i;
-#endif // Pandas_FuncExtend_Increase_Inventory
-	nullpo_retv(sd);
+void pc_setinventorydata( map_session_data& sd ){
+	for( size_t i = 0; i < MAX_INVENTORY; i++ ){
+		t_itemid id = sd.inventory.u.items_inventory[i].nameid;
 
-	for(i = 0; i < MAX_INVENTORY; i++) {
-		t_itemid id = sd->inventory.u.items_inventory[i].nameid;
-		sd->inventory_data[i] = id?itemdb_search(id):nullptr;
+		if( id != 0 ){
+			sd.inventory_data[i] = itemdb_search( id );
+		}else{
+			sd.inventory_data[i] = nullptr;
+		}
 	}
 }
 
@@ -1842,6 +1838,7 @@ uint8 pc_isequip(map_session_data *sd,int32 n)
 				case W_DAGGER: //All level 4 - Daggers
 				case W_1HSWORD: //All level 4 - 1H Swords
 				case W_1HAXE: //All level 4 - 1H Axes
+				case W_2HAXE: // All level 4 - 2H Axes (works, but low ASPD)
 				case W_MACE: //All level 4 - 1H Maces
 				case W_STAFF: //All level 4 - 1H Staves
 				case W_2HSTAFF: //All level 4 - 2H Staves
@@ -1868,7 +1865,7 @@ uint8 pc_isequip(map_session_data *sd,int32 n)
 		switch (item->subtype) {
 			case AMMO_ARROW:
 				if (battle_config.ammo_check_weapon && sd->status.weapon != W_BOW && sd->status.weapon != W_MUSICAL && sd->status.weapon != W_WHIP) {
-					clif_msg(sd, MSI_FAIL_NEED_EQUIPPED_BOW);
+					clif_msg( *sd, MSI_FAIL_NEED_EQUIPPED_BOW );
 					return ITEM_EQUIP_ACK_FAIL;
 				}
 				break;
@@ -1883,26 +1880,26 @@ uint8 pc_isequip(map_session_data *sd,int32 n)
 					&& sd->status.weapon != W_GRENADE
 #endif
 					) {
-					clif_msg(sd, MSI_WRONG_BULLET);
+					clif_msg( *sd, MSI_WRONG_BULLET );
 					return ITEM_EQUIP_ACK_FAIL;
 				}
 				break;
 #ifndef RENEWAL
 			case AMMO_GRENADE:
 				if (battle_config.ammo_check_weapon && sd->status.weapon != W_GRENADE) {
-					clif_msg(sd, MSI_WRONG_BULLET);
+					clif_msg( *sd, MSI_WRONG_BULLET );
 					return ITEM_EQUIP_ACK_FAIL;
 				}
 				break;
 #endif
 			case AMMO_CANNONBALL:
 				if (!pc_ismadogear(sd) && (sd->status.class_ == JOB_MECHANIC_T || sd->status.class_ == JOB_MECHANIC)) {
-					clif_msg(sd, MSI_USESKILL_FAIL_MADOGEAR); // Item can only be used when Mado Gear is mounted.
+					clif_msg( *sd, MSI_USESKILL_FAIL_MADOGEAR ); // Item can only be used when Mado Gear is mounted.
 					return ITEM_EQUIP_ACK_FAIL;
 				}
 				if (sd->state.active && !pc_iscarton(sd) && //Check if sc data is already loaded
 					(sd->status.class_ == JOB_GENETIC_T || sd->status.class_ == JOB_GENETIC)) {
-					clif_msg(sd, MSI_USESKILL_FAIL_CART); // Only available when cart is mounted.
+					clif_msg( *sd, MSI_USESKILL_FAIL_CART ); // Only available when cart is mounted.
 					return ITEM_EQUIP_ACK_FAIL;
 				}
 				break;
@@ -3109,7 +3106,7 @@ int32 pc_disguise(map_session_data *sd, int32 class_)
 /// Check for valid Race, break & show error message if invalid Race
 #define PC_BONUS_CHK_RACE(rc,bonus) { if (!CHK_RACE((rc))) { PC_BONUS_SHOW_ERROR((bonus),Race,(rc)); }}
 /// Check for valid Race2, break & show error message if invalid Race2
-#define PC_BONUS_CHK_RACE2(rc2,bonus) { if (!CHK_RACE2((rc2))) { PC_BONUS_SHOW_ERROR((bonus),Race2,(rc2)); }}
+#define PC_BONUS_CHK_RACE2(rc2,bonus) { if ((rc2) <= RC2_NONE || (rc2) >= RC2_MAX) { PC_BONUS_SHOW_ERROR((bonus),Race2,(rc2)); }}
 /// Check for valid Class, break & show error message if invalid Class
 #define PC_BONUS_CHK_CLASS(cl,bonus) { if (!CHK_CLASS((cl))) { PC_BONUS_SHOW_ERROR((bonus),Class,(cl)); }}
 /// Check for valid Size, break & show error message if invalid Size
@@ -4506,6 +4503,10 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 		case SP_EMATK:
 			if (sd->state.lr_flag != LR_FLAG_ARROW)
 				sd->bonus.ematk += val;
+			break;
+		case SP_EMATK_HIDDEN:
+			if (sd->state.lr_flag != LR_FLAG_ARROW)
+				sd->bonus.ematk_hidden += val;
 			break;
 		case SP_ADD_VARIABLECAST:
 			if (sd->state.lr_flag != LR_FLAG_ARROW)
@@ -6584,7 +6585,7 @@ bool pc_isUseitem(map_session_data *sd,int32 n)
 		return false;
 
 	if( (item->item_usage.sitting) && (pc_issit(sd) == 1) && (pc_get_group_level(sd) < item->item_usage.override) ) {
-		clif_msg(sd, MSI_CANT_USE_WHEN_SITDOWN);
+		clif_msg( *sd, MSI_CANT_USE_WHEN_SITDOWN );
 		return false; // You cannot use this item while sitting.
 	}
 
@@ -6629,7 +6630,7 @@ bool pc_isUseitem(map_session_data *sd,int32 n)
 
 			// User is not party leader
 			if( i == MAX_PARTY ){
-				clif_msg( sd, MSI_CANNOT_PARTYCALL);
+				clif_msg( *sd, MSI_CANNOT_PARTYCALL );
 				return false;
 			}
 
@@ -6637,11 +6638,11 @@ bool pc_isUseitem(map_session_data *sd,int32 n)
 
 			// No party members found on same map
 			if( i == MAX_PARTY ){
-				clif_msg( sd, MSI_NO_PARTYMEM_ON_THISMAP );
+				clif_msg( *sd, MSI_NO_PARTYMEM_ON_THISMAP );
 				return false;
 			}
 		}else{
-			clif_msg( sd, MSI_CANNOT_PARTYCALL);
+			clif_msg( *sd, MSI_CANNOT_PARTYCALL );
 			return false;
 		}
 	}
@@ -6677,14 +6678,14 @@ bool pc_isUseitem(map_session_data *sd,int32 n)
 		// Check if the player is not overweighted
 		// In Renewal the limit is 70% weight and gives the same error message
 		if (pc_is70overweight(sd)) {
-			clif_msg_color(sd, MSI_PICKUP_FAILED_ITEMCREATE, color_table[COLOR_RED]);
+			clif_msg_color( *sd, MSI_PICKUP_FAILED_ITEMCREATE, color_table[COLOR_RED] );
 			return 0;
 		}
 #else
 		// Check if the player is not overweighted
 		// In Pre-Renewal the limit is 50% weight and gives a specific error message
 		if (pc_is50overweight(sd)) {
-			clif_msg_color(sd, MSI_CANT_GET_ITEM_BECAUSE_WEIGHT, color_table[COLOR_RED]);
+			clif_msg_color( *sd, MSI_CANT_GET_ITEM_BECAUSE_WEIGHT, color_table[COLOR_RED] );
 			return 0;
 		}
 #endif
@@ -6695,9 +6696,9 @@ bool pc_isUseitem(map_session_data *sd,int32 n)
 		// TODO: Count the items the player will get and check for the actual inventory space required std::max<size_t>( count, 10 )
 		if (pc_inventoryblank(sd) <= 10) {
 #ifdef RENEWAL
-			clif_msg_color(sd, MSI_PICKUP_FAILED_ITEMCREATE, color_table[COLOR_RED]);
+			clif_msg_color( *sd, MSI_PICKUP_FAILED_ITEMCREATE, color_table[COLOR_RED] );
 #else
-			clif_msg_color(sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED]);
+			clif_msg_color( *sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED] );
 #endif
 			return 0;
 		}
@@ -6777,7 +6778,7 @@ int32 pc_useitem(map_session_data *sd,int32 n)
 
 		if( pc_hasprogress( sd, WIP_DISABLE_SKILLITEM ) || !sd->npc_item_flag ){
 #ifdef RENEWAL
-			clif_msg( sd, MSI_BUSY);
+			clif_msg( *sd, MSI_BUSY );
 #endif
 			return 0;
 		}
@@ -6861,20 +6862,9 @@ int32 pc_useitem(map_session_data *sd,int32 n)
 	}
 #endif // Pandas_BattleConfig_CashMounting_UseitemLimit
 
-#ifdef Pandas_MapFlag_NoCapture
-	// 如果玩家所在地图设置了 nocapture 标记的话
-	// 那么在扣除道具之前，就给予玩家禁止玩家捕捉宠物的提示 [Sola丶小克]
-	if (sd && map_getmapflag(sd->bl.m, MF_NOCAPTURE)) {
-		if (id->pandas.taming_mobid.size()) {
-			clif_displaymessage(sd->fd, msg_txt_cn(sd, 18));	// 此地图禁止捕捉宠物.
-			return 0;
-		}
-	}
-#endif // Pandas_MapFlag_NoCapture
-
 	/* on restricted maps the item is consumed but the effect is not used */
 	if (!pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && itemdb_isNoEquip(id,sd->bl.m)) {
-		clif_msg(sd, MSI_IMPOSSIBLE_USEITEM_AREA); // This item cannot be used within this area
+		clif_msg( *sd, MSI_IMPOSSIBLE_USEITEM_AREA ); // This item cannot be used within this area
 		if( battle_config.allow_consume_restricted_item && id->flag.delay_consume > 0 ) { //need confirmation for delayed consumption items
 			clif_useitemack(sd,n,item.amount-1,true);
 			pc_delitem(sd,n,1,1,0,LOG_TYPE_CONSUME);
@@ -6882,10 +6872,18 @@ int32 pc_useitem(map_session_data *sd,int32 n)
 		return 0;/* regardless, effect is not run */
 	}
 
+#ifndef Pandas_MapFlag_NoCapture
 	if (pet_db_search(id->nameid, PET_CATCH) != nullptr && map_getmapflag(sd->bl.m, MF_NOPETCAPTURE)) {
 		clif_displaymessage(sd->fd, msg_txt(sd, 669)); // You can't catch any pet on this map.
 		return 0;
 	}
+#else
+	// 添加对 id->pandas.taming_mobid.size() 的判断, 以便兼容 mpet 脚本指令
+	if ((pet_db_search(id->nameid, PET_CATCH) != nullptr || id->pandas.taming_mobid.size()) && map_getmapflag(sd->bl.m, MF_NOPETCAPTURE)) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 669)); // You can't catch any pet on this map.
+		return 0;
+	}
+#endif // Pandas_MapFlag_NoCapture
 
 	sd->itemid = item.nameid;
 	sd->itemindex = n;
@@ -7061,7 +7059,7 @@ void pc_putitemtocart(map_session_data *sd,int32 idx,int32 amount)
 		return;
 
 	if( item_data->equipSwitch ){
-		clif_msg( sd, MSI_SWAP_EQUIPITEM_UNREGISTER_FIRST );
+		clif_msg( *sd, MSI_SWAP_EQUIPITEM_UNREGISTER_FIRST );
 		return;
 	}
 
@@ -7197,7 +7195,6 @@ int32 pc_show_steal(struct block_list *bl,va_list ap)
  */
 bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 {
-	int32 i;
 	t_itemid itemid;
 	double rate;
 	unsigned char flag = 0;
@@ -7238,19 +7235,37 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	)
 		return false;
 
-	// Try dropping one item, in the order from first to last possible slot.
-	// Droprate is affected by the skill success rate.
-	for( i = 0; i < MAX_MOB_DROP; i++ )
-		if( item_db.exists(md->db->dropitem[i].nameid) && !md->db->dropitem[i].steal_protected && rnd() % 10000 < md->db->dropitem[i].rate
-#ifndef RENEWAL
-		* rate/100.
-#endif
-		)
-			break;
-	if( i == MAX_MOB_DROP )
-		return false;
+	std::shared_ptr<s_mob_drop> drop = nullptr;
 
-	itemid = md->db->dropitem[i].nameid;
+	// Try dropping one item.
+	for( std::shared_ptr<s_mob_drop>& entry : md->db->dropitem ){
+		if( entry->steal_protected ){
+			continue;
+		}
+
+		if( !item_db.exists( entry->nameid ) ){
+			continue;
+		}
+
+#ifdef RENEWAL
+		if( rnd() % 10000 < entry->rate ){
+			drop = entry;
+			break;
+		}
+#else
+		// Droprate is affected by the skill success rate.
+		if( rnd() % 10000 < entry->rate * rate / 100. ){
+			drop = entry;
+			break;
+		}
+#endif
+	}
+
+	if( drop == nullptr ){
+		return false;
+	}
+
+	itemid = drop->nameid;
 	struct item tmp_item = {};
 	tmp_item.nameid = itemid;
 	tmp_item.amount = 1;
@@ -7259,7 +7274,7 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 	tmp_item.identify = (battle_config.force_identified & 8 ? 1 : tmp_item.identify);
 #endif // Pandas_BattleConfig_Force_Identified
 	if( battle_config.skill_steal_random_options ){
-		mob_setdropitem_option( tmp_item, md->db->dropitem[i] );
+		mob_setdropitem_option( tmp_item, drop );
 	}
 	flag = pc_additem(sd,&tmp_item,1,LOG_TYPE_PICKDROP_PLAYER);
 
@@ -7284,7 +7299,7 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 		struct item_data* dd = itemdb_search(itemid);
 		if (ITEM_PROPERTIES_HASFLAG(dd, annouce_mask, ITEM_ANNOUCE_STEAL_TO_INVENTORY)) {
 			char message[128] = { 0 };
-			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname.c_str(), dd->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
+			sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname.c_str(), dd->ename.c_str(), (float)drop->rate / 100);
 			intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 		}
 	}
@@ -7295,11 +7310,11 @@ bool pc_steal_item(map_session_data *sd,struct block_list *bl, uint16 skill_lv)
 #endif // Pandas_Item_Special_Annouce
 
 	//A Rare Steal Global Announce by Lupus
-	if(md->db->dropitem[i].rate <= battle_config.rare_drop_announce) {
+	if(drop->rate <= battle_config.rare_drop_announce) {
 		struct item_data *i_data;
 		char message[128];
 		i_data = itemdb_search(itemid);
-		sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname.c_str(), i_data->ename.c_str(), (float)md->db->dropitem[i].rate / 100);
+		sprintf (message, msg_txt(sd,542), (sd->status.name[0])?sd->status.name :"GM", md->db->jname.c_str(), i_data->ename.c_str(), (float)drop->rate / 100);
 		//MSG: "'%s' stole %s's %s (chance: %0.02f%%)"
 		intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 	}
@@ -10841,7 +10856,7 @@ int64 pc_readparam(map_session_data* sd,int64 type)
 		case SP_COOKMASTERY:     val = sd->cook_mastery; break;
 		case SP_ACHIEVEMENT_LEVEL: val = sd->achievement_data.level; break;
 		case SP_CRITICAL:        val = sd->battle_status.cri/10; break;
-		case SP_ASPD:            val = (2000-sd->battle_status.amotion)/10; break;
+		case SP_ASPD:            val = (AMOTION_ZERO_ASPD-sd->battle_status.amotion)/AMOTION_INTERVAL; break;
 		case SP_BASE_ATK:
 #ifdef RENEWAL
 			val = sd->bonus.eatk;
@@ -10960,6 +10975,7 @@ int64 pc_readparam(map_session_data* sd,int64 type)
 		case SP_ADD_HEAL2_RATE:  val = sd->bonus.add_heal2_rate; break;
 		case SP_ADD_ITEM_HEAL_RATE: val = sd->bonus.itemhealrate2; break;
 		case SP_EMATK:           val = sd->bonus.ematk; break;
+		case SP_EMATK_HIDDEN:    val = sd->bonus.ematk_hidden; break;
 		case SP_FIXCASTRATE:     val = sd->bonus.fixcastrate; break;
 		case SP_ADD_FIXEDCAST:   val = sd->bonus.add_fixcast; break;
 		case SP_ADD_VARIABLECAST:  val = sd->bonus.add_varcast; break;
@@ -12234,19 +12250,19 @@ bool pc_setreg2(map_session_data *sd, const char *reg, int64 val) {
 
 	nullpo_retr(false, sd);
 
-	if (reg[strlen(reg)-1] == '$') {
-		ShowError("pc_setreg2: Invalid variable scope '%s'\n", reg);
+	if( is_string_variable( reg ) ){
+		ShowError( "pc_setreg2: Invalid variable '%s'. String type variables are not supported.\n", reg );
+		return false;
+	}
+
+	if( !not_server_variable( prefix ) ){
+		ShowError( "pc_setreg2: Invalid variable scope '%s'.\n", reg );
 		return false;
 	}
 
 	val = cap_value(val, INT_MIN, INT_MAX);
 
 	switch (prefix) {
-		case '.':
-		case '\'':
-		case '$':
-			ShowError("pc_setreg2: Invalid variable scope '%s'\n", reg);
-			return false;
 		case '@':
 			return pc_setreg(sd, add_str(reg), val);
 		case '#':
@@ -12254,8 +12270,6 @@ bool pc_setreg2(map_session_data *sd, const char *reg, int64 val) {
 		default:
 			return pc_setglobalreg(sd, add_str(reg), val);
 	}
-
-	return false;
 }
 
 /**
@@ -12269,17 +12283,17 @@ int64 pc_readreg2(map_session_data *sd, const char *reg) {
 
 	nullpo_ret(sd);
 
-	if (reg[strlen(reg)-1] == '$') {
-		ShowError("pc_readreg2: Invalid variable scope '%s'\n", reg);
+	if( is_string_variable( reg ) ){
+		ShowError( "pc_readreg2: Invalid variable '%s'. String type variables are not supported.\n", reg );
+		return 0;
+	}
+
+	if( !not_server_variable( prefix ) ){
+		ShowError( "pc_readreg2: Invalid variable scope '%s'.\n", reg );
 		return 0;
 	}
 
 	switch (prefix) {
-		case '.':
-		case '\'':
-		case '$':
-			ShowError("pc_readreg2: Invalid variable scope '%s'\n", reg);
-			return 0;
 		case '@':
 			return pc_readreg(sd, add_str(reg));
 		case '#':
@@ -12287,8 +12301,6 @@ int64 pc_readreg2(map_session_data *sd, const char *reg) {
 		default:
 			return pc_readglobalreg(sd, add_str(reg));
 	}
-
-	return 0;
 }
 
 /*==========================================
@@ -13584,8 +13596,8 @@ bool pc_divorce(map_session_data *sd)
 			pc_delitem(p_sd, i, 1, 0, 0, LOG_TYPE_OTHER);
 	}
 
-	clif_divorced(sd, p_sd->status.name);
-	clif_divorced(p_sd, sd->status.name);
+	clif_divorced( *sd, p_sd->status.name );
+	clif_divorced( *p_sd, sd->status.name );
 
 	return true;
 }
@@ -14670,14 +14682,18 @@ uint64 JobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			if (this->nodeExists(node, "BaseASPD")) {
 				const ryml::NodeRef& aspdNode = node["BaseASPD"];
 				uint8 max = MAX_WEAPON_TYPE;
+				int32 def_aspd = AMOTION_ZERO_ASPD;
 
-#ifdef RENEWAL // Renewal adds an extra column for shields
+#ifdef RENEWAL
+				// Renewal adds an extra column for shields
 				max += 1;
+				// Renewal uses ASPD penalty which is amotion divided by the amotion interval
+				def_aspd /= AMOTION_INTERVAL;
 #endif
 
 				if (!exists) {
 					job->aspd_base.resize(max);
-					std::fill(job->aspd_base.begin(), job->aspd_base.end(), 2000);
+					std::fill(job->aspd_base.begin(), job->aspd_base.end(), def_aspd);
 				}
 
 				for (const auto &aspdit : aspdNode) {
@@ -14706,12 +14722,16 @@ uint64 JobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			} else {
 				if (!exists) {
 					uint8 max = MAX_WEAPON_TYPE;
+					int32 def_aspd = AMOTION_ZERO_ASPD;
 
-#ifdef RENEWAL // Renewal adds an extra column for shields
+#ifdef RENEWAL
+					// Renewal adds an extra column for shields
 					max += 1;
+					// Renewal uses ASPD penalty which is amotion divided by the amotion interval
+					def_aspd /= AMOTION_INTERVAL;
 #endif
 					job->aspd_base.resize(max);
-					std::fill(job->aspd_base.begin(), job->aspd_base.end(), 2000);
+					std::fill(job->aspd_base.begin(), job->aspd_base.end(), def_aspd);
 				}
 			}
 
@@ -15462,7 +15482,7 @@ uint8 pc_itemcd_check(map_session_data *sd, struct item_data *id, t_tick tick, u
 	// Send reply of delay remains
 	if (sc->getSCE(id->delay.sc)) {
 		const struct TimerData *timer = get_timer(sc->getSCE(id->delay.sc)->timer);
-		clif_msg_value(sd, MSI_ITEM_REUSE_LIMIT_SECOND, (int32)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99));
+		clif_msg_value( *sd, MSI_ITEM_REUSE_LIMIT_SECOND, (int32)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99) );
 		return 1;
 	}
 
@@ -16127,40 +16147,42 @@ pec_ushort pc_maxparameter(map_session_data *sd, e_params param) {
 * @param sd Player
 * @return ASPD
 */
-int16 pc_maxaspd(map_session_data *sd) {
+int16 pc_maxaspd(map_session_data* sd) {
+	// 最终计算得到的是一个攻击动画的播放时长(单位为毫秒)
+	// 返回的数值越大, 表示动画播放的时间越长, 也就是攻击速度越慢.
+	//
+	// 动画时长的概念跟我们认知的 ASPD 是相反的, 在游戏概念中 ASPD 越大攻击速度越快,
+	// 这个函数返回的值越大, 代表动画播放的时间越长, 也就是攻击速度越慢.
+	// 
+	// 我们需要尽量计算拿到一个最大的动画播放时长,
+	// 因为时长越大实际上 ASPD 就越小, 也就是攻击速度越慢.
 	nullpo_ret(sd);
 
 #ifdef Pandas_BattleConfig_MaxAspdForGVG
 	// 根据 max_aspd_for_gvg 约束玩家的最大攻速 [Sola丶小克]
 	if (map_flag_gvg(sd->bl.m) && battle_config.max_aspd_for_gvg > 0) {
-		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
+		// 依据不同的职业类型, 获得 rAthena 默认的攻击动画时长
 		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
 			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
 				(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 			battle_config.max_aspd));
 
-		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
-		// 需要注意: 这里返回的攻速值, 实际上是攻击间隔延迟的毫秒数 (值越大, 攻速越慢; 值越小, 攻速越快)
-		if (aspd < battle_config.max_aspd_for_gvg) {
-			return battle_config.max_aspd_for_gvg;
-		}
+		// 返回最大的攻击动画时长
+		return std::max(aspd, battle_config.max_aspd_for_gvg);
 	}
 #endif // Pandas_BattleConfig_MaxAspdForGVG
 
 #ifdef Pandas_BattleConfig_MaxAspdForPVP
 	// 根据 max_aspd_for_pvp 约束玩家的最大攻速 [Sola丶小克]
 	if (map_flag_vs(sd->bl.m) && battle_config.max_aspd_for_pvp > 0) {
-		// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
+		// 依据不同的职业类型, 获得 rAthena 默认的攻击动画时长
 		int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
 			((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
 				(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 			battle_config.max_aspd));
 
-		// 若 PVP 地图限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
-		// 需要注意: 这里返回的攻速值, 实际上是攻击间隔延迟的毫秒数 (值越大, 攻速越慢; 值越小, 攻速越快)
-		if (aspd < battle_config.max_aspd_for_pvp) {
-			return battle_config.max_aspd_for_pvp;
-		}
+		// 返回最大的攻击动画时长
+		return std::max(aspd, battle_config.max_aspd_for_pvp);
 	}
 #endif // Pandas_BattleConfig_MaxAspdForPVP
 
@@ -16168,18 +16190,17 @@ int16 pc_maxaspd(map_session_data *sd) {
 	if (map_getmapflag(sd->bl.m, MF_MAXASPD)) {
 		int val = map_getmapflag_param(sd->bl.m, MF_MAXASPD, 1);
 		if (val) {
-			// 先根据 rAthena 默认的攻速公式, 计算出即将返回的攻速数值
+			// 依据不同的职业类型, 获得 rAthena 默认的攻击动画时长
 			int aspd = ((sd->class_ & JOBL_THIRD) ? battle_config.max_third_aspd : (
 				((sd->class_ & MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_ & MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
 					(sd->class_ & MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd :
 				battle_config.max_aspd));
 
-			val = 2000 - val * 10;
-			// 若 MaxAspd 地图标记所限制的攻速比原先 rAthena 计算的攻速更小 (限制更严格, 攻速更慢), 那么以最小的为准
-			// 需要注意: 这里返回的攻速值, 实际上是攻击间隔延迟的毫秒数 (值越大, 攻速越慢; 值越小, 攻速越快)
-			if (aspd < val) {
-				return val;
-			}
+			// 根据地图标记限制的攻速上限, 计算得到一个新的动画时长
+			val = (AMOTION_ZERO_ASPD - val * AMOTION_INTERVAL) * AMOTION_DIVIDER_PC;
+
+			// 返回最大的攻击动画时长
+			return std::max(aspd, val);
 		}
 	}
 #endif // Pandas_MapFlag_MaxASPD
@@ -16987,7 +17008,7 @@ uint64 CaptchaDatabase::parseBodyNode(const ryml::NodeRef &node) {
 			return 0;
 
 		if (answer.length() < CAPTCHA_ANSWER_SIZE_MIN || answer.length() > CAPTCHA_ANSWER_SIZE_MAX) {
-			this->invalidWarning(node["Answer"], "The captcha answer must be between 4~%d characters, skipping...", CAPTCHA_ANSWER_SIZE_MAX);
+			this->invalidWarning(node["Answer"], "The captcha answer must be between 4~%d characters, skipping...\n", CAPTCHA_ANSWER_SIZE_MAX);
 			return 0;
 		}
 
