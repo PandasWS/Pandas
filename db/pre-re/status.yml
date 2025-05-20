@@ -777,9 +777,6 @@ Body:
   - Status: Barrier
     Icon: EFST_BARRIER
     DurationLookup: NPC_BARRIER
-    CalcFlags:
-      Mdef: true
-      Def: true
     Flags:
       RemoveOnHermode: true
   - Status: Stripweapon
@@ -2330,8 +2327,6 @@ Body:
     CalcFlags:
       Def2: true
       MDef2: true
-      Speed: true
-      Aspd: true
     Opt3:
       SteelBody: true
     Flags:

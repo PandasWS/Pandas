@@ -1988,6 +1988,47 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int32 type, int32 flag)
 }
 
 /*==========================================
+ * Locates a nearby, walkable cell with no blocks of a certain type on it
+ * This one uses the official algorithm the find a free cell
+ * Returns true on success and sets x and y to cell found.
+ * Otherwise returns false and x and y are not changed.
+ * type: Types of block to count
+ * flag: 
+ *		0x1 - only count standing units
+ *------------------------------------------*/
+bool map_nearby_freecell(int16 m, int16 &x, int16 &y, int32 type, int32 flag)
+{
+	int16 tx = x;
+	int16 ty = y;
+
+	if(!map_count_oncell(m, tx, ty, type, flag))
+		return true; //Current cell is free
+
+	// One of two possible orders of direction processing is used at random
+	directions dir[2][DIR_MAX] = {
+		{DIR_NORTHEAST, DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_NORTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST},
+		{DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_SOUTH, DIR_NORTHEAST, DIR_EAST, DIR_SOUTHEAST}
+	};
+	uint16 array_idx = rnd_value<decltype(array_idx)>(0, ARRAYLENGTH(dir) - 1);
+
+	// Try each direction in the selected array in order
+	for(uint8 dir_idx = 0; dir_idx < DIR_MAX; dir_idx++) {
+		int16 dx = dirx[dir[array_idx][dir_idx]];
+		int16 dy = diry[dir[array_idx][dir_idx]];
+
+		tx = x + dx;
+		ty = y + dy;
+		if (!map_count_oncell(m, tx, ty, type, flag) && map_getcell(m, tx, ty, CELL_CHKPASS)) {
+			x = tx;
+			y = ty;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*==========================================
  * Add an item in floor to location (m,x,y) and add restriction for those who could pickup later
  * NB : If charids are null their no restriction for pickup
  * @param item_data : item attributes
@@ -3907,15 +3948,6 @@ void map_flags_init(void){
 		}));
 #endif // Pandas_MapFlag_NoToken
 
-#ifdef Pandas_MapFlag_NoCapture
-	mapflag_config.insert(std::make_pair(MF_NOCAPTURE, s_mapflag_item{
-		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "NoCapture",
-		/* 当有参数值的时候, 若全部参数的值等于默认值时, 是否自动关闭此地图标记 */ false,
-		/* 禁止在 @mapflag 指令中开启此地图标记 */ false,
-		/* 参数列表定义(支持多参数), 格式: {默认值, 最小值, 最大值, <"可选: 参数单位">} */ {}
-		}));
-#endif // Pandas_MapFlag_NoCapture
-
 #ifdef Pandas_MapFlag_HideGuildInfo
 	mapflag_config.insert(std::make_pair(MF_HIDEGUILDINFO, s_mapflag_item{
 		/* 地图标记名称 (主要用在 @mapinfo 指令中显示) */ "HideGuildInfo",
@@ -5409,6 +5441,11 @@ int32 map_getmapflag_sub(int16 m, enum e_mapflag mapflag, pds_mapflag_args *args
 			return mapdata->getMapFlag(MF_NOEXPPENALTY) && mapdata->getMapFlag(MF_NOZENYPENALTY);
 		case MF_NOEXP:
 			return mapdata->getMapFlag(MF_NOBASEEXP) && mapdata->getMapFlag(MF_NOJOBEXP);
+#ifdef Pandas_MapFlag_NoCapture
+		case MF_NOCAPTURE:
+			// 读取 nocapture 则返回 nopetcapture 的值
+			return mapdata->getMapFlag(MF_NOPETCAPTURE);
+#endif // Pandas_MapFlag_NoCapture
 		case MF_SKILL_DAMAGE:
 			nullpo_retr(-1, args);
 
@@ -5701,6 +5738,12 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, pds_mapfla
 			}
 			mapdata->setMapFlag(mapflag, status);
 			break;
+#ifdef Pandas_MapFlag_NoCapture
+		case MF_NOCAPTURE:
+			// 设置 nocapture 就等于设置 nopetcapture 标记
+			mapdata->setMapFlag(MF_NOPETCAPTURE, status);
+			break;
+#endif // Pandas_MapFlag_NoCapture
 		default:
 			mapdata->setMapFlag(mapflag, status);
 			break;

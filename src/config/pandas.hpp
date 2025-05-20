@@ -1145,9 +1145,6 @@
 	// 修正 setinstancevar 传递无效的副本编号会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
 
-	// 修正转职到没有基础攻速数据的职业时会导致地图服务器崩溃的问题 [Sola丶小克]
-	#define Pandas_Crashfix_ASPD_Base_Empty
-
 	// 规避脚本引擎在定时器唤醒后可能导致的潜在崩溃 [Sola丶小克]
 	// 
 	// 目前常看到的崩溃调用堆栈是:

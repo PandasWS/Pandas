@@ -1231,16 +1231,6 @@ void pet_catch_process_start( map_session_data& sd, t_itemid item_id, e_pet_catc
 		return;
 	}
 
-#ifdef Pandas_MapFlag_NoCapture
-	// 如果玩家所在地图设置了 nocapture 标记的话,
-	// 虽然在 pc_useitem 中已经加了限制, 但是这里也得再加一次判断,
-	// 可以防止贤者的随机捕捉宠物技能捕捉魔物 [Sola丶小克]
-	if (map_getmapflag(sd.bl.m, MF_NOCAPTURE)) {
-		clif_displaymessage(sd.fd, msg_txt_cn(&sd, 18));	// 此地图禁止捕捉宠物.
-		return;
-	}
-#endif // Pandas_MapFlag_NoCapture
-
 	std::shared_ptr<s_pet_catch_process> process = util::umap_find( pet_catchprocesses, sd.status.char_id );
 
 	if( process == nullptr ){
@@ -1287,16 +1277,6 @@ void pet_catch_process_end( map_session_data& sd, int32 target_id ){
 
 		return;
 	}
-
-#ifdef Pandas_MapFlag_NoCapture
-	// 看到 rAthena 官方也在 pet_catch_process_end 加了个拦截, 熊猫也加一个~
-	if (map_getmapflag(sd.bl.m, MF_NOCAPTURE)) {
-		clif_pet_roulette(sd, false);
-		pet_catchprocesses.erase(sd.status.char_id);
-		clif_displaymessage(sd.fd, msg_txt_cn(&sd, 18));	// 此地图禁止捕捉宠物.
-		return;
-	}
-#endif // Pandas_MapFlag_NoCapture
 
 	//FIXME: delete taming item here, if this was an item-invoked capture and the item was flagged as delay-consume [ultramage]
 
@@ -1358,7 +1338,7 @@ void pet_catch_process_end( map_session_data& sd, int32 target_id ){
 	if (!pc_inventoryblank(&sd)) {
 		clif_pet_roulette(sd, false);
 		pet_catchprocesses.erase( sd.status.char_id );
-		clif_msg_color(&sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED]);
+		clif_msg_color( sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED] );
 
 		return;
 	}
@@ -2140,7 +2120,7 @@ TIMER_FUNC(pet_recovery_timer){
 		//Detoxify is chosen for now.
 		clif_skill_nodamage(&pd->bl,sd->bl,TF_DETOXIFY,1);
 		status_change_end(&sd->bl, pd->recovery->type);
-		clif_emotion(&pd->bl, ET_OK);
+		clif_emotion( pd->bl, ET_OK );
 	}
 
 	pd->recovery->timer = INVALID_TIMER;
@@ -2400,7 +2380,7 @@ void pet_evolution(map_session_data *sd, int16 pet_id) {
 	clif_send_petdata( sd, *sd->pd, CHANGESTATEPET_HAIRSTYLE );
 	clif_send_petdata( nullptr, *sd->pd, CHANGESTATEPET_ACCESSORY );
 	clif_send_petstatus( *sd, *sd->pd );
-	clif_emotion(&sd->bl, ET_BEST);
+	clif_emotion( sd->bl, ET_BEST );
 	clif_specialeffect(&sd->pd->bl, EF_HO_UP, AREA);
 
 	clif_pet_evolution_result(sd, e_pet_evolution_result::SUCCESS);
