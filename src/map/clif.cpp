@@ -3935,7 +3935,7 @@ static void clif_longlongpar_change(map_session_data& sd, uint16 varId, int64 am
 void clif_updatestatus( map_session_data& sd, enum _sp type ){
 	switch(type){
 		case SP_WEIGHT:
-			pc_updateweightstatus(&sd);
+			pc_updateweightstatus(sd);
 			clif_par_change(sd, type, sd.weight);
 			break;
 		case SP_MAXWEIGHT:
@@ -7502,7 +7502,7 @@ void clif_use_card(map_session_data *sd,int32 idx)
 #ifdef Pandas_BattleConfig_CashMounting_UseitemLimit
 	// 当玩家双击卡片时先判定是否乘坐了“商城坐骑”,
 	// 如果是那么再根据 cashmount_useitem_limit 设置决定是否拒绝 [Sola丶小克]
-	if (sd && sd->sc.count && sd->sc.getSCE(SC_ALL_RIDING)) {
+	if (sd && !sd->sc.empty() && sd->sc.getSCE(SC_ALL_RIDING)) {
 		bool isblocked = false;
 
 		switch (sd->inventory_data[idx]->type) {
@@ -23090,11 +23090,7 @@ void clif_weight_limit( map_session_data* sd ){
 
 	WFIFOHEAD(fd, packet_len(0xADE));
 	WFIFOW(fd, 0) = 0xADE;
-#ifdef RENEWAL
-	WFIFOL(fd, 2) = battle_config.natural_heal_weight_rate_renewal;
-#else
 	WFIFOL(fd, 2) = battle_config.natural_heal_weight_rate;
-#endif
 	WFIFOSET(fd, packet_len(0xADE));
 #endif
 }
@@ -25526,7 +25522,7 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 void clif_enchantwindow_open( map_session_data& sd, uint64 clientLuaIndex ){
 #if PACKETVER_RE_NUM >= 20211103 || PACKETVER_MAIN_NUM >= 20220330
 	// Hardcoded clientside check
-	if( sd.weight > ( ( sd.max_weight * 70 ) / 100 ) ){
+	if( pc_getpercentweight(sd) >= 70 ){
 		clif_msg_color( sd, MSI_ENCHANT_FAILED_OVER_WEIGHT, color_table[COLOR_RED] );
 		sd.state.item_enchant_index = 0;
 		return;

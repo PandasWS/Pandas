@@ -30405,7 +30405,7 @@ BUILDIN_FUNC(statuscheck) {
 		return SCRIPT_CMD_SUCCESS;
 	}
 
-	if (sd->sc.count == 0 || !sd->sc.getSCE(id)) {
+	if (sd->sc.empty() || !sd->sc.getSCE(id)) {
 		script_pushint(st, 0);
 		return SCRIPT_CMD_SUCCESS;
 	}

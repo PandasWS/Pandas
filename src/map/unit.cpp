@@ -1840,7 +1840,7 @@ TIMER_FUNC(unit_resume_running){
 /**
  * Sets the delays that prevent attacks and skill usage considering the bl type
  * Makes sure that delays are not decreased in case they are already higher
- * Currently this function only handles normal attacks, cast begin and parry events
+ * Will also invoke bl type specific delay functions when required
  * @param bl Object to apply attack delay to
  * @param tick Current tick
  * @param event The event that resulted in calling this function
@@ -1879,6 +1879,8 @@ void unit_set_attackdelay(block_list& bl, t_tick tick, e_delay_event event)
 		case BL_MOB:
 			switch (event) {
 				case DELAY_EVENT_ATTACK:
+				case DELAY_EVENT_CASTEND:
+				case DELAY_EVENT_CASTCANCEL:
 					// This represents setting of attack delay (recharge time) that happens for non-PCs
 					attack_delay = status_get_adelay(&bl);
 					break;
@@ -1887,6 +1889,8 @@ void unit_set_attackdelay(block_list& bl, t_tick tick, e_delay_event event)
 					// When monsters use skills, they only get delays on cast end and cast cancel
 					break;
 			}
+			// Set monster-specific delays (inactive AI time, monster skill delays)
+			mob_set_delay(reinterpret_cast<mob_data&>(bl), tick, event);
 			break;
 		case BL_HOM:
 			switch (event) {
@@ -3296,13 +3300,8 @@ static int32 unit_attack_timer_sub(struct block_list* src, int32 tid, t_tick tic
 			ud->skill_id = 0;
 
 		// You can't move during your attack motion
-		if (src->type&battle_config.attack_walk_delay) {
-			// Monsters set their AI inactive instead of having a walkdelay
-			if (md != nullptr)
-				md->next_thinktime = tick + status_get_amotion(src);
-			else
-				unit_set_walkdelay(src, tick, sstatus->amotion, 1);
-		}
+		if (src->type&battle_config.attack_walk_delay)
+			unit_set_walkdelay(src, tick, sstatus->amotion, 1);
 	}
 
 	if(ud->state.attack_continue) {
@@ -3428,11 +3427,10 @@ int32 unit_skillcastcancel(struct block_list *bl, char type)
 		}
 	}
 
+	unit_set_attackdelay(*bl, tick, DELAY_EVENT_CASTCANCEL);
+
 	if (bl->type == BL_MOB) {
 		mob_data& md = reinterpret_cast<mob_data&>(*bl);
-		// Sets cooldowns and attack delay
-		// This needs to happen even if the cast was cancelled
-		mobskill_end(md, tick);
 		md.skill_idx = -1;
 	}
 
@@ -4080,7 +4078,6 @@ int32 unit_free(struct block_list *bl, clr_type clrtype)
 
 			skill_clear_unitgroup(bl);
 			status_change_clear(bl,1);
-			pd->~pet_data();
 			break;
 		}
 		case BL_MOB: {
@@ -4153,8 +4150,6 @@ int32 unit_free(struct block_list *bl, clr_type clrtype)
 			}
 #endif // Pandas_Struct_Mob_Data_Special_SetUnitData
 
-			md->~mob_data();
-
 			break;
 		}
 		case BL_HOM:
@@ -4185,8 +4180,6 @@ int32 unit_free(struct block_list *bl, clr_type clrtype)
 
 			skill_clear_unitgroup(bl);
 			status_change_clear(bl,1);
-
-			hd->~homun_data();
 			break;
 		}
 		case BL_MER: {
@@ -4211,8 +4204,6 @@ int32 unit_free(struct block_list *bl, clr_type clrtype)
 
 			skill_clear_unitgroup(bl);
 			status_change_clear(bl,1);
-
-			md->~s_mercenary_data();
 			break;
 		}
 		case BL_ELEM: {
