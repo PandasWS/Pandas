@@ -1031,7 +1031,7 @@ enum sc_type : int16 {
 	SC_WEAPONBLOCK_ON,
 	SC_SPORE_EXPLOSION,
 	SC_ADAPTATION,
-	SC_BASILICA_CELL, // Used in renewal mode for cell_basilica only
+	SC_BASILICA_CELL, // Deprecated
 
 	SC_ENTRY_QUEUE_APPLY_DELAY,
 	SC_ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT,
@@ -3635,6 +3635,7 @@ bool status_isinvisible(struct block_list* bl);
 
 bool status_isdead(block_list &bl);
 int32 status_isimmune(struct block_list *bl);
+bool status_isendure(block_list& bl, t_tick tick, bool visible);
 
 t_tick status_get_sc_def(struct block_list *src,struct block_list *bl, enum sc_type type, int32 rate, t_tick tick, unsigned char flag);
 int32 status_change_start(struct block_list* src, struct block_list* bl,enum sc_type type,int32 rate,int32 val1,int32 val2,int32 val3,int32 val4,t_tick duration,unsigned char flag, int32 delay = 0);
