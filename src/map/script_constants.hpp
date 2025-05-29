@@ -145,10 +145,6 @@
 	export_constant(NPCE_KILLMVP);	// killmvp_event_name	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
 
-#ifdef Pandas_NpcEvent_IDENTIFY
-	export_constant(NPCE_IDENTIFY);	// identify_event_name	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
-#endif // Pandas_NpcEvent_IDENTIFY
-
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	export_constant(NPCE_INSERT_CARD);	// insert_card_event_name	// OnPCInsertCardEvent		// 当玩家成功插入卡片后触发事件
 #endif // Pandas_NpcEvent_INSERT_CARD
@@ -2370,6 +2366,7 @@
 	export_constant(SC_SBUNSHIN);
 	export_constant(SC_CONTENTS_34);
 	export_constant(SC_CONTENTS_35);
+	export_constant(SC_NOACTION);
 
 /// Do not modify code below this, until the end of the API hook, since it will be automatically generated again
 /// @APIHOOK_START(EFST_CONST)

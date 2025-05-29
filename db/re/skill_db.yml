@@ -4466,7 +4466,6 @@ Body:
     Range: 3
     Hit: Single
     HitCount: 1
-    SplashArea: 1
     Duration1:
       - Level: 1
         Time: 200000
@@ -4554,7 +4553,6 @@ Body:
     Range: 3
     Hit: Single
     HitCount: 1
-    SplashArea: 1
     Duration1:
       - Level: 1
         Time: 150000
@@ -4687,7 +4685,7 @@ Body:
       SpCost: 10
       ItemCost:
         - Item: Booby_Trap
-          Amount: 1
+          Amount: 2
     Unit:
       Id: Blastmine
       Range: 1
@@ -5111,7 +5109,8 @@ Body:
       - Level: 9
         Time: 60000
       - Level: 10
-        Time: 65000
+        Time: 60000
+    Duration2: 60000
     Requires:
       SpCost:
         - Level: 1
@@ -11565,6 +11564,7 @@ Body:
     Element: Weapon
     SplashArea: 1
     Knockback: 2
+    Duration1: 4500
     Duration2: 2000
     Requires:
       SpCost:
@@ -15841,8 +15841,6 @@ Body:
           Size: 13
       Interval: 300
       Target: Enemy
-      Flag:
-        PathCheck: true
   - Id: 654
     Name: NPC_FIREBREATH
     Description: Fire Breath

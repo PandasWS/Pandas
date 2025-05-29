@@ -1424,6 +1424,7 @@ enum sc_type : int16 {
 
 	SC_CONTENTS_34,
 	SC_CONTENTS_35,
+	SC_NOACTION,
 
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 };
@@ -3346,8 +3347,8 @@ struct status_data {
 		str, agi, vit, int_, dex, luk,
 		pow, sta, wis, spl, con, crt,
 		eatk;
+	int32 batk;
 	pec_uint16
-		batk,
 #ifdef RENEWAL
 		watk,
 		watk2,
@@ -3482,6 +3483,7 @@ private:
 public:
 	status_change();
 
+	bool hasSCE( enum sc_type type );
 	status_change_entry* getSCE( enum sc_type type );
 	status_change_entry* getSCE( uint32 type );
 	status_change_entry* createSCE( enum sc_type type );
