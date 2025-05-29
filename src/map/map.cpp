@@ -285,6 +285,10 @@ void map_destroyblock( block_list* bl ){
 	}
 
 	switch( bl->type ){
+		case BL_NUL:
+			// Dummy type, has no destructor
+			break;
+
 		case BL_PC:
 			// Do not call the destructor here, it will be done in chrif_auth_delete
 			//reinterpret_cast<map_session_data*>( bl )->~map_session_data();
@@ -2134,12 +2138,26 @@ int32 map_addflooritem(struct item *item, int32 amount, int16 m, int16 x, int16 
 		return 0;
 	}
 
+	// If item is flagged as MVP item or dropped by bosses, it is protected for longer
+	bool extend_protection = (flags&1);
+	if (!extend_protection && mob_id > 0) {
+		// Boss and MVP drops both have prelonged loot protection
+		if (auto mob = mob_db.find(mob_id); mob != nullptr && mob->get_bosstype() != BOSSTYPE_NONE)
+			extend_protection = true;
+	}
 	fitem->first_get_charid = first_charid;
-	fitem->first_get_tick = gettick() + (flags&1 ? battle_config.mvp_item_first_get_time : battle_config.item_first_get_time);
 	fitem->second_get_charid = second_charid;
-	fitem->second_get_tick = fitem->first_get_tick + (flags&1 ? battle_config.mvp_item_second_get_time : battle_config.item_second_get_time);
 	fitem->third_get_charid = third_charid;
-	fitem->third_get_tick = fitem->second_get_tick + (flags&1 ? battle_config.mvp_item_third_get_time : battle_config.item_third_get_time);
+	if (extend_protection) {
+		fitem->first_get_tick = gettick() + battle_config.mvp_item_first_get_time;
+		fitem->second_get_tick = fitem->first_get_tick + battle_config.mvp_item_second_get_time;
+		fitem->third_get_tick = fitem->second_get_tick + battle_config.mvp_item_third_get_time;
+	}
+	else {
+		fitem->first_get_tick = gettick() + battle_config.item_first_get_time;
+		fitem->second_get_tick = fitem->first_get_tick + battle_config.item_second_get_time;
+		fitem->third_get_tick = fitem->second_get_tick + battle_config.item_third_get_time;
+	}
 	fitem->mob_id = mob_id;
 
 	memcpy(&fitem->item,item,sizeof(*item));
