@@ -126,3 +126,45 @@ DELIMITER ;
 
 CALL UPDATE_PANDAS_MAIN_USESQLDB();
 DROP PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB;
+
+-- -----------------------------------------------
+-- upgrade_20250525.sql
+-- -----------------------------------------------
+
+DROP PROCEDURE IF EXISTS UPDATE_PANDAS_MAIN_USESQLDB;
+
+DELIMITER $$
+CREATE PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB()
+BEGIN
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db') THEN
+		ALTER TABLE `mob_db`
+			ADD COLUMN `groupid` smallint(6) unsigned DEFAULT NULL AFTER `damage_taken`,
+			ADD COLUMN `title` text DEFAULT NULL AFTER `groupid`
+		;
+	END IF;
+	
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db2') THEN
+		ALTER TABLE `mob_db2`
+			ADD COLUMN `groupid` smallint(6) unsigned DEFAULT NULL AFTER `damage_taken`,
+			ADD COLUMN `title` text DEFAULT NULL AFTER `groupid`
+		;
+	END IF;
+	
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db_re') THEN
+		ALTER TABLE `mob_db_re`
+			ADD COLUMN `groupid` smallint(6) unsigned DEFAULT NULL AFTER `damage_taken`,
+			ADD COLUMN `title` text DEFAULT NULL AFTER `groupid`
+		;
+	END IF;
+	
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db2_re') THEN
+		ALTER TABLE `mob_db2_re`
+			ADD COLUMN `groupid` smallint(6) unsigned DEFAULT NULL AFTER `damage_taken`,
+			ADD COLUMN `title` text DEFAULT NULL AFTER `groupid`
+		;
+	END IF;
+END $$
+DELIMITER ;
+
+CALL UPDATE_PANDAS_MAIN_USESQLDB();
+DROP PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB;

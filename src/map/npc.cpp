@@ -6857,6 +6857,8 @@ const char *npc_get_script_event_name(int32 npce_index)
 		return script_config.kill_pc_event_name;
 	case NPCE_KILLNPC:
 		return script_config.kill_mob_event_name;
+	case NPCE_IDENTIFY:
+		return script_config.identify_event_name;
 
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
@@ -7006,11 +7008,6 @@ const char *npc_get_script_event_name(int32 npce_index)
 	case NPCE_KILLMVP:
 		return script_config.killmvp_event_name;	// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
-
-#ifdef Pandas_NpcEvent_IDENTIFY
-	case NPCE_IDENTIFY:
-		return script_config.identify_event_name;	// OnPCIdentifyEvent		// 当玩家成功鉴定了装备时触发事件
-#endif // Pandas_NpcEvent_IDENTIFY
 
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	case NPCE_INSERT_CARD:

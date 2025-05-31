@@ -167,6 +167,7 @@ struct Script_Config {
 	const char *loadmap_event_name;
 	const char *baselvup_event_name;
 	const char *joblvup_event_name;
+	const char *identify_event_name;
 
 	/************************************************************************/
 	/* Filter 类型的过滤事件，这些事件可以被 processhalt 中断                    */
@@ -288,10 +289,6 @@ struct Script_Config {
 #ifdef Pandas_NpcEvent_KILLMVP
 	const char* killmvp_event_name;	// NPCE_KILLMVP		// OnPCKillMvpEvent		// 当玩家杀死 MVP 魔物后触发事件
 #endif // Pandas_NpcEvent_KILLMVP
-
-#ifdef Pandas_NpcEvent_IDENTIFY
-	const char* identify_event_name;	// NPCE_IDENTIFY	// OnPCIdentifyEvent	// 当玩家成功鉴定了装备时触发事件
-#endif // Pandas_NpcEvent_IDENTIFY
 
 #ifdef Pandas_NpcEvent_INSERT_CARD
 	const char* insert_card_event_name;	// NPCE_INSERT_CARD	// OnPCInsertCardEvent	// 当玩家成功插入卡片后触发事件
