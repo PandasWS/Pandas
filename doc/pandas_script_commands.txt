@@ -935,16 +935,21 @@ EQI装备位置:
 若使用 script4each 指令, 则执行 <脚本> 的玩家将会成为其默认关联玩家.
 
 脚本的执行范围:
-	0 - 全服单位								例: script4each "{<脚本>}",0;
-	1 - 指定地图上的全部单位					例: script4each "{<脚本>}",1,<"地图名称">;
-	2 - 以地图某个点为中心半径距离内的单位		例: script4each "{<脚本>}",2,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
-	3 - 指定玩家所在的队伍中的全部队伍成员		例: script4each "{<脚本>}",3,<角色编号>;
-	4 - 指定玩家所在的公会中的全部公会成员		例: script4each "{<脚本>}",4,<角色编号>;
-	5 - 指定区域内的全部单位					例: script4each "{<脚本>}",5,<"地图名称">,<坐标x0>,<坐标y0>,<坐标x1>,<坐标y1>;
-	6 - 指定队伍中的全部队伍成员				例: script4each "{<脚本>}",6,<队伍编号>;
-	7 - 指定公会中的全部公会成员				例: script4each "{<脚本>}",7,<公会编号>;
+	 0 - SFE_ALL 		- 全服单位								例: script4each "{<脚本>}",SFE_ALL;
+	 1 - SFE_MAP		- 指定地图上的全部单位					例: script4each "{<脚本>}",SFE_MAP,<"地图名称">;
+	 2 - SFE_MAP_RANGE	- 以地图某个点为中心半径距离内的单位	例: script4each "{<脚本>}",SFE_MAP_RANGE,<"地图名称">,<中心坐标x>,<中心坐标y>,<范围>;
+	 3 - SFE_MAP_PARTY	- 指定地图上的全部队伍成员				例: script4each "{<脚本>}",SFE_MAP_PARTY,<"地图名称">,<队伍编号>;
+	 4 - SFE_MAP_GUILD	- 指定地图上的全部公会成员				例: script4each "{<脚本>}",SFE_MAP_GUILD,<"地图名称">,<公会编号>;
+	 5 - SFE_MAP_AREA	- 指定区域内的全部单位					例: script4each "{<脚本>}",SFE_MAP_AREA,<"地图名称">,<坐标x0>,<坐标y0>,<坐标x1>,<坐标y1>;
+	 6 - SFE_PARTY		- 指定队伍中的全部队伍成员				例: script4each "{<脚本>}",SFE_PARTY,<队伍编号>;
+	 7 - SFE_GUILD		- 指定公会中的全部公会成员				例: script4each "{<脚本>}",SFE_GUILD,<公会编号>;
+	 8 - SFE_MAP_TRIBE	- 指定地图上的全部Tribe阵营成员			例: script4each "{<脚本>}",SFE_MAP_PARTY,<"地图名称">,<Tribe阵营编号>;
+	 9 - SFE_TRIBE		- 指定阵营中的全部Tribe阵营成员			例: script4each "{<脚本>}",SFE_MAP_PARTY,<"地图名称">,<Tribe阵营编号>;
+	10 - SFE_MAP_BG		- 指定地图上的全部BG阵营成员			例: script4each "{<脚本>}",SFE_MAP_BG,<"地图名称">,<BG阵营编号>;
+	11 - SFE_BG			- 指定BG阵营中的全部BG阵营成员			例: script4each "{<脚本>}",SFE_BG,<阵营编号>;
 	
 	其中 3,4,6,7 仅支持被 script4each 使用, 无法对 script4eachmob 和 script4eachnpc 生效.
+	注：Tribe阵营尚未实装
 
 可无视外层大括号:
 	从 Pandas v1.0.1 版本开始, {<脚本>} 参数中最外层的大括号可以被忽略.
