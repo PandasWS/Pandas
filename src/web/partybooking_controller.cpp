@@ -68,7 +68,7 @@ bool party_booking_read( std::string& world_name, std::vector<s_party_booking_en
 	SQLLock sl(MAP_SQL_LOCK);
 	sl.lock();
 	auto handle = sl.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc( handle );
+	SqlStmt stmt{ *handle };
 	s_party_booking_entry entry;
 	char world_name_escaped[WORLD_NAME_LENGTH * 2 + 1];
 	char char_name[NAME_LENGTH ];
@@ -78,35 +78,33 @@ bool party_booking_read( std::string& world_name, std::vector<s_party_booking_en
 
 	std::string query = "SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, `damagedealer`, `healer`, `tanker`, `minimum_level`, `maximum_level`, `comment` FROM `" + std::string( partybookings_table ) + "` WHERE `world_name` = ? AND " + condition + order;
 
-	if( SQL_SUCCESS != SqlStmt_Prepare( stmt, query.c_str() )
-		|| SQL_SUCCESS != SqlStmt_BindParam( stmt, 0, SQLDT_STRING, (void*)world_name_escaped, strlen( world_name_escaped ) )
-		|| SQL_SUCCESS != SqlStmt_Execute( stmt )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 0, SQLDT_UINT32, &entry.account_id, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 1, SQLDT_UINT32, &entry.char_id, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 2, SQLDT_STRING, (void*)char_name, sizeof( char_name ), nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 3, SQLDT_UINT16, &entry.purpose, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 4, SQLDT_UINT8, &entry.assist, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 5, SQLDT_UINT8, &entry.damagedealer, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 6, SQLDT_UINT8, &entry.healer, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 7, SQLDT_UINT8, &entry.tanker, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 8, SQLDT_UINT16, &entry.minimum_level, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 9, SQLDT_UINT16, &entry.maximum_level, 0, nullptr, nullptr )
-		|| SQL_SUCCESS != SqlStmt_BindColumn( stmt, 10, SQLDT_STRING, (void*)comment, sizeof( comment ), nullptr, nullptr )
+	if( SQL_SUCCESS != stmt.Prepare( query.c_str() )
+		|| SQL_SUCCESS != stmt.BindParam( 0, SQLDT_STRING, (void*)world_name_escaped, strlen( world_name_escaped ) )
+		|| SQL_SUCCESS != stmt.Execute()
+		|| SQL_SUCCESS != stmt.BindColumn( 0, SQLDT_UINT32, &entry.account_id, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 1, SQLDT_UINT32, &entry.char_id, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 2, SQLDT_STRING, (void*)char_name, sizeof( char_name ), nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 3, SQLDT_UINT16, &entry.purpose, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 4, SQLDT_UINT8, &entry.assist, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 5, SQLDT_UINT8, &entry.damagedealer, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 6, SQLDT_UINT8, &entry.healer, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 7, SQLDT_UINT8, &entry.tanker, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 8, SQLDT_UINT16, &entry.minimum_level, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 9, SQLDT_UINT16, &entry.maximum_level, 0, nullptr, nullptr )
+		|| SQL_SUCCESS != stmt.BindColumn( 10, SQLDT_STRING, (void*)comment, sizeof( comment ), nullptr, nullptr )
 	){
 		SqlStmt_ShowDebug( stmt );
-		SqlStmt_Free( stmt );
 		sl.unlock();
 		return false;
 	}
 
-	while( SQL_SUCCESS == SqlStmt_NextRow( stmt ) ){
+	while( SQL_SUCCESS == stmt.NextRow() ){
 		entry.char_name = char_name;
 		entry.comment = comment;
 
 		output.push_back( entry );
 	}
 
-	SqlStmt_Free( stmt );
 	sl.unlock();
 
 	return true;
@@ -125,30 +123,27 @@ HANDLER_FUNC(partybooking_add){
 	SQLLock csl( CHAR_SQL_LOCK );
 	csl.lock();
 	auto chandle = csl.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc( chandle );
-	if( SQL_SUCCESS != SqlStmt_Prepare( stmt, "SELECT 1 FROM `%s` WHERE `leader_id` = ? AND `leader_char` = ?", party_table, aid, cid )
-		|| SQL_SUCCESS != SqlStmt_BindParam( stmt, 0, SQLDT_UINT32, &aid, sizeof( aid ) )
-		|| SQL_SUCCESS != SqlStmt_BindParam( stmt, 1, SQLDT_UINT32, &cid, sizeof( cid ) )
-		|| SQL_SUCCESS != SqlStmt_Execute( stmt )
+	SqlStmt stmt{ *chandle };
+	if( SQL_SUCCESS != stmt.Prepare( "SELECT 1 FROM `%s` WHERE `leader_id` = ? AND `leader_char` = ?", party_table, aid, cid )
+		|| SQL_SUCCESS != stmt.BindParam( 0, SQLDT_UINT32, &aid, sizeof( aid ) )
+		|| SQL_SUCCESS != stmt.BindParam( 1, SQLDT_UINT32, &cid, sizeof( cid ) )
+		|| SQL_SUCCESS != stmt.Execute()
 	){
 		SqlStmt_ShowDebug( stmt );
-		SqlStmt_Free( stmt );
 		csl.unlock();
 		res.status = HTTP_BAD_REQUEST;
 		res.set_content( "Error", "text/plain" );
 		return;
 	}
 
-	if( SqlStmt_NumRows( stmt ) <= 0 ){
+	if( stmt.NumRows() <= 0 ){
 		// No party or not party leader
-		SqlStmt_Free( stmt );
 		csl.unlock();
 		res.status = HTTP_BAD_REQUEST;
 		res.set_content( "Error", "text/plain" );
 		return;
 	}
 
-	SqlStmt_Free( stmt );
 	csl.unlock();
 
 	auto world_name = req.get_file_value( "WorldName" ).content;
@@ -629,34 +624,33 @@ bool party_booking_read(std::string& world_name, std::vector<s_party_booking_ent
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
 	std::string query = "SELECT `account_id`, `char_id`, `char_name`, `purpose`, `assist`, `damagedealer`, `healer`, "
 		"`tanker`, `minimum_level`, `maximum_level`, `comment` FROM `" + std::string(partybookings_table) +
 		"` WHERE `world_name` = ? AND " + condition + order + limit;
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, query.c_str())
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &entry.account_id, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 1, SQLDT_UINT32, &entry.char_id, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 2, SQLDT_STRING, (void*)char_name, sizeof(char_name), NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 3, SQLDT_UINT16, &entry.purpose, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 4, SQLDT_UINT8, &entry.assist, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 5, SQLDT_UINT8, &entry.damagedealer, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 6, SQLDT_UINT8, &entry.healer, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 7, SQLDT_UINT8, &entry.tanker, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 8, SQLDT_UINT16, &entry.minimum_level, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 9, SQLDT_UINT16, &entry.maximum_level, 0, NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 10, SQLDT_STRING, (void*)comment, sizeof(comment), NULL, NULL)
+	if (SQL_SUCCESS != stmt.Prepare(query.c_str())
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != stmt.Execute()
+		|| SQL_SUCCESS != stmt.BindColumn(0, SQLDT_UINT32, &entry.account_id, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(1, SQLDT_UINT32, &entry.char_id, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(2, SQLDT_STRING, (void*)char_name, sizeof(char_name), NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(3, SQLDT_UINT16, &entry.purpose, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(4, SQLDT_UINT8, &entry.assist, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(5, SQLDT_UINT8, &entry.damagedealer, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(6, SQLDT_UINT8, &entry.healer, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(7, SQLDT_UINT8, &entry.tanker, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(8, SQLDT_UINT16, &entry.minimum_level, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(9, SQLDT_UINT16, &entry.maximum_level, 0, NULL, NULL)
+		|| SQL_SUCCESS != stmt.BindColumn(10, SQLDT_STRING, (void*)comment, sizeof(comment), NULL, NULL)
 		) {
 		SqlStmt_ShowDebug(stmt);
-		SqlStmt_Free(stmt);
 		maplock.unlock();
 		return false;
 	}
 
-	while (SQL_SUCCESS == SqlStmt_NextRow(stmt)) {
+	while (SQL_SUCCESS == stmt.NextRow()) {
 		char_name[NAME_LENGTH - 1] = '\0';
 		comment[COMMENT_LENGTH - 1] = '\0';
 		
@@ -666,7 +660,6 @@ bool party_booking_read(std::string& world_name, std::vector<s_party_booking_ent
 		output.push_back(entry);
 	}
 
-	SqlStmt_Free(stmt);
 	maplock.unlock();
 
 	return true;
@@ -678,19 +671,18 @@ int party_booking_count(std::string& world_name, const std::string& condition) {
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
 	std::string query = "SELECT COUNT(*) FROM `%s` WHERE `world_name` = ? AND " + condition;
 	
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt, query.c_str(), partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
-		|| SQL_SUCCESS != SqlStmt_BindColumn(stmt, 0, SQLDT_UINT32, &record_count, sizeof(record_count), NULL, NULL)
-		|| SQL_SUCCESS != SqlStmt_NextRow(stmt)) {
+	if (SQL_SUCCESS != stmt.Prepare(query.c_str(), partybookings_table)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != stmt.Execute()
+		|| SQL_SUCCESS != stmt.BindColumn(0, SQLDT_UINT32, &record_count, sizeof(record_count), NULL, NULL)
+		|| SQL_SUCCESS != stmt.NextRow()) {
 		SqlStmt_ShowDebug(stmt);
 	}
 	
-	SqlStmt_Free(stmt);
 	maplock.unlock();
 	return record_count;
 }
@@ -803,26 +795,26 @@ HANDLER_FUNC(partybooking_add) {
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"REPLACE INTO `%s` (`world_name`, `account_id`, `char_id`, `char_name`, `purpose`, `assist`, "
 		"`damagedealer`, `healer`, `tanker`, `minimum_level`, `maximum_level`, `comment`"
 		") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_UINT32, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_UINT32, &char_id, sizeof(char_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void*)char_name.c_str(), strlen(char_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_UINT16, &purpose, sizeof(purpose))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_UINT8, &assist, sizeof(assist))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_UINT8, &damagedealer, sizeof(damagedealer))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_UINT8, &healer, sizeof(healer))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_UINT8, &tanker, sizeof(tanker))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, SQLDT_UINT16, &minimum_level, sizeof(minimum_level))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_UINT16, &maximum_level, sizeof(maximum_level))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING, (void*)memo.c_str(), strlen(memo.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_UINT32, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(2, SQLDT_UINT32, &char_id, sizeof(char_id))
+		|| SQL_SUCCESS != stmt.BindParam(3, SQLDT_STRING, (void*)char_name.c_str(), strlen(char_name.c_str()))
+		|| SQL_SUCCESS != stmt.BindParam(4, SQLDT_UINT16, &purpose, sizeof(purpose))
+		|| SQL_SUCCESS != stmt.BindParam(5, SQLDT_UINT8, &assist, sizeof(assist))
+		|| SQL_SUCCESS != stmt.BindParam(6, SQLDT_UINT8, &damagedealer, sizeof(damagedealer))
+		|| SQL_SUCCESS != stmt.BindParam(7, SQLDT_UINT8, &healer, sizeof(healer))
+		|| SQL_SUCCESS != stmt.BindParam(8, SQLDT_UINT8, &tanker, sizeof(tanker))
+		|| SQL_SUCCESS != stmt.BindParam(9, SQLDT_UINT16, &minimum_level, sizeof(minimum_level))
+		|| SQL_SUCCESS != stmt.BindParam(10, SQLDT_UINT16, &maximum_level, sizeof(maximum_level))
+		|| SQL_SUCCESS != stmt.BindParam(11, SQLDT_STRING, (void*)memo.c_str(), strlen(memo.c_str()))
+		|| SQL_SUCCESS != stmt.Execute()
 		) {
 		make_response(res, FAILURE_RET, "An error occurred while inserting data.");
 		RETURN_STMT_FAILURE(stmt, maplock);
@@ -854,14 +846,14 @@ HANDLER_FUNC(partybooking_delete) {
 	SQLLock maplock(MAP_SQL_LOCK);
 	maplock.lock();
 	auto handle = maplock.getHandle();
-	SqlStmt* stmt = SqlStmt_Malloc(handle);
+	SqlStmt stmt{ *handle };
 
-	if (SQL_SUCCESS != SqlStmt_Prepare(stmt,
+	if (SQL_SUCCESS != stmt.Prepare(
 		"DELETE FROM `%s` WHERE (`account_id` = ? AND `world_name` = ?)",
 		partybookings_table)
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, &account_id, sizeof(account_id))
-		|| SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
-		|| SQL_SUCCESS != SqlStmt_Execute(stmt)
+		|| SQL_SUCCESS != stmt.BindParam(0, SQLDT_INT32, &account_id, sizeof(account_id))
+		|| SQL_SUCCESS != stmt.BindParam(1, SQLDT_STRING, (void*)world_name.c_str(), strlen(world_name.c_str()))
+		|| SQL_SUCCESS != stmt.Execute()
 		) {
 		make_response(res, FAILURE_RET, "An error occurred while executing query.");
 		RETURN_STMT_FAILURE(stmt, maplock);

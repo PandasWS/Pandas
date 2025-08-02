@@ -43,7 +43,7 @@ jobs:
       - name: Update & Install dependencies
         run: |
           ./tools/integration/retry.sh sudo apt-get update -y
-          ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev -y
+          ./tools/integration/retry.sh sudo apt-get install libmysqlclient-dev zlib1g-dev libpcre3-dev libnsl-dev -y
 
       - name: Setup Simplified Chinese
         run: |

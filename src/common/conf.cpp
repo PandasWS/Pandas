@@ -10,10 +10,10 @@
 #include <sstream>
 
 #ifndef Pandas_Support_UTF8BOM_Files
-int conf_read_file(config_t *config, const char *config_filename)
+int32 conf_read_file(config_t *config, const char *config_filename)
 #else
 // 重命名该函数以便重载一个签名完全一致的函数接管其处理逻辑
-int conf_read_file_internal(config_t* config, const char* config_filename)
+int32 conf_read_file_internal(config_t* config, const char* config_filename)
 #endif // Pandas_Support_UTF8BOM_Files
 {
 	config_init(config);
@@ -33,10 +33,10 @@ int conf_read_file_internal(config_t* config, const char* config_filename)
 // Access:      public 
 // Parameter:   config_t * config
 // Parameter:   const char * config_filename
-// Returns:     int
+// Returns:     int32
 // Author:      Sola丶小克(CairoLee)  2021/02/06 11:55
 //************************************ 
-int conf_read_file(config_t* config, const char* config_filename)
+int32 conf_read_file(config_t* config, const char* config_filename)
 {
 	std::string strFilename(config_filename);
 
@@ -92,7 +92,7 @@ int conf_read_file(config_t* config, const char* config_filename)
 static void config_setting_copy_simple(config_setting_t *parent, const config_setting_t *src);
 static void config_setting_copy_elem(config_setting_t *parent, const config_setting_t *src);
 static void config_setting_copy_aggregate(config_setting_t *parent, const config_setting_t *src);
-int config_setting_copy(config_setting_t *parent, const config_setting_t *src);
+int32 config_setting_copy(config_setting_t *parent, const config_setting_t *src);
 
 void config_setting_copy_simple(config_setting_t *parent, const config_setting_t *src)
 {
@@ -145,7 +145,7 @@ void config_setting_copy_elem(config_setting_t *parent, const config_setting_t *
 void config_setting_copy_aggregate(config_setting_t *parent, const config_setting_t *src)
 {
 	config_setting_t *newAgg;
-	int i, n;
+	int32 i, n;
 
 	newAgg = config_setting_add(parent, config_setting_name(src), config_setting_type(src));
 
@@ -163,7 +163,7 @@ void config_setting_copy_aggregate(config_setting_t *parent, const config_settin
 	}
 }
 
-int config_setting_copy(config_setting_t *parent, const config_setting_t *src)
+int32 config_setting_copy(config_setting_t *parent, const config_setting_t *src)
 {
 	if (!config_setting_is_group(parent) && !config_setting_is_list(parent))
 		return CONFIG_FALSE;

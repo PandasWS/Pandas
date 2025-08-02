@@ -67,7 +67,7 @@
 	//         ^ 此处第四段为 1 表示这是一个 1.0.2 的开发版本 (develop)
 	// 
 	// 在 Windows 环境下, 程序启动时会根据第四段的值自动携带对应的版本后缀, 以便进行版本区分
-	#define Pandas_Version "1.2.4.0"
+	#define Pandas_Version "1.2.5.1"
 
 	// 在启动时显示 Pandas 的 LOGO
 	#define Pandas_Show_Logo
@@ -844,6 +844,9 @@
 	// 修正在部分情况下角色公会图标刷新不及时的问题 [Sola丶小克]
 	#define Pandas_Fix_GuildEmblem_Update
 
+	// 修正当 PACKETVER 小于 20131223 出现的 clif_mvp_exp 类型转换错误 [Sola丶小克]
+	#define Pandas_Fix_Clif_MVP_Exp_Type_Conversion
+
 	// 修正部分简体、繁体中文字符作为角色名时, 会被变成问号的问题 [Sola丶小克]
 	// 例如: "凯撒"中的"凯"字, "聽風"中的"聽"字等
 	#define Pandas_Fix_Chinese_Character_Trimmed
@@ -948,15 +951,6 @@
 	#ifdef Pandas_Struct_Status_Change_Cloak_Reverting
 		#define Pandas_Fix_Cloak_Status_Baffling
 	#endif // Pandas_Struct_Status_Change_Cloak_Reverting
-
-	// 修正获取道具分组的随机算法权重不符合预期的问题 [Sola丶小克]
-	// 所有最终使用 item_group_db.yml 数据的指令函数 (比如 getrandgroupitem 等)
-	// 最后都会经过 itemdb.cpp 中的 get_random_itemsubgroup 来获取随机物品
-	// 该函数的实现并不严谨, 随机出来的物品概率与 doc/item_group.txt 的描述不符合
-	// 这可能导致很多卡片或者道具过多流入到市场, 打破游戏平衡
-	//
-	// 感谢 "红狐狸" 提醒此问题
-	#define Pandas_Fix_GetRandom_ItemSubGroup_Algorithm
 
 	// 修正在保存 s_storage 数据期间如果发生了存储内容的增删改时,
 	// 特定操作流程下可能诱发数据丢失的问题 [Sola丶小克]
@@ -1070,9 +1064,6 @@
 	// 对除数可能为零的情况进行一些规避处理 [Sola丶小克]
 	#define Pandas_Crashfix_Divide_by_Zero
 
-	// 修复使用 sommon 脚本指令召唤不存在的魔物, 会导致地图服务器崩溃的问题 [Sola丶小克]
-	#define Pandas_Crashfix_ScriptCommand_Summon
-
 	// 修复使用 getd 操作的变量名存在空格开头时,
 	// 若 getd 的结果直接作为参数传入其他脚本指令, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	//
@@ -1153,9 +1144,6 @@
 
 	// 修正 setinstancevar 传递无效的副本编号会导致地图服务器崩溃的问题 [Sola丶小克]
 	#define Pandas_Crashfix_SetInstanceVar_Invaild_InstanceID
-
-	// 修正转职到没有基础攻速数据的职业时会导致地图服务器崩溃的问题 [Sola丶小克]
-	#define Pandas_Crashfix_ASPD_Base_Empty
 
 	// 规避脚本引擎在定时器唤醒后可能导致的潜在崩溃 [Sola丶小克]
 	// 
@@ -1504,11 +1492,6 @@
 	// 常量名称: NPCE_KILLMVP / 变量名称: killmvp_event_name
 	#define Pandas_NpcEvent_KILLMVP
 
-	// 当玩家成功鉴定了装备时触发事件 [Sola丶小克]
-	// 事件类型: Event / 事件名称: OnPCIdentifyEvent
-	// 常量名称: NPCE_IDENTIFY / 变量名称: identify_event_name
-	#define Pandas_NpcEvent_IDENTIFY
-
 	// 当玩家成功插入卡片后触发事件 [Sola丶小克]
 	// 事件类型: Event / 事件名称: OnPCInsertCardEvent
 	// 常量名称: NPCE_INSERT_CARD / 变量名称: insert_card_event_name
@@ -1751,6 +1734,13 @@
 	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
 	#ifdef Pandas_Aura_Mechanism
 		#define Pandas_AtCommand_Aura
+	#endif // Pandas_Aura_Mechanism
+
+	// 是否启用 reloadauradb 管理员指令 [Sola丶小克]
+	// 重新加载光环数据库 (aura_db.yml)
+	// 此选项开关需要依赖 Pandas_Aura_Mechanism 的拓展
+	#ifdef Pandas_Aura_Mechanism
+		#define Pandas_AtCommand_ReloadAuraDB
 	#endif // Pandas_Aura_Mechanism
 
 	// 是否启用 reloadlaphinedb 管理员指令 [Sola丶小克]

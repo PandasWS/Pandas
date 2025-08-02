@@ -290,7 +290,7 @@ void aura_refresh_client(struct block_list* bl) {
 		// 而不是和 else 分支一样广播 clif_outsight 封包,
 		// 否则单位在移动过程中发生光环替换的时候会有明显的消失后再出现的效果.
 		if (mapdata && mapdata->users) {
-			clif_clearunit_area(bl, CLR_TRICKDEAD);
+			clif_clearunit_area(*bl, CLR_TRICKDEAD);
 			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
 		}
 		break;

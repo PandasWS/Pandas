@@ -28,49 +28,49 @@ extern std::string log_db_id;
 extern std::string log_db_pw;
 extern std::string log_db_db;
 
-size_t DBResultData::Index(int Row, int Column) {
+size_t DBResultData::Index(size_t Row, size_t Column) {
 	return Row * ColumnNum + Column;
 }
 
-const char* DBResultData::GetData(int Row, int Column) {
+const char* DBResultData::GetData(size_t Row, size_t Column) {
 	return data.at(Index(Row, Column)).c_str();
 }
 
-void DBResultData::SetData(int Row, int Column, Sql* handle) {
+void DBResultData::SetData(size_t Row, size_t Column, Sql* handle) {
 	char* _data;
 	Sql_GetData(handle, Column, &_data, NULL);
 	data.at(Index(Row, Column)) = _data;
 }
 
-int8 DBResultData::GetInt8(int Row, int Column) {
+int8 DBResultData::GetInt8(size_t Row, size_t Column) {
 	return atoi(GetData(Row, Column));
 }
 
-uint8 DBResultData::GetUInt8(int Row, int Column) {
+uint8 DBResultData::GetUInt8(size_t Row, size_t Column) {
 	return atoi(GetData(Row, Column));
 }
 
-int16 DBResultData::GetInt16(int Row, int Column) {
+int16 DBResultData::GetInt16(size_t Row, size_t Column) {
 	return atoi(GetData(Row, Column));
 }
 
-uint16 DBResultData::GetUInt16(int Row, int Column) {
+uint16 DBResultData::GetUInt16(size_t Row, size_t Column) {
 	return atoi(GetData(Row, Column));
 }
 
-int32 DBResultData::GetInt32(int Row, int Column) {
+int32 DBResultData::GetInt32(size_t Row, size_t Column) {
 	return atoi(GetData(Row, Column));
 }
 
-uint32 DBResultData::GetUInt32(int Row, int Column) {
+uint32 DBResultData::GetUInt32(size_t Row, size_t Column) {
 	return strtoul(GetData(Row, Column), nullptr, 10);
 }
 
-int64 DBResultData::GetInt64(int Row, int Column) {
+int64 DBResultData::GetInt64(size_t Row, size_t Column) {
 	return strtoll(GetData(Row, Column), NULL, 10);
 }
 
-uint64 DBResultData::GetUInt64(int Row, int Column) {
+uint64 DBResultData::GetUInt64(size_t Row, size_t Column) {
 	return strtoull(GetData(Row, Column), NULL, 10);
 }
 

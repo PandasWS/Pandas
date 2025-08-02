@@ -264,11 +264,11 @@ void suspend_recall_postfix(map_session_data* sd) {
 	struct s_suspender* sp = NULL;
 	if (sp = (struct s_suspender*)uidb_get(suspender_db, sd->status.char_id)) {
 		pc_setdir(sd, sp->dir, sp->head_dir);
-		clif_changed_dir(&sd->bl, AREA_WOS);
+		clif_changed_dir(sd->bl, AREA_WOS);
 		if (sp->sit) {
 			pc_setsit(sd);
 			skill_sit(sd, 1);
-			clif_sitting(&sd->bl);
+			clif_sitting(sd->bl);
 		}
 
 		switch (sp->mode) {
@@ -417,24 +417,24 @@ void suspend_active(map_session_data* sd, enum e_suspend_mode smode) {
 	if (sitting == 0 && pc_issit(sd)) {
 		pc_setstand(sd, true);
 		skill_sit(sd, false);
-		clif_standing(&sd->bl);
+		clif_standing(sd->bl);
 	}
 	else if (sitting == 1 && !pc_issit(sd)) {
 		pc_setsit(sd);
 		skill_sit(sd, true);
-		clif_sitting(&sd->bl);
+		clif_sitting(sd->bl);
 	}
 
 	if (bodydirection >= 0) {
 		pc_setdir(sd, bodydirection, sd->head_dir);
-		clif_changed_dir(&sd->bl, AREA_WOS);
-		clif_changed_dir(&sd->bl, SELF);
+		clif_changed_dir(sd->bl, AREA_WOS);
+		clif_changed_dir(sd->bl, SELF);
 	}
 
 	if (headdirection >= 0) {
 		pc_setdir(sd, sd->ud.dir, headdirection);
-		clif_changed_dir(&sd->bl, AREA_WOS);
-		clif_changed_dir(&sd->bl, SELF);
+		clif_changed_dir(sd->bl, AREA_WOS);
+		clif_changed_dir(sd->bl, SELF);
 	}
 
 	struct s_suspender* sp = NULL;
@@ -471,7 +471,7 @@ void suspend_active(map_session_data* sd, enum e_suspend_mode smode) {
 		chat_leavechat(sd, 0);
 
 	// 若正在进行交易, 则立刻取消交易
-	if (sd->trade_partner)
+	if (sd->state.trading)
 		trade_tradecancel(sd);
 
 	// 关闭正在访问的仓库, 防止卡住公会仓库 (感谢"喵了个咪"反馈)
@@ -487,11 +487,11 @@ void suspend_active(map_session_data* sd, enum e_suspend_mode smode) {
 
 	// 若正在被邀请加入队伍, 则立刻回绝
 	if (sd->party_invite > 0)
-		party_reply_invite(sd, sd->party_invite, 0);
+		party_reply_invite(*sd, sd->party_invite, 0);
 
 	// 若正在被邀请加入公会, 则立刻回绝
 	if (sd->guild_invite > 0)
-		guild_reply_invite(sd, sd->guild_invite, 0);
+		guild_reply_invite(*sd, sd->guild_invite, 0);
 
 	// 若正在被邀请创建公会同盟, 则立刻回绝
 	if (sd->guild_alliance > 0)

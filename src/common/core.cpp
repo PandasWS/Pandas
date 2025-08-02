@@ -36,8 +36,8 @@
 #ifndef DEPRECATED_COMPILER_SUPPORT
 	#if defined( _MSC_VER ) && _MSC_VER < 1914
 		#error "Visual Studio versions older than Visual Studio 2017 are not officially supported anymore"
-	#elif defined( __clang__ ) && __clang_major__ < 6
-		#error "clang versions older than clang 6.0 are not officially supported anymore"
+	#elif defined( __clang__ ) && __clang_major__ < 13
+		#error "clang versions older than clang 13.0 are not officially supported anymore"
 	#elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 6
 		#error "GCC versions older than GCC 6 are not officially supported anymore"
 	#endif
@@ -56,7 +56,7 @@ using namespace rathena::server_core;
 Core* global_core = nullptr;
 
 #if defined(BUILDBOT)
-	int buildbotflag = 0;
+	int32 buildbotflag = 0;
 #endif
 
 char db_path[12] = "db"; /// relative path for db from server
@@ -78,7 +78,7 @@ char *SERVER_NAME = nullptr;
 #ifndef POSIX
 #define compat_signal(signo, func) signal(signo, func)
 #else
-sigfunc *compat_signal(int signo, sigfunc *func) {
+sigfunc *compat_signal(int32 signo, sigfunc *func) {
 	struct sigaction sact, oact;
 
 	sact.sa_handler = func;
@@ -123,8 +123,8 @@ static void cevents_init() {
 /*======================================
  *	CORE : Signal Sub Function
  *--------------------------------------*/
-static void sig_proc(int sn) {
-	static int is_called = 0;
+static void sig_proc(int32 sn) {
+	static int32 is_called = 0;
 
 	switch (sn) {
 	case SIGINT:
@@ -242,7 +242,7 @@ const char* get_svn_revision(void) {
 	if ((fp = fopen(".svn/entries", "r")) != nullptr)
 	{
 		char line[1024];
-		int rev;
+		int32 rev;
 		// Check the version
 		if (fgets(line, sizeof(line), fp))
 		{
@@ -291,7 +291,7 @@ const char *get_git_hash (void) {
 		char line[64];
 		char *rev = (char*)malloc(sizeof(char) * 50);
 
-		if( fgets(line, sizeof(line), fp) && sscanf(line, "%40s", rev) )
+		if (fgets(line, sizeof(line), fp) != nullptr && sscanf(line, "%40s", rev) == 1)
 			snprintf(GitHash, sizeof(GitHash), "%s", rev);
 
 		free(rev);
@@ -413,7 +413,7 @@ void usercheck(void)
 #endif
 }
 
-int Core::start( int argc, char **argv ){
+int32 Core::start( int32 argc, char **argv ){
 	if( this->get_status() != e_core_status::NOT_STARTED) {
 		ShowFatalError( "Core was already started and cannot be started again!\n" );
 		return EXIT_FAILURE;
@@ -541,7 +541,7 @@ int Core::start( int argc, char **argv ){
 	return EXIT_SUCCESS;
 }
 
-bool Core::initialize( int argc, char* argv[] ){
+bool Core::initialize( int32 argc, char* argv[] ){
 	// Do nothing
 	return true;
 }
