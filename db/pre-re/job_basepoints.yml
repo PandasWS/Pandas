@@ -4356,6 +4356,7 @@ Body:
         Hp: 4056
   - Jobs:
       Gunslinger: true
+      Baby_Gunslinger: true
     BaseHp:
       - Level: 1
         Hp: 40
@@ -4557,6 +4558,7 @@ Body:
         Hp: 4510
   - Jobs:
       Ninja: true
+      Baby_Ninja: true
     BaseHp:
       - Level: 1
         Hp: 40
@@ -4758,6 +4760,7 @@ Body:
         Hp: 4080
   - Jobs:
       Taekwon: true
+      Baby_Taekwon: true
     BaseHp:
       - Level: 1
         Hp: 40
@@ -9432,6 +9435,7 @@ Body:
         Sp: 604
   - Jobs:
       Gunslinger: true
+      Baby_Gunslinger: true
     BaseSp:
       - Level: 1
         Sp: 12
@@ -9633,6 +9637,7 @@ Body:
         Sp: 456
   - Jobs:
       Ninja: true
+      Baby_Ninja: true
     BaseSp:
       - Level: 1
         Sp: 14
@@ -9834,6 +9839,7 @@ Body:
         Sp: 522
   - Jobs:
       Taekwon: true
+      Baby_Taekwon: true
     BaseSp:
       - Level: 1
         Sp: 12
@@ -10036,6 +10042,8 @@ Body:
   - Jobs:
       Star_Gladiator: true
       Star_Gladiator2: true
+      Baby_Star_Gladiator: true
+      Baby_Star_Gladiator2: true
     BaseSp:
       - Level: 1
         Sp: 14
@@ -10237,6 +10245,7 @@ Body:
         Sp: 500
   - Jobs:
       Soul_Linker: true
+      Baby_Soul_Linker: true
     BaseSp:
       - Level: 1
         Sp: 19
