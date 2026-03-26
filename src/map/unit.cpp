@@ -35,6 +35,7 @@
 #include "path.hpp"
 #include "pc.hpp"
 #include "pet.hpp"
+#include "script.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
 
@@ -3544,6 +3545,11 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 				achievement_free(sd);
 
 			// Clearing...
+			if (sd->regs.table_vars) {
+				script_free_table_vars(sd->regs.table_vars);
+				sd->regs.table_vars = nullptr;
+			}
+
 			if (sd->bonus_script.head)
 				pc_bonus_script_clear(sd, BSF_REM_ALL);
 

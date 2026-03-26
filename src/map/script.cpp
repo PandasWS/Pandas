@@ -13,6 +13,7 @@
 #include <cmath>
 #include <csetjmp>
 #include <cstdlib> // atoi, strtol, strtoll, exit
+#include <unordered_map>
 
 #ifdef Pandas_ScriptEngine_Express
 #include <cctype>	// toupper, tolower
@@ -288,6 +289,7 @@ static int buildin_getelementofarray_ref = 0;
 // Caches compiled autoscript item code.
 // Note: This is not cleared when reloading itemdb.
 static DBMap* autobonus_db = nullptr; // char* script -> char* bytecode
+static DBMap* global_table_vars = nullptr;
 
 struct Script_Config script_config = {
 	1, // warn_func_mismatch_argtypes
@@ -644,6 +646,7 @@ const char* script_op2name(int op)
 	RETURN_OP_NAME(C_USERFUNC_POS);
 
 	RETURN_OP_NAME(C_REF);
+	RETURN_OP_NAME(C_TABLE);
 
 	// operators
 	RETURN_OP_NAME(C_OP3);
@@ -1182,6 +1185,8 @@ static const char* skip_word(const char* p)
 	// postfix
 	if( *p == '$' )// string
 		p++;
+	else if( *p == '%' )// table
+		p++;
 
 	return p;
 }
@@ -1380,6 +1385,59 @@ const char* parse_variable(const char* p) {
 
 	// skip the variable where applicable
 	p = skip_word(p);
+
+	// Table chain assignment: .@t%.field = value -> table_set(.@t%, "field", value)
+	if( type == C_NOP && p > var && *(p-1) == '%' && *p == '.' ) {
+		struct chain_entry { std::string name; char postfix; };
+		std::vector<chain_entry> chain;
+		const char* cp = p;
+
+		while (*cp == '.') {
+			cp++;
+			const char* fs = cp;
+			while (ISALNUM(*cp) || *cp == '_') cp++;
+			if (fs == cp) return nullptr;
+			std::string fname(fs, cp - fs);
+			char postfix = 0;
+			if (*cp == '%' || *cp == '$') { postfix = *cp; cp++; }
+			chain.push_back({fname, postfix});
+			if (postfix != '%') break;
+		}
+
+		const char* after_chain = skip_space(cp);
+		if (after_chain && *after_chain == '=' && *(after_chain+1) != '=') {
+			after_chain = skip_space(after_chain + 1);
+
+			add_scriptl(add_str("table_set"));
+			add_scriptc(C_ARG);
+
+			for (int ci = 0; ci < (int)chain.size() - 1; ci++) {
+				add_scriptl(add_str("table_ensure"));
+				add_scriptc(C_ARG);
+			}
+
+			int root_word = add_word(var);
+			add_scriptl(root_word);
+
+			for (int ci = 0; ci < (int)chain.size() - 1; ci++) {
+				add_scriptc(C_STR);
+				for (char c : chain[ci].name) add_scriptb(c);
+				add_scriptb(0);
+				add_scriptc(C_FUNC);
+			}
+
+			add_scriptc(C_STR);
+			for (char c : chain.back().name) add_scriptb(c);
+			add_scriptb(0);
+
+			after_chain = parse_subexpr(after_chain, -1);
+
+			add_scriptc(C_FUNC);
+			return after_chain;
+		}
+		// Not an assignment — fall through to normal parse_variable logic
+	}
+
 	p = skip_space(p);
 
 	if( p == nullptr ) {// end of the line or invalid buffer
@@ -1555,6 +1613,47 @@ const char* parse_simpleexpr(const char *p)
 
 	if(*p==';' || *p==',')
 		disp_error_message("parse_simpleexpr: unexpected end of expression",p);
+	if(*p=='{'){
+		// Table literal: { key = 1, name$ = "str", child% = { ... } }
+		int table_create_ref = add_str("table_create");
+		add_scriptl(table_create_ref);
+		add_scriptc(C_ARG);
+
+		p = skip_space(p + 1);
+
+		while (*p && *p != '}') {
+			const char* key_start = p;
+			while (ISALNUM(*p) || *p == '_') p++;
+			if (key_start == p)
+				disp_error_message("parse_simpleexpr: empty key name in table literal", p);
+			const char* key_end = p;
+
+			if (*p == '$' || *p == '%') p++;
+
+			add_scriptc(C_STR);
+			for (const char* k = key_start; k < key_end; k++)
+				add_scriptb(*k);
+			add_scriptb(0);
+
+			p = skip_space(p);
+			if (*p != '=')
+				disp_error_message("parse_simpleexpr: expected '=' in table literal", p);
+			p = skip_space(p + 1);
+
+			p = parse_subexpr(p, -1);
+			p = skip_space(p);
+
+			if (*p == ',')
+				p = skip_space(p + 1);
+		}
+
+		if (*p != '}')
+			disp_error_message("parse_simpleexpr: unmatched '}' in table literal", p);
+		p++;
+
+		add_scriptc(C_FUNC);
+		return p;
+	}
 	if(*p=='('){
 		if( (i=syntax.curly_count-1) >= 0 && syntax.curly[i].type == TYPE_ARGLIST )
 			++syntax.curly[i].count;
@@ -1660,6 +1759,47 @@ const char* parse_simpleexpr(const char *p)
 
 		p=skip_word(p);
 		if( *p == '[' ){
+			// Pre-scan: if this is a table array with chain access (.@arr%[i].field),
+			// collect the chain FIRST so we can emit table_get wrappers before getelementofarray.
+			struct chain_entry_arr { std::string name; char postfix; };
+			std::vector<chain_entry_arr> arr_chain;
+			const char* arr_chain_end = nullptr;
+
+			if( is_table_variable(get_str(l)) ) {
+				const char* peek = p;
+				int depth = 0;
+				for (; *peek; peek++) {
+					if (*peek == '[') depth++;
+					if (*peek == ']') { depth--; if (depth == 0) { peek++; break; } }
+				}
+				if (*peek == '.') {
+					const char* cp = peek;
+					while (*cp == '.') {
+						cp++;
+						const char* fs = cp;
+						while (ISALNUM(*cp) || *cp == '_') cp++;
+						if (fs == cp) break;
+						std::string fname(fs, cp - fs);
+						char postfix = 0;
+						if (*cp == '%' || *cp == '$') { postfix = *cp; cp++; }
+						arr_chain.push_back({fname, postfix});
+						if (postfix != '%') break;
+					}
+					if (!arr_chain.empty())
+						arr_chain_end = cp;
+				}
+			}
+
+			// Emit table_get wrappers BEFORE getelementofarray (if chain detected)
+			for (int ci = 0; ci < (int)arr_chain.size(); ci++) {
+				bool is_last = (ci == (int)arr_chain.size() - 1);
+				if (is_last && arr_chain[ci].postfix == '$')
+					add_scriptl(add_str("table_get$"));
+				else
+					add_scriptl(add_str("table_get"));
+				add_scriptc(C_ARG);
+			}
+
 			// array(name[i] => getelementofarray(name,i) )
 			add_scriptl(buildin_getelementofarray_ref);
 			add_scriptc(C_ARG);
@@ -1671,7 +1811,57 @@ const char* parse_simpleexpr(const char *p)
 				disp_error_message("parse_simpleexpr: unmatched ']'",p);
 			++p;
 			add_scriptc(C_FUNC);
-		}else
+
+			// Emit chain keys AFTER getelementofarray
+			if (!arr_chain.empty()) {
+				for (auto& f : arr_chain) {
+					add_scriptc(C_STR);
+					for (char c : f.name) add_scriptb(c);
+					add_scriptb(0);
+					add_scriptc(C_FUNC);
+				}
+				p = arr_chain_end;
+			}
+		} else if ( is_table_variable(get_str(l)) && *p == '.' ) {
+			// Chain access: .@t%.field%.subfield$ etc.
+			struct chain_entry { std::string name; char postfix; };
+			std::vector<chain_entry> chain;
+			const char* cp = p;
+
+			while (*cp == '.') {
+				cp++;
+				const char* fs = cp;
+				while (ISALNUM(*cp) || *cp == '_') cp++;
+				if (fs == cp)
+					disp_error_message("parse_simpleexpr: empty field name in table chain access", cp);
+				std::string fname(fs, cp - fs);
+				char postfix = 0;
+				if (*cp == '%' || *cp == '$') { postfix = *cp; cp++; }
+				chain.push_back({fname, postfix});
+				if (postfix != '%') break;
+			}
+
+			// Generate nested table_get/table_get$ bytecode
+			for (int ci = 0; ci < (int)chain.size(); ci++) {
+				bool is_last = (ci == (int)chain.size() - 1);
+				if (is_last && chain[ci].postfix == '$')
+					add_scriptl(add_str("table_get$"));
+				else
+					add_scriptl(add_str("table_get"));
+				add_scriptc(C_ARG);
+			}
+
+			add_scriptl(l);
+
+			for (auto& f : chain) {
+				add_scriptc(C_STR);
+				for (char c : f.name) add_scriptb(c);
+				add_scriptb(0);
+				add_scriptc(C_FUNC);
+			}
+
+			p = cp;
+		} else
 			add_scriptl(l);
 
 	}
@@ -2980,7 +3170,61 @@ struct script_data *get_val_(struct script_state* st, struct script_data* data, 
 		}
 	}
 
-	if( postfix == '$' ) {// string variable
+	if( postfix == '%' ) {// table variable
+		struct script_table* t = nullptr;
+		struct reg_db* n_db = nullptr;
+
+		switch( prefix ) {
+			case '.':
+				n_db = data->ref ? data->ref :
+					name[1] == '@' ? &st->stack->scope :
+					&st->script->local;
+				break;
+			case '@':
+				if( sd ) n_db = &sd->regs;
+				break;
+			case '$':
+			{
+				static struct reg_db global_reg = { nullptr, nullptr, nullptr };
+				global_reg.table_vars = global_table_vars;
+				n_db = &global_reg;
+				break;
+			}
+			case '\'':
+				if (data->ref) {
+					n_db = data->ref;
+				} else {
+					std::shared_ptr<s_instance_data> idata = util::umap_find(instances, script_instancegetid(st));
+					if (idata) n_db = &idata->regs;
+				}
+				break;
+			default:
+				ShowWarning("script:get_val: unsupported prefix for table variable: '%s'\n", name);
+				break;
+		}
+
+		if( n_db && n_db->table_vars )
+			t = (struct script_table*)i64db_get(n_db->table_vars, reference_getuid(data));
+
+		// auto-create if not found
+		if( !t && n_db ) {
+			t = script_table_create();
+			if( !n_db->table_vars )
+				n_db->table_vars = i64db_alloc(DB_OPT_BASE);
+			i64db_put(n_db->table_vars, reference_getuid(data), t);
+			if( prefix == '$' )
+				global_table_vars = n_db->table_vars;
+		}
+
+		if( t ) {
+			data->type = C_TABLE;
+			data->u.table = t;
+			script_table_addref(t);
+		} else {
+			data->type = C_NOP;
+			data->u.num = 0;
+		}
+	} else if( postfix == '$' ) {// string variable
 
 		switch( prefix ) {
 			case '@':
@@ -3486,6 +3730,67 @@ bool set_reg_str( struct script_state* st, map_session_data* sd, int64 num, cons
 	}
 }
 
+bool set_reg_table(struct script_state* st, map_session_data* sd, int64 num, const char* name,
+                   struct script_table* value, struct reg_db* ref) {
+	char prefix = name[0];
+	struct reg_db* n = nullptr;
+
+	switch (prefix) {
+		case '.':
+			n = ref ? ref :
+				(name[1] == '@') ? &st->stack->scope :
+				&st->script->local;
+			break;
+		case '@':
+			if (!sd) return false;
+			n = &sd->regs;
+			break;
+		case '$':
+			{
+				static struct reg_db global_reg = { nullptr, nullptr, nullptr };
+				global_reg.table_vars = global_table_vars;
+				n = &global_reg;
+			}
+			break;
+		case '\'':
+			if (ref) {
+				n = ref;
+			} else {
+				std::shared_ptr<s_instance_data> idata = util::umap_find(instances, script_instancegetid(st));
+				if (idata)
+					n = &idata->regs;
+				else {
+					ShowError("set_reg_table: cannot write instance variable '%s', NPC not in an instance!\n", name);
+					return false;
+				}
+			}
+			break;
+		default:
+			ShowError("set_reg_table: unsupported prefix for table variable: '%s'\n", name);
+			return false;
+	}
+
+	if (!n) return false;
+
+	if (!n->table_vars)
+		n->table_vars = i64db_alloc(DB_OPT_BASE);
+
+	struct script_table* old = (struct script_table*)i64db_get(n->table_vars, num);
+	if (old) script_table_release(old);
+
+	if (value) {
+		script_table_addref(value);
+		i64db_put(n->table_vars, num, value);
+	} else {
+		i64db_remove(n->table_vars, num);
+	}
+
+	if (prefix == '$')
+		global_table_vars = n->table_vars;
+
+	return true;
+}
+
 bool set_reg_num( struct script_state* st, map_session_data* sd, int64 num, const char* name, int64 value, struct reg_db *ref ){
 	char prefix = name[0];
 	size_t vlen = 0;
@@ -3622,6 +3927,15 @@ const char* conv_str_(struct script_state* st, struct script_data* data, map_ses
 		data->type = C_STR;
 		data->u.str = p;
 	}
+	else if( data_istable(data) )
+	{// table -> string (not meaningful)
+		ShowWarning("script:conv_str: converting table to string, defaulting to \"(table)\"\n");
+		script_reportdata(data);
+		script_reportsrc(st);
+		script_table_release(data->u.table);
+		data->type = C_CONSTSTR;
+		data->u.str = const_cast<char *>("(table)");
+	}
 	else if( data_isreference(data) )
 	{// reference -> string
 		//##TODO when does this happen (check get_val) [FlavioJS] -- at getd!!
@@ -3684,6 +3998,15 @@ int64 conv_num_(struct script_state* st, struct script_data* data, map_session_d
 			aFree(p);
 		data->type = C_INT;
 		data->u.num = num;
+	}
+	else if( data_istable(data) )
+	{// table -> int (not meaningful)
+		ShowWarning("script:conv_num: converting table to number, defaulting to 0\n");
+		script_reportdata(data);
+		script_reportsrc(st);
+		script_table_release(data->u.table);
+		data->type = C_INT;
+		data->u.num = 0;
 	}
 #if 0
 	// FIXME this function is being used to retrieve the position of labels and
@@ -3763,6 +4086,50 @@ struct script_data* push_retinfo(struct script_stack* stack, struct script_retin
 	return &stack->stack_data[stack->sp-1];
 }
 
+script_table* script_table_create() {
+	auto* t = new script_table();
+	t->refcount = 1;
+	return t;
+}
+
+void script_table_addref(script_table* t) {
+	if (t) t->refcount++;
+}
+
+void script_table_release(script_table* t) {
+	if (!t) return;
+	if (--t->refcount == 0) {
+		for (auto& [k, v] : t->fields) {
+			if (v.type == script_table_value::VT_TABLE && v.table)
+				script_table_release(v.table);
+		}
+		delete t;
+	}
+}
+
+script_table* script_table_deep_copy(const script_table* src) {
+	if (!src) return nullptr;
+	auto* dst = script_table_create();
+	for (auto& [k, v] : src->fields) {
+		script_table_value nv = v;
+		if (v.type == script_table_value::VT_TABLE && v.table) {
+			nv.table = script_table_deep_copy(v.table);
+		}
+		dst->fields[k] = std::move(nv);
+	}
+	return dst;
+}
+
+struct script_data* push_table(struct script_stack* stack, struct script_table* t) {
+	if (stack->sp >= stack->sp_max)
+		stack_expand(stack);
+	stack->stack_data[stack->sp].type    = C_TABLE;
+	stack->stack_data[stack->sp].u.table = t;
+	stack->stack_data[stack->sp].ref     = nullptr;
+	stack->sp++;
+	return &stack->stack_data[stack->sp - 1];
+}
+
 /// Pushes a copy of the target position into the stack
 struct script_data* push_copy(struct script_stack* stack, int pos)
 {
@@ -3772,6 +4139,10 @@ struct script_data* push_copy(struct script_stack* stack, int pos)
 			break;
 		case C_STR:
 			return push_str(stack, C_STR, aStrdup(stack->stack_data[pos].u.str));
+			break;
+		case C_TABLE:
+			script_table_addref(stack->stack_data[pos].u.table);
+			return push_table(stack, stack->stack_data[pos].u.table);
 			break;
 		case C_RETINFO:
 			ShowFatalError("script:push_copy: can't create copies of C_RETINFO. Exiting...\n");
@@ -3812,6 +4183,8 @@ void pop_stack(struct script_state* st, int start, int end)
 		data = &stack->stack_data[i];
 		if( data->type == C_STR )
 			aFree(data->u.str);
+		if( data->type == C_TABLE )
+			script_table_release(data->u.table);
 		if( data->type == C_RETINFO ) {
 			struct script_retinfo* ri = data->u.ri;
 
@@ -3822,6 +4195,10 @@ void pop_stack(struct script_state* st, int start, int end)
 			if (ri->scope.arrays) {
 				ri->scope.arrays->destroy(ri->scope.arrays, script_free_array_db);
 				ri->scope.arrays = nullptr;
+			}
+			if (ri->scope.table_vars) {
+				script_free_table_vars(ri->scope.table_vars);
+				ri->scope.table_vars = nullptr;
 			}
 			if( data->ref )
 				aFree(data->ref);
@@ -3875,6 +4252,17 @@ void script_free_vars(struct DBMap* storage)
 	}
 }
 
+void script_free_table_vars(struct DBMap* storage) {
+	if (!storage) return;
+	struct DBIterator *iter = db_iterator(storage);
+	for (void* data = dbi_first(iter); dbi_exists(iter); data = dbi_next(iter)) {
+		struct script_table* t = (struct script_table*)data;
+		if (t) script_table_release(t);
+	}
+	dbi_destroy(iter);
+	db_destroy(storage);
+}
+
 void script_free_code(struct script_code* code)
 {
 	nullpo_retv(code);
@@ -3884,6 +4272,8 @@ void script_free_code(struct script_code* code)
 	script_free_vars(code->local.vars);
 	if (code->local.arrays)
 		code->local.arrays->destroy(code->local.arrays, script_free_array_db);
+	if (code->local.table_vars)
+		script_free_table_vars(code->local.table_vars);
 	aFree(code->script_buf);
 
 #ifdef Pandas_Crashfix_ScriptFreeCode_SetPointerNull
@@ -3914,6 +4304,7 @@ struct script_state* script_alloc_state(struct script_code* rootscript, int pos,
 	st->stack->defsp = st->stack->sp;
 	st->stack->scope.vars = i64db_alloc(DB_OPT_RELEASE_DATA);
 	st->stack->scope.arrays = nullptr;
+	st->stack->scope.table_vars = nullptr;
 	st->state = RUN;
 	st->script = rootscript;
 	st->pos = pos;
@@ -4010,6 +4401,8 @@ void script_free_state(struct script_state* st)
 			script_free_vars(st->stack->scope.vars);
 			if (st->stack->scope.arrays)
 				st->stack->scope.arrays->destroy(st->stack->scope.arrays, script_free_array_db);
+			if (st->stack->scope.table_vars)
+				script_free_table_vars(st->stack->scope.table_vars);
 			pop_stack(st, 0, st->stack->sp);
 			aFree(st->stack->stack_data);
 			ers_free(stack_ers, st->stack);
@@ -4023,6 +4416,10 @@ void script_free_state(struct script_state* st)
 			if (st->script->local.arrays && !db_size(st->script->local.arrays)) {
 				st->script->local.arrays->destroy(st->script->local.arrays, script_free_array_db);
 				st->script->local.arrays = nullptr;
+			}
+			if (st->script->local.table_vars && !db_size(st->script->local.table_vars)) {
+				script_free_table_vars(st->script->local.table_vars);
+				st->script->local.table_vars = nullptr;
 			}
 		}
 		st->pos = -1;
@@ -4357,7 +4754,7 @@ static void script_check_buildin_argtype(struct script_state* st, int func)
 			switch( type )
 			{
 				case 'v':
-					if( !data_isstring(data) && !data_isint(data) && !data_isreference(data) )
+					if( !data_isstring(data) && !data_isint(data) && !data_isreference(data) && !data_istable(data) )
 					{// variant
 						ShowWarning("Unexpected type for argument %d. Expected string, number or variable.\n", idx-1);
 						script_reportdata(data);
@@ -4516,6 +4913,8 @@ int run_func(struct script_state *st)
 		}
 		script_free_vars(st->stack->scope.vars);
 		st->stack->scope.arrays->destroy(st->stack->scope.arrays, script_free_array_db);
+		if (st->stack->scope.table_vars)
+			script_free_table_vars(st->stack->scope.table_vars);
 
 		ri = st->stack->stack_data[st->stack->defsp-1].u.ri;
 		nargs = ri->nargs;
@@ -4523,6 +4922,7 @@ int run_func(struct script_state *st)
 		st->script = ri->script;
 		st->stack->scope.vars = ri->scope.vars;
 		st->stack->scope.arrays = ri->scope.arrays;
+		st->stack->scope.table_vars = ri->scope.table_vars;
 		st->stack->defsp = ri->defsp;
 		memset(ri, 0, sizeof(struct script_retinfo));
 
@@ -5730,6 +6130,10 @@ void do_final_script() {
 
 	mapreg_final();
 
+	if (global_table_vars)
+		script_free_table_vars(global_table_vars);
+	global_table_vars = nullptr;
+
 	db_destroy(scriptlabel_db);
 	userfunc_db->destroy(userfunc_db, db_script_free_code_sub);
 	autobonus_db->destroy(autobonus_db, db_script_free_code_sub);
@@ -6360,10 +6764,12 @@ BUILDIN_FUNC(callfunc)
 	if (!st->stack->scope.arrays)
 		st->stack->scope.arrays = idb_alloc(DB_OPT_BASE); // TODO: Can this happen? when?
 	ref[0].arrays = st->stack->scope.arrays;
+	ref[0].table_vars = st->stack->scope.table_vars;
 	ref[1].vars = st->script->local.vars;
 	if (!st->script->local.arrays)
 		st->script->local.arrays = idb_alloc(DB_OPT_BASE); // TODO: Can this happen? when?
 	ref[1].arrays = st->script->local.arrays;
+	ref[1].table_vars = st->script->local.table_vars;
 
 	for(i = st->start+3, j = 0; i < st->end; i++, j++) {
 		struct script_data* data = push_copy(st->stack,i);
@@ -6377,12 +6783,13 @@ BUILDIN_FUNC(callfunc)
 	}
 
 	CREATE(ri, struct script_retinfo, 1);
-	ri->script       = st->script;              // script code
-	ri->scope.vars   = st->stack->scope.vars;   // scope variables
-	ri->scope.arrays = st->stack->scope.arrays; // scope arrays
-	ri->pos          = st->pos;                 // script location
-	ri->nargs        = j;                       // argument count
-	ri->defsp        = st->stack->defsp;        // default stack pointer
+	ri->script             = st->script;              // script code
+	ri->scope.vars         = st->stack->scope.vars;   // scope variables
+	ri->scope.arrays       = st->stack->scope.arrays; // scope arrays
+	ri->scope.table_vars   = st->stack->scope.table_vars; // scope table variables
+	ri->pos                = st->pos;                 // script location
+	ri->nargs              = j;                       // argument count
+	ri->defsp              = st->stack->defsp;        // default stack pointer
 	push_retinfo(st->stack, ri, ref);
 
 	st->pos = 0;
@@ -6391,6 +6798,7 @@ BUILDIN_FUNC(callfunc)
 	st->state = GOTO;
 	st->stack->scope.vars = i64db_alloc(DB_OPT_RELEASE_DATA);
 	st->stack->scope.arrays = idb_alloc(DB_OPT_BASE);
+	st->stack->scope.table_vars = nullptr;
 
 	if (!st->script->local.vars)
 		st->script->local.vars = i64db_alloc(DB_OPT_RELEASE_DATA);
@@ -6420,6 +6828,7 @@ BUILDIN_FUNC(callsub)
 	if (!st->stack->scope.arrays)
 		st->stack->scope.arrays = idb_alloc(DB_OPT_BASE); // TODO: Can this happen? when?
 	ref[0].arrays = st->stack->scope.arrays;
+	ref[0].table_vars = st->stack->scope.table_vars;
 
 	for(i = st->start+3, j = 0; i < st->end; i++, j++) {
 		struct script_data* data = push_copy(st->stack,i);
@@ -6433,12 +6842,13 @@ BUILDIN_FUNC(callsub)
 	}
 
 	CREATE(ri, struct script_retinfo, 1);
-	ri->script       = st->script;              // script code
-	ri->scope.vars   = st->stack->scope.vars;   // scope variables
-	ri->scope.arrays = st->stack->scope.arrays; // scope arrays
-	ri->pos          = st->pos;                 // script location
-	ri->nargs        = j;                       // argument count
-	ri->defsp        = st->stack->defsp;        // default stack pointer
+	ri->script             = st->script;              // script code
+	ri->scope.vars         = st->stack->scope.vars;   // scope variables
+	ri->scope.arrays       = st->stack->scope.arrays; // scope arrays
+	ri->scope.table_vars   = st->stack->scope.table_vars; // scope table variables
+	ri->pos                = st->pos;                 // script location
+	ri->nargs              = j;                       // argument count
+	ri->defsp              = st->stack->defsp;        // default stack pointer
 	push_retinfo(st->stack, ri, ref);
 
 	st->pos = pos;
@@ -6446,6 +6856,7 @@ BUILDIN_FUNC(callsub)
 	st->state = GOTO;
 	st->stack->scope.vars = i64db_alloc(DB_OPT_RELEASE_DATA);
 	st->stack->scope.arrays = idb_alloc(DB_OPT_BASE);
+	st->stack->scope.table_vars = nullptr;
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -7242,14 +7653,23 @@ BUILDIN_FUNC(setr)
 #endif
 
 	if( !strcmp(command, "setr") && script_hasdata(st, 4) ) { // Optional argument used by post-increment/post-decrement constructs to return the previous value
-		if( is_string_variable(name) )
+		if( is_table_variable(name) )
+			script_pushcopy(st, 4); // table: push copy of old value
+		else if( is_string_variable(name) )
 			script_pushstrcopy(st,script_getstr(st, 4));
 		else
 			script_pushint(st,script_getnum64(st, 4));
 	} else // Return a copy of the variable reference
 		script_pushcopy(st, 2);
 
-	if( is_string_variable(name) )
+	if( is_table_variable(name) ) {
+		struct script_data* val = script_getdata(st, 3);
+		get_val(st, val);
+		struct script_table* t = data_istable(val) ? val->u.table : nullptr;
+		struct script_table* copy = t ? script_table_deep_copy(t) : nullptr;
+		set_reg_table(st, sd, num, name, copy, script_getref(st, 2));
+		if (copy) script_table_release(copy);
+	} else if( is_string_variable(name) )
 		set_reg_str( st, sd, num, name, script_getstr( st, 3 ), script_getref( st, 2 ) );
 	else
 		set_reg_num( st, sd, num, name, script_getnum64( st, 3 ), script_getref( st, 2 ) );
@@ -29063,6 +29483,378 @@ BUILDIN_FUNC(setdialogpospercent){
 	return SCRIPT_CMD_SUCCESS;
 }
 
+/// Helper: get a script_table* from a stack position (resolves references)
+static struct script_table* script_get_table(struct script_state* st, int idx) {
+	struct script_data* data = script_getdata(st, idx);
+	get_val(st, data);
+	if (data_istable(data))
+		return data->u.table;
+	return nullptr;
+}
+
+/// table_create("key1", val1, "key2", val2, ...) -> creates a new table
+BUILDIN_FUNC(table_create)
+{
+	struct script_table* t = script_table_create();
+	int nargs = script_lastdata(st) - 1;
+
+	if (nargs > 0) {
+		if (nargs % 2 != 0) {
+			ShowError("buildin_table_create: arguments must be key-value pairs (even count), got %d\n", nargs);
+			script_table_release(t);
+			script_pushint(st, 0);
+			return SCRIPT_CMD_FAILURE;
+		}
+		for (int i = 0; i < nargs; i += 2) {
+			const char* key = script_getstr(st, 2 + i);
+			struct script_data* val = script_getdata(st, 3 + i);
+			get_val(st, val);
+
+			script_table_value tv;
+			if (data_istable(val)) {
+				tv.type = script_table_value::VT_TABLE;
+				tv.table = script_table_deep_copy(val->u.table);
+			} else if (data_isstring(val)) {
+				tv.type = script_table_value::VT_STR;
+				tv.str = val->u.str;
+			} else {
+				tv.type = script_table_value::VT_INT;
+				tv.num = val->u.num;
+			}
+			t->fields[key] = std::move(tv);
+		}
+	}
+
+	push_table(st->stack, t);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_get(.@t%, "key") -> returns int or table value
+BUILDIN_FUNC(table_get)
+{
+	struct script_table* t = script_get_table(st, 2);
+	const char* key = script_getstr(st, 3);
+
+	if (!t) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	auto it = t->fields.find(key);
+	if (it == t->fields.end()) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	switch (it->second.type) {
+	case script_table_value::VT_TABLE:
+		if (it->second.table) {
+			script_table_addref(it->second.table);
+			push_table(st->stack, it->second.table);
+		} else {
+			script_pushint(st, 0);
+		}
+		break;
+	case script_table_value::VT_INT:
+	default:
+		script_pushint(st, it->second.num);
+		break;
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_ensure(.@t%, "key") -> returns table at key, auto-creating if absent
+BUILDIN_FUNC(table_ensure)
+{
+	struct script_table* t = script_get_table(st, 2);
+	const char* key = script_getstr(st, 3);
+
+	if (!t) {
+		t = script_table_create();
+		push_table(st->stack, t);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	auto it = t->fields.find(key);
+	if (it != t->fields.end() && it->second.type == script_table_value::VT_TABLE && it->second.table) {
+		script_table_addref(it->second.table);
+		push_table(st->stack, it->second.table);
+	} else {
+		struct script_table* sub = script_table_create();
+		script_table_value tv;
+		tv.type = script_table_value::VT_TABLE;
+		tv.table = sub;
+		if (it != t->fields.end() && it->second.type == script_table_value::VT_TABLE && it->second.table)
+			script_table_release(it->second.table);
+		t->fields[key] = std::move(tv);
+		script_table_addref(sub);
+		push_table(st->stack, sub);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_get$(.@t%, "key") -> returns string value
+BUILDIN_FUNC(table_getstr)
+{
+	struct script_table* t = script_get_table(st, 2);
+	const char* key = script_getstr(st, 3);
+
+	if (!t) {
+		script_pushconststr(st, const_cast<char*>(""));
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	auto it = t->fields.find(key);
+	if (it == t->fields.end() || it->second.type != script_table_value::VT_STR) {
+		script_pushconststr(st, const_cast<char*>(""));
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	script_pushstrcopy(st, it->second.str.c_str());
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_set(.@t%, "key", value) -- auto-detects int/string/table
+BUILDIN_FUNC(table_set)
+{
+	struct script_table* t = script_get_table(st, 2);
+	const char* key = script_getstr(st, 3);
+
+	if (!t) {
+		ShowError("buildin_table_set: argument is not a table\n");
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	struct script_data* val = script_getdata(st, 4);
+	get_val(st, val);
+
+	auto it = t->fields.find(key);
+	if (it != t->fields.end() && it->second.type == script_table_value::VT_TABLE && it->second.table) {
+		script_table_release(it->second.table);
+	}
+
+	script_table_value tv;
+	if (data_istable(val)) {
+		tv.type = script_table_value::VT_TABLE;
+		tv.table = script_table_deep_copy(val->u.table);
+	} else if (data_isstring(val)) {
+		tv.type = script_table_value::VT_STR;
+		tv.str = val->u.str;
+	} else {
+		tv.type = script_table_value::VT_INT;
+		tv.num = val->u.num;
+	}
+	t->fields[key] = std::move(tv);
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_has(.@t%, "key") -> 0/1
+BUILDIN_FUNC(table_has)
+{
+	struct script_table* t = script_get_table(st, 2);
+	const char* key = script_getstr(st, 3);
+
+	script_pushint(st, (t && t->fields.count(key)) ? 1 : 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_size(.@t%) -> number of fields
+BUILDIN_FUNC(table_size)
+{
+	struct script_table* t = script_get_table(st, 2);
+
+	script_pushint(st, t ? (int)t->fields.size() : 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_array_count(.@arr%) -- counts consecutive indexed table entries
+BUILDIN_FUNC(table_array_count)
+{
+	struct script_data* data = script_getdata(st, 2);
+	if (!data_isreference(data)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	const char* name = reference_getname(data);
+	if (!is_table_variable(name)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	char prefix = name[0];
+	struct reg_db* n_db = nullptr;
+	map_session_data* sd = nullptr;
+
+	switch (prefix) {
+		case '.':
+			n_db = data->ref ? data->ref :
+				(name[1] == '@') ? &st->stack->scope :
+				&st->script->local;
+			break;
+		case '@':
+			script_rid2sd(sd);
+			if (sd) n_db = &sd->regs;
+			break;
+		case '$':
+		{
+			static struct reg_db global_reg = { nullptr, nullptr, nullptr };
+			global_reg.table_vars = global_table_vars;
+			n_db = &global_reg;
+			break;
+		}
+		case '\'':
+			if (data->ref) {
+				n_db = data->ref;
+			} else {
+				std::shared_ptr<s_instance_data> idata = util::umap_find(instances, script_instancegetid(st));
+				if (idata) n_db = &idata->regs;
+			}
+			break;
+	}
+
+	if (!n_db || !n_db->table_vars) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int id = reference_getid(data);
+	int count = 0;
+	while (i64db_get(n_db->table_vars, reference_uid(id, count)) != nullptr)
+		count++;
+
+	script_pushint(st, count);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_keys(.@t%, .@arr$) -- writes all keys into a string array
+BUILDIN_FUNC(table_keys)
+{
+	struct script_table* t = script_get_table(st, 2);
+	struct script_data* arr_data = script_getdata(st, 3);
+
+	if (!data_isreference(arr_data)) {
+		ShowError("buildin_table_keys: second argument must be an array reference\n");
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	const char* arr_name = reference_getname(arr_data);
+	int arr_id = reference_getid(arr_data);
+	struct reg_db* ref = reference_getref(arr_data);
+
+	if (!t) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	int idx = 0;
+	for (auto& [k, v] : t->fields) {
+		int64 uid = reference_uid(arr_id, idx);
+		set_reg_str(st, nullptr, uid, arr_name, k.c_str(), ref);
+		idx++;
+	}
+
+	script_pushint(st, idx);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_copy(.@t%) -> deep copy, returns new table
+BUILDIN_FUNC(table_copy)
+{
+	struct script_table* t = script_get_table(st, 2);
+
+	if (!t) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	struct script_table* copy = script_table_deep_copy(t);
+	push_table(st->stack, copy);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_remove(.@t%, "key")
+BUILDIN_FUNC(table_remove)
+{
+	struct script_table* t = script_get_table(st, 2);
+	const char* key = script_getstr(st, 3);
+
+	if (!t) {
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	auto it = t->fields.find(key);
+	if (it != t->fields.end()) {
+		if (it->second.type == script_table_value::VT_TABLE && it->second.table) {
+			script_table_release(it->second.table);
+		}
+		t->fields.erase(it);
+	}
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/// table_tostring(.@t%) -> JSON-like debug string
+static void script_table_tostring_impl(const struct script_table* t, std::string& out, int depth) {
+	if (!t) { out += "null"; return; }
+	if (depth > 10) { out += "{...}"; return; }
+	out += "{ ";
+	bool first = true;
+	for (auto& [k, v] : t->fields) {
+		if (!first) out += ", ";
+		first = false;
+		out += "\"" + k + "\": ";
+		switch (v.type) {
+		case script_table_value::VT_INT:
+			out += std::to_string(v.num);
+			break;
+		case script_table_value::VT_STR:
+			out += "\"" + v.str + "\"";
+			break;
+		case script_table_value::VT_TABLE:
+			script_table_tostring_impl(v.table, out, depth + 1);
+			break;
+		}
+	}
+	out += " }";
+}
+
+BUILDIN_FUNC(table_tostring)
+{
+	struct script_table* t = script_get_table(st, 2);
+	std::string out;
+	script_table_tostring_impl(t, out, 0);
+	script_pushstrcopy(st, out.c_str());
+	return SCRIPT_CMD_SUCCESS;
+}
+
+void script_table_set_int(struct script_table* t, const char* key, int64 val) {
+	if (!t) return;
+	script_table_value tv;
+	tv.type = script_table_value::VT_INT;
+	tv.num = val;
+	t->fields[key] = std::move(tv);
+}
+
+void script_table_set_str(struct script_table* t, const char* key, const char* val) {
+	if (!t) return;
+	script_table_value tv;
+	tv.type = script_table_value::VT_STR;
+	tv.str = val ? val : "";
+	t->fields[key] = std::move(tv);
+}
+
+void script_table_set_table(struct script_table* t, const char* key, struct script_table* val) {
+	if (!t) return;
+	auto it = t->fields.find(key);
+	if (it != t->fields.end() && it->second.type == script_table_value::VT_TABLE && it->second.table)
+		script_table_release(it->second.table);
+	script_table_value tv;
+	tv.type = script_table_value::VT_TABLE;
+	tv.table = val ? script_table_deep_copy(val) : nullptr;
+	t->fields[key] = std::move(tv);
+}
+
 #include <custom/script.inc>
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -34380,6 +35172,20 @@ struct script_function buildin_func[] = {
 #ifdef Pandas_ScriptCommand_WhoDropItem
 	BUILDIN_DEF(whodropitem,"v??"),						// 查询指定道具会从哪些魔物身上掉落以及掉落的机率信息 [Sola丶小克]
 #endif // Pandas_ScriptCommand_WhoDropItem
+	// Table type builtins
+	BUILDIN_DEF(table_create, "*"),
+	BUILDIN_DEF(table_get, "vs"),
+	BUILDIN_DEF(table_ensure, "vs"),
+	BUILDIN_DEF2(table_getstr, "table_get$", "vs"),
+	BUILDIN_DEF(table_set, "vs*"),
+	BUILDIN_DEF(table_has, "vs"),
+	BUILDIN_DEF(table_size, "v"),
+	BUILDIN_DEF(table_array_count, "r"),
+	BUILDIN_DEF(table_keys, "vr"),
+	BUILDIN_DEF(table_copy, "v"),
+	BUILDIN_DEF(table_remove, "vs"),
+	BUILDIN_DEF(table_tostring, "v"),
+
 	// PYHELP - SCRIPTCMD - INSERT POINT - <Section 3>
 
 #include <custom/script_def.inc>

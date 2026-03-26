@@ -2184,6 +2184,7 @@ bool pc_authok(map_session_data *sd, uint32 login_id2, time_t expiration_time, i
 
 	sd->regs.vars = i64db_alloc(DB_OPT_BASE);
 	sd->regs.arrays = nullptr;
+	sd->regs.table_vars = nullptr;
 	sd->vars_dirty = false;
 	sd->vars_ok = false;
 	sd->vars_received = 0x0;
