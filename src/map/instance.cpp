@@ -1093,6 +1093,11 @@ bool instance_destroy(int instance_id, bool skip_erase)
 	if( idata->regs.arrays )
 		idata->regs.arrays->destroy(idata->regs.arrays, script_free_array_db);
 
+	if( idata->regs.table_vars ) {
+		script_free_table_vars(idata->regs.table_vars);
+		idata->regs.table_vars = nullptr;
+	}
+
 	ShowInfo("[Instance] Destroyed: %s (%d)\n", instance_db.find(idata->id)->name.c_str(), instance_id);
 
 #ifdef Pandas_FuncDefine_Instance_Destory
