@@ -30,14 +30,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         gcc: [11]
         mode: ['PRE','RE']
         packetver: ['20220406', '20211103', '20200902', '20200401', '20180620', '20151104', '20130807']
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
