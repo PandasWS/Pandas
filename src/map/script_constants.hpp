@@ -22,6 +22,7 @@
 	export_constant(NPCE_DIE);
 	export_constant(NPCE_KILLPC);
 	export_constant(NPCE_KILLNPC);
+	export_constant(NPCE_IDENTIFY);
 	export_constant(NPCE_MAX);
 
 	/************************************************************************/

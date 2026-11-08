@@ -1,0 +1,7 @@
+﻿-	script	identify_event#ci	-1,{
+OnInit:
+	// 鉴定事件已由上游提供，settrigger 使用的脚本常量仍须导出。
+	AssertEquals(8, getconstant("NPCE_IDENTIFY"), "鉴定事件常量");
+	AssertTrue(getconstant("NPCE_IDENTIFY") != getconstant("NPCE_LOGIN"), "鉴定事件与登录事件区分");
+	end;
+}
