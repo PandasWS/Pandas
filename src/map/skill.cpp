@@ -10584,7 +10584,12 @@ int32 skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, 
 			int32 trickstop = (MOB_SKILL_INTERVAL * 7) / 10;
 			if (DIFF_TICK(md->trickcasting, tick) >= trickstop) {
 				// This skill directly modifies a monster's base speed value
-				md->base_status->speed = std::max<pec_uint16>(md->base_status->speed - 250, MIN_WALK_SPEED);
+#ifndef Pandas_Extreme_Computing
+				md->base_status->speed = std::max(md->base_status->speed - 250, MIN_WALK_SPEED);
+#else
+				// 在减法前转为有符号数，避免移速下限附近发生回绕。
+				md->base_status->speed = static_cast<pec_uint16>(std::max<int64>(static_cast<int64>(md->base_status->speed) - 250, MIN_WALK_SPEED));
+#endif // Pandas_Extreme_Computing
 				// Need to recalc speed based on new base value
 				status_calc_bl(&md->bl, { SCB_SPEED });
 				// We use skills only on each full cell, to fix the inaccuracy we do this on last move interval
