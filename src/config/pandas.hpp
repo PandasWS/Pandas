@@ -1064,6 +1064,9 @@
 	// 对除数可能为零的情况进行一些规避处理 [Sola丶小克]
 	#define Pandas_Crashfix_Divide_by_Zero
 
+	// 在 summon 生成魔物前校验完整编号，避免无效编号截断后变成其他魔物
+	#define Pandas_Crashfix_ScriptCommand_Summon
+
 	// 修复使用 getd 操作的变量名存在空格开头时,
 	// 若 getd 的结果直接作为参数传入其他脚本指令, 会导致地图服务器崩溃的问题 [Sola丶小克]
 	//

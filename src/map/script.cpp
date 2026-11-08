@@ -18039,6 +18039,14 @@ BUILDIN_FUNC(summon)
 		check_event(st, event);
 	}
 
+#ifdef Pandas_Crashfix_ScriptCommand_Summon
+	if (_class < 0 || !mobdb_checkid(_class)) {
+		ShowError("buildin_summon: Invalid mob ID %d.\n", _class);
+		st->state = END;
+		return SCRIPT_CMD_FAILURE;
+	}
+#endif // Pandas_Crashfix_ScriptCommand_Summon
+
 	mob_data* md = mob_once_spawn_sub( &sd->bl, sd->bl.m, sd->bl.x, sd->bl.y, str, _class, event, SZ_SMALL, AI_NONE );
 
 	if( md == nullptr ){
