@@ -3493,11 +3493,11 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type, uint16 s
 #ifdef Pandas_Item_Special_Annouce
 			bool is_spceial_annouced = false;
 
-			if (mvp_sd && ditem) {
+			if (first_sd && ditem) {
 				struct item_data* dd = itemdb_search(ditem->item_data.nameid);
 				if (ITEM_PROPERTIES_HASFLAG(dd, annouce_mask, ITEM_ANNOUCE_DROP_TO_GROUND)) {
 					char message[128] = { 0 };
-					sprintf(message, msg_txt(NULL,541), mvp_sd->status.name, md->name, it->ename.c_str(), (float)drop_rate / 100);
+					sprintf(message, msg_txt(NULL,541), first_sd->status.name, md->name, it->ename.c_str(), (float)drop_rate / 100);
 					intif_broadcast(message,strlen(message)+1,BC_DEFAULT);
 					is_spceial_annouced = true;
 				}
@@ -3860,12 +3860,14 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type, uint16 s
 	}
 
 	// MvP tomb [GreenBox]
-	if (battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->bl.m, MF_NOTOMB) != 1)
+	if (battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->bl.m, MF_NOTOMB) != 1) {
 #ifndef Pandas_FuncParams_Mob_MvpTomb_Create
 		mvptomb_create(md, mvp_sd != nullptr ? mvp_sd->status.name : (first_sd != nullptr ? first_sd->status.name : nullptr), time(nullptr));
 #else
-		mvptomb_create(md, mvp_sd != nullptr ? mvp_sd->status.name : (first_sd != nullptr ? first_sd->status.name : nullptr), time(nullptr), mvp_sd ? mvp_sd->bl.id : 0);
+		map_session_data* killer_sd = mvp_sd != nullptr ? mvp_sd : first_sd;
+		mvptomb_create(md, killer_sd != nullptr ? killer_sd->status.name : nullptr, time(nullptr), killer_sd != nullptr ? killer_sd->bl.id : 0);
 #endif // Pandas_FuncParams_Mob_MvpTomb_Create
+	}
 
 	if( !rebirth )
 		mob_setdelayspawn(md); //Set respawning.
