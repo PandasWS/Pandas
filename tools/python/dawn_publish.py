@@ -200,6 +200,10 @@ def arrange_common(packagedir):
     
     recursive_overwrite(packagedir + 'tools/python/dist/', packagedir)
     rmdir(packagedir + 'tools', ['batches'])
+
+    # 开发规则仅保留在源码中, 发行覆盖完成后从运行包移除
+    rmdir(packagedir + 'doc/development')
+    remove_file(packagedir, 'AGENTS.md')
     
     remove_files(packagedir + 'doc', 'packet_*.txt')
     remove_files(packagedir, '*.sh')
