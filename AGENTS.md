@@ -20,9 +20,9 @@ Pandas 是基于 rAthena 的中文 MMORPG 模拟器。本文件是仓库内 Agen
 
 - Pandas 自有 C/C++ 功能差异应使用恰当的 `Pandas_*` 宏标识和控制，在 `src/config/pandas.hpp` 对应分组声明并说明用途、依赖。优先复用同一功能已有的宏；同时检查启用和关闭路径。具体边界见开发规范。
 - 同步上游时保留 Pandas 已有行为及修复，沿入口、注册、实现、数据和反馈检查完整链路。上游新发现的问题按任务范围处理，不顺带扩大同步修复。
-- 新写的提交信息遵循 Conventional Commits；第一行标题末尾禁止使用英文句号 `.` 或中文句号 `。`。完整格式与示例见提交规范。
+- 新写的提交信息遵循 Conventional Commits；rAthena 同步的汇总合并提交沿用专用标题格式。第一行标题末尾禁止使用英文句号 `.` 或中文句号 `。`。完整格式与例外见 [提交规范](doc/development/standards/commits.md)。
 - 未经用户明确授权，不执行 commit、push、merge 或 release；这些操作分别确认授权范围。不得绕过 hook 或关闭提交签名来完成提交。
-- 默认在当前项目仓库内创建、推送功能分支，通过 PR 合入 `develop`；不直接向 `develop` 提交或推送改动。具体步骤见 [开发规范](doc/development/standards/development.md#功能分支与-pr)。
+- 默认在当前项目仓库内创建、推送功能分支，通过 PR 合入 `develop`；普通改动默认使用 Rebase and merge，`merge_rathena` 同步分支使用 Create a merge commit，并遵循 [上游同步规范](doc/development/standards/upstream-sync.md) 的 PR 与合并提交标题格式。不直接向 `develop` 提交或推送改动。具体步骤见 [开发规范](doc/development/standards/development.md#功能分支与-pr)。
 - 本项目是开源项目。与本机或特定环境强绑定的配置、路径、主机地址、账号及操作记录应保存在仓库外，不写入或提交到源码、文档、注释和示例中；可复用的说明使用通用配置与占位符，提交前检查是否夹带环境信息或凭据。
 - 遵循 `.editorconfig` 并保留既有文件编码和换行风格；不得破坏 `PYHELP` 注入标记。生成器产物须审查并补全业务行为。
 - 交付前审查 diff，执行与变更相称的检查，报告实际结果和未完成验证。修复行为时优先补充可复现的行为验证，避免只测试实现的副本。
