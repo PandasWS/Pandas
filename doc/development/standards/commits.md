@@ -1,6 +1,6 @@
 ﻿# 提交规范
 
-Pandas 新编写的提交信息采用 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。从上游导入的历史提交保留原信息。
+Pandas 新编写的提交信息采用 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。从上游导入的历史提交保留原信息；`merge_rathena` 合入 `develop` 时生成的汇总合并提交沿用下述专用格式。
 
 ## 格式
 
@@ -40,6 +40,8 @@ fix(release): 从运行包排除开发文档
 ```
 
 ## 提交边界与说明
+
+rAthena 同步的汇总合并提交标题固定为 `汇总合并 rAthena 官方最新代码 - YYYY年MM月DD日`，与对应 PR 标题一致，不添加 Conventional Commits 前缀。这是标题格式的特例；同步过程中新增的独立修复提交仍遵循常规格式。分支、日期及合并方式见 [上游同步规范](upstream-sync.md#同步-pr-与汇总合并)。
 
 一个提交表达一个可独立理解和验证的改动；无关整理和行为修复分开。标题描述最终结果。正文按需要说明触发条件、根因、行为变化和验证结果；关联上游或历史修复时提供提交号，方便追溯。
 

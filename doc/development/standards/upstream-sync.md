@@ -2,6 +2,27 @@
 
 同步目标是吸收选定 rAthena 版本的更新，同时保留 Pandas 的功能边界、数据处理和已有修复。此次开发文档建立时，对照基线为 rAthena `67431ee25c641a1064b07365f8a916cd26678fca`：适配提交 `81987167a4` 的第二父即该提交，`6328ac345c` 汇总这一轮同步。
 
+## 同步 PR 与汇总合并
+
+rAthena 同步使用当前仓库的 `merge_rathena` 分支，向 `develop` 创建 PR。合入时选择 **Create a merge commit**（`gh pr merge --merge`），保留 rAthena 历史、适配提交和目标分支之间的合并关系；此类同步不使用 Rebase and merge 或 Squash and merge。
+
+PR 标题与最终生成的 merge commit 第一行标题必须一致，格式为：
+
+```text
+汇总合并 rAthena 官方最新代码 - YYYY年MM月DD日
+```
+
+使用 `rAthena` 的原有大小写、半角连字符及其两侧空格，月份和日期补齐两位，标题末尾不加句号。日期采用本轮同步批次确定的日期，实际合入时保留该日期，不自动替换为合入当天。合并时显式填写这一标题，避免使用 GitHub 默认的 `Merge pull request #...` 标题；通过 CLI 操作时使用 `--subject` 指定。
+
+历史依据如下；这些 PR 均从 `merge_rathena` 合入 `develop`，最终提交均有两个父提交，且标题与 PR 一致：
+
+| PR | PR 与最终合并提交标题 | 最终合并提交 |
+| --- | --- | --- |
+| [#785](https://github.com/PandasWS/Pandas/pull/785) | 汇总合并 rAthena 官方最新代码 - 2025年05月29日 | `6328ac345c` |
+| [#784](https://github.com/PandasWS/Pandas/pull/784) | 汇总合并 rAthena 官方最新代码 - 2025年04月28日 | `fdda06a757` |
+
+这一专用标题是 [提交规范](commits.md) 中 Conventional Commits 格式的例外；普通改动的 PR 默认使用 Rebase and merge。
+
 ## 建立比较基线
 
 开始前核对远端身份、目标分支、工作区和已有合并关系，记录本轮 Pandas 起点、上次上游基点及本次上游目标的完整 SHA。使用确定的提交做比较，分支名只用于定位。

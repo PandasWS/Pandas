@@ -6,6 +6,8 @@ Pandas 维护相对 rAthena 的长期差异。改动应便于识别本地意图�
 
 默认从最新 `develop` 创建功能分支，在当前项目仓库内推送该分支，并向同一仓库的 `develop` 提交 PR。代码、SQL、配置和文档改动均通过这一流程汇入；不直接在 `develop` 上提交或向其推送改动。
 
+普通改动默认使用 **Rebase and merge**（`gh pr merge --rebase`），保留逐个提交的组织方式，使目标分支保持线性历史；GitHub 会重建提交并生成新的 SHA。rAthena 同步使用 `merge_rathena` 分支，通过 **Create a merge commit** 合入，保留同步历史的父子关系；PR 标题与最终合并提交标题遵循 [上游同步规范](upstream-sync.md#同步-pr-与汇总合并)。
+
 PR 用于集中检查差异和 CI 结果；合入前确认最新改动对应的适用 CI 已通过，并完成与改动相称的本地验证。现有工作流对 `pull_request` 设有路径过滤，未触发的检查应结合改动范围判断是否需要通过 `workflow_dispatch` 补跑，不能把未运行当作成功。提交、推送、创建 PR 和合并按用户授权范围执行。
 
 ## 用宏表达自有功能边界
