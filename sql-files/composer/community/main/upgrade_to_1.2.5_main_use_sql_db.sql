@@ -168,3 +168,45 @@ DELIMITER ;
 
 CALL UPDATE_PANDAS_MAIN_USESQLDB();
 DROP PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB;
+
+-- -----------------------------------------------
+-- 熊猫模拟器自定义修改
+-- -----------------------------------------------
+
+-- 补齐 rAthena 遗漏的 racegroup_ep16_def 字段升级.
+-- rAthena 提交 0354e7009a 已修改建表脚本及读取逻辑, 但未提供对应升级脚本.
+-- 本段同时兼容复兴前和复兴后的魔物数据库, 仅处理当前数据库中存在的表.
+
+DROP PROCEDURE IF EXISTS UPDATE_PANDAS_MAIN_USESQLDB;
+
+DELIMITER $$
+CREATE PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB()
+BEGIN
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db') THEN
+		ALTER TABLE `mob_db`
+			ADD COLUMN `racegroup_ep16_def` tinyint(1) unsigned DEFAULT NULL AFTER `racegroup_illusion_moonlight`
+		;
+	END IF;
+
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db2') THEN
+		ALTER TABLE `mob_db2`
+			ADD COLUMN `racegroup_ep16_def` tinyint(1) unsigned DEFAULT NULL AFTER `racegroup_illusion_moonlight`
+		;
+	END IF;
+
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db_re') THEN
+		ALTER TABLE `mob_db_re`
+			ADD COLUMN `racegroup_ep16_def` tinyint(1) unsigned DEFAULT NULL AFTER `racegroup_illusion_moonlight`
+		;
+	END IF;
+
+	IF EXISTS (SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = (SELECT DATABASE ()) and TABLE_NAME = 'mob_db2_re') THEN
+		ALTER TABLE `mob_db2_re`
+			ADD COLUMN `racegroup_ep16_def` tinyint(1) unsigned DEFAULT NULL AFTER `racegroup_illusion_moonlight`
+		;
+	END IF;
+END $$
+DELIMITER ;
+
+CALL UPDATE_PANDAS_MAIN_USESQLDB();
+DROP PROCEDURE UPDATE_PANDAS_MAIN_USESQLDB;
