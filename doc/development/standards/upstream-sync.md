@@ -4,15 +4,15 @@
 
 ## 同步 PR 与汇总合并
 
-rAthena 同步使用当前仓库的 `merge_rathena` 分支，向 `develop` 创建 PR。合入时选择 **Create a merge commit**（`gh pr merge --merge`），保留 rAthena 历史、适配提交和目标分支之间的合并关系；此类同步不使用 Rebase and merge 或 Squash and merge。
+rAthena 同步使用当前仓库的 `merge_rathena` 分支，按协作需要向 `develop` 创建 PR。同步合入需保留 merge commit，保存 rAthena 历史、适配提交和目标分支之间的合并关系；通过 PR 合入时选择 **Create a merge commit**（`gh pr merge --merge`），此类同步不使用 Rebase and merge 或 Squash and merge。本地合并后直接推送时，也须保留该合并关系，并确保远端 `develop` 能快进到目标提交。
 
-PR 标题与最终生成的 merge commit 第一行标题必须一致，格式为：
+汇总 merge commit 第一行标题使用以下格式；采用 PR 时，PR 标题与其一致：
 
 ```text
 汇总合并 rAthena 官方最新代码 - YYYY年MM月DD日
 ```
 
-使用 `rAthena` 的原有大小写、半角连字符及其两侧空格，月份和日期补齐两位，标题末尾不加句号。日期采用本轮同步批次确定的日期，实际合入时保留该日期，不自动替换为合入当天。合并时显式填写这一标题，避免使用 GitHub 默认的 `Merge pull request #...` 标题；通过 CLI 操作时使用 `--subject` 指定。
+使用 `rAthena` 的原有大小写、半角连字符及其两侧空格，月份和日期补齐两位，标题末尾不加句号。日期采用本轮同步批次确定的日期，实际合入时保留该日期，不自动替换为合入当天。合并时显式填写这一标题，避免使用 GitHub 默认的 `Merge pull request #...` 标题；通过 `gh pr merge` 操作时使用 `--subject` 指定。
 
 历史依据如下；这些 PR 均从 `merge_rathena` 合入 `develop`，最终提交均有两个父提交，且标题与 PR 一致：
 

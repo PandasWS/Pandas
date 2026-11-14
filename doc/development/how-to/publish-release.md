@@ -37,7 +37,7 @@ v1.2.2、v1.2.3 也采用相同的版本提交结构：
 
 ## 1. 准备本轮内容和版本号
 
-在 `develop` 对应的发布准备分支整理本轮改动，记录目标版本和提交范围。先完成必要的回归、数据与翻译更新，以及 [数据库升级脚本](update-database-upgrades.md)。历史上的 SQL 汇总通常在开发阶段维护：例如 v1.2.3 的汇总脚本在 `c0132788bd` 建立，发布前一晚由 `222c1bc020` 补充。
+在最新 `develop` 上整理本轮改动，记录目标版本和提交范围。版本号与更新日志可直接在 `develop` 提交；需要隔离改动或协作审查时，再使用准备分支和 PR。先完成必要的回归、数据与翻译更新，以及 [数据库升级脚本](update-database-upgrades.md)。历史上的 SQL 汇总通常在开发阶段维护：例如 v1.2.3 的汇总脚本在 `c0132788bd` 建立，发布前一晚由 `222c1bc020` 补充。
 
 版本号批量修改工具是 [imple_versions.py](../../../tools/python/imple_versions.py)。在仓库根目录开始：
 
@@ -63,7 +63,7 @@ pipenv run python imple_versions.py
 
 v1.2.2–v1.2.4 的发布提交均同时修改 `CHANGELOG.md`、`pandas.hpp` 和九个 `.rc`；相应 GitHub Release 正文与 CHANGELOG 的该版内容一致。编译脚本对缺少版本日志只发出警告，因此发布准备时应主动检查完整性。
 
-按 [提交规范](../standards/commits.md) 编写本轮正式提交，例如 `chore(release): 发布 v1.2.5 正式版`。提交、合并和推送依次遵守用户授权及当前分支保护。将经过验证的正式提交纳入 `develop`，并使 `master` 对齐该正式提交；采用快进时保持提交身份，不引入额外的合并提交。
+按 [提交规范](../standards/commits.md) 在 `develop` 编写本轮正式提交，例如 `chore(release): 发布 v1.2.5 正式版`，验证后正常推送并固定完整 SHA。检查远端 `master` 是该 SHA 的祖先，再用 `git merge --ff-only <正式提交SHA>` 将本地 `master` 推进到该提交并正常推送；发布步骤无需额外 PR。两条分支、构建产物和正式标签使用同一正式提交身份。若分支已分叉，先处理分叉，不使用强推或临时创建发布 merge commit 代替快进。提交、合并、推送和发布分别遵守用户授权。
 
 ## 3. 在 Windows 构建正式提交
 
@@ -127,7 +127,7 @@ Pandas_v1.2.5_YYYYMMDD_HHMMSS_PRE_BIG5.zip
 
 ## 6. 开启下一轮开发
 
-确认正式提交及其制品已固定后，在 `develop` 再执行 `imple_versions.py`，将下一版设为 `X.Y.(Z+1).1`，或采用本轮已经决定的下一目标版本。单独提交升版，例如 `chore(release): 开始 v1.2.6-dev 开发`。`master` 和正式 tag 继续保留在已发布提交。
+确认正式提交及其制品已固定后，在 `develop` 再执行 `imple_versions.py`，将下一版设为 `X.Y.(Z+1).1`，或采用本轮已经决定的下一目标版本。直接在 `develop` 单独提交并正常推送升版，例如 `chore(release): 开始 v1.2.6-dev 开发`，按用户授权执行，无需专门创建升版 PR。`master` 和正式 tag 继续保留在已发布提交。
 
 v1.2.4 的顺序最直观：`1.2.4.0` 正式提交 → 构包与 Release → `develop` 升为 `1.2.5.1`。v1.2.2 则在 GitHub Release 公开发布前已经提交下一版开发号，因此制品阶段应明确使用正式提交，避免随开发分支继续移动。
 

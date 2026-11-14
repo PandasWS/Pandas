@@ -4,11 +4,13 @@ Pandas 维护相对 rAthena 的长期差异。改动应便于识别本地意图�
 
 ## 功能分支与 PR
 
-默认从最新 `develop` 创建功能分支，在当前项目仓库内推送该分支，并向同一仓库的 `develop` 提交 PR。代码、SQL、配置和文档改动均通过这一流程汇入；不直接在 `develop` 上提交或向其推送改动。
+`develop` 和 `master` 允许直接快进更新，保留禁止非快进改写和删除的保护。快进要求远端旧提交仍是目标提交的祖先，允许历史中保留 rAthena 同步的 merge commit；不启用禁止 merge commit 的线性历史要求。
 
-普通改动默认使用 **Rebase and merge**（`gh pr merge --rebase`），保留逐个提交的组织方式，使目标分支保持线性历史；GitHub 会重建提交并生成新的 SHA。rAthena 同步使用 `merge_rathena` 分支，通过 **Create a merge commit** 合入，保留同步历史的父子关系；PR 标题与最终合并提交标题遵循 [上游同步规范](upstream-sync.md#同步-pr-与汇总合并)。
+功能、修复和上游同步按协作需要使用 PR，便于审查差异及 CI 结果。需要隔离改动时，从最新 `develop` 创建功能分支，并在当前项目仓库内协作。版本号、更新日志及下一轮开发升版可直接在 `develop` 提交和推送；发布时用 `--ff-only` 将 `master` 推进到选定的正式提交，无需额外的发布准备或发布 PR。出现分叉时先处理分叉，不强推覆盖历史。完整步骤见 [发布正式版](../how-to/publish-release.md)。
 
-PR 用于集中检查差异和 CI 结果；合入前确认最新改动对应的适用 CI 已通过，并完成与改动相称的本地验证。现有工作流对 `pull_request` 设有路径过滤，未触发的检查应结合改动范围判断是否需要通过 `workflow_dispatch` 补跑，不能把未运行当作成功。提交、推送、创建 PR 和合并按用户授权范围执行。
+采用 PR 时，普通改动默认使用 **Rebase and merge**（`gh pr merge --rebase`），保留逐个提交的组织方式；GitHub 会重建提交并生成新的 SHA。rAthena 同步使用 `merge_rathena` 分支并保留 merge commit，通过 PR 合入时选择 **Create a merge commit**；标题格式遵循 [上游同步规范](upstream-sync.md#同步-pr-与汇总合并)。
+
+采用 PR 或直接更新都需完成与改动相称的验证。合入 PR 前核对适用 CI；直接推送前完成本地检查，推送后核对适用 CI，正式发布前完成验收。现有工作流对 `push` 和 `pull_request` 设有路径过滤，未触发的检查应结合改动范围判断是否需要通过 `workflow_dispatch` 补跑，不能把未运行当作成功。提交、推送、创建 PR、合并及发布仍按用户授权范围执行。
 
 ## 用宏表达自有功能边界
 
