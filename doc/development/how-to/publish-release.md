@@ -66,7 +66,7 @@ python3 tools/python/imple_versions.py check
 
 v1.2.2–v1.2.4 的发布提交均同时修改 `CHANGELOG.md`、`pandas.hpp` 和九个 `.rc`；相应 GitHub Release 正文与 CHANGELOG 的该版内容一致。编译脚本对缺少版本日志只发出警告，因此发布准备时应主动检查完整性。
 
-按 [提交规范](../standards/commits.md) 在 `develop` 编写本轮正式提交，例如 `chore(release): 发布 v1.2.5 正式版`，验证后正常推送并固定完整 SHA。检查远端 `master` 是该 SHA 的祖先，再用 `git merge --ff-only <正式提交SHA>` 将本地 `master` 推进到该提交并正常推送；发布步骤无需额外 PR。两条分支、构建产物和正式标签使用同一正式提交身份。若分支已分叉，先处理分叉，不使用强推或临时创建发布 merge commit 代替快进。提交、合并、推送和发布分别遵守用户授权。
+按 [提交规范](../standards/commits.md) 在 `develop` 编写本轮正式提交，标题沿用 `发布 vX.Y.Z 正式版`，例如 `发布 v1.2.5 正式版`；这是 Conventional Commits 的明确例外。创建时即采用最终发布标题，`master` 快进后保留同一提交及其信息。验证后正常推送并固定完整 SHA。检查远端 `master` 是该 SHA 的祖先，再用 `git merge --ff-only <正式提交SHA>` 将本地 `master` 推进到该提交并正常推送；发布步骤无需额外 PR。两条分支、构建产物和正式标签使用同一正式提交身份。若分支已分叉，先处理分叉，不使用强推或临时创建发布 merge commit 代替快进。提交、合并、推送和发布分别遵守用户授权。
 
 ## 3. 在 Windows 构建正式提交
 
