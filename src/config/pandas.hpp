@@ -376,6 +376,10 @@
 	// 是否启用 strict_parameters_of_rand 配置选项及其功能 [Sola丶小克]
 	// 此选项用于控制是否对 rand 脚本指令进行严格的参数检查, 以便兼容以前早期的脚本
 	#define Pandas_BattleConfig_Strict_Parameters_Of_Rand
+
+	// 是否启用 identify_event_mode 配置选项及其功能
+	// 此选项用于选择鉴定事件遵循 Pandas 1.2.4 或 rAthena 的触发规则
+	#define Pandas_BattleConfig_Identify_Event_Mode
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 1>
 #endif // Pandas_BattleConfigure
 

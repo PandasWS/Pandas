@@ -12573,6 +12573,9 @@ static const struct _battle_data {
 #ifdef Pandas_BattleConfig_Strict_Parameters_Of_Rand
 	{ "strict_parameters_of_rand",          &battle_config.strict_parameters_of_rand,       1,      0,      1,              },
 #endif // Pandas_BattleConfig_Strict_Parameters_Of_Rand
+#ifdef Pandas_BattleConfig_Identify_Event_Mode
+	{ "identify_event_mode",                &battle_config.identify_event_mode,             0,      0,      1,              },
+#endif // Pandas_BattleConfig_Identify_Event_Mode
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 3>
 #include <custom/battle_config_init.inc>
 };

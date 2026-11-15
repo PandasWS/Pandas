@@ -872,6 +872,9 @@ struct Battle_Config
 #ifdef Pandas_BattleConfig_Strict_Parameters_Of_Rand
 	int32 strict_parameters_of_rand;		// 是否对 rand 脚本指令进行严格的参数检查
 #endif // Pandas_BattleConfig_Strict_Parameters_Of_Rand
+#ifdef Pandas_BattleConfig_Identify_Event_Mode
+	int32 identify_event_mode;			// 鉴定事件模式: 0 为 Pandas 1.2.4, 1 为 rAthena
+#endif // Pandas_BattleConfig_Identify_Event_Mode
 	// PYHELP - BATTLECONFIG - INSERT POINT - <Section 2>
 #include <custom/battle_config_struct.inc>
 };

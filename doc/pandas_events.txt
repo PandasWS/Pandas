@@ -55,20 +55,35 @@
 
 *OnPCIdentifyEvent:
 
-当玩家成功鉴定了装备时触发事件
+当玩家的装备鉴定流程产生结果时, 按战斗配置选择是否触发事件
+
+工作模式:
+	由 conf/battle/pandas.conf 中的 identify_event_mode 控制,
+	可在 conf/import/battle_conf.txt 中覆写:
+	0 - 熊猫模拟器标准 (默认): 与 v1.2.4 一致, 发送鉴定结果后,
+	    无论成功或失败均触发事件.
+	1 - rAthena 标准: 仅鉴定成功时触发事件.
 
 事件关联:
 	关联到发起鉴定的玩家
 
 中断关联:
-	若玩家鉴定装备时在 OnPCIdentifyFilter 事件中使用了 processhalt
-	指令打断了后续流程, 那么此事件将不会被触发.
+	两种模式下, 若 OnPCIdentifyFilter 使用 processhalt 打断流程,
+	或过滤器执行后待鉴定道具已不存在, 此事件均不会被触发.
+	取消鉴定、选择无效或已鉴定的道具, 以及一键鉴定时没有放大镜,
+	也不触发此事件.
+	OnPCUseOCIdentifyFilter 使用 processhalt 中断一键鉴定时同样不触发.
 
 携带参数:
-	@identify_idx	已被玩家成功鉴定的道具背包序号
+	@identify_idx	本次尝试鉴定的道具背包序号
+
+注意事项:
+	熊猫模拟器模式下, 例如 OnPCIdentifyFilter 使用 identifyidx 先完成鉴定,
+	随后放行原流程, 原流程会返回鉴定失败结果, 但仍触发此事件.
+	@identify_idx 只提供道具位置, 不携带本次操作的成功或失败状态.
 
 修订记录:
-	v1.2.5	- rAthena 官方合并了此事件. 该事件从此版本开始, 必须鉴定成功才会触发
+	v1.2.5	- 合并 rAthena 官方事件, 当时调整为仅鉴定成功才触发
 
 --------------------------------------------------------------
 

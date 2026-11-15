@@ -21147,8 +21147,13 @@ void skill_identify(map_session_data *sd, int32 idx)
 		}
 	}
 	clif_item_identified( *sd, idx, failure );
-	
+
+#ifdef Pandas_BattleConfig_Identify_Event_Mode
+	// Pandas 1.2.4 在发送鉴定结果后触发事件, 包括失败结果; 提前中断仍不触发。
+	if (!failure || battle_config.identify_event_mode == 0) {
+#else
 	if(!failure) {
+#endif // Pandas_BattleConfig_Identify_Event_Mode
 		pc_setreg(sd, add_str("@identify_idx"), idx);
 		npc_script_event( *sd, NPCE_IDENTIFY );
 	}

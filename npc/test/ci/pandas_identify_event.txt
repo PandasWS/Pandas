@@ -3,5 +3,12 @@ OnInit:
 	// 鉴定事件已由上游提供，settrigger 使用的脚本常量仍须导出。
 	AssertEquals(8, getconstant("NPCE_IDENTIFY"), "鉴定事件常量");
 	AssertTrue(getconstant("NPCE_IDENTIFY") != getconstant("NPCE_LOGIN"), "鉴定事件与登录事件区分");
+	// 验证配置注册与两种模式切换, 最后恢复启动时的设置。
+	.@original_mode = getbattleflag("identify_event_mode");
+	setbattleflag "identify_event_mode", 1;
+	AssertEquals(1, getbattleflag("identify_event_mode"), "rAthena 鉴定事件模式");
+	setbattleflag "identify_event_mode", 0;
+	AssertEquals(0, getbattleflag("identify_event_mode"), "Pandas 鉴定事件模式");
+	setbattleflag "identify_event_mode", .@original_mode;
 	end;
 }
