@@ -39,15 +39,16 @@ v1.2.2、v1.2.3 也采用相同的版本提交结构：
 
 在最新 `develop` 上整理本轮改动，记录目标版本和提交范围。版本号与更新日志可直接在 `develop` 提交；需要隔离改动或协作审查时，再使用准备分支和 PR。先完成必要的回归、数据与翻译更新，以及 [数据库升级脚本](update-database-upgrades.md)。历史上的 SQL 汇总通常在开发阶段维护：例如 v1.2.3 的汇总脚本在 `c0132788bd` 建立，发布前一晚由 `222c1bc020` 补充。
 
-版本号批量修改工具是 [imple_versions.py](../../../tools/python/imple_versions.py)。在仓库根目录开始：
+版本号批量修改工具是 [imple_versions.py](../../../tools/python/imple_versions.py)，仅依赖 Python 3.8+ 标准库。在仓库根目录执行以下命令，示例版本按本轮目标替换：
 
 ```sh
-cd tools/python
-pipenv install
-pipenv run python imple_versions.py
+python3 tools/python/imple_versions.py show
+python3 tools/python/imple_versions.py set 1.2.5.0 --expect-current 1.2.5.1 --dry-run
+python3 tools/python/imple_versions.py set 1.2.5.0 --expect-current 1.2.5.1
+python3 tools/python/imple_versions.py check
 ```
 
-按提示输入四段式版本。社区版约定第四段为 `1` 表示开发版，为 `0` 表示正式版：
+`show` 查看当前版本，`--dry-run` 预览改动，`set` 直接写入，`check` 核对字段一致性。`--expect-current` 要求原有版本全部符合预期；可用 `--json` 获取结构化结果。Windows 可将 `python3` 换成 `python`，无参数运行仍支持交互输入。完整参数和退出码见 [辅助脚本 README](../../../tools/python/README.md#版本号管理)。社区版约定第四段为 `1` 表示开发版，为 `0` 表示正式版：
 
 | 目的 | 输入示例 | 程序显示 |
 | --- | --- | --- |
@@ -55,7 +56,7 @@ pipenv run python imple_versions.py
 | 发布 v1.2.5 | `1.2.5.0` | `v1.2.5` |
 | 开始下一版开发 | `1.2.6.1` | `v1.2.6-dev` |
 
-脚本修改 `src/config/pandas.hpp` 的 `Pandas_Version`，以及 `src/` 下九个 Windows `.rc` 的文件/产品数值版本和字符串版本。它直接写入匹配文件，运行后审查 diff；它不处理 composer SQL 的文件名或注释。`CHANGELOG.md`、提交、标签及 Release 由后续步骤完成。
+脚本修改 `src/config/pandas.hpp` 的 `Pandas_Version`，以及 `src/` 下当前九个 Windows `.rc` 的文件/产品数值版本和字符串版本；新增 `.rc` 也会纳入检查。写入前检查全部字段，保留原有编码和换行，运行后审查 diff；它不处理 composer SQL 的文件名或注释。`CHANGELOG.md`、提交、标签及 Release 由后续步骤完成。
 
 形成正式提交前，核对本轮 `sql-files/composer/community/{main,logs,web}/` 中升级脚本的文件名、顶部目标版本注释，以及 CHANGELOG、发行版 SQL README 对这些文件的引用。社区版 SQL 沿用三段目标版本：程序 `1.2.5.1 → 1.2.5.0` 时，SQL 使用 `upgrade_to_1.2.5_*.sql`，注释写 `1.2.5`。若开发期间使用过临时版本或开发标记，按最终版本同步更名、改注释和引用，清除本轮目标版本中的四段 `.1`、`-dev` 等开发标记，避免旧临时文件一起进入运行包；保留已发布的历史升级文件。历史例子是 `07b13d8190`：计划版本由 `1.1.20` 调整为 `1.2.0` 时，同时修改了两份 composer 文件的名称和顶部注释。维护方式见 [数据库升级脚本](update-database-upgrades.md#2-同步新建库和升级路径)。
 
@@ -129,7 +130,7 @@ Pandas_v1.2.5_YYYYMMDD_HHMMSS_PRE_BIG5.zip
 
 ## 6. 开启下一轮开发
 
-确认正式提交及其制品已固定后，在 `develop` 再执行 `imple_versions.py`，将下一版设为 `X.Y.(Z+1).1`，或采用本轮已经决定的下一目标版本。直接在 `develop` 单独提交并正常推送升版，例如 `chore(release): 开始 v1.2.6-dev 开发`，按用户授权执行，无需专门创建升版 PR。`master` 和正式 tag 继续保留在已发布提交。
+确认正式提交及其制品已固定后，在 `develop` 再执行 `imple_versions.py set <下一开发版本> --expect-current <本次正式版本>`，将下一版设为 `X.Y.(Z+1).1`，或采用本轮已经决定的下一目标版本。例如先预览 `python3 tools/python/imple_versions.py set 1.2.6.1 --expect-current 1.2.5.0 --dry-run`，确认后去掉 `--dry-run` 执行，并运行 `check`。直接在 `develop` 单独提交并正常推送升版，例如 `chore(release): 开始 v1.2.6-dev 开发`，按用户授权执行，无需专门创建升版 PR。`master` 和正式 tag 继续保留在已发布提交。
 
 v1.2.4 的顺序最直观：`1.2.4.0` 正式提交 → 构包与 Release → `develop` 升为 `1.2.5.1`。v1.2.2 则在 GitHub Release 公开发布前已经提交下一版开发号，因此制品阶段应明确使用正式提交，避免随开发分支继续移动。
 
