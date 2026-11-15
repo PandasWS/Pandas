@@ -7,6 +7,7 @@
 | 需要做什么 | 阅读入口 |
 | --- | --- |
 | 写提交信息 | [提交规范](standards/commits.md) |
+| 编写更新日志、整理 Release 正文 | [更新日志规范](standards/changelog.md) |
 | 修改自有功能、安排宏和数据覆盖 | [开发规范](standards/development.md) |
 | 同步上游并检查本地改动是否丢失 | [上游同步规范](standards/upstream-sync.md) |
 | 理解 Pandas 相对 rAthena 的主要结构差异 | [架构概览](architecture/overview.md) |

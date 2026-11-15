@@ -11,6 +11,7 @@ Pandas 是基于 rAthena 的中文 MMORPG 模拟器。本文件是仓库内 Agen
 | 任务 | 必读文档 |
 | --- | --- |
 | 编写提交信息 | [提交规范](doc/development/standards/commits.md) |
+| 编写更新日志、整理 Release 正文 | [更新日志规范](doc/development/standards/changelog.md) |
 | 合并、审查 rAthena 更新 | [上游同步规范](doc/development/standards/upstream-sync.md) |
 | 了解仓库结构及 Pandas 差异 | [架构概览](doc/development/architecture/overview.md) |
 | 修改发布、打包、SQL 目录整理 | [发布与数据库整理](doc/development/architecture/release-pipeline.md) |
