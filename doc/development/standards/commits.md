@@ -1,6 +1,6 @@
 ﻿# 提交规范
 
-Pandas 新编写的提交信息采用 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。从上游导入的历史提交保留原信息；正式版发布提交及 `merge_rathena` 合入 `develop` 时生成的汇总合并提交沿用下述专用格式。
+Pandas 新编写的提交信息采用 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。从上游导入的历史提交保留原信息；正式版发布、下一轮开发升版及 `merge_rathena` 合入 `develop` 时生成的汇总合并提交沿用下述专用格式。
 
 ## 格式
 
@@ -41,7 +41,9 @@ fix(release): 从运行包排除开发文档
 
 ## 提交边界与说明
 
-正式版发布提交标题固定为 `发布 vX.Y.Z 正式版`，不添加 Conventional Commits 前缀，末尾不加句号，沿用 v1.2.2–v1.2.4 等历史版本的写法。这一提交包含正式版本号和定稿的更新日志；在 `develop` 创建时即使用正式发布措辞，例如 `发布 v1.2.5 正式版`，随后 `master` 快进到同一提交，因此标题不写“准备发布”。发布工具维护和下一轮开发升版仍遵循常规格式。历史记录与流程见 [发布正式版](../how-to/publish-release.md)。
+正式版发布提交标题固定为 `发布 vX.Y.Z 正式版`，不添加 Conventional Commits 前缀，末尾不加句号，沿用 v1.2.2–v1.2.4 等历史版本的写法。这一提交包含正式版本号和定稿的更新日志；在 `develop` 创建时即使用正式发布措辞，例如 `发布 v1.2.5 正式版`，随后 `master` 快进到同一提交，因此标题不写“准备发布”。历史记录与流程见 [发布正式版](../how-to/publish-release.md)。
+
+下一轮开发升版提交标题固定为 `将版本号提升为 vX.Y.Z-dev 开发版`，同样不添加 Conventional Commits 前缀，末尾不加句号。沿用 `88ba4f4fe4`（v1.2.3-dev）、`8a9b46af33`（v1.2.4-dev）、`b301350e1f`（v1.2.5-dev）等历史提交的写法；例如程序版本升为 `1.2.6.1` 时，标题为 `将版本号提升为 v1.2.6-dev 开发版`。该提交在 `develop` 单独记录下一轮版本号切换；发布工具维护等其他改动仍遵循常规格式。
 
 rAthena 同步的汇总合并提交标题固定为 `汇总合并 rAthena 官方最新代码 - YYYY年MM月DD日`，与对应 PR 标题一致，不添加 Conventional Commits 前缀。这是标题格式的特例；同步过程中新增的独立修复提交仍遵循常规格式。分支、日期及合并方式见 [上游同步规范](upstream-sync.md#同步-pr-与汇总合并)。
 

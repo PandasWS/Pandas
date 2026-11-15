@@ -130,7 +130,7 @@ Pandas_v1.2.5_YYYYMMDD_HHMMSS_PRE_BIG5.zip
 
 ## 6. 开启下一轮开发
 
-确认正式提交及其制品已固定后，在 `develop` 再执行 `imple_versions.py set <下一开发版本> --expect-current <本次正式版本>`，将下一版设为 `X.Y.(Z+1).1`，或采用本轮已经决定的下一目标版本。例如先预览 `python3 tools/python/imple_versions.py set 1.2.6.1 --expect-current 1.2.5.0 --dry-run`，确认后去掉 `--dry-run` 执行，并运行 `check`。直接在 `develop` 单独提交并正常推送升版，例如 `chore(release): 开始 v1.2.6-dev 开发`，按用户授权执行，无需专门创建升版 PR。`master` 和正式 tag 继续保留在已发布提交。
+确认正式提交及其制品已固定后，在 `develop` 再执行 `imple_versions.py set <下一开发版本> --expect-current <本次正式版本>`，将下一版设为 `X.Y.(Z+1).1`，或采用本轮已经决定的下一目标版本。例如先预览 `python3 tools/python/imple_versions.py set 1.2.6.1 --expect-current 1.2.5.0 --dry-run`，确认后去掉 `--dry-run` 执行，并运行 `check`。直接在 `develop` 单独提交并正常推送升版，标题沿用 `将版本号提升为 vX.Y.Z-dev 开发版`，例如 `将版本号提升为 v1.2.6-dev 开发版`；这是 [提交规范](../standards/commits.md) 中 Conventional Commits 的明确例外。提交和推送按用户授权执行，无需专门创建升版 PR。`master` 和正式 tag 继续保留在已发布提交。
 
 v1.2.4 的顺序最直观：`1.2.4.0` 正式提交 → 构包与 Release → `develop` 升为 `1.2.5.1`。v1.2.2 则在 GitHub Release 公开发布前已经提交下一版开发号，因此制品阶段应明确使用正式提交，避免随开发分支继续移动。
 
