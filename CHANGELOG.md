@@ -12,6 +12,42 @@
 
 -------------------------------------------------------------------------------
 
+## [v1.2.5] - `2026-11-15`
+
+### 升级提示
+
+- 请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.2.5_main.sql`
+- 若您启用了 `SQL` 版本的魔物/物品数据, 那么请在主数据库导入:
+	- `sql-files\main\upgrades\upgrade_to_1.2.5_main_use_sql_db.sql`
+
+> 导入之前请打开 `sql` 文件查看顶部的注释信息, 低版本尚未执行的升级脚本应按版本号从小到大依序导入.
+> 请在升级数据库之前做好备份.
+
+- `item_group_db.yml` 的版本从 3 升为 4, 自定义物品组请使用 `yamlupgrade` 转换并检查各子组的 `Algorithm` 设置. 默认的 `SharedPool` 会在每次抽取后减少池中对应道具的数量; 若需要每次独立按权重抽取, 请显式使用 `Random`. 详见 [物品组说明](doc/item_group.txt)
+- `skill_db.yml` 的版本从 3 升为 4, `CastCancel` 的默认值从 `false` 改为 `true`. 自定义技能请使用 `yamlupgrade` 转换并复核受击打断设置, 需要保持咏唱不可被打断的技能应显式设置 `CastCancel: false`
+- 上游已移除部分弃用的脚本常量, 请检查自定义脚本中的旧名称. 例如 `SI_PROVOKE` 应改为 `EFST_PROVOKE`, `UNITTYPE_MOB` 应改为 `BL_MOB`, `JOB_BABY_RUNE` 应改为 `JOB_BABY_RUNE_KNIGHT`
+- 上游已移除原有的 `@reload <类型>` 用法, 请使用对应的独立重载指令. 例如 `@reload auradb` 改用 `@reloadauradb`, `@reload laphinedb` 改用 `@reloadlaphinedb`
+- `OnPCIdentifyEvent` 鉴定事件改用上游实现后, 仅在道具鉴定成功时触发, 鉴定失败时将不再触发. 请检查依赖该事件的自定义脚本; 原有的 `@identify_idx` 参数和 `NPCE_IDENTIFY` 脚本常量继续保留
+
+### rAthena 重要更新
+
+- 实装复兴后天帝、魂灵师、契灵士、疾风忍者和月影忍者的职业技能
+- 将复兴后四转及扩展四转职业的基础/职业等级上限提高到 275/60, 特性素质上限提高到 110
+- 实装复兴后部分四转职业的新技能, 包括 `Energy Conversion`、`Wild Walk` 和 `Cross Slash`
+- 实现人工生命体和佣兵的技能冷却时间保存 (主数据库结构更新)
+- 实装复兴后 `Illusion of Teddy Bear` 的任务、魔物及相关附魔内容
+- 实装复兴后 `Garden of Time` 的任务、魔物及兑换商店
+- 实装复兴后契灵士转职任务及 `Deep Forest` 副本
+
+### 功能调整
+
+- 汉化并完善 `conf/battle/exp.conf` 和 `conf/battle/gm.conf` 中的配置说明 (#769, #770)
+- `nocapture` 地图标记改为上游 `nopetcapture` 的兼容别名, 原有脚本仍可使用
+- 更新简体/繁体终端翻译, 适配魔物刷新范围等提示信息的变化
+
+-------------------------------------------------------------------------------
+
 ## [v1.2.4] - `2024-09-21`
 
 ### 特别感谢
@@ -1343,6 +1379,8 @@
 
 -------------------------------------------------------------------------------
 
+[v1.2.5]: https://github.com/PandasWS/Pandas/compare/v1.2.4...v1.2.5
+[v1.2.4]: https://github.com/PandasWS/Pandas/compare/v1.2.3...v1.2.4
 [v1.2.3]: https://github.com/PandasWS/Pandas/compare/v1.2.2...v1.2.3
 [v1.2.2]: https://github.com/PandasWS/Pandas/compare/v1.2.1...v1.2.2
 [v1.2.1]: https://github.com/PandasWS/Pandas/compare/v1.2.0...v1.2.1
