@@ -84270,7 +84270,7 @@ Body:
       getgroupitem(IG_EYPGT_COSTUME_BOX3);
   - Id: 200537
     AegisName: If_Speed_Booster_10_Box
-    Name: Efreet Speed ​​Booster Package 10 Sets    # !todo check english name
+    Name: Efreet Speed Booster Package 10 Sets    # !todo check english name
     Type: Cash
     Weight: 10
     Flags:
@@ -84287,7 +84287,7 @@ Body:
       getgroupitem(IG_IF_SPEED_BOOSTER_10_BOX);
   - Id: 200538
     AegisName: If_Speed_Booster_Box
-    Name: Efreet Speed ​​Booster Package    # !todo check english name
+    Name: Efreet Speed Booster Package    # !todo check english name
     Type: Cash
     Weight: 10
     Flags:

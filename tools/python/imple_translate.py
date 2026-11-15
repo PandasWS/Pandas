@@ -833,14 +833,9 @@ class YamlReplaceController():
         return dictmap[key]
 
     def __load(self, filename):
-        contents = None
-
-        encoding = Common.get_file_encoding(filename)
-        encoding = 'latin1' if encoding is None else encoding
-
-        with open(filename, 'r', encoding=encoding) as f:
-            contents = self.__yaml.load(f.read())
-        return contents
+        # YAML 由解析器按 UTF-8/BOM 读取，避免通用编码探测将 Unicode 误判为旧编码。
+        with open(filename, 'rb') as f:
+            return self.__yaml.load(f)
 
     def __escape(self, value):
         if value is None:
@@ -876,6 +871,28 @@ class YamlReplaceController():
             else:
                 item[self.__target_field] = transname
         return contents
+
+    def __validate_encoding(self, contents, filename):
+        encoding = {'zh-cn': 'gbk', 'zh-tw': 'big5'}[self.__lang]
+
+        def check(value, field):
+            if isinstance(value, str):
+                try:
+                    value.encode(encoding)
+                except UnicodeEncodeError as error:
+                    characters = ', '.join('U+%04X' % ord(c) for c in value[error.start:error.end])
+                    raise ValueError('%s: %s 包含无法转换为 %s 的字符 %s，请修正数据或译名' % (
+                        filename, field, encoding.upper(), characters
+                    )) from error
+            elif isinstance(value, dict):
+                for key, child in value.items():
+                    check(child, '%s.%s' % (field, key))
+            elif isinstance(value, list):
+                for index, child in enumerate(value):
+                    check(child, '%s[%d]' % (field, index))
+
+        for item in contents['Body']:
+            check(item, 'Body[%s=%s]' % (self.__id_field, item[self.__id_field]))
     
     def __save(self, contents, filename):
         try:
@@ -904,6 +921,7 @@ class YamlReplaceController():
 
         contents = self.__load(filename)
         contents = self.__process(contents)
+        self.__validate_encoding(contents, filename)
         return self.__save(contents, savefile)
 
 def process(project_dir, lang = 'zh-cn', with_doc = False, silent = False):

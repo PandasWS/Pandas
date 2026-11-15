@@ -60,6 +60,20 @@ pipeline {
 			}
 		}
 		
+		stage('Validate: Package YAML') {
+			when {
+				expression {
+					return params.publish_package
+				}
+			}
+			steps {
+				bat """
+					cd tools\\python\\
+					pipenv run python tests/test_yaml.py
+				"""
+			}
+		}
+
 		stage('Build') {
 			steps {
 				bat """

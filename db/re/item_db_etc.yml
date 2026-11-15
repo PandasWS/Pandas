@@ -55235,7 +55235,7 @@ Body:
       bonus2 bSkillAtk,"SKE_ALL_IN_THE_SKY",.@r;
   - Id: 300598
     AegisName: aegis_300598
-    Name: Günter Card
+    Name: Gunter Card
     Type: Card
     Weight: 10
     Locations:
@@ -70414,7 +70414,7 @@ Body:
       autobonus "{}",30,100,BF_WEAPON|BF_MAGIC,"{ sc_start SC_REFRESH,20000,1; }";
   - Id: 311366
     AegisName: Inc_Movement_Speed
-    Name: Movement Speed ​​Increase
+    Name: Movement Speed Increase
     Type: Card
     SubType: Enchant
     Script: |

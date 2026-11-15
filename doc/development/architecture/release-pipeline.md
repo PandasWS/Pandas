@@ -17,7 +17,7 @@ Jenkins / 本地配置
         → ZIP → Jenkins 环境中额外复制到 artifacts/packages
 ```
 
-[Jenkinsfile](../../../Jenkinsfile) 在 Windows 中准备 Pipenv、调用 [dawn_compile.py](../../../tools/python/dawn_compile.py)，再按参数选择符号归档和包生成；这两个后续任务可并行，成功后归档 `artifacts/**`。普通 GitHub Actions 编译验证另由 `.github/workflows/` 管理。
+[Jenkinsfile](../../../Jenkinsfile) 在 Windows 中准备 Pipenv；启用打包时，先运行 `tests/test_yaml.py` 检查实际 YAML 加载及双语言转译，通过后调用 [dawn_compile.py](../../../tools/python/dawn_compile.py)，再按参数选择符号归档和包生成；这两个后续任务可并行，成功后归档 `artifacts/**`。普通 GitHub Actions 编译验证另由 `.github/workflows/` 管理。
 
 本地包输出目录由 `publish_path` 配置决定，空值时采用项目目录的 `../Release`。
 
