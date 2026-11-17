@@ -6058,6 +6058,7 @@ void MapServer::finalize(){
 	do_final_vending();
 	do_final_buyingstore();
 	do_final_path();
+	do_final_emotions();
 
 #ifdef Pandas_Player_Suspend_System
 	do_final_suspend();
@@ -6587,6 +6588,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_duel();
 	do_init_vending();
 	do_init_buyingstore();
+	do_init_emotions();
 
 #ifdef Pandas_Player_Suspend_System
 	do_init_suspend();
